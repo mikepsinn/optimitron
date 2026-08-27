@@ -343,7 +343,7 @@ export function Layout({ children }: LayoutProps) {
               {copyrightText}
             </div>
             {footerComplianceNotice && (
-              <div className="text-center text-xs mt-3 opacity-60">
+              <div className="text-center text-sm font-bold mt-3 opacity-80">
                 {footerComplianceNotice}
               </div>
             )}

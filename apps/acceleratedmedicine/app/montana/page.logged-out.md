@@ -2,18 +2,18 @@
 
 ## Metadata
 
-- Page title: Montana Universal Right to Try | Institute for Accelerated Medicine
+- Page title: Montana Universal Right to Try | Right to Trial Initiative
 - Meta description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 - Canonical: https://acceleratedmedicine.org/montana
-- Open Graph title: Montana Universal Right to Try | Institute for Accelerated Medicine
+- Open Graph title: Montana Universal Right to Try | Right to Trial Initiative
 - Open Graph description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Montana Universal Right to Try | Institute for Accelerated Medicine
+- Twitter title: Montana Universal Right to Try | Right to Trial Initiative
 - Twitter description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 
 ## Visible Page Copy
 
-- [INSTITUTE FOR ACCELERATED MEDICINE](/)
+- [RIGHT TO TRIAL INITIATIVE](/)
 - ENACTED PRECEDENT
 ## WHAT MONTANA'S UNIVERSAL RIGHT TO TRY LAW ACTUALLY DOES.
 - Montana SB 535 creates a licensed, supervised path for eligible patients to consider experimental treatment after reviewing approved choices with a treating clinician.
@@ -57,10 +57,10 @@
 - [CURRENT MONTANA CODE](https://mca.legmt.gov/bills/mca/title_0500/chapter_0120/part_0010/sections_index.html)
 - [TREATMENT CENTER LICENSING](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters)
 - BRING RIGHT TO TRIAL TO EVERY STATE
-### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
+### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
-- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
+- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
 - YES
 - SHOW ME MORE
 - NO
@@ -72,8 +72,8 @@
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
-- [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
+- [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
@@ -82,6 +82,7 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
+- [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

@@ -13,7 +13,6 @@ import {
   PragmaticTrialEvidenceSection,
 } from "@/components/landing/medical-freedom-sections";
 import {
-  MissouriCampaignSection,
   MontanaProofSection,
   PatientAccessFlowSection,
   RightToTrialImpactPreviewSection,
@@ -26,7 +25,7 @@ import {
 } from "@/components/landing/right-to-try-sections";
 
 /**
- * Institute for Accelerated Medicine — patient access, shared evidence, and
+ * Right to Trial Initiative — patient access, shared evidence, and
  * pragmatic clinical-trial education.
  */
 export default function HomePage() {
@@ -50,7 +49,6 @@ export default function HomePage() {
       <DecentralizedFDASection showDisclaimer={false} />
       <PatientImpactSection />
       <RoleActionSection />
-      <MissouriCampaignSection />
       <DeathClock message="while safe treatments remain untested and willing patients remain excluded" />
       <UniversalRightToTryFinalCTA />
     </Layout>

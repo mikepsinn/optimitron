@@ -1442,8 +1442,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Measure support, explain the Montana precedent, and equip state campaigns
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
-    name: "IAM",
-    title: "Institute for Accelerated Medicine",
+    name: "RTT",
+    title: "Right to Trial Initiative",
     description:
       "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
@@ -1497,7 +1497,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // Navigation system - state action first, evidence and support second
     topLevelNavItems: [
       "rightToTryMontana",
-      "rightToTryMissouri",
       "rightToTryStates",
       "rightToTryModelAct",
       "rightToTrialImpact",
@@ -1506,7 +1505,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     sidebarSections: [],
     sidebarVoteCtaEnabled: false,
     footerBranding: {
-      title: "THE INSTITUTE FOR ACCELERATED MEDICINE",
+      title: "RIGHT TO TRIAL INITIATIVE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     footerSections: [
@@ -1515,8 +1514,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         label: "RIGHT TO TRIAL",
         items: [
           "rightToTryMontana",
-          "rightToTryMissouri",
           "rightToTryStates",
+          "rightToTrySurvey",
           "rightToTryModelAct",
         ],
       },
@@ -1528,7 +1527,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "support",
         label: "SUPPORT",
-        items: ["donate", "volunteer"],
+        items: ["donate", "volunteer", "rightToTryEmailUpdates"],
       },
     ],
     contactInfo: {
@@ -1551,10 +1550,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+      alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 Accelerated Medicine Foundation (Institute for Accelerated Medicine) | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 

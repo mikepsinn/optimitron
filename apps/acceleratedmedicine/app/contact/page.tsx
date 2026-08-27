@@ -15,7 +15,7 @@ import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 
 export const metadata: Metadata = {
-  title: "Volunteer for Right to Trial | Institute for Accelerated Medicine",
+  title: "Volunteer for Right to Trial | Right to Trial Initiative",
   description:
     "Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.",
   alternates: { canonical: "https://acceleratedmedicine.org/contact" },

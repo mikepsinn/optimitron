@@ -56,6 +56,7 @@ const roleLabels: Record<RightToTrySupportInput["role"], string> = {
   clinician: "Clinician",
   researcher: "Researcher",
   "public-educator": "Public educator or state organizer",
+  "state-legislator-or-staff": "State legislator or staff",
   other: "Other",
 };
 
@@ -104,7 +105,10 @@ export function buildSupportNotification(input: RightToTrySupportInput) {
     return { html, subject, text };
   }
 
-  const subject = `[Right to Trial] ${input.state}: ${positionLabels[input.position]}`;
+  const subject =
+    input.role === "state-legislator-or-staff"
+      ? `[Right to Trial LEGISLATOR] ${input.state}: ${positionLabels[input.position]}`
+      : `[Right to Trial] ${input.state}: ${positionLabels[input.position]}`;
   const text = [
     `State: ${input.state}`,
     `Position: ${positionLabels[input.position]}`,
@@ -229,6 +233,29 @@ export async function sendRightToTrySupport(
   } catch (error) {
     console.error("Right to Try notification email failed", error);
     return { sentConfirmation: false };
+  }
+
+  if (input.updates && input.email) {
+    const audienceId = process.env.RESEND_AUDIENCE_ID;
+    if (!audienceId) {
+      console.error(
+        "RESEND_AUDIENCE_ID is not configured; the updates opt-in was stored but the contact was not subscribed",
+      );
+    } else {
+      try {
+        const contactResult = await resend.contacts.create({
+          audienceId,
+          email: input.email,
+          firstName: input.name || undefined,
+          unsubscribed: false,
+        });
+        if (contactResult.error) {
+          throw new Error(contactResult.error.message);
+        }
+      } catch (error) {
+        console.error("Right to Try audience subscription failed", error);
+      }
+    }
   }
 
   if (!input.email) {
