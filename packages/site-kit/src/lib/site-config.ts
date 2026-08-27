@@ -1387,6 +1387,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         items: ["about", "faq", "contact"],
       },
     ],
+    // No vote CTA: this app has no vote surface, so the shared sidebar
+    // button would render "Answer the Question" over a /#vote anchor that
+    // does not exist here. It arrives with the court vote routes (#254).
+    sidebarVoteCtaEnabled: false,
 
     footerBranding: {
       title: "COURT OF HUMANITY",
