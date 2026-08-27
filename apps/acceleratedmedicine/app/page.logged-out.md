@@ -3,28 +3,27 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
-- RIGHT TO TRIAL
-## EVERY PATIENT HAS THE RIGHT TO TRIAL.
-- Every patient should be able to join a pragmatic clinical trial for the most promising treatments. Every result should help the next patient. Montana opened the door. Now every state can turn access into evidence.
-- [SEE MONTANA'S PRECEDENT](/montana)
-- [BRING RIGHT TO TRIAL TO MY STATE](#state-support)
-- MONTANA
+- THE RIGHT TO TRIAL
+## WE CAN ERADICATE DISEASE.
+- Give every patient the right to join a clinical trial for the most promising treatments—with a clinician, at a licensed treatment center, wherever they live. Every patient gets more options. Every result helps us find what works.
+- [SEE HOW MONTANA DID IT](/montana)
+- [BRING IT TO MY STATE](#state-support)
+- HOW MONTANA IS ACCELERATING CLINICAL DISCOVERY
 - SB 535
-- Signed in 2025. Final rules effective in 2026. Experimental treatment center applications are available now.
-- AN ENACTED STATE PRECEDENT
-### MONTANA ALREADY MOVED THE LINE.
-- Montana's Universal Right to Try law is enacted, regulated, and ready for licensed experimental treatment centers. The precedent exists. Right to Trial carries it forward.
+- Montana removed the terminal-illness restriction, licensed experimental treatment centers, and required outcome monitoring. Patients and providers now have a practical path to more treatment options.
+### PATIENTS CAN REACH TREATMENTS. PROVIDERS CAN DELIVER THEM.
+- Montana removed the terminal-illness restriction in 2023. In 2025, SB 535 created licensed experimental treatment centers, direct provider-patient payment agreements, outcome monitoring, adverse event reporting, and an access requirement funded by 2% of each center's net annual profits.
 - 2015
 #### RIGHT TO TRY BEGINS
 - Montana creates an initial access path for eligible patients.
@@ -38,34 +37,45 @@
 #### THE DOORS CAN OPEN
 - Final rules take effect and Montana publishes the experimental treatment center application.
 - Read the official [enrolled SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9), [final rules](https://dphhs.mt.gov/assets/rules/2026-427-Adp-Arm.pdf), and [licensing page](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters).
-### OPEN THE DOOR. THEN LEARN FROM EVERY PERSON WHO WALKS THROUGH IT.
-- Montana created a licensed path to treatment. Right to Trial adds pragmatic trials, standardized outcomes, and shared evidence so each patient can help the next one.
-- BEFORE
-#### A NARROW EXCEPTION
-- Eligibility can depend on a narrow diagnosis or federal pathway.
-- No dedicated state license for an experimental treatment center.
-- Patients may still have nowhere lawful and supervised to go.
-- MONTANA SB 535
-#### A LICENSED ACCESS PATH
-- Licensed centers operate under state rules and inspection.
-- Patients review approved options with a treating clinician.
-- Consent, safety, records, and professional oversight are explicit.
-#### EVERY PATIENT BECOMES EVIDENCE
-- Use standard outcome measures before and after treatment.
-- Pool comparable results across patients and centers.
-- Publish useful treatment evidence for the next decision.
-### ONE PATIENT. ONE SUPERVISED CHOICE. ONE MORE USEFUL RESULT.
-#### REVIEW APPROVED OPTIONS
-- The patient and treating clinician review the condition, prior care, and approved choices.
-#### CHOOSE WITH INFORMED CONSENT
-- The patient receives the known risks, possible benefits, costs, alternatives, and right to stop.
-#### TREAT UNDER LICENSED SUPERVISION
-- A licensed center and qualified professionals provide care, maintain records, and meet safety rules.
-#### MAKE THE OUTCOME USEFUL
-- Standard measures turn one person's result into comparable evidence for future patients and clinicians.
+### WHAT MONTANA CHANGED. WHAT RIGHT TO TRIAL ADDS.
+- Earlier Right to Try laws created permission for a narrow group of patients, but not a delivery system or a public evidence system. Montana built the delivery path. Right to Trial adds pragmatic trials and published results.
+- TRADITIONAL RIGHT TO TRY
+#### PERMISSION WITHOUT A DELIVERY SYSTEM
+- Federal eligibility is limited to patients with a life-threatening disease or condition.
+- Manufacturers and providers may still decline to participate.
+- Montana's earlier law did not license treatment centers or create comparable public results.
+- MONTANA SB 422 + SB 535
+#### A PRACTICAL TREATMENT PATHWAY
+- Montana removed the terminal-illness restriction in 2023.
+- Licensed centers and direct payment agreements give providers a place and a way to deliver treatment.
+- Centers must monitor outcomes and adverse events and devote 2% of net annual profits to access.
+- RIGHT TO TRIAL PROPOSAL
+#### EVERY PATIENT CAN PARTICIPATE
+- Let every patient join a pragmatic trial for the most promising treatments.
+- Give providers a clear way to be paid for treatment and trial services.
+- Collect and publish standardized results so everyone can see what works.
+### FIND A TREATMENT. JOIN A TRIAL. REPORT WHAT HAPPENED.
+#### FIND PROMISING TREATMENTS
+- See the treatments and trials most likely to help with your condition.
+#### CHOOSE WITH A CLINICIAN
+- Review the possible benefits, risks, costs, alternatives, and your right to stop.
+#### RECEIVE SUPERVISED TREATMENT
+- Get care from qualified professionals at a licensed treatment center.
+#### REPORT WHAT HAPPENED
+- Your result becomes part of a public comparison of treatment outcomes.
+- AVERAGE WAIT FOR A FIRST TREATMENT
+- 221.7
+- YEARS
+- 40.5
+- 181.2 YEARS SOONER
+- THE WORLD WE CAN CREATE
+### DISCOVER TREATMENTS WHILE TODAY'S PATIENTS ARE STILL ALIVE.
+- At today's pace, the average untreated disease waits 222 years for its first effective treatment. Give willing patients a place in low-cost clinical trials, and the central estimate falls to 41 years.
+- [SEE HOW MUCH FASTER](/impact)
+- [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
 - BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
-- Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
+- Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
 - YES
@@ -178,17 +188,17 @@
 - 🧫
 #### 44+ Years Since Last Disease Cure
 - No major disease has been cured in over 44 years, highlighting the need for new research paradigms.
-### REASON 2.
-#### Patients who try treatments cannot turn their care into shared evidence
+### THE OTHER PROBLEM.
+#### When patients try treatments, the rest of us learn almost nothing.
 - There are about 7K rare diseases. Roughly 6.65K still lack an effective treatment.
-- Right-to-try access can help the person choosing now. Standardized, pooled outcomes can make that choice useful to the next patient.
-##### GET AN OPTION
+- Right to Try creates access. Standardized outcomes turn isolated treatment decisions into comparable evidence about what works.
+##### GET ANOTHER OPTION
 - When approved treatments have failed, informed adults can still make a choice with their clinician.
-##### TRACK EVERY RESULT
-- Standard outcomes turn ordinary treatment decisions into evidence instead of anecdotes.
-##### HELP THE NEXT HUMAN
-- Pooling and publishing results lets the next patient make a less blind decision.
-### GIVE PATIENTS AN OPTION. MAKE EVERY RESULT USEFUL.
+##### TRACK WHAT HAPPENED
+- The same simple before-and-after measures show whether treatment helped.
+##### PUBLISH COMPARABLE RESULTS
+- De-identified results show which treatments helped, which failed, and for whom.
+### GIVE PATIENTS ACCESS. MEASURE EVERY OUTCOME.
 ### OXFORD'S RECOVERY TRIAL PROVED RESEARCH CAN COST DRAMATICALLY LESS
 - $500
 - Per patient in a real pragmatic trial.
@@ -238,12 +248,12 @@
 - Time to cover the untreated-disease queue.
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
-### WHAT PRAGMATIC TRIAL ACCESS AT SCALE COULD PRODUCE
+### WHAT HAPPENS WHEN EVERY PATIENT CAN PARTICIPATE
 - 23.4M
 - 12.3x
 - $58.6B
-### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
-- See what the platonic ideal of healthcare and clinical trials will look like when dFDA frameworks are widely adopted.
+### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
 - Search for trials based on your condition, location, and preferences.
@@ -424,32 +434,33 @@
 - Regulatory submission preparation
 - View Full Analytics
 - [Create a Trial](https://dfda.earth/contact)
-### MEDICAL FREEDOM THAT LEARNS
+### TREATMENT BECOMES EVIDENCE
 #### ONE PATIENT GETS AN OPTION
 - A person with no adequate approved treatment can make an informed choice with a clinician.
-#### THEIR OUTCOME BECOMES EVIDENCE
-- The result is measured in the same format as results from other patients.
-#### THE NEXT DECISION GETS LESS BLIND
-- Public, pooled outcomes reveal what works, what fails, and for whom.
-### THIS ONLY BECOMES REAL WHEN THE RIGHT HUMANS SHOW UP.
-- [PATIENTS AND CAREGIVERS TELL US WHAT ACCESS WOULD CHANGE A short story can show why a lawful, supervised option matters when approved treatments are not enough. CONTINUE](#state-support)
-- [CLINICIANS HELP DEFINE RESPONSIBLE CARE Bring practical insight on consent, treatment review, monitoring, records, and patient safety. CONTINUE](/states/missouri?role=clinician#state-support)
-- [RESEARCHERS MAKE EVERY OUTCOME COMPARABLE Help define the small, standard outcome set that turns treatment access into cumulative evidence. CONTINUE](/research)
-- [PUBLIC EDUCATORS BUILD A USEFUL STATE PAGE Collect local questions, identify credible speakers, and explain the model without slogans or fog. CONTINUE](/contact)
-- NEXT ACTIVE STATE: MISSOURI
-### HELP MISSOURI LEAD THE NEXT RIGHT TO TRIAL STATE.
-- Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence and every outcome helps the next patient.
-- [OPEN THE MISSOURI PAGE](/states/missouri)
+#### THEIR RESULT CHANGES THE RANKINGS
+- The same simple measures show how their treatment compares with every other option.
+#### THE EVIDENCE IS PUBLISHED
+- De-identified results reveal what helps, what fails, and which patients respond best.
+### CHOOSE HOW YOU WANT TO HELP PATIENTS GET ANSWERS FASTER.
+- [PATIENTS AND CAREGIVERS TELL YOUR STORY Show what another supervised treatment option would mean when approved treatments are not enough. GET STARTED](#state-support)
+- [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](/states/missouri?role=clinician#state-support)
+- [RESEARCHERS TURN CARE INTO DISCOVERIES Choose the small set of outcomes that lets one patient's result improve treatment rankings for everyone. GET STARTED](/research)
+- [PUBLIC EDUCATORS MAKE THE CASE IN YOUR STATE Share the patient story, answer local questions, and show what Montana already proved possible. GET STARTED](/contact)
+- MISSOURI CAN BE NEXT
+### GIVE MISSOURI PATIENTS THE RIGHT TO TRIAL.
+- Montana showed that a state can give patients more supervised treatment options. Missouri can take the next step: let every willing patient join the search for treatments that work.
+- [BRING IT TO MISSOURI](/states/missouri)
 ### 💀 DEATH CLOCK
-### MONTANA OPENED THE DOOR. BRING RIGHT TO TRIAL TO YOUR STATE.
-- [RECORD MY STATE](#state-support)
-- [READ THE MODEL FRAMEWORK](/model-act)
+### MONTANA CREATED A PATH. BRING RIGHT TO TRIAL TO YOUR STATE.
+- [READ THE PROPOSED LAW](/model-act)
 - MISSION: TOTAL DISEASE ERADICATION
+#### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT

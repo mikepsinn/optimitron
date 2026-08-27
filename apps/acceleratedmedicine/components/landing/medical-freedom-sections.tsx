@@ -247,23 +247,23 @@ export function MedicalFreedomAccessSection() {
   const benefits = [
     {
       icon: ShieldCheck,
-      title: "Get an option",
+      title: "Get another option",
       description:
         "When approved treatments have failed, informed adults can still make a choice with their clinician.",
       color: "bg-brutal-yellow",
     },
     {
       icon: Database,
-      title: "Track every result",
+      title: "Track what happened",
       description:
-        "Standard outcomes turn ordinary treatment decisions into evidence instead of anecdotes.",
+        "The same simple before-and-after measures show whether treatment helped.",
       color: "bg-brutal-cyan",
     },
     {
       icon: Users,
-      title: "Help the next human",
+      title: "Publish comparable results",
       description:
-        "Pooling and publishing results lets the next patient make a less blind decision.",
+        "De-identified results show which treatments helped, which failed, and for whom.",
       color: "bg-brutal-pink",
     },
   ];
@@ -273,11 +273,10 @@ export function MedicalFreedomAccessSection() {
       <Container>
         <div className="mx-auto mb-12 flex max-w-5xl flex-col items-center gap-4 text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Reason 2.
+            The other problem.
           </h2>
           <h3 className="text-3xl font-black tracking-tighter sm:text-4xl md:text-5xl">
-            Patients who try treatments cannot turn their care into shared
-            evidence
+            When patients try treatments, the rest of us learn almost nothing.
           </h3>
           <p className="max-w-3xl text-lg font-bold sm:text-xl">
             There are about{" "}
@@ -290,8 +289,8 @@ export function MedicalFreedomAccessSection() {
             still lack an effective treatment.
           </p>
           <p className="max-w-3xl text-lg font-bold sm:text-xl">
-            Right-to-try access can help the person choosing now. Standardized,
-            pooled outcomes can make that choice useful to the next patient.
+            Right to Try creates access. Standardized outcomes turn isolated
+            treatment decisions into comparable evidence about what works.
           </p>
         </div>
 
@@ -317,8 +316,8 @@ export function MedicalFreedomBridgeSection() {
     <SectionContainer bgColor="pink" borderPosition="bottom">
       <Container>
         <h2 className="text-center text-3xl font-black uppercase leading-tight text-white sm:text-4xl md:text-5xl lg:text-7xl">
-          Give patients an option. <br />
-          Make every result useful.
+          Give patients access. <br />
+          Measure every outcome.
         </h2>
       </Container>
     </SectionContainer>
@@ -448,7 +447,7 @@ export function ModeledBenefitsSection() {
       <Container>
         <div className="mx-auto mb-12 max-w-5xl text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            What pragmatic trial access at scale could produce
+            What happens when every patient can participate
           </h2>
         </div>
 
@@ -480,14 +479,14 @@ export function PatientImpactSection() {
     },
     {
       icon: HeartPulse,
-      title: "Their outcome becomes evidence",
-      text: "The result is measured in the same format as results from other patients.",
+      title: "Their result changes the rankings",
+      text: "The same simple measures show how their treatment compares with every other option.",
       color: "bg-background",
     },
     {
       icon: Users,
-      title: "The next decision gets less blind",
-      text: "Public, pooled outcomes reveal what works, what fails, and for whom.",
+      title: "The evidence is published",
+      text: "De-identified results reveal what helps, what fails, and which patients respond best.",
       color: "bg-brutal-cyan",
     },
   ];
@@ -496,7 +495,7 @@ export function PatientImpactSection() {
     <SectionContainer bgColor="pink" borderPosition="bottom">
       <Container>
         <h2 className="mb-12 text-center text-4xl font-black uppercase leading-tight text-brutal-pink-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-          Medical freedom that learns
+          Treatment becomes evidence
         </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {steps.map(({ icon: Icon, title, text, color }, index) => (

@@ -138,6 +138,7 @@ const SITES: Site[] = [
   {
     additionalSnapshotRoutes: [
       "/the-plan",
+      "/impact",
       "/montana",
       "/model-act",
       "/states/missouri",

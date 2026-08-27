@@ -1340,7 +1340,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
     description:
-      "Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.",
+      "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1395,7 +1395,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       "rightToTryMissouri",
       "rightToTryStates",
       "rightToTryModelAct",
-      "research",
+      "rightToTrialImpact",
       "donate",
     ],
     sidebarSections: [],
@@ -1418,7 +1418,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "evidence",
         label: "EVIDENCE",
-        items: ["research", "faq"],
+        items: ["rightToTrialImpact", "research", "faq"],
       },
       {
         id: "support",
@@ -1432,8 +1432,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       websiteLabel: "AcceleratedMedicine.org",
     },
     impactAnalysis: {
-      url: "https://impact.warondisease.org",
-      label: "impact.warondisease.org",
+      url: "https://acceleratedmedicine.org/impact",
+      label: "acceleratedmedicine.org/impact",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {

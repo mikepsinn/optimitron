@@ -195,7 +195,7 @@ export const NAV_ITEMS_MAP = {
     label: "Model Act",
     path: ROUTES.modelAct,
     description:
-      "See how every patient can join a pragmatic trial and every result can help the next patient.",
+      "See how every patient can join a pragmatic trial and providers can publish comparable results.",
     emoji: "📄",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
@@ -203,6 +203,22 @@ export const NAV_ITEMS_MAP = {
       "Right to Trial model act",
       "patient access legislation",
       "experimental treatment licensing",
+    ],
+  },
+  rightToTrialImpact: {
+    id: "rightToTrialImpact",
+    label: "Impact",
+    path: ROUTES.impact,
+    description:
+      "See how Right to Trial can help patients join low-cost trials and find effective treatments sooner.",
+    emoji: "⚡",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Right to Trial impact",
+      "pragmatic clinical trials",
+      "treatment discovery",
+      "clinical trial cost",
     ],
   },
   volunteer: {

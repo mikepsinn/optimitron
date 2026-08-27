@@ -106,40 +106,28 @@ Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones be
 - `docs/FEATURES.md` — Feature registry: what actually exists, with evidence (the only doc allowed to assert maturity status)
 - `docs/ROADMAP.md` — Sequencing (Now/Next/Later/Parked/Won't) + code-cleanup backlog
 - `docs/TYPE_SYSTEM.md` — How types flow from Prisma → all packages
-- `docs/h2ewd.md` — Wishonia/H2EWD voice for public-facing persuasion copy
+- `docs/h2ewd.md` — War on Disease campaign source material
 
 ## Public Copy Rules
 
-Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
+Do not apply a repository-wide voice. Use the rendered target page, its current source, and user-provided references as the style source.
 
-- Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
-- Ask the shortest missing question only when strategy is unclear. Include a recommended default.
-- Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
-- Speak directly to the specific human or organization that should do something.
-- Make the action obvious, then show the value to them for doing it.
-- Before writing user-facing text, identify the audience, desired action, desired feeling, and outcome; make the copy outcome-first, not mechanism-first.
-- Be funny when the surface allows it. Dry, concrete, slightly alien, and useful beats cute or verbose.
-- Do not leak implementation or planning terms into user copy: "site variant", "program graph", "initiative landing page", "approved organizations get", "route allowlist", etc.
-- Prefer strong concrete nouns and verbs. If a sentence could appear on any SaaS landing page, rewrite it.
-- For treaty/vote/referral copy, optimize for voting, sharing, embedding, and task completion, not explaining the whole system.
-- Before writing campaign copy, name the audience, desired action, and legal/quantitative anchor. Preserve the anchor when it creates trust or legitimacy; compress around it instead of replacing it.
-- On vote, survey, referral, and embed surfaces, choose words that increase the target action. Move precision that slows response into citations, expanders, and case pages.
-- **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
-- **No MLM copy.** Ban recruit/downline/power-recruiter/keep-going/your-job-is/build-your-team hierarchy language on public surfaces. Prefer outcome verbs: tell friends, share, vote, optimize Earth, save lives, prevent suffering. Humanity Manager / Office Space comedy can stay; pyramid-scheme enrollment tone cannot.
-- **Ban “movement”** as campaign identity language (“build a movement”, “movement builder”, “this is how a vote becomes a movement”). Political-science citations of Chenoweth in long-form docs can keep the word.
-- **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
-- **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
-- Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
-- After verification and screenshots, commit the intended changes. Push the branch. Open or update a normal pull request.
-- Pause only for an explicit hold or unresolved strategic choice.
-- The PR review packet is the copy approval surface. Agents leave its checkboxes unchecked for the human reviewer.
-- Show copy changes as Before → After in the PR review or handoff. Label additions New and unchanged relocations Moved unchanged.
+- Before editing, identify the audience, desired action, human outcome, old copy's job, and source anchor.
+- Structure important copy as outcome, mechanism, proof, then action.
+- Use concrete language from the target project and its evidence.
+- Preserve legal distinctions, parameter values, citations, and user-supplied claims unless they are incorrect.
+- Keep enacted law, observed evidence, model estimates, and proposals clearly distinct.
+- Ask one short question only when the strategy is genuinely unclear.
+- Show Before → After for broad copy changes before editing when the human requests review.
+- Treat `page.logged-out.md` diffs and screenshots as copy-review evidence.
+- After verification, commit and push the intended changes. Update or open a normal pull request.
+- The PR review packet is the approval surface. Leave its checkboxes unchecked for the human reviewer.
 
 ## Task Writing — Simplified Technical English
 
 Write task titles, descriptions, acceptance criteria, and agent instructions in ASD-STE100: active voice, one instruction per sentence, under 20 words per sentence, simple tenses, no `-ing` verb forms, one term per concept, no metaphors. Tasks are executed by agents and by non-native readers, so ambiguity costs them time.
 
-Persuasion surfaces are excluded. Landing pages, emails, share copy, and the manual keep the voice in `docs/h2ewd.md`. STE is for the instruction layer only.
+Persuasion surfaces are excluded. Their style comes from the target page and user-provided references. STE is for the instruction layer only.
 
 STE removes figurative language, not facts. Keep every number and citation; expect the word count to rise, not fall.
 

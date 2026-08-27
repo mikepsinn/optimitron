@@ -15,7 +15,7 @@
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
 ## A RIGHT TO TRIAL FRAMEWORK FOR EVERY STATE.
-- Start with Montana's enacted licensing framework. Add pragmatic trials and comparable outcomes. Give every patient another option and make every result useful to the next patient.
+- Start with Montana's enacted licensing framework. Add pragmatic trials, provider payment, and published outcomes. Give every patient the right and practical ability to participate in a clinical trial for the most promising treatments.
 - 01
 ### PATIENT ELIGIBILITY
 - Let an informed adult consider an experimental treatment after the patient and treating clinician evaluate approved options.
@@ -29,18 +29,18 @@
 ### PROFESSIONAL OVERSIGHT
 - Keep clinicians and facilities accountable to licensing boards, scope-of-practice rules, and safety reporting.
 - 05
-### FAIR FINANCIAL RULES
-- Disclose every charge before treatment and prohibit misleading claims about access, results, or regulatory status.
+### PROVIDER PARTICIPATION AND FAIR COSTS
+- Let clinicians and treatment centers be paid for treatment and trial services. Disclose every charge before care.
 - 06
 ### COMPARABLE OUTCOMES
-- Use a small standard outcome set so each participating patient's result can strengthen the next decision.
+- Collect the same outcomes for each condition and publish de-identified results so patients, clinicians, and researchers can compare treatments.
 ### USE ENACTED TEXT AS THE STARTING POINT.
 - The framework above is an educational outline. Montana's enrolled bill and final rules provide the official enacted language, definitions, licensing structure, and implementation detail.
 - [OPEN SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - [READ THE MONTANA GUIDE](/montana)
 - BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
-- Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
+- Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
 - YES
@@ -58,6 +58,7 @@
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
