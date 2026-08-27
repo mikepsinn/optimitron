@@ -360,8 +360,8 @@ export function RightToTrialImpactPreviewSection() {
             <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
               <div>
                 <p className="text-5xl font-black leading-none">
-                  {Math.round(
-                    RIGHT_TO_TRIAL_SOURCE_PARAMETERS.statusQuoAverageWait.value,
+                  {RIGHT_TO_TRIAL_SOURCE_PARAMETERS.statusQuoAverageWait.value.toFixed(
+                    1,
                   )}
                 </p>
                 <p className="font-black uppercase">years</p>
@@ -369,13 +369,13 @@ export function RightToTrialImpactPreviewSection() {
               <ArrowRight className="h-10 w-10" strokeWidth={3} />
               <div>
                 <p className="text-5xl font-black leading-none">
-                  {centralImpact.averageWaitYears.toFixed(0)}
+                  {centralImpact.averageWaitYears.toFixed(1)}
                 </p>
                 <p className="font-black uppercase">years</p>
               </div>
             </div>
             <p className="mt-5 border-t-4 border-primary pt-5 text-3xl font-black uppercase leading-none">
-              {centralImpact.yearsEarlier.toFixed(0)} years returned to patients
+              {centralImpact.yearsEarlier.toFixed(1)} years returned to patients
             </p>
           </div>
 

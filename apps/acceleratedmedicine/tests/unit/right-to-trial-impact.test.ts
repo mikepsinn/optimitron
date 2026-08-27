@@ -35,6 +35,6 @@ describe("right-to-trial impact calculations", () => {
 
     expect(comparison.conventionalParticipants).toBe(24);
     expect(comparison.pragmaticParticipants).toBe(1076);
-    expect(comparison.participantMultiplier).toBeCloseTo(44.1, 1);
+    expect(comparison.costReductionMultiplier).toBeCloseTo(44.1, 1);
   });
 });

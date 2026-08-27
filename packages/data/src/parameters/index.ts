@@ -6,3 +6,4 @@ export * from "./earth-optimization-prize";
 export * from "./military-spending";
 export * from "./shirt-distribution";
 export * from "./content-hash";
+export * from "./state-right-to-trial";

@@ -84,7 +84,7 @@ export function calculateRightToTrialImpact(
 export interface TrialBudgetComparison {
   budget: number;
   conventionalParticipants: number;
-  participantMultiplier: number;
+  costReductionMultiplier: number;
   pragmaticParticipants: number;
 }
 
@@ -98,7 +98,7 @@ export function calculateTrialBudgetComparison(
     conventionalParticipants: Math.floor(
       budget / TRADITIONAL_PHASE3_COST_PER_PATIENT.value,
     ),
-    participantMultiplier:
+    costReductionMultiplier:
       TRADITIONAL_PHASE3_COST_PER_PATIENT.value /
       DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value,
     pragmaticParticipants: Math.floor(

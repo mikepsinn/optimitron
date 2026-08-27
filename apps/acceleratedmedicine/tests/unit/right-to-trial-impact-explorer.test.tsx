@@ -16,5 +16,23 @@ describe("RightToTrialImpactExplorer", () => {
     expect(
       screen.getByText("200 years returned to patients"),
     ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+
+    expect(screen.getByText("5.48× faster")).toBeInTheDocument();
+    expect(
+      screen.getByText("181 years returned to patients"),
+    ).toBeInTheDocument();
+  });
+
+  it("updates both participant counts when the trial budget changes", () => {
+    render(<RightToTrialImpactExplorer />);
+
+    fireEvent.change(screen.getByLabelText(/Trial budget/), {
+      target: { value: "2000000" },
+    });
+
+    expect(screen.getByText("48")).toBeInTheDocument();
+    expect(screen.getByText("2,152")).toBeInTheDocument();
   });
 });

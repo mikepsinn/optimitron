@@ -14445,36 +14445,6 @@ export const SHIRT_WEARING_FRICTION_COST_USD: Parameter = {
   manualPageTitle: "The Funniest Joke in the Universe",
 };
 
-export const STATE_RTT_PHILANTHROPIC_COST_TOTAL: Parameter = {
-  value: 65000000.0,
-  parameterName: "STATE_RTT_PHILANTHROPIC_COST_TOTAL",
-  calculationsUrl: "https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html#sec-state_rtt_philanthropic_cost_total",
-  unit: "USD",
-  displayName: "Universal Right to Try with Evidence Philanthropic Cost",
-  description: "Total philanthropic cost of adopting Universal Right to Try with Evidence in all 50 states: a central $15 million campaign estimate plus $50 million for the shared registry's first ten years.",
-  sourceType: "definition",
-  confidence: "low",
-  confidenceInterval: [25000000.0, 200000000.0],
-  distribution: "lognormal",
-  manualPageUrl: "https://rtt-impact.acceleratedmedicine.org/",
-  manualPageTitle: "Universal Right to Try with Evidence: Potential Impact of Adoption in All 50 States",
-};
-
-export const STATE_RTT_TREATMENT_DISCOVERY_MULTIPLIER: Parameter = {
-  value: 5.48,
-  parameterName: "STATE_RTT_TREATMENT_DISCOVERY_MULTIPLIER",
-  calculationsUrl: "https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html#sec-state_rtt_treatment_discovery_multiplier",
-  unit: "x",
-  displayName: "Universal Right to Try with Evidence Treatment Discovery Multiplier",
-  description: "Conditional multiplier on the worldwide first-treatment discovery rate after all 50 states adopt and a mature pooled pragmatic-trial system operates.",
-  sourceType: "definition",
-  confidence: "low",
-  confidenceInterval: [1.1, 15.0],
-  distribution: "lognormal",
-  manualPageUrl: "https://rtt-impact.acceleratedmedicine.org/",
-  manualPageTitle: "Universal Right to Try with Evidence: Potential Impact of Adoption in All 50 States",
-};
-
 export const TESTED_RELATIONSHIPS_ESTIMATE: Parameter = {
   value: 32500.0,
   parameterName: "TESTED_RELATIONSHIPS_ESTIMATE",
@@ -15942,8 +15912,6 @@ export const parameters = {
   SHIRT_SEED_COST_PER_WEARER_USD,
   SHIRT_SEED_WEARERS_THRESHOLD,
   SHIRT_WEARING_FRICTION_COST_USD,
-  STATE_RTT_PHILANTHROPIC_COST_TOTAL,
-  STATE_RTT_TREATMENT_DISCOVERY_MULTIPLIER,
   TESTED_RELATIONSHIPS_ESTIMATE,
   TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX,
   TREATY_CAMPAIGN_BUDGET_LOBBYING,
@@ -18807,10 +18775,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 889,
+  total: 887,
   external: 254,
   calculated: 447,
-  definitions: 188,
+  definitions: 186,
   citations: 196,
 } as const;
 

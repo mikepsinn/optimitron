@@ -64,10 +64,10 @@
 #### MAKE THE OUTCOME USEFUL
 - Standard measures turn one person's result into comparable evidence for future patients and clinicians.
 - TREATMENT TIMELINE
-- 222
+- 221.7
 - YEARS
-- 40
-- 181 YEARS RETURNED TO PATIENTS
+- 40.5
+- 181.2 YEARS RETURNED TO PATIENTS
 - EXPLORE THE IMPACT
 ### WHAT CHANGES WHEN EVERY PATIENT CAN HELP DISCOVER THE NEXT TREATMENT?
 - Move the discovery rate. Change the trial budget. See how Right to Trial could compress the treatment queue, include more patients, and make every result useful.

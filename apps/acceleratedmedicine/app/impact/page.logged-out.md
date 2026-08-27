@@ -17,7 +17,7 @@
 - INTERACTIVE IMPACT EXPLORER
 ## HOW MANY YEARS ARE TRAPPED IN THE TREATMENT QUEUE?
 - At today's pace, the average disease without an effective treatment waits 222 years for its first one. Move one lever and watch what patient-powered pragmatic trials could change.
-- [MOVE THE LEVER](#explore-impact)
+- [MOVE THE LEVER](#turn-the-222-year-wait-into-a-number-we-can-live-with)
 - [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
 - CENTRAL SCENARIO
 - 181
@@ -48,7 +48,7 @@
 - The large totals span future generations. They are the cumulative benefit of moving the treatment schedule forward once, not a count of people alive today.
 - At this setting, the model moves the discovery rate from 15 to 82.2 first treatments per year and clears today's untreated-disease queue in 80.9 years.
 - [Open every parameter, formula, and citation](https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html)
-### SAME TRIAL BUDGET. FORTY-FOUR TIMES AS MANY PARTICIPANTS.
+### SAME TRIAL BUDGET. FAR MORE PATIENTS INCLUDED.
 - Pragmatic trials collect useful evidence through ordinary care. Move the budget and compare how many patients the same dollars can include.
 - TRIAL BUDGET: $1M
 - $100K
@@ -60,7 +60,7 @@
 - PRAGMATIC TRIAL
 - 1,076
 - $929 per participant
-- 44.1× AS MANY PARTICIPANTS
+- 44.1× LOWER COST PER PARTICIPANT
 ### THE ARITHMETIC IS PUBLIC. THE NEXT STATE CAN BE YOURS.
 - Read the proposal, inspect every assumption, or tell us where you want Right to Trial next.
 - [PUT MY STATE ON THE MAP](/#state-support)

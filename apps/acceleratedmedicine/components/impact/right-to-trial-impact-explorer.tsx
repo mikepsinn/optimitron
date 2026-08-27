@@ -137,7 +137,7 @@ export function RightToTrialImpactExplorer() {
                   className={`${buttonClass} bg-brutal-pink`}
                   size="lg"
                 >
-                  <a href="#explore-impact">
+                  <a href="#turn-the-222-year-wait-into-a-number-we-can-live-with">
                     Move the lever <ArrowRight className="h-5 w-5" />
                   </a>
                 </Button>
@@ -178,7 +178,7 @@ export function RightToTrialImpactExplorer() {
       </SectionContainer>
 
       <SectionContainer
-        id="explore-impact"
+        id="turn-the-222-year-wait-into-a-number-we-can-live-with"
         bgColor="pink"
         borderPosition="bottom"
         className="scroll-mt-24"
@@ -339,7 +339,7 @@ export function RightToTrialImpactExplorer() {
           <div className="mx-auto max-w-5xl text-center">
             <Users className="mx-auto h-14 w-14" strokeWidth={3} />
             <h2 className="mt-4 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Same trial budget. Forty-four times as many participants.
+              Same trial budget. Far more patients included.
             </h2>
             <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
               Pragmatic trials collect useful evidence through ordinary care.
@@ -380,7 +380,9 @@ export function RightToTrialImpactExplorer() {
               <Card className="gap-3 rounded-none border-4 border-primary bg-background p-6">
                 <p className="font-black uppercase">Conventional trial</p>
                 <p className="text-6xl font-black leading-none">
-                  {trialComparison.conventionalParticipants.toLocaleString()}
+                  {trialComparison.conventionalParticipants.toLocaleString(
+                    "en-US",
+                  )}
                 </p>
                 <p className="text-xl font-black uppercase">participants</p>
                 <p className="font-bold">
@@ -394,7 +396,9 @@ export function RightToTrialImpactExplorer() {
               <Card className="gap-3 rounded-none border-4 border-primary bg-brutal-cyan p-6 shadow-[7px_7px_0px_0px_rgba(0,0,0,1)]">
                 <p className="font-black uppercase">Pragmatic trial</p>
                 <p className="text-6xl font-black leading-none">
-                  {trialComparison.pragmaticParticipants.toLocaleString()}
+                  {trialComparison.pragmaticParticipants.toLocaleString(
+                    "en-US",
+                  )}
                 </p>
                 <p className="text-xl font-black uppercase">participants</p>
                 <p className="font-bold">
@@ -408,8 +412,8 @@ export function RightToTrialImpactExplorer() {
             </div>
 
             <p className="mt-7 text-center text-3xl font-black uppercase sm:text-4xl">
-              {trialComparison.participantMultiplier.toFixed(1)}× as many
-              participants
+              {trialComparison.costReductionMultiplier.toFixed(1)}× lower cost
+              per participant
             </p>
           </div>
         </Container>
