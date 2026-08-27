@@ -1448,7 +1448,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 Accelerated Medicine Foundation (Institute for Accelerated Medicine) | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 
