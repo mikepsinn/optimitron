@@ -51,6 +51,19 @@ const nextConfig = {
         permanent: true,
       },
       { source: "/join-us", destination: "/", permanent: false },
+      // Campaign-domain consolidation, mirroring Optimitron's redirects.js:
+      // both of these long-standing entry points land on the signatory list.
+      { source: "/campaign", destination: "/signatories", permanent: true },
+      { source: "/coalition", destination: "/signatories", permanent: true },
+      // Optimitron served /impact from a route handler that read impactUrl out
+      // of the referendum site content and 307'd to it. For warondisease that
+      // value is a constant, so a config redirect is the whole behaviour --
+      // Next.js forwards the query string on its own, matching the handler.
+      {
+        source: "/impact",
+        destination: "https://impact.warondisease.org",
+        permanent: false,
+      },
       {
         source: "/stupid-questions",
         destination:
