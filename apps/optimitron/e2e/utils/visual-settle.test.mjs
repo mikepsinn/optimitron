@@ -41,7 +41,7 @@ test("waits for a quiet pass after finishing newly-created animations", async ()
 });
 
 test("waits for custom visual-capture state to commit", async () => {
-  const waitFunctions = [];
+  let readinessWait;
   const mainFrame = {};
   const page = {
     async evaluate() {},
@@ -51,19 +51,21 @@ test("waits for custom visual-capture state to commit", async () => {
     mainFrame() {
       return mainFrame;
     },
-    async waitForFunction(action) {
-      waitFunctions.push(action.toString());
+    locator(selector) {
+      assert.equal(selector, '[data-visual-capture-ready="false"]');
+      return {
+        async waitFor(options) {
+          readinessWait = options;
+        },
+      };
     },
+    async waitForFunction() {},
     async waitForLoadState() {},
   };
 
   await prepareFullPageVisualCapture(page);
 
-  assert.ok(
-    waitFunctions.some((source) =>
-      source.includes('data-visual-capture-ready="false"'),
-    ),
-  );
+  assert.deepEqual(readinessWait, { state: "detached", timeout: 10_000 });
 });
 
 test("bounds font readiness waits", async () => {

@@ -160,12 +160,9 @@ export async function prepareFullPageVisualCapture(page) {
     });
   });
   await retryAfterNavigation(page, async () => {
-    await page.waitForFunction(
-      () =>
-        !document.querySelector('[data-visual-capture-ready="false"]'),
-      undefined,
-      { timeout: 10_000 },
-    );
+    await page
+      .locator('[data-visual-capture-ready="false"]')
+      .waitFor({ state: "detached", timeout: 10_000 });
   });
   await waitForPaint(page);
 }
