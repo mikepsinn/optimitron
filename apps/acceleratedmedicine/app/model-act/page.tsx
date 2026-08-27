@@ -26,6 +26,29 @@ export const metadata: Metadata = {
   description:
     "An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.",
   alternates: { canonical: "https://acceleratedmedicine.org/model-act" },
+  openGraph: {
+    title: "Universal Right to Try Model Framework",
+    description:
+      "An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.",
+    images: [
+      {
+        alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+        height: 630,
+        url: "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
+        width: 1200,
+      },
+    ],
+    url: "https://acceleratedmedicine.org/model-act",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Universal Right to Try Model Framework",
+    description:
+      "An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.",
+    images: [
+      "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
+    ],
+  },
 };
 
 export default function ModelActPage() {

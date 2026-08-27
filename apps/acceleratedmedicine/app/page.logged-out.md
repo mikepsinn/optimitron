@@ -434,7 +434,7 @@
 - Public, pooled outcomes reveal what works, what fails, and for whom.
 ### THIS ONLY BECOMES REAL WHEN THE RIGHT HUMANS SHOW UP.
 - [PATIENTS AND CAREGIVERS TELL US WHAT ACCESS WOULD CHANGE A short story can show why a lawful, supervised option matters when approved treatments are not enough. CONTINUE](#state-support)
-- [CLINICIANS HELP DEFINE RESPONSIBLE CARE Bring practical insight on consent, treatment review, monitoring, records, and patient safety. CONTINUE](/states/missouri#state-support)
+- [CLINICIANS HELP DEFINE RESPONSIBLE CARE Bring practical insight on consent, treatment review, monitoring, records, and patient safety. CONTINUE](/states/missouri?role=clinician#state-support)
 - [RESEARCHERS MAKE EVERY OUTCOME COMPARABLE Help define the small, standard outcome set that turns treatment access into cumulative evidence. CONTINUE](/research)
 - [PUBLIC EDUCATORS BUILD A USEFUL STATE PAGE Collect local questions, identify credible speakers, and explain the model without slogans or fog. CONTINUE](/contact)
 - NEXT ACTIVE STATE: MISSOURI

@@ -12,9 +12,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MissouriPage() {
+export default async function MissouriPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ role?: string }>;
+}) {
   const campaign = getStateCampaign("missouri");
   if (!campaign) return null;
+  const { role } = await searchParams;
 
-  return <StateCampaignPage campaign={campaign} />;
+  return (
+    <StateCampaignPage
+      campaign={campaign}
+      initialRole={role === "clinician" ? "clinician" : undefined}
+    />
+  );
 }

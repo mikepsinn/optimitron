@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { StateCampaignPage } from "@/components/state-campaign-page";
 import { getStateCampaign, STATE_CAMPAIGNS } from "@/lib/right-to-try";
 
+export const dynamicParams = false;
+
 interface StatePageProps {
   params: Promise<{ state: string }>;
 }

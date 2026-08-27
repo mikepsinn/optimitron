@@ -29,6 +29,29 @@ export const metadata: Metadata = {
   description:
     "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
   alternates: { canonical: "https://acceleratedmedicine.org/montana" },
+  openGraph: {
+    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    description:
+      "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
+    images: [
+      {
+        alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+        height: 630,
+        url: "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
+        width: 1200,
+      },
+    ],
+    url: "https://acceleratedmedicine.org/montana",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    description:
+      "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
+    images: [
+      "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
+    ],
+  },
 };
 
 const shadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
@@ -48,7 +71,7 @@ export default function MontanaPage() {
     {
       icon: ClipboardCheck,
       title: "Written consent",
-      text: "The patient receives the treatment's known risks, expected benefits, alternatives, costs, and right to stop.",
+      text: "The patient receives the treatment's possible outcomes, approved alternatives, insurance limits, and costs.",
     },
     {
       icon: ShieldCheck,

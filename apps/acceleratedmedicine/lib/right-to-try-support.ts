@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { z } from "zod";
 
-import { US_STATES } from "@/lib/right-to-try";
+import { SUPPORTER_ROLES, US_STATES } from "@/lib/right-to-try";
 import { storeRightToTrySupport } from "@/lib/right-to-try-support-store";
 
 const stateNames = US_STATES.map(([name]) => name) as [
@@ -10,13 +10,7 @@ const stateNames = US_STATES.map(([name]) => name) as [
 ];
 
 export const supportPositionSchema = z.enum(["yes", "unsure", "no"]);
-export const supporterRoleSchema = z.enum([
-  "patient-or-caregiver",
-  "clinician",
-  "researcher",
-  "public-educator",
-  "other",
-]);
+export const supporterRoleSchema = z.enum(SUPPORTER_ROLES);
 
 export const rightToTrySupportSchema = z.object({
   submissionKey: z.string().uuid(),
@@ -27,6 +21,14 @@ export const rightToTrySupportSchema = z.object({
   story: z.string().trim().max(2000).optional().or(z.literal("")),
   updates: z.boolean().default(false),
   companyWebsite: z.string().max(500).optional().default(""),
+}).superRefine((input, context) => {
+  if (input.updates && !input.email) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Enter an email address to receive updates.",
+      path: ["email"],
+    });
+  }
 });
 
 export type RightToTrySupportInput = z.infer<
@@ -113,9 +115,13 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
 
 export async function sendRightToTrySupport(
   rawInput: unknown,
-  store: typeof storeRightToTrySupport = storeRightToTrySupport,
+  options: {
+    clientKey: string;
+    store?: typeof storeRightToTrySupport;
+  },
 ): Promise<{ sentConfirmation: boolean }> {
   const input = rightToTrySupportSchema.parse(rawInput);
+  const store = options.store ?? storeRightToTrySupport;
 
   // Silently accept bot submissions. The response reveals nothing useful to
   // form-filling bots and prevents spam from reaching the Institute inbox.
@@ -123,7 +129,7 @@ export async function sendRightToTrySupport(
     return { sentConfirmation: false };
   }
 
-  await store(input, input.submissionKey);
+  await store(input, input.submissionKey, options.clientKey);
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {

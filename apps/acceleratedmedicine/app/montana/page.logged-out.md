@@ -5,11 +5,11 @@
 - Page title: Montana Universal Right to Try | Institute for Accelerated Medicine
 - Meta description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 - Canonical: https://acceleratedmedicine.org/montana
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Open Graph title: Montana Universal Right to Try | Institute for Accelerated Medicine
+- Open Graph description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Twitter title: Montana Universal Right to Try | Institute for Accelerated Medicine
+- Twitter description: A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.
 
 ## Visible Page Copy
 
@@ -40,7 +40,7 @@
 #### CLINICAL REVIEW
 - A treating health care provider identifies the patient as eligible after considering approved options.
 #### WRITTEN CONSENT
-- The patient receives the treatment's known risks, expected benefits, alternatives, costs, and right to stop.
+- The patient receives the treatment's possible outcomes, approved alternatives, insurance limits, and costs.
 #### SAFETY AND RECORDS
 - Centers must meet professional, safety, recordkeeping, inspection, and reporting requirements.
 #### PROFESSIONAL ACCOUNTABILITY

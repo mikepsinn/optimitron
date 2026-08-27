@@ -295,6 +295,17 @@ function getScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/lib/right-to-try.ts",
       ],
     });
+    routes.push({
+      label: "Missouri clinician response",
+      routeName: "states-missouri-clinician",
+      routePath: "/states/missouri?role=clinician#state-support",
+      covers: [
+        "apps/acceleratedmedicine/app/states/missouri/page.tsx",
+        "apps/acceleratedmedicine/components/state-campaign-page.tsx",
+        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+      ],
+    });
     const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
     if (planRoute) {
       planRoute.covers = [campaignPlanPageFile];

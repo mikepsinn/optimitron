@@ -64,6 +64,16 @@ export const US_STATES = [
 
 export type StateName = (typeof US_STATES)[number][0];
 
+export const SUPPORTER_ROLES = [
+  "patient-or-caregiver",
+  "clinician",
+  "researcher",
+  "public-educator",
+  "other",
+] as const;
+
+export type SupporterRole = (typeof SUPPORTER_ROLES)[number];
+
 export type StateCampaignStage = "enacted-model" | "active" | "listening";
 
 export interface StateCampaign {

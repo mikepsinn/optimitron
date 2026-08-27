@@ -16,6 +16,15 @@ import type { RightToTrySupportInput } from "@/lib/right-to-try-support";
 
 const FORM_SOURCE_KEY = "acceleratedmedicine:universal-right-to-try-support";
 const FORM_TITLE = "Universal Right to Try state support";
+const SUBMISSION_WINDOW_MS = 10 * 60 * 1000;
+const SUBMISSIONS_PER_WINDOW = 5;
+
+export class RightToTryRateLimitError extends Error {
+  constructor() {
+    super("Right to Try submission limit reached");
+    this.name = "RightToTryRateLimitError";
+  }
+}
 
 const formFields = [
   {
@@ -61,6 +70,12 @@ const formFields = [
     key: "updates",
     prompt: "Send occasional Universal Right to Try education updates",
     type: FormFieldType.BOOLEAN,
+    required: true,
+  },
+  {
+    key: "client-key",
+    prompt: "Private abuse-prevention key",
+    type: FormFieldType.SHORT_TEXT,
     required: true,
   },
 ] as const;
@@ -146,6 +161,7 @@ async function getCurrentFormRevision(actorUserId: string) {
 export async function storeRightToTrySupport(
   input: RightToTrySupportInput,
   submissionKey: string,
+  clientKey: string,
 ): Promise<{ submissionId: string }> {
   const { user } = await upsertWishoniaUser(prisma);
   const revision = await getCurrentFormRevision(user.id);
@@ -156,10 +172,14 @@ export async function storeRightToTrySupport(
     story: input.story || "",
     email: input.email || "",
     updates: input.updates,
+    "client-key": clientKey,
   };
   const requestHash = hashJson(values);
 
   return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw<Array<{ locked: boolean }>>`
+      SELECT pg_advisory_xact_lock(hashtextextended(${clientKey}, 0)) AS locked
+    `;
     const existing = await tx.formSubmission.findUnique({
       where: {
         createdByUserId_idempotencyKey: {
@@ -174,6 +194,30 @@ export async function storeRightToTrySupport(
         throw new Error("Submission key was already used for another response");
       }
       return { submissionId: existing.id };
+    }
+
+    const clientKeyField = revision.fields.find(
+      (field) => field.key === "client-key",
+    );
+    if (!clientKeyField) {
+      throw new Error("Right to Try abuse-prevention field is unavailable");
+    }
+    const recentSubmissionCount = await tx.formResponse.count({
+      where: {
+        deletedAt: null,
+        fieldId: clientKeyField.id,
+        valueJson: { equals: clientKey },
+        submission: {
+          createdAt: {
+            gte: new Date(Date.now() - SUBMISSION_WINDOW_MS),
+          },
+          deletedAt: null,
+          status: FormSubmissionStatus.SUBMITTED,
+        },
+      },
+    });
+    if (recentSubmissionCount >= SUBMISSIONS_PER_WINDOW) {
+      throw new RightToTryRateLimitError();
     }
 
     const submission = await tx.formSubmission.create({

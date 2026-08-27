@@ -40,6 +40,10 @@ const server = setupServer(
 
 describe("Universal Right to Try support submission", () => {
   const store = vi.fn(async () => ({ submissionId: "submission_1" }));
+  const submissionOptions = {
+    clientKey: "0".repeat(64),
+    store,
+  };
 
   beforeAll(() => {
     previousEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
@@ -70,9 +74,9 @@ describe("Universal Right to Try support submission", () => {
   });
 
   it("records the response with the Institute and confirms it to the supporter", async () => {
-    await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
-      sentConfirmation: true,
-    });
+    await expect(
+      sendRightToTrySupport(validResponse, submissionOptions),
+    ).resolves.toEqual({ sentConfirmation: true });
 
     expect(store).toHaveBeenCalledOnce();
     expect(sentMessages).toHaveLength(2);
@@ -111,7 +115,7 @@ describe("Universal Right to Try support submission", () => {
           ...validResponse,
           companyWebsite: "https://spam.example",
         },
-        store,
+        submissionOptions,
       ),
     ).resolves.toEqual({ sentConfirmation: false });
 
@@ -133,10 +137,47 @@ describe("Universal Right to Try support submission", () => {
       ),
     );
 
-    await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
-      sentConfirmation: false,
-    });
+    await expect(
+      sendRightToTrySupport(validResponse, submissionOptions),
+    ).resolves.toEqual({ sentConfirmation: false });
     expect(store).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the stored response when only the confirmation email fails", async () => {
+    let requestNumber = 0;
+    server.use(
+      http.post(resendEndpoint, async ({ request }) => {
+        sentMessages.push(await request.json());
+        requestNumber += 1;
+        if (requestNumber === 2) {
+          return HttpResponse.json(
+            {
+              name: "validation_error",
+              message: "Confirmation rejected",
+              statusCode: 422,
+            },
+            { status: 422 },
+          );
+        }
+        return HttpResponse.json({ id: "email_notification" });
+      }),
+    );
+
+    await expect(
+      sendRightToTrySupport(validResponse, submissionOptions),
+    ).resolves.toEqual({ sentConfirmation: false });
+    expect(store).toHaveBeenCalledOnce();
+    expect(sentMessages).toHaveLength(2);
+  });
+
+  it("requires an email address when the supporter requests updates", async () => {
+    await expect(
+      sendRightToTrySupport(
+        { ...validResponse, email: "", updates: true },
+        submissionOptions,
+      ),
+    ).rejects.toThrow();
+    expect(store).not.toHaveBeenCalled();
   });
 
   it("keeps the stored response when email delivery is not configured", async () => {
@@ -145,9 +186,9 @@ describe("Universal Right to Try support submission", () => {
     delete process.env.RESEND_API_KEY;
 
     try {
-      await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
-        sentConfirmation: false,
-      });
+      await expect(
+        sendRightToTrySupport(validResponse, submissionOptions),
+      ).resolves.toEqual({ sentConfirmation: false });
       expect(store).toHaveBeenCalledOnce();
       expect(sentMessages).toHaveLength(0);
     } finally {

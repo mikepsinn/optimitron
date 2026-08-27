@@ -28,6 +28,7 @@ import {
   STATE_CAMPAIGNS,
   stateCampaignHref,
 } from "@/lib/right-to-try";
+import type { StateCampaignStage, SupporterRole } from "@/lib/right-to-try";
 
 const buttonShadow =
   "rounded-none border-4 border-primary px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
@@ -295,7 +296,13 @@ export function PatientAccessFlowSection() {
   );
 }
 
-export function StateSupportSection({ initialState }: { initialState?: string }) {
+export function StateSupportSection({
+  initialRole,
+  initialState,
+}: {
+  initialRole?: SupporterRole;
+  initialState?: string;
+}) {
   return (
     <SectionContainer
       id="state-support"
@@ -315,18 +322,18 @@ export function StateSupportSection({ initialState }: { initialState?: string })
             state education pages, clinician briefings, and public events.
           </p>
         </div>
-        <RightToTrySupportForm initialState={initialState} />
+        <RightToTrySupportForm initialRole={initialRole} initialState={initialState} />
       </Container>
     </SectionContainer>
   );
 }
 
 export function StateCampaignMapSection() {
-  const stageClasses = {
+  const stageClasses: Record<StateCampaignStage, string> = {
     "enacted-model": "bg-brutal-green",
     active: "bg-brutal-pink",
     listening: "bg-background",
-  } as const;
+  };
 
   return (
     <SectionContainer bgColor="yellow" borderPosition="bottom">
@@ -381,7 +388,7 @@ export function RoleActionSection() {
       role: "Clinicians",
       action: "Help define responsible care",
       text: "Bring practical insight on consent, treatment review, monitoring, records, and patient safety.",
-      href: "/states/missouri#state-support",
+      href: "/states/missouri?role=clinician#state-support",
       color: "bg-brutal-yellow",
     },
     {

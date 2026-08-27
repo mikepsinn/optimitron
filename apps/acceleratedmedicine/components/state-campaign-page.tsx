@@ -8,9 +8,15 @@ import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-contain
 
 import Layout from "@/components/layout";
 import { StateSupportSection } from "@/components/landing/right-to-try-sections";
-import type { StateCampaign } from "@/lib/right-to-try";
+import type { StateCampaign, SupporterRole } from "@/lib/right-to-try";
 
-export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
+export function StateCampaignPage({
+  campaign,
+  initialRole,
+}: {
+  campaign: StateCampaign;
+  initialRole?: SupporterRole;
+}) {
   const isMissouri = campaign.name === "Missouri";
   const stageColor = isMissouri ? "bg-brutal-pink" : "bg-brutal-cyan";
 
@@ -91,7 +97,7 @@ export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
         </SectionContainer>
       ) : null}
 
-      <StateSupportSection initialState={campaign.name} />
+      <StateSupportSection initialRole={initialRole} initialState={campaign.name} />
     </Layout>
   );
 }

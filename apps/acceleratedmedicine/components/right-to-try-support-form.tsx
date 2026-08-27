@@ -1,11 +1,14 @@
 "use client";
 
 import { Check, Loader2, Mail, MapPin } from "lucide-react";
-import { FormEvent, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import type { FormEvent } from "react";
 
 import { US_STATES } from "@/lib/right-to-try";
+import type { SupporterRole } from "@/lib/right-to-try";
 
 interface RightToTrySupportFormProps {
+  initialRole?: SupporterRole;
   initialState?: string;
 }
 
@@ -19,12 +22,14 @@ const inputClassName =
   "w-full rounded-none border-4 border-primary bg-background px-4 py-3 text-base font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:-translate-x-0.5 focus:-translate-y-0.5 focus:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]";
 
 export function RightToTrySupportForm({
+  initialRole = "patient-or-caregiver",
   initialState = "",
 }: RightToTrySupportFormProps) {
   const [submission, setSubmission] = useState<SubmissionState>({
     status: "idle",
   });
   const submissionKey = useRef<string>();
+  const [wantsUpdates, setWantsUpdates] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,7 +126,7 @@ export function RightToTrySupportForm({
 
         <label className="block font-black uppercase">
           <span className="mb-2 block">Your role</span>
-          <select className={inputClassName} name="role" required>
+          <select className={inputClassName} defaultValue={initialRole} name="role" required>
             <option value="patient-or-caregiver">Patient or caregiver</option>
             <option value="clinician">Clinician</option>
             <option value="researcher">Researcher</option>
@@ -178,6 +183,7 @@ export function RightToTrySupportForm({
           className={inputClassName}
           name="email"
           placeholder="you@example.com"
+          required={wantsUpdates}
           type="email"
         />
       </label>
@@ -185,7 +191,9 @@ export function RightToTrySupportForm({
       <label className="mt-5 flex cursor-pointer items-start gap-3 font-bold">
         <input
           className="mt-1 h-5 w-5 shrink-0 accent-black"
+          checked={wantsUpdates}
           name="updates"
+          onChange={(event) => setWantsUpdates(event.target.checked)}
           type="checkbox"
         />
         Send me occasional updates about Universal Right to Try education in my

@@ -5,11 +5,11 @@
 - Page title: Universal Right to Try Model Framework
 - Meta description: An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.
 - Canonical: https://acceleratedmedicine.org/model-act
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Open Graph title: Universal Right to Try Model Framework
+- Open Graph description: An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Twitter title: Universal Right to Try Model Framework
+- Twitter description: An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.
 
 ## Visible Page Copy
 
