@@ -46,6 +46,10 @@
         "./components/sharing/*",
         "../../packages/site-kit/src/components/sharing/*"
       ],
+      "@/components/*": [
+        "./components/*",
+        "../../packages/site-kit/src/components/*"
+      ],
       "@/components/layout": [
         "../../packages/site-kit/src/components/layout.tsx"
       ],
