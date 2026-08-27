@@ -3,7 +3,7 @@
 ## Metadata
 
 - Page title: Missouri Right to Trial
-- Meta description: Help bring Right to Trial to every Missouri patient through pragmatic clinical trials and shared outcome evidence.
+- Meta description: Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.
 - Canonical: https://acceleratedmedicine.org/states/missouri
 - Open Graph title: Institute for Accelerated Medicine
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
@@ -14,20 +14,25 @@
 ## Visible Page Copy
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
-- ACTIVE EDUCATION
-## MISSOURI CAN BRING RIGHT TO TRIAL TO EVERY PATIENT.
-- Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence for the next patient.
+- LISTENING FOR SUPPORT
+## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO TRIAL?
+- Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.
 - [ADD MY RESPONSE](#state-support)
-### WHAT THE MISSOURI PAGE IS BUILDING NOW
-#### PATIENT QUESTIONS
-- Which barriers, safeguards, costs, and treatment choices matter most to patients and caregivers?
-#### CLINICAL AND RESEARCH VOICES
-- Who can explain responsible supervision, consent, monitoring, and comparable outcomes?
-#### STATE-SPECIFIC EDUCATION
-- How does the Montana precedent fit the state's current law, agencies, facilities, and public questions?
+### WHAT MISSOURI HAS TODAY
+#### LEGAL HERE SINCE 2018
+- Right to Try has been federal law in Missouri since 2018. It lets some patients ask manufacturers for experimental treatments—but it built no clinics, pays no providers, and publishes no results.
+- [FEDERAL RIGHT TO TRY ACT](https://www.congress.gov/bill/115th-congress/senate-bill/204)
+#### 550,000 NEIGHBORS
+- About 550,000 of Missouri's 6.3 million people live with a rare disease—and 95% of the roughly 7,000 rare diseases have no approved treatment to try.
+- [GAO RARE DISEASE REPORT](https://www.gao.gov/products/gao-25-106774)
+#### THE MISSING HALF
+- Montana licensed experimental treatment centers with SB 535. Right to Trial adds the evidence half—pragmatic trials, provider payment, and published results. Missouri can adopt both at once.
+- [READ THE MODEL ACT](/model-act)
+- Patient estimate: Missouri's share of the roughly 30 million Americans with a rare disease (GAO 2025), using Census 2025 population estimates.
 ### MISSOURI CAN GIVE EVERY PATIENT THE RIGHT TO TRIAL.
 - Montana showed that a state can open a broader, licensed path. Missouri can go further by making pragmatic trials and shared outcomes part of the path from day one.
 - [SEE THE RIGHT TO TRIAL FRAMEWORK](/model-act)
+- [SEE HOW MONTANA DID IT](/montana)
 - BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
 - Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
@@ -44,7 +49,6 @@
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
-- [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE

@@ -164,20 +164,6 @@ export const NAV_ITEMS_MAP = {
       "patient access",
     ],
   },
-  rightToTryMissouri: {
-    id: "rightToTryMissouri",
-    label: "Missouri",
-    path: ROUTES.missouri,
-    description: "Help bring Right to Trial to every Missouri patient.",
-    emoji: "⭐",
-    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
-    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
-    keywords: [
-      "Missouri Right to Try",
-      "Missouri patient access",
-      "Universal Right to Try",
-    ],
-  },
   rightToTryStates: {
     id: "rightToTryStates",
     label: "Your State",

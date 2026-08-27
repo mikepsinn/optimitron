@@ -74,7 +74,7 @@ export const SUPPORTER_ROLES = [
 
 export type SupporterRole = (typeof SUPPORTER_ROLES)[number];
 
-export type StateCampaignStage = "enacted-model" | "active" | "listening";
+export type StateCampaignStage = "enacted-model" | "listening";
 
 export interface StateCampaign {
   abbreviation: string;
@@ -104,19 +104,6 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
         headline: "Montana opened a broader, licensed path.",
         summary:
           "SB 535 created licensed experimental treatment centers and a supervised path for patients who have considered approved options.",
-      };
-    }
-
-    if (name === "Missouri") {
-      return {
-        abbreviation,
-        name,
-        slug,
-        stage: "active",
-        stageLabel: "Active education",
-        headline: "Missouri can bring Right to Trial to every patient.",
-        summary:
-          "Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence for the next patient.",
       };
     }
 

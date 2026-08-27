@@ -486,7 +486,6 @@ const STATE_TILE_POSITIONS: Record<string, [number, number]> = {
 export function StateCampaignMapSection() {
   const stageClasses: Record<StateCampaignStage, string> = {
     "enacted-model": "bg-brutal-green",
-    active: "bg-brutal-pink",
     listening: "bg-background",
   };
 
@@ -495,20 +494,17 @@ export function StateCampaignMapSection() {
       <Container>
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Montana proved a path. Missouri is the next active state.
+            Montana proved it. Put your state on the map.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Pick any state and put it on the map. Montana is the enacted
-            precedent. Missouri is active now. Every other state can be next.
+            Montana is the enacted precedent. Tap your state to see what Right
+            to Trial would mean there, then add your voice.
           </p>
         </div>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3 font-black uppercase">
           <span className="border-4 border-primary bg-brutal-green px-3 py-2">
             Enacted precedent
-          </span>
-          <span className="border-4 border-primary bg-brutal-pink px-3 py-2">
-            Active education
           </span>
           <span className="border-4 border-primary bg-background px-3 py-2">
             Listening
@@ -559,7 +555,7 @@ export function RoleActionSection() {
       role: "Clinicians",
       action: "Give patients another option",
       text: "Help make consent, treatment review, monitoring, records, and patient safety work in real care.",
-      href: "/states/missouri?role=clinician#state-support",
+      href: "#state-support",
       color: "bg-brutal-yellow",
     },
     {
@@ -607,33 +603,6 @@ export function RoleActionSection() {
             </Link>
           ))}
         </div>
-      </Container>
-    </SectionContainer>
-  );
-}
-
-export function MissouriCampaignSection() {
-  return (
-    <SectionContainer bgColor="pink" borderPosition="bottom">
-      <Container size="lg" className="text-center text-brutal-pink-foreground">
-        <p className="font-black uppercase">Missouri can be next</p>
-        <h2 className="mt-3 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          Give Missouri patients the Right to Trial.
-        </h2>
-        <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-          Montana showed that a state can give patients more supervised
-          treatment options. Missouri can take the next step: let every willing
-          patient join the search for treatments that work.
-        </p>
-        <Button
-          asChild
-          size="lg"
-          className={`${buttonShadow} mt-8 bg-brutal-yellow text-foreground`}
-        >
-          <Link href="/states/missouri">
-            Bring it to Missouri <ArrowRight className="h-5 w-5" />
-          </Link>
-        </Button>
       </Container>
     </SectionContainer>
   );

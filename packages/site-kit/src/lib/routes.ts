@@ -42,7 +42,6 @@ export const ROUTES = {
   montana: '/montana',
   modelAct: '/model-act',
   states: '/states',
-  missouri: '/states/missouri',
 
   // Movement / Advocacy
   thePlan: '/the-plan',

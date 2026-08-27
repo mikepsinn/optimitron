@@ -49,7 +49,6 @@
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
-- [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE

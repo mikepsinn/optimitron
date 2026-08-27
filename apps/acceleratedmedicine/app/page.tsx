@@ -13,7 +13,6 @@ import {
   PragmaticTrialEvidenceSection,
 } from "@/components/landing/medical-freedom-sections";
 import {
-  MissouriCampaignSection,
   MontanaProofSection,
   PatientAccessFlowSection,
   RightToTrialImpactPreviewSection,
@@ -50,7 +49,6 @@ export default function HomePage() {
       <DecentralizedFDASection showDisclaimer={false} />
       <PatientImpactSection />
       <RoleActionSection />
-      <MissouriCampaignSection />
       <DeathClock message="while safe treatments remain untested and willing patients remain excluded" />
       <UniversalRightToTryFinalCTA />
     </Layout>

@@ -1392,7 +1392,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // Navigation system - state action first, evidence and support second
     topLevelNavItems: [
       "rightToTryMontana",
-      "rightToTryMissouri",
       "rightToTryStates",
       "rightToTryModelAct",
       "rightToTrialImpact",
@@ -1410,7 +1409,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         label: "RIGHT TO TRIAL",
         items: [
           "rightToTryMontana",
-          "rightToTryMissouri",
           "rightToTryStates",
           "rightToTryModelAct",
         ],

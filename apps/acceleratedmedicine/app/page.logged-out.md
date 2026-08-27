@@ -86,10 +86,9 @@
 - Send me occasional updates about Right to Trial in my state.
 - RECORD MY STATE RESPONSE
 - If you provide an email, we will send a confirmation. We will not sell or rent it.
-### MONTANA PROVED A PATH. MISSOURI IS THE NEXT ACTIVE STATE.
-- Pick any state and put it on the map. Montana is the enacted precedent. Missouri is active now. Every other state can be next.
+### MONTANA PROVED IT. PUT YOUR STATE ON THE MAP.
+- Montana is the enacted precedent. Tap your state to see what Right to Trial would mean there, then add your voice.
 - ENACTED PRECEDENT
-- ACTIVE EDUCATION
 - LISTENING
 - [AL](/states/alabama)
 - [AK](/states/alaska)
@@ -443,20 +442,15 @@
 - De-identified results reveal what helps, what fails, and which patients respond best.
 ### CHOOSE HOW YOU WANT TO HELP PATIENTS GET ANSWERS FASTER.
 - [PATIENTS AND CAREGIVERS TELL YOUR STORY Show what another supervised treatment option would mean when approved treatments are not enough. GET STARTED](#state-support)
-- [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](/states/missouri?role=clinician#state-support)
+- [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](#state-support)
 - [RESEARCHERS TURN CARE INTO DISCOVERIES Choose the small set of outcomes that lets one patient's result improve treatment rankings for everyone. GET STARTED](/research)
 - [PUBLIC EDUCATORS MAKE THE CASE IN YOUR STATE Share the patient story, answer local questions, and show what Montana already proved possible. GET STARTED](/contact)
-- MISSOURI CAN BE NEXT
-### GIVE MISSOURI PATIENTS THE RIGHT TO TRIAL.
-- Montana showed that a state can give patients more supervised treatment options. Missouri can take the next step: let every willing patient join the search for treatments that work.
-- [BRING IT TO MISSOURI](/states/missouri)
 ### 💀 DEATH CLOCK
 ### MONTANA CREATED A PATH. BRING RIGHT TO TRIAL TO YOUR STATE.
 - [READ THE PROPOSED LAW](/model-act)
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
-- [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
