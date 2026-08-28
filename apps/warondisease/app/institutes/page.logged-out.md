@@ -162,7 +162,7 @@
 - [ABOUT](/about)
 - [FAQ](/faq)
 - [THE PLAN](/the-plan)
-- [THE FIELD MANUAL](https://manual.warondisease.org)
+- [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
 #### CONNECT
 - [INSTITUTES](/institutes)

@@ -23,7 +23,7 @@
 - [THE PLAN](https://warondisease.org/the-plan)
 - [VOLUNTEER](/contact)
 #### GET THE MANUAL
-- [THE FIELD MANUAL](https://manual.warondisease.org)
+- [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
 - [GET THE MANUAL](https://manual.warondisease.org)
 #### LEARN MORE

@@ -96,6 +96,10 @@ const SITES: Site[] = [
     variant: VARIANTS.WAR_ON_DISEASE,
   },
   {
+    // /soldiers is public but not linked from the navigation, so the nav walk
+    // never reaches it and its snapshot went stale the moment a shared footer
+    // label changed. Declaring it here is what that field is for.
+    additionalSnapshotRoutes: ["/soldiers"],
     directory: "apps/warondisease",
     host: "127.0.0.1",
     label: "@apps/warondisease",
