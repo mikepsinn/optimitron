@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { signIn } from "next-auth/react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Input } from "@optimitron/neobrutalist-ui/ui/input"
@@ -21,6 +21,8 @@ interface AuthFormProps {
   onSuccess?: () => void
   compact?: boolean
   emailOnly?: boolean
+  /** Start with the email form expanded while still offering social sign-in. */
+  defaultEmailOpen?: boolean
   showNameField?: boolean
   showSubscribe?: boolean
   subscribeDefault?: boolean
@@ -42,6 +44,7 @@ export function AuthForm({
   onSuccess,
   compact = false,
   emailOnly = false,
+  defaultEmailOpen = false,
   showNameField = true,
   showSubscribe = true,
   subscribeDefault = true,
@@ -60,7 +63,7 @@ export function AuthForm({
   const [subscribe, setSubscribe] = useState(subscribeDefault)
   const [isLoading, setIsLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
-  const [showEmailForm, setShowEmailForm] = useState(emailOnly)
+  const [showEmailForm, setShowEmailForm] = useState(emailOnly || defaultEmailOpen)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -135,14 +138,28 @@ export function AuthForm({
   const buttonHeight = compact ? "h-12" : "h-14"
   const textSize = compact ? "text-base" : "text-lg"
 
-  // Detect if running in iframe
-  const isInIframe = typeof window !== 'undefined' && window.self !== window.top
+  // Detect if running in iframe.
+  //
+  // Resolved after mount rather than during render: the server has no window,
+  // so reading it inline renders one tree on the server and a different one in
+  // the browser. That was tolerable while this only drove a hint, but it now
+  // also decides whether a button exists.
+  // null until resolved. Defaulting to false would render the Google button on
+  // the server and the first client paint, so an embedded voter would see it
+  // -- and could click it -- for a tick before the effect removed it. Starting
+  // unresolved means the server and the first client render agree on omitting
+  // it, and it appears a tick later only where it actually works.
+  const [isInIframe, setIsInIframe] = useState<boolean | null>(null)
+  useEffect(() => {
+    setIsInIframe(window.self !== window.top)
+  }, [])
+  const canUseSocialSignIn = !emailOnly && isInIframe === false
 
   return (
     <div className="w-full">
 
       {/* Iframe-specific tip */}
-      {isInIframe && compact && !emailOnly && (
+      {isInIframe === true && compact && !emailOnly && (
         <div className="mb-4 border-4 border-brutal-cyan bg-brutal-cyan p-3">
           <p className="text-xs font-bold text-center text-foreground">
             Email verification works best in embedded surveys.
@@ -188,8 +205,16 @@ export function AuthForm({
             </div>
           )}
 
-          {/* Google Login */}
-          {!emailOnly && (
+          {/* Google Login.
+              Hidden inside an iframe: NextAuth's signIn() navigates the frame
+              it runs in, and Google refuses to render its account pages in a
+              third-party frame, so an embedded voter who clicks this lands on
+              a blocked frame instead of a sign-in. The partner survey embed at
+              apps/trialabundancesurvey/app/embed/page.tsx reaches this form
+              through TreatyVoteSection -> TreatyPostVoteFlow, which is exactly
+              the case the "email works best in embedded surveys" hint above
+              was written for. Email verification still works there. */}
+          {canUseSocialSignIn && (
             <div className="mb-4">
               <Button
                 type="button"
@@ -215,7 +240,10 @@ export function AuthForm({
             </Button>
           ) : (
             <>
-              {!emailOnly && (
+              {/* "OR USE EMAIL" only means something when a social option
+                  precedes it. In an iframe there is none, so the separator
+                  would divide the email form from nothing. */}
+              {canUseSocialSignIn && (
                 <div className="relative mb-4">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t-4 border-black"></div>
