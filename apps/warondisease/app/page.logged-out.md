@@ -138,6 +138,7 @@
 - Compare with standard of care treatments
 - Read about experiences from patients like you
 - Klotho-Increasing Gene Therapy
+- Illustrative demo data — hypothetical future therapy
 - Cognitive Function (ADAS-Cog)
 - +28%
 - Memory Recall
@@ -212,21 +213,23 @@
 - Screening
 - 82%
 ##### Assign Patients to Trial Arms with Confidence
-- Review detailed outcome labels, compare trial arms (including placebo/standard of care), and assign patients directly.
+- Review detailed outcome labels, compare trial arms (including standard of care), and assign patients directly.
 - Make informed decisions with transparent outcome data
 - Compare effectiveness and side effect profiles easily
 - Assign patients to specific trial arms seamlessly
 - Integrate assignment with patient management workflows
 - Arm 1: Lecanemab (Bi-weekly IV)
 - Active
+- Decline slowed vs standard care (ADAS-Cog)
+- 27%
 - Immune Response (ARIA)
 - 12%
 - Assign to Lecanemab Arm
-- Arm 2: Placebo (Bi-weekly IV)
-- Control
-- -5%
+- Arm 2: Standard of Care
+- Reference
+- Usual rate of decline
 - 5%
-- Assign to Placebo Arm
+- Continue Standard of Care
 ##### Monitor Patient Progress & Trial Performance
 - Track key metrics, patient-reported outcomes, and overall trial status through an intuitive dashboard.
 - Visualize patient progress over time
@@ -278,7 +281,7 @@
 - Automated inventory tracking and alerts
 - Secure patient order processing and fulfillment
 - Temperature-controlled shipping monitoring
-- Blockchain-verified chain of custody
+- Verified chain of custody
 - New
 - Manage Inventory
 ##### Analyze Trial Data

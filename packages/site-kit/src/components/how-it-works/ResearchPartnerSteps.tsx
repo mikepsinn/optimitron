@@ -203,7 +203,7 @@ export function ResearchPartnerSteps() {
           "Automated inventory tracking and alerts",
           "Secure patient order processing and fulfillment",
           "Temperature-controlled shipping monitoring",
-          "Blockchain-verified chain of custody",
+          "Verified chain of custody",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
