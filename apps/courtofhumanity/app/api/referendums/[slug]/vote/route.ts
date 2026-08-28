@@ -6,6 +6,7 @@ import {
   ReferendumVoteSource,
   VotePosition,
 } from "@optimitron/db";
+import type { HumanityVGovernmentVerdictAnswer } from "@/lib/humanity-v-government-case.server";
 import { requireAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { ensurePersonForUser } from "@/lib/person.server";
@@ -58,8 +59,16 @@ export async function POST(
       originUrl?: string;
     };
 
+    // Compared against the database enum rather than string literals, so the
+    // accepted spellings cannot drift from what ReferendumVote.answer stores.
     const answer = body.answer?.toUpperCase();
-    if (!answer || !["YES", "NO", "ABSTAIN"].includes(answer)) {
+    const isVerdictAnswer = (
+      value: string | undefined,
+    ): value is HumanityVGovernmentVerdictAnswer =>
+      value === VotePosition.YES ||
+      value === VotePosition.NO ||
+      value === VotePosition.ABSTAIN;
+    if (!isVerdictAnswer(answer)) {
       return NextResponse.json(
         { error: "Answer must be YES, NO, or ABSTAIN" },
         { status: 400 },
@@ -112,7 +121,7 @@ export async function POST(
       // Referrer attribution is first-referrer-wins, matching the monolith:
       // it is set on create only and never overwritten by later revotes.
       update: {
-        answer: answer as VotePosition,
+        answer,
         deletedAt: null,
         isPublic: makePublic,
         userId,
@@ -122,7 +131,7 @@ export async function POST(
         userId,
         personId: person.id,
         referendumId: referendum.id,
-        answer: answer as VotePosition,
+        answer,
         voteSource: ReferendumVoteSource.SELF,
         referredByUserId,
         isPublic: makePublic,
