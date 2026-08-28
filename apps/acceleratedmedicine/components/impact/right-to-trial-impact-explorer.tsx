@@ -325,8 +325,9 @@ export function RightToTrialImpactExplorer() {
           </div>
 
           <p className="mx-auto mt-6 max-w-4xl text-center font-bold text-brutal-pink-foreground">
-            These are central estimates. Across the paper&apos;s 10,000-draw
-            Monte Carlo, the central scenario&apos;s 90% range is{" "}
+            The cards above track your slider setting. At the paper&apos;s
+            central {RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT}×, the
+            10,000-draw Monte Carlo puts the 90% range at{" "}
             {compactNumber(
               RIGHT_TO_TRIAL_CANONICAL_RESULTS.livesSaved
                 .confidenceInterval?.[0] ?? 0,
@@ -449,7 +450,11 @@ export function RightToTrialImpactExplorer() {
                   0,
                 )}
                 × less than the ~$4,500 a GiveWell top charity spends per life
-                saved. Treat that ratio with the same probability discount as
+                saved. The cost scopes differ: our numerator is only the $65
+                million campaign and registry, with patients and payers funding
+                the treatments themselves, while GiveWell&apos;s figure covers
+                full program costs. Quote it as leverage, not a like-for-like
+                charity comparison — and apply the same probability discount as
                 everything else here.
               </p>
             </div>
