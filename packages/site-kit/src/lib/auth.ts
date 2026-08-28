@@ -8,7 +8,7 @@ import DiscordProvider from "next-auth/providers/discord"
 import EmailProvider from "next-auth/providers/email"
 import { prisma } from "./prisma"
 import { compare, hash } from "bcryptjs"
-import { getEmailFrom } from "./email-utils"
+import { getBrandedEmailFrom } from "./email-utils"
 import { sendSignupConfirmationEmail } from "./email"
 import { SocialPlatform, NotificationType } from "@optimitron/db"
 import { env } from "./env"
@@ -150,7 +150,7 @@ export const authOptions: NextAuthOptions = {
               pass: env.RESEND_API_KEY,
             },
           },
-          from: getEmailFrom(),
+          from: getBrandedEmailFrom(),
           maxAge: 24 * 60 * 60, // Magic links valid for 24 hours
           async sendVerificationRequest({ identifier, url, provider: _provider }) {
             // Extract name from email (local part before @) or use generic greeting
