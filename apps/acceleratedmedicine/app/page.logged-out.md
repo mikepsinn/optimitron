@@ -430,6 +430,8 @@
 - Participant compliance tracking
 - Advanced statistical analysis tools
 - Regulatory submission preparation
+- Week 1
+- Week 8
 - View Full Analytics
 - [Create a Trial](https://dfda.earth/contact)
 ### TREATMENT BECOMES EVIDENCE

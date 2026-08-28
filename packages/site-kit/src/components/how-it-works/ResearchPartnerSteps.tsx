@@ -256,15 +256,6 @@ export function ResearchPartnerSteps() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="text-xs font-medium">Supply Chain Map</div>
-                <div className="h-16 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">
-                    Interactive map view
-                  </div>
-                </div>
-              </div>
-
               <Button size="sm" className="w-full text-xs" disabled>
                 Manage Inventory
               </Button>
@@ -296,11 +287,24 @@ export function ResearchPartnerSteps() {
             </div>
             <div className="p-4 space-y-4">
               <div className="space-y-2">
-                <div className="text-xs font-medium">Trial Performance</div>
-                <div className="h-20 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">
-                    Effectiveness graph
+                <div className="flex justify-between items-center">
+                  <div className="text-xs font-medium">Trial Performance</div>
+                  <div className="text-xs text-green-500 font-medium">
+                    ↑ 18%
                   </div>
+                </div>
+                <div className="h-20 flex items-end gap-1">
+                  {[22, 28, 34, 41, 46, 54, 60, 67].map((height, index) => (
+                    <div
+                      key={index}
+                      className="bg-primary/80 rounded-sm w-full"
+                      style={{ height: `${height}%` }}
+                    ></div>
+                  ))}
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Week 1</span>
+                  <span>Week 8</span>
                 </div>
               </div>
 
