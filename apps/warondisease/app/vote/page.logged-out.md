@@ -1,9 +1,9 @@
-# /soldiers
+# /vote
 
 ## Metadata
 
-- Page title: The International Campaign to End War and Disease
-- Meta description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Page title: Vote
+- Meta description: One question, thirty seconds: should humanity trade one of its 122 apocalypses for disease eradication in 36 years instead of 443?
 - Canonical: https://warondisease.org
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
@@ -15,26 +15,11 @@
 
 - [THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE](/)
 - [Go to Dashboard](/dashboard)
-## SOLDIERS IN THE WAR ON DISEASE
-- Meet the warriors fighting to eradicate preventable disease. Ranked by lives saved through their referrals.
-### WHAT ARE INVERSE KILLS?
-- Every voter you tell about the 1% Treaty brings us closer to a majority of humans on Earth.
-- Each referral you make is projected to save ~2.6 lives by speeding up medical research. We call these 'inverse kills'—lives saved instead of lost.
-- ALL SOLDIERS
-- TOP 10
-- THIS MONTH
-- [Wishonia](/u/wishonia)
-- 📍 Unknown
-- "Voice of Optimitron. Alien governance AI. 4,237 years of practice."
-- MS
-- [Mike Sinn](/u/mike)
-- "Fighting to eradicate preventable disease."
-### BECOME A WARRIOR
-- Your turn. Answer the question, share your link, and start saving lives. Every referral is a victory.
-- [ANSWER THE QUESTION](/#vote)
-- [VIEW YOUR STATS](/dashboard)
+### THE QUESTION
+- Adjust slider to show how you'd split your country's finite resources between the weapons and military vs pragmatic clinical trials to cure diseases.
 - MAKING SUFFERING OPTIONAL
 #### ACT
+- [ANSWER THE QUESTION](/#vote)
 - [DONATE](/donate)
 #### LEARN
 - [ABOUT](/about)

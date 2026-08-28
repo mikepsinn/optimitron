@@ -22,6 +22,11 @@
  *   pnpm copy                      # every site
  *   pnpm copy acceleratedmedicine  # one site, while iterating
  *   pnpm copy web --routes=/shirt  # one site, some routes
+ *
+ * Git Bash on Windows rewrites arguments that start with "/" into Windows
+ * paths ("--routes=/shirt" arrives as "--routes=C:/Program Files/Git/shirt"),
+ * so from Git Bash pass routes without the leading slash
+ * (`pnpm copy web --routes=shirt`) or set MSYS_NO_PATHCONV=1.
  */
 import "./lib/load-copy-preview-env";
 
@@ -38,8 +43,31 @@ import {
 } from "../packages/site-kit/src/lib/site-config";
 import { buildCopyPreviewMarkdown } from "../apps/optimitron/src/lib/copy-preview-markdown";
 import { extractVisibleCopyMarkdown } from "./lib/copy-preview-dom";
+import {
+  getPublicSiteAppRoutes,
+  getSourcePageForRoutePath,
+} from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(__dirname, "..");
+
+/**
+ * Routes are accepted with or without the leading slash because Git Bash
+ * (MSYS) rewrites "/soldiers" into "C:/Program Files/Git/soldiers" before the
+ * script ever sees it. A route that still looks like a Windows path went
+ * through that rewrite, so fail with the workaround instead of silently
+ * matching nothing.
+ */
+function normalizeRouteArg(route: string): string {
+  const trimmed = route.trim();
+  if (/^[A-Za-z]:[\\/]/.test(trimmed)) {
+    throw new Error(
+      `--routes value "${trimmed}" looks like a Windows path — Git Bash rewrote the leading slash. ` +
+        `Pass routes without it (--routes=soldiers) or set MSYS_NO_PATHCONV=1.`,
+    );
+  }
+  if (trimmed.length === 0 || trimmed.startsWith("/")) return trimmed;
+  return `/${trimmed}`;
+}
 
 const routeFilterArg = process.argv
   .slice(2)
@@ -47,7 +75,7 @@ const routeFilterArg = process.argv
 const routeFilter = routeFilterArg
   ?.slice("--routes=".length)
   .split(",")
-  .map((route) => route.trim())
+  .map(normalizeRouteArg)
   .filter(Boolean);
 
 interface Site {
@@ -341,6 +369,34 @@ async function extractMetadata(page: any) {
   };
 }
 
+interface PublicSiteAppRoute {
+  expectNotFound?: boolean;
+  routePath: string;
+  sourcePage: string;
+}
+
+/**
+ * Public non-nav routes declared for the screenshot pipeline
+ * (site-app-visual-routes.mjs) that can also take a copy snapshot: static
+ * logged-out pages whose route path maps 1:1 to a page.tsx. Dynamic routes,
+ * query-string states, and not-found probes stay screenshot-only — their
+ * paths have no page directory to write `page.logged-out.md` into.
+ */
+function publicSnapshotRoutes(site: Site): string[] {
+  const appName = site.directory.split("/").at(-1) as string;
+  const declared: PublicSiteAppRoute[] = getPublicSiteAppRoutes(appName);
+  return declared
+    .filter(
+      (route) =>
+        !route.expectNotFound &&
+        !route.routePath.includes("?") &&
+        !route.routePath.includes("#") &&
+        route.sourcePage ===
+          getSourcePageForRoutePath(appName, route.routePath),
+    )
+    .map((route) => route.routePath);
+}
+
 /** Sites in `apps/` — routes come from their site-config navigation. */
 async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
   const routes = [
@@ -348,6 +404,7 @@ async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
       ...getInternalNavigationRoutesForVariant(site.variant).map(
         ({ path: routePath }) => routePath,
       ),
+      ...publicSnapshotRoutes(site),
       ...(site.additionalSnapshotRoutes ?? []),
     ]),
   ].filter((routePath) => !routeFilter || routeFilter.includes(routePath));
@@ -431,7 +488,9 @@ async function snapshotOwnRenderer(site: Site, baseUrl: string): Promise<void> {
         "exec",
         "tsx",
         "scripts/render-pages-to-markdown.ts",
-        ...(routeFilterArg ? [routeFilterArg] : []),
+        // Rebuilt from the normalized routes so the renderer sees "/shirt"
+        // even when Git Bash delivered "shirt".
+        ...(routeFilter ? [`--routes=${routeFilter.join(",")}`] : []),
       ],
       {
         cwd: path.join(repoRoot, site.directory),
