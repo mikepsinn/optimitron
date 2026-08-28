@@ -4,7 +4,6 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  getInternalNavigationRoutesForVariant,
   getSiteConfigForVariant,
   VARIANTS,
 } from "../packages/site-kit/src/lib/site-config.ts";
@@ -16,7 +15,7 @@ import {
 import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.mjs";
 import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
 import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../apps/optimitron/scripts/visual-capture-contract.mjs";
-import { getAuthenticatedSiteAppRoutes } from "./site-app-visual-routes.mjs";
+import { getSiteAppScreenshotRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -48,61 +47,6 @@ const screenshotRootInput = process.env.SITE_APP_SCREENSHOT_ROOT?.trim();
 const screenshotRoot = screenshotRootInput
   ? path.resolve(repoRoot, screenshotRootInput)
   : undefined;
-const campaignPlanPageFile =
-  "packages/site-kit/src/components/campaign-plan-page.tsx";
-const dfdaHowItWorksFiles = [
-  "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
-  "packages/site-kit/src/components/how-it-works/HowItWorksStep.tsx",
-  "packages/site-kit/src/components/how-it-works/OutcomeLabelPreview.tsx",
-  "packages/site-kit/src/components/how-it-works/PatientHowItWorks.tsx",
-  "packages/site-kit/src/components/how-it-works/PatientSteps.tsx",
-  "packages/site-kit/src/components/how-it-works/ProviderHowItWorks.tsx",
-  "packages/site-kit/src/components/how-it-works/ProviderSteps.tsx",
-  "packages/site-kit/src/components/how-it-works/ResearchPartnerHowItWorks.tsx",
-  "packages/site-kit/src/components/how-it-works/ResearchPartnerStep.tsx",
-  "packages/site-kit/src/components/how-it-works/ResearchPartnerSteps.tsx",
-  "packages/site-kit/src/components/how-it-works/provider-steps/Step1ReviewPatientMatches.tsx",
-  "packages/site-kit/src/components/how-it-works/provider-steps/Step2AssignIntervention.tsx",
-  "packages/site-kit/src/components/how-it-works/provider-steps/Step3MonitorProgress.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step1FindTrials.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step2ViewOutcomeLabels.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step3JoinTrial.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step4CoordinateCare.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step5TrackData.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step6GainInsights.tsx",
-  "packages/site-kit/src/components/how-it-works/steps/Step7FDAiAgent.tsx",
-];
-const campaignHomeSharedFiles = [
-  "packages/site-kit/src/components/campaign-home-page.tsx",
-  "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-  "packages/site-kit/src/components/landing/final-cta.tsx",
-  "packages/site-kit/src/components/landing/societal-benefits-concise.tsx",
-  "packages/site-kit/src/lib/site-config.ts",
-  ...dfdaHowItWorksFiles,
-];
-
-function getCampaignHomeFiles(appName) {
-  if (appName === "acceleratedmedicine") {
-    return [
-      "apps/acceleratedmedicine/app/page.tsx",
-      "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
-      "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-      "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-      "apps/acceleratedmedicine/lib/right-to-try.ts",
-      "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
-      "packages/site-kit/src/components/landing/problem-statement.tsx",
-      "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
-      "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
-      "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-      "packages/site-kit/src/components/landing/death-clock.tsx",
-      "packages/site-kit/src/lib/site-config.ts",
-      ...dfdaHowItWorksFiles,
-    ];
-  }
-
-  return [`apps/${appName}/app/page.tsx`, ...campaignHomeSharedFiles];
-}
-
 const requestedApps = process.argv.slice(2);
 const unknownApps = requestedApps.filter(
   (requestedApp) => !apps.some(([appName]) => appName === requestedApp),
@@ -195,183 +139,12 @@ async function verifyWarOnDiseaseHome(baseUrl) {
   }
 }
 
-function getScreenshotRoutes(appName, siteVariant) {
-  const isCampaignHome =
-    siteVariant === VARIANTS.WAR_ON_DISEASE ||
-    siteVariant === VARIANTS.CUREDAO ||
-    siteVariant === VARIANTS.ACCELERATED_MEDICINE;
-  const campaignHomeFiles = getCampaignHomeFiles(appName);
-  const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
-    ({ label, path: routePath }) => ({
-      label,
-      ...(isCampaignHome && routePath === "/"
-        ? { covers: campaignHomeFiles }
-        : {}),
-      routeName:
-        routePath === "/"
-          ? "home"
-          : routePath
-              .replace(/^\/+|\/+$/g, "")
-              .replaceAll("/", "-")
-              .replace(/[^a-z0-9-]+/gi, "-")
-              .toLowerCase(),
-      routePath,
-    }),
-  );
-
-  if (siteVariant === VARIANTS.WAR_ON_DISEASE) {
-    routes.push({
-      label: "Home footer",
-      routeName: "home-footer",
-      routePath: "/",
-      captureSelector: "footer",
-      covers: campaignHomeFiles,
-    });
-    const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
-    if (planRoute) {
-      planRoute.covers = [campaignPlanPageFile];
-    } else {
-      routes.push({
-        label: "Shared campaign plan",
-        routeName: "the-plan",
-        routePath: "/the-plan",
-        covers: [campaignPlanPageFile],
-      });
-    }
-  }
-
-  if (siteVariant === VARIANTS.DFDA) {
-    const landingRoute = routes.find(({ routePath }) => routePath === "/");
-    if (landingRoute) {
-      landingRoute.covers = [
-        "apps/dfda/app/dfda/components/DfdaLandingContent.tsx",
-        ...dfdaHowItWorksFiles,
-      ];
-    }
-  }
-
-  if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
-    const rightToTryRouteFiles = new Map([
-      [
-        "/impact",
-        [
-          "apps/acceleratedmedicine/app/impact/page.tsx",
-          "apps/acceleratedmedicine/components/impact/right-to-trial-impact-explorer.tsx",
-          "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
-          "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-          "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
-        ],
-      ],
-      [
-        "/contact",
-        [
-          "apps/acceleratedmedicine/app/contact/page.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-        ],
-      ],
-      [
-        "/montana",
-        [
-          "apps/acceleratedmedicine/app/montana/page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-          "apps/acceleratedmedicine/lib/right-to-try.ts",
-        ],
-      ],
-      [
-        "/model-act",
-        [
-          "apps/acceleratedmedicine/app/model-act/page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-        ],
-      ],
-      [
-        "/states/missouri",
-        [
-          "apps/acceleratedmedicine/app/states/missouri/page.tsx",
-          "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-          "apps/acceleratedmedicine/lib/right-to-try.ts",
-        ],
-      ],
-    ]);
-    for (const route of routes) {
-      const covers = rightToTryRouteFiles.get(route.routePath);
-      if (covers) route.covers = covers;
-    }
-    routes.push({
-      label: "State education template",
-      routeName: "states-alabama",
-      routePath: "/states/alabama",
-      covers: [
-        "apps/acceleratedmedicine/app/states/[state]/page.tsx",
-        "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-        "apps/acceleratedmedicine/lib/right-to-try.ts",
-      ],
-    });
-    routes.push({
-      label: "Missouri clinician response",
-      routeName: "states-missouri-clinician",
-      routePath: "/states/missouri?role=clinician#state-support",
-      covers: [
-        "apps/acceleratedmedicine/app/states/missouri/page.tsx",
-        "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-      ],
-    });
-    const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
-    if (planRoute) {
-      planRoute.covers = [campaignPlanPageFile];
-    } else {
-      routes.push({
-        label: "Legacy campaign plan",
-        routeName: "the-plan",
-        routePath: "/the-plan",
-        covers: [campaignPlanPageFile],
-      });
-    }
-    routes.push({
-      label: "Legacy About redirect",
-      routeName: "about-redirect",
-      routePath: "/about",
-    });
-  }
-
-  if (siteVariant === VARIANTS.SURVEY) {
-    routes.push({
-      label: "Partner embed",
-      routeName: "embed",
-      routePath: "/embed?embed=1&visual=1",
-    });
-  }
-
-  const screenshotRoutes = [
-    ...routes,
-    ...getAuthenticatedSiteAppRoutes(appName),
-  ];
-  const routeNames = new Set();
-  for (const route of screenshotRoutes) {
-    if (routeNames.has(route.routeName)) {
-      throw new Error(
-        `@apps/${appName}: duplicate screenshot route name ${route.routeName}`,
-      );
-    }
-    routeNames.add(route.routeName);
-  }
-  return screenshotRoutes;
-}
-
 async function captureScreenshots(appName, siteVariant, baseUrl) {
   if (!screenshotRoot) {
     return;
   }
 
-  const screenshotRoutes = getScreenshotRoutes(appName, siteVariant);
+  const screenshotRoutes = getSiteAppScreenshotRoutes(appName, siteVariant);
   const requireFromWeb = createRequire(
     path.join(repoRoot, "apps", "optimitron", "package.json"),
   );
