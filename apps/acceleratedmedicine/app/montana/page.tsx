@@ -132,6 +132,58 @@ export default function MontanaPage() {
         </Container>
       </SectionContainer>
 
+      <SectionContainer bgColor="background" borderPosition="bottom">
+        <Container>
+          <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl">
+            This is already happening.
+          </h2>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {[
+              {
+                title: "Rules in force",
+                text: "The operating rules for experimental treatment centers took effect July 25, 2026, with an independent five-expert review board evaluating treatments.",
+              },
+              {
+                title: "$12,500 to apply",
+                text: "A company with a drug through preliminary safety testing pays $12,500 to ask the review board for approval to offer it in Montana.",
+              },
+              {
+                title: "First applications filed",
+                text: "Treatments for neuropathy and hearing loss are already under review. The first licensed clinics are expected around the end of 2026.",
+              },
+            ].map(({ title, text }, index) => (
+              <Card
+                key={title}
+                className={`${index === 1 ? "bg-brutal-cyan" : "bg-brutal-yellow"} ${shadow} gap-4 rounded-none border-4 border-primary p-6`}
+              >
+                <h3 className="text-2xl font-black uppercase">{title}</h3>
+                <p className="font-bold">{text}</p>
+              </Card>
+            ))}
+          </div>
+          <p className="mx-auto mt-8 max-w-3xl text-center font-bold">
+            Reported by{" "}
+            <a
+              className="underline underline-offset-4"
+              href="https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              MIT Technology Review (July 30, 2026)
+            </a>{" "}
+            · Board details at{" "}
+            <a
+              className="underline underline-offset-4"
+              href="https://montanaetrb.org"
+              rel="noreferrer"
+              target="_blank"
+            >
+              montanaetrb.org
+            </a>
+          </p>
+        </Container>
+      </SectionContainer>
+
       <SectionContainer bgColor="pink" borderPosition="bottom">
         <Container size="lg" className="text-center text-brutal-pink-foreground">
           <FileCheck2 className="mx-auto h-16 w-16" strokeWidth={3} />

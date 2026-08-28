@@ -30,6 +30,9 @@
 - RESET
 - 1.1×
 - 15×
+- SKEPTICAL 2×
+- PAPER CENTRAL 5.48×
+- OPTIMISTIC 10×
 - TODAY
 - 222
 - YEARS
@@ -42,14 +45,22 @@
 - YEARS OF HEALTHY LIFE SAVED
 - $0.000134
 - COST TO SAVE ONE HEALTHY YEAR
+- These are central estimates. Across the paper's 10,000-draw Monte Carlo, the central scenario's 90% range is 3.7B–17.2B future deaths prevented and $0.000041–$0.000440 per healthy year.
 - HOW WE CALCULATED IT
 - Faster discovery moves every future treatment closer. The model applies those earlier treatments to the share of disease deaths and lost healthy years that medical progress can prevent.
 - The estimated launch cost is $65M: $15 million to bring Right to Trial to all 50 states plus $50 million to operate the shared treatment registry for a decade.
 - The death and healthy-life totals include future generations. They measure the lasting benefit of finding treatments sooner, not only the people alive today.
 - At this setting, the model moves the discovery rate from 15 to 82.2 first treatments per year and clears today's untreated-disease queue in 80.9 years.
+- The arithmetic, in one line: 2.88 billion healthy years are lost to disease every year, medicine can eventually prevent 92.6% of that, and the central scenario delivers treatments 181 years sooner — 2.88B × 92.6% × 181 ≈ 483 billion healthy years. Deaths follow the same chain from 150,000 disease deaths per day.
 - [Open every parameter, formula, and citation](https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html)
+- Peer-archived versions: [Right to Trial & FDA Upgrade Act (2025)](https://doi.org/10.5281/zenodo.19076852) · [Continuous Evidence Generation Protocol (2025)](https://doi.org/10.5281/zenodo.18203375)
+- READ THIS BEFORE QUOTING THE NUMBERS
+- The death total can exceed today's world population because it sums premature deaths prevented across roughly 181 years of future generations, not people alive right now.
+- The 5.48× multiplier is an assumption calibrated to move discovery from 15 to 82.2 first treatments per year — not an observed effect. That is why the slider exists: set it where your own skepticism lands.
+- Every result is conditional on 50-state adoption producing the modeled discovery shift. Multiply the headline by your own probability that it does. Even the skeptical preset — 2× discovery — prevents 5.6B future deaths, so the case does not depend on the central estimate being right.
+- At the central estimate, preventing one premature death costs about $0.0071 of launch spending — roughly 636K× less than the ~$4,500 a GiveWell top charity spends per life saved. Treat that ratio with the same probability discount as everything else here.
 ### GIVE MORE PATIENTS A PLACE IN THE TRIAL.
-- Traditional trials spend about $41,000 per participant. Pragmatic trials can collect useful results for $929 per participant. Move the budget and see how many people those same dollars can include.
+- Traditional trials spend about $41,000 per participant (range $20,000–$120,000). Pragmatic trials can collect useful results for $929 per participant (range $97–$3,000). Move the budget and see how many people those same dollars can include.
 - TRIAL BUDGET: $1M
 - $100K
 - $10M
