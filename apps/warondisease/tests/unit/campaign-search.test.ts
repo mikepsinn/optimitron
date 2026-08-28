@@ -53,6 +53,23 @@ describe("searchCampaign", () => {
     expect(where.deletedAt).toBeNull()
   })
 
+  it("orders both queries so a truncated candidate set is deterministic", async () => {
+    // Both queries take three times the display limit and then score what
+    // came back. Without an orderBy the database may return any matching
+    // rows, so a person or organization could appear for one request and
+    // vanish for the identical next one.
+    await searchCampaign("nairobi")
+
+    expect(mocks.userFindMany.mock.calls[0][0].orderBy).toEqual([
+      { person: { displayName: "asc" } },
+      { id: "asc" },
+    ])
+    expect(mocks.organizationFindMany.mock.calls[0][0].orderBy).toEqual([
+      { name: "asc" },
+      { id: "asc" },
+    ])
+  })
+
   it("matches a page on its keywords, not just its title", async () => {
     // /poster is titled "Hang Up Flyers"; "flyer" is the word a visitor types.
     const results = await searchCampaign("flyer")

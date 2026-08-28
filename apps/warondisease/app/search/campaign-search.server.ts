@@ -305,6 +305,11 @@ async function searchPeople(
         },
       },
     },
+    // `take` without `orderBy` lets the database return any matching rows it
+    // likes, so which candidates reach the scorer would vary between identical
+    // requests. Ordering by name keeps the truncation deterministic; `id` is
+    // the tiebreak because displayName is not unique.
+    orderBy: [{ person: { displayName: "asc" } }, { id: "asc" }],
     take: PERSON_LIMIT * 3,
   })
 
@@ -368,6 +373,8 @@ async function searchOrganizationRecords(
       slug: true,
       type: true,
     },
+    // Same reason as the person query above: deterministic truncation.
+    orderBy: [{ name: "asc" }, { id: "asc" }],
     take: ORGANIZATION_LIMIT * 3,
   })
 
