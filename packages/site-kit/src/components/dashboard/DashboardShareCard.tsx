@@ -159,9 +159,12 @@ export function DashboardShareCard({
   }
 
   function trackShare(channel: ShareChannel) {
-    fetch("/api/share/track", {
+    // Same divergence as SignatoryVisibilityPanel: Optimitron has
+    // /api/share/track taking { templateLabel }; warondisease, the only
+    // consumer of this copy, has /api/share taking { platform }.
+    fetch("/api/share", {
       body: JSON.stringify({
-        templateLabel: `dashboard-${channel}`,
+        platform: `dashboard-${channel}`,
       }),
       headers: { "Content-Type": "application/json" },
       method: "POST",

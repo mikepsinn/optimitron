@@ -33,7 +33,11 @@ export function SignatoryVisibilityPanel({
     setIsSaving(true);
     let response: Response;
     try {
-      response = await fetch("/api/dashboard/profile", {
+      // Optimitron's own copy of this panel PATCHes /api/dashboard/profile.
+      // This site-kit copy is rendered only by warondisease, whose equivalent
+      // route is /api/user/visibility with the same { isPublic } body. The two
+      // apps keep separate components, so this does not need to be host-aware.
+      response = await fetch("/api/user/visibility", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isPublic: nextIsPublic }),
