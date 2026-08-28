@@ -51,11 +51,6 @@ const ROUTES_TO_SMOKE = [
     source: "tasksLink label",
   },
   {
-    path: "/humanity-v-government",
-    expectedH1: "Humanity v. Governments of Earth",
-    source: "humanityVGovernmentLink label",
-  },
-  {
     path: "/legislation",
     expectedH1: "Drafted bills built from the analysis, not vibes",
     source: "legislation page heading",
@@ -64,16 +59,6 @@ const ROUTES_TO_SMOKE = [
     path: "/employees",
     expectedH1: "President Management System",
     source: "employees page heading",
-  },
-  {
-    path: "/court",
-    // /court renders via ReferendumStepperPage, whose primary heading
-    // is the referendum's `question` field from the DB (canonical text
-    // in packages/data/src/referendums/court-of-humanity.ts). The page
-    // title "Court of Humanity" is metadata, not a body heading.
-    expectedH1:
-      "If a government kills, injures, or harms you or your family, should you have the same right to sue it that you would have if a corporation did the same?",
-    source: "court-of-humanity referendum question",
   },
   {
     path: "/people",

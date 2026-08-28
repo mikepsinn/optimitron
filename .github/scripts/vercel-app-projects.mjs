@@ -36,7 +36,11 @@ export const VERCEL_APP_PROJECTS = Object.freeze([
     "courtofhumanity",
     "courtofhumanity.org",
     undefined,
-    undefined,
+    // The two case surfaces moved here from the monolith. Optimitron now
+    // answers both paths with a permanent redirect to this domain, so it can
+    // no longer smoke them itself -- following that redirect only proves this
+    // app is up. Inert until the project exists (see previewPending).
+    ["/", "/court", "/humanity-v-government"],
     { previewPending: true },
   ),
 ]);
