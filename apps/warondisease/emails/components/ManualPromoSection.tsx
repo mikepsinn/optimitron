@@ -30,7 +30,7 @@ export function ManualPromoSection({
           margin: "0 0 12px 0",
         }}
       >
-        📖 THE FIELD MANUAL
+        📖 HOW TO END WAR AND DISEASE
       </Text>
       <Text
         style={{
