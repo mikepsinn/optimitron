@@ -505,8 +505,9 @@ export function StateCampaignMapSection() {
             Montana proved it. Put your state on the map.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Montana is the enacted precedent. Tap your state to see what Right
-            to Trial would mean there, then add your voice.
+            Montana is the enacted precedent. The original Right to Try spread
+            from one state in 2014 to 41 states by 2018 — tap your state to
+            see what Right to Trial would mean there, then add your voice.
           </p>
         </div>
 
