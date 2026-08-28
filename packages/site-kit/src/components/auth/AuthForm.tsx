@@ -21,6 +21,8 @@ interface AuthFormProps {
   onSuccess?: () => void
   compact?: boolean
   emailOnly?: boolean
+  /** Start with the email form expanded while still offering social sign-in. */
+  defaultEmailOpen?: boolean
   showNameField?: boolean
   showSubscribe?: boolean
   subscribeDefault?: boolean
@@ -42,6 +44,7 @@ export function AuthForm({
   onSuccess,
   compact = false,
   emailOnly = false,
+  defaultEmailOpen = false,
   showNameField = true,
   showSubscribe = true,
   subscribeDefault = true,
@@ -60,7 +63,7 @@ export function AuthForm({
   const [subscribe, setSubscribe] = useState(subscribeDefault)
   const [isLoading, setIsLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
-  const [showEmailForm, setShowEmailForm] = useState(emailOnly)
+  const [showEmailForm, setShowEmailForm] = useState(emailOnly || defaultEmailOpen)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
