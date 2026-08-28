@@ -17,7 +17,7 @@ import {
   SendOneMoreNudgeEmail,
   VoteConfirmedImpactEmail,
 } from "@/emails/referral-sequence"
-import { getResendClient, getEmailFrom } from "@/lib/email-utils"
+import { getBrandedEmailFrom, getResendClient } from "@/lib/email-utils"
 import { getSiteConfig, getEmail } from "@/lib/site-config"
 import { env } from "@/lib/env"
 import { createLogger } from "@/lib/logger"
@@ -54,7 +54,7 @@ export async function sendDonationThankYouEmail({
     )
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject: "Thank you for joining the war on disease! 🎉",
       html: emailHtml,
@@ -114,7 +114,7 @@ export async function sendWeeklyUpdate({
       : "📊 Your Weekly War on Disease Update"
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject,
       html: emailHtml,
@@ -164,7 +164,7 @@ export async function sendCampaignPledgeEmail({
     )
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject: `Thank you for backing ${campaignTitle}! 🚀`,
       html: emailHtml,
@@ -211,7 +211,7 @@ export async function sendCampaignUpdateEmail({
     )
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject: `Update from ${campaignTitle}: ${updateTitle}`,
       html: emailHtml,
@@ -303,7 +303,7 @@ export async function sendPartnerWelcomeEmail({
     )
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject: `You're live! Start sharing your ${organizationName} survey`,
       html: emailHtml,
@@ -344,7 +344,7 @@ export async function sendPartnerRejectionEmail({
     )
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject: `Update on your partner application for ${organizationName}`,
       html: emailHtml,
@@ -445,7 +445,7 @@ export async function sendReferralMotivationEmail({
       : "⚡ Your time is worth $17M/hour (really)"
 
     const result = await resend.emails.send({
-      from: getEmailFrom(),
+      from: getBrandedEmailFrom(),
       to,
       subject,
       html: emailHtml,
@@ -460,7 +460,7 @@ export async function sendReferralMotivationEmail({
 
 function getWarOnDiseaseFrom(senderName?: string): string {
   const fromAddress = env.EMAIL_FROM_ADDRESS || getEmail()
-  return senderName ? `${senderName} via War on Disease <${fromAddress}>` : getEmailFrom()
+  return senderName ? `${senderName} via War on Disease <${fromAddress}>` : getBrandedEmailFrom()
 }
 
 export async function sendReferralInviteEmail({
