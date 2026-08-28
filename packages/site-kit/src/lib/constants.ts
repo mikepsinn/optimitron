@@ -15,6 +15,11 @@ export const STORAGE_KEYS = {
   SIGNUP_SUBSCRIBE: "signup_subscribe",
   PUBLIC_PROMPT_DISMISSED: "publicPromptDismissed",
   POST_VOTE_FLOW_STATE: "postVoteFlowState",
+  // Key strings match Optimitron's so a reader who endorsed there and then
+  // lands on the campaign domain does not lose a queued draft.
+  PENDING_ORGANIZATION_ENDORSEMENTS: "pending_organization_endorsements",
+  PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK:
+    "pending_organization_endorsements_sync_lock",
 } as const
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]

@@ -44,6 +44,30 @@ export const ROUTES = {
   states: '/states',
   survey: '/survey',
 
+  // Campaign surfaces (warondisease.org)
+  // Note: HASH_LINKS.vote ('/#vote') is the sidebar anchor into the home page's
+  // vote box; `vote` here is the dedicated vote page, which is where campaign
+  // copy links when it says "take 30 seconds".
+  vote: '/vote',
+  treaty: '/treaty',
+  shirt: '/shirt',
+  joke: '/joke',
+  poster: '/poster',
+  doorToDoor: '/door-to-door',
+  love: '/love',
+  missions: '/missions',
+  foundations: '/foundations',
+  fixAi: '/fix-ai',
+  employees: '/employees',
+  signatories: '/signatories',
+  join: '/join',
+  coalition: '/coalition',
+  campaign: '/campaign',
+  organizations: '/organizations',
+  tasks: '/tasks',
+  feedback: '/feedback',
+  search: '/search',
+
   // Movement / Advocacy
   thePlan: '/the-plan',
   soldiers: '/soldiers',
@@ -242,6 +266,14 @@ export const HASH_LINKS = {
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
+
+export const NONPROFIT_COALITION_STRATEGY_URL =
+  'https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy'
+
+/** `/organizations/{slug}` — an organization's public page. */
+export function getOrganizationPath(identifier: string): string {
+  return `${ROUTES.organizations}/${identifier}`
+}
 
 /**
  * Check if a path is a hash link (contains #)

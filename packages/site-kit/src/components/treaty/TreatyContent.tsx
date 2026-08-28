@@ -1,0 +1,109 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { TREATY_READER_CONFIG } from "../../config/treaty-referendum";
+import {
+  readerMarkdownComponents,
+  splitIntoSlides,
+} from "../referendum/ReferendumStepper";
+import { Button } from "@optimitron/neobrutalist-ui/ui/button";
+import { defaultButtonClassName } from "../ui/default-button";
+import { TreatySignatureBox } from "../landing/TreatySignatureBox";
+import { storage } from "../../lib/storage";
+import { TREATY_REFERENDUM_SLUG } from "../../lib/treaty";
+import { COURT_LINKS } from "../../lib/court-links";
+import { cn } from "@optimitron/neobrutalist-ui/cn";
+
+/**
+ * Treaty body plus public signature box, styled to match /treaty reader mode.
+ * Reuses the referendum reader and inline sign controls so treaty rendering
+ * stays consistent across surfaces.
+ */
+interface TreatyContentProps {
+  bodyMarkdown?: string | null;
+  className?: string;
+  introText?: string | null;
+  showCourtCta?: boolean;
+  showInlineSign?: boolean;
+}
+
+export function TreatyContent({
+  bodyMarkdown = null,
+  className,
+  introText,
+  showCourtCta = true,
+  showInlineSign = true,
+}: TreatyContentProps = {}) {
+  const [courtReferralCode, setCourtReferralCode] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const currentReferralCode = new URLSearchParams(window.location.search).get(
+      "ref",
+    );
+
+    if (currentReferralCode) {
+      storage.setSignupReferral(currentReferralCode);
+      setCourtReferralCode(currentReferralCode);
+      return;
+    }
+
+    setCourtReferralCode(storage.getSignupReferral());
+  }, []);
+
+  const slides = bodyMarkdown ? splitIntoSlides(bodyMarkdown) : TREATY_READER_CONFIG.slides;
+  // The court moved to its own domain (#254), so this is absolute and carries
+  // the referral code as a query param rather than a path prefix.
+  const courtHref = courtReferralCode
+    ? `${COURT_LINKS.court.url}?ref=${encodeURIComponent(courtReferralCode)}`
+    : COURT_LINKS.court.url;
+
+  return (
+    <div className={cn("mx-auto w-full max-w-2xl space-y-10", className)}>
+      <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
+      <p className="text-center text-3xl font-bold leading-snug tracking-tight text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl">
+        {introText ?? TREATY_READER_CONFIG.introText}
+      </p>
+      <div className="mx-auto h-px w-24 bg-[var(--treaty-ink-muted)]" />
+      {slides.map((slide) => (
+        <ReactMarkdown
+          key={`${slide.length}:${slide.slice(0, 80)}`}
+          remarkPlugins={[remarkGfm]}
+          components={readerMarkdownComponents}
+        >
+          {slide}
+        </ReactMarkdown>
+      ))}
+      {showCourtCta ? (
+        <div className="border-t border-[var(--treaty-ink-muted)] pt-10 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)] sm:text-sm">
+            If your government refuses to sign
+          </p>
+          <Button
+            asChild
+            className={`${defaultButtonClassName} mt-4 sm:text-base`}
+            variant="outline"
+          >
+            <Link href={courtHref} aria-label="Join the Court of Humanity">
+              Join the Court of Humanity
+            </Link>
+          </Button>
+          <p className="mt-3 text-sm font-bold leading-7 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-base">
+            {showInlineSign
+              ? "Sign it. If your government refuses, join the class action and sue them for the 102 million people their refusal has killed."
+              : "If your government refuses to sign the treaty, join the class action and sue them for the 102 million people their refusal has killed."}
+          </p>
+        </div>
+      ) : null}
+      {showInlineSign ? (
+        <div className="border-t border-[var(--treaty-ink-muted)] pt-12">
+          <TreatySignatureBox />
+        </div>
+      ) : null}
+    </div>
+  );
+}

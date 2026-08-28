@@ -73,6 +73,19 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
     {
       authenticated: true,
+      authRole: "user",
+      covers: [
+        "apps/warondisease/app/join/page.tsx",
+        "apps/warondisease/app/join/EndorseForm.tsx",
+        "packages/site-kit/src/components/treaty/TreatyContent.tsx",
+      ],
+      label: "Join as an organization — signed-in user",
+      routeName: "join-authenticated",
+      routePath: "/join",
+      sourcePage: "apps/warondisease/app/join/page.tsx",
+    },
+    {
+      authenticated: true,
       authRole: "admin",
       covers: [
         "apps/warondisease/app/admin/layout.tsx",

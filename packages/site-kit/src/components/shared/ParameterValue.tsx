@@ -27,14 +27,24 @@ export interface ParameterValueProps {
   figures?: number
   /** When false, render plain text with no modal */
   showPopover?: boolean
+  /**
+   * Campaign-page shorthand for `showPopover`. The pages migrated out of
+   * Optimitron express "plain text, no modal" as `presentation="inline"`, so
+   * both spellings are accepted. `showPopover` wins when a caller sets both;
+   * `presentation` alone is enough to suppress the modal.
+   */
+  presentation?: "interactive" | "inline"
   /** Additional CSS classes for the rendered value */
   className?: string
   /** Render as inline span or block div when modal is disabled */
   as?: "span" | "div"
   /**
-   * Override the rendered text (metadata details still use `param`). Useful
-   * when the displayed value is derived from `param` but needs custom
-   * formatting the auto-formatter can't express.
+   * Replace the rendered text while keeping `param` as the source for the
+   * detail modal. Needed where the displayed figure is derived from the
+   * parameter but the auto-formatter cannot express it — a percentage computed
+   * from a ratio at a fixed decimal count, for example. The modal still shows
+   * the parameter's own full value, so the override never edits the underlying
+   * number, only how this one call site prints it.
    */
   valueOverride?: string
 }
@@ -44,12 +54,15 @@ export function ParameterValue({
   format,
   display = "auto",
   figures = 3,
-  showPopover = true,
+  showPopover,
+  presentation,
   className,
   as: Component = "span",
   valueOverride,
 }: ParameterValueProps) {
   const [open, setOpen] = React.useState(false)
+
+  const popoverEnabled = showPopover ?? presentation !== "inline"
 
   const resolvedFormat = resolveFormatOptions(param, format, display, figures)
   const text =
@@ -82,7 +95,7 @@ export function ParameterValue({
     param.confidenceInterval,
   ].some(Boolean)
 
-  if (!showPopover || !hasMetadata) {
+  if (!popoverEnabled || !hasMetadata) {
     return (
       <Component className={className} data-copy-preview-href={referenceUrl}>
         {text}

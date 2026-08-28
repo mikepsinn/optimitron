@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { HelpCircle, ArrowUpRight, UsersRound, HeartPulse, Clock3, Zap } from "lucide-react"
 import Link from "next/link"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@optimitron/neobrutalist-ui/ui/tooltip"
@@ -28,9 +29,28 @@ interface ImpactExplainerProps {
   iconClassName?: string
   size?: number
   label?: string
+  /**
+   * Trigger content. Without it the trigger is the round help icon. The
+   * migrated campaign surfaces wrap their own label text instead — a column
+   * heading, a figure — so the whole thing becomes the explainer trigger.
+   */
+  children?: ReactNode
+  /**
+   * Show the inline link out to the full impact analysis. Default true. Set
+   * false where sending the reader away mid-task is costly, which is why the
+   * signatory leaderboard turns it off on every cell.
+   */
+  showFullAnalysisLink?: boolean
 }
 
-export function ImpactExplainer({ className, iconClassName, size = 18, label = "Impact math explainer" }: ImpactExplainerProps) {
+export function ImpactExplainer({
+  className,
+  iconClassName,
+  size = 18,
+  label = "Impact math explainer",
+  children,
+  showFullAnalysisLink = true,
+}: ImpactExplainerProps) {
   const impactAnalysis = getImpactAnalysisInfo()
 
   return (
@@ -41,23 +61,34 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
             type="button"
             aria-label={label}
             className={cn(
-              "inline-flex items-center justify-center rounded-full border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary",
+              children
+                ? "inline-flex items-center justify-center rounded-sm text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+                : "inline-flex items-center justify-center rounded-full border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary",
               className,
             )}
           >
-            <HelpCircle className={cn("stroke-[3px]", iconClassName)} style={{ width: size, height: size }} />
+            {children ?? (
+              <HelpCircle className={cn("stroke-[3px]", iconClassName)} style={{ width: size, height: size }} />
+            )}
           </button>
         </TooltipTrigger>
         <TooltipContent className="max-w-[400px] bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-semibold space-y-3">
           <div className="space-y-1">
             <p className="font-black uppercase text-xs">The Math Behind Your Impact</p>
-            <p>
-              Every number comes from first-principles analysis at{" "}
-              <Link href={impactAnalysis.url} target="_blank" rel="noreferrer" className="font-black underline">
-                {impactAnalysis.label}
-              </Link>
-              . Here is what "your vote matters" means when you actually do the math:
-            </p>
+            {showFullAnalysisLink ? (
+              <p>
+                Every number comes from first-principles analysis at{" "}
+                <Link href={impactAnalysis.url} target="_blank" rel="noreferrer" className="font-black underline">
+                  {impactAnalysis.label}
+                </Link>
+                . Here is what "your vote matters" means when you actually do the math:
+              </p>
+            ) : (
+              <p>
+                Every number comes from first-principles analysis. Here is what
+                "your vote matters" means when you actually do the math:
+              </p>
+            )}
           </div>
           
           <div className="space-y-3">
@@ -108,15 +139,17 @@ export function ImpactExplainer({ className, iconClassName, size = 18, label = "
             </div>
           </div>
 
-          <Link
-            href={impactAnalysis.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
-          >
-            See the full analysis
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
+          {showFullAnalysisLink ? (
+            <Link
+              href={impactAnalysis.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
+            >
+              See the full analysis
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          ) : null}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

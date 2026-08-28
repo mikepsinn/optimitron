@@ -1,4 +1,4 @@
-The Complete Idiot’s Guide to Legally Bribing Your Way to Utopia
+A Step-by-Step Guide to Optimizing Your Terrible Civilization
 
 Listen
 Get

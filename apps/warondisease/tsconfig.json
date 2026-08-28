@@ -46,6 +46,10 @@
         "./components/sharing/*",
         "../../packages/site-kit/src/components/sharing/*"
       ],
+      "@/components/*": [
+        "./components/*",
+        "../../packages/site-kit/src/components/*"
+      ],
       "@/components/layout": [
         "../../packages/site-kit/src/components/layout.tsx"
       ],
@@ -65,6 +69,10 @@
         "../../packages/neobrutalist-ui/src/index.ts"
       ],
       "@optimitron/neobrutalist-ui/*": ["../../packages/neobrutalist-ui/src/*"],
+      "@optimitron/wishonia-widget": [
+        "../../packages/wishonia-widget/src/index.ts"
+      ],
+      "@optimitron/wishonia-widget/*": ["../../packages/wishonia-widget/src/*"],
       "@optimitron/data": ["../../packages/data/src/index.ts"],
       "@optimitron/data/*": ["../../packages/data/src/*"],
       "@/components/ui/*": ["../../packages/neobrutalist-ui/src/ui/*"],
