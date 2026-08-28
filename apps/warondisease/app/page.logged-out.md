@@ -106,8 +106,8 @@
 - $4.5B CURRENT
 - 👈+$27.2B INCREASE FROM 1% TREATY
 ### WHAT $27.2B COULD BUY
-### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
-- See what the platonic ideal of healthcare and clinical trials will look like when dFDA frameworks are widely adopted.
+### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
 - These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
@@ -329,7 +329,7 @@
 - [ABOUT](/about)
 - [FAQ](/faq)
 - [THE PLAN](/the-plan)
-- [THE FIELD MANUAL](https://manual.warondisease.org)
+- [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
 #### CONNECT
 - [INSTITUTES](/institutes)
