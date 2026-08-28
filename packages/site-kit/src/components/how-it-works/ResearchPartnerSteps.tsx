@@ -232,7 +232,7 @@ export function ResearchPartnerSteps() {
 
               <div className="space-y-2">
                 <div className="text-xs font-medium">Recent Orders</div>
-                <div className="space-y-2 max-h-[100px] overflow-y-auto">
+                <div className="space-y-2">
                   <div className="rounded-md border p-2 flex justify-between items-center">
                     <div>
                       <div className="text-xs font-medium">#ORD-2845</div>
