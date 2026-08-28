@@ -182,6 +182,7 @@ jobs:
               - 'scripts/site-app-navigation.test.ts'
               - 'scripts/site-app-visual-routes.mjs'
               - 'scripts/smoke-site-apps.mjs'
+              - 'apps/optimitron/scripts/visual-capture-contract.mjs'
               - '.npmrc'
               - 'package.json'
               - 'pnpm-workspace.yaml'

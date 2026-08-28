@@ -128,6 +128,39 @@ test("excludes tests, stories, email renderers, and server-only JSX", () => {
   );
 });
 
+test("classifies site-app UI sources with their server-only exclusions", () => {
+  const included = [
+    "apps/warondisease/app/vote/page.tsx",
+    "apps/warondisease/app/layout.tsx",
+    "apps/warondisease/components/sharing/campaign-qr-code.tsx",
+    "apps/dfda/app/conditions/[conditionSlug]/page.tsx",
+    "apps/warondisease/app/globals.css",
+    "apps/acceleratedmedicine/public/images/hero.png",
+    // Not-found boundaries render deterministically via any unknown URL, so
+    // each app registers a 404 capture and the files stay in the gate.
+    "apps/warondisease/app/not-found.tsx",
+    "apps/warondisease/app/survey/[slug]/not-found.tsx",
+  ];
+  for (const filePath of included) {
+    assert.equal(isVisualUiSourceFile(filePath), true, filePath);
+  }
+
+  const excluded = [
+    "apps/warondisease/app/api/og/route.tsx",
+    "apps/warondisease/emails/referral-invitation.tsx",
+    "apps/warondisease/app/opengraph-image.tsx",
+    "apps/warondisease/app/global-error.tsx",
+    "apps/warondisease/app/soldiers/loading.tsx",
+    "apps/warondisease/lib/treaty-votes.server.ts",
+    "apps/warondisease/components/shared/ParameterValue.test.tsx",
+    // Only apps enrolled in the site-app capture matrix are gated.
+    "apps/courtofhumanity/app/page.tsx",
+  ];
+  for (const filePath of excluded) {
+    assert.equal(isVisualUiSourceFile(filePath), false, filePath);
+  }
+});
+
 test("keeps stylesheet, public image, and styling config coverage", () => {
   const included = [
     "apps/optimitron/src/app/globals.css",
