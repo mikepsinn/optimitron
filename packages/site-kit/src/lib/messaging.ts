@@ -355,3 +355,25 @@ export const CAMPAIGN_PRINT_COPY = {
 export const SHIRT_FRONT_COPY = CAMPAIGN_PRINT_COPY.shirtFrontLines.join(' ')
 export const SHIRT_BACK_COPY_LINES = CAMPAIGN_PRINT_COPY.shirtBackLines
 export const SHIRT_BACK_COPY = SHIRT_BACK_COPY_LINES.join(' ')
+
+/**
+ * Technically accurate descriptions of what military spending does.
+ * Rotated throughout the UI so no single page repeats.
+ * Each one uses corporate/industrial language for atrocities —
+ * the comedy comes from describing it honestly.
+ */
+export const MILITARY_SPENDING_SYNONYMS = [
+  "orphan manufacturing",
+  "death logistics",
+  "widow production",
+  "organized suffering",
+  "limb removal services",
+  "refugee generation",
+  "famine engineering",
+  "rubble creation",
+  "murder infrastructure",
+  "killing strangers",
+  "skeleton manufacturing",
+  "blowing stuff up",
+  "destroying everything",
+] as const
