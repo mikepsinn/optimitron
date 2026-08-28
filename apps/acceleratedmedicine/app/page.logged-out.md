@@ -87,7 +87,7 @@
 - RECORD MY STATE RESPONSE
 - If you provide an email, we will send a confirmation. We will not sell or rent it.
 ### MONTANA PROVED IT. PUT YOUR STATE ON THE MAP.
-- Montana is the enacted precedent. Tap your state to see what Right to Trial would mean there, then add your voice.
+- Montana is the enacted precedent. The original Right to Try spread from one state in 2014 to 41 states by 2018 — tap your state to see what Right to Trial would mean there, then add your voice.
 - ENACTED PRECEDENT
 - LISTENING
 - [AK](/states/alaska)

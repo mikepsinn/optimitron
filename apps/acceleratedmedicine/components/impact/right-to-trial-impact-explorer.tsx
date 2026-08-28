@@ -20,13 +20,23 @@ import {
   calculateRightToTrialImpact,
   calculateTrialBudgetComparison,
   RIGHT_TO_TRIAL_CALCULATIONS_URL,
+  RIGHT_TO_TRIAL_CANONICAL_RESULTS,
   RIGHT_TO_TRIAL_DEFAULT_TRIAL_BUDGET,
   RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT,
   RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_MAX,
   RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_MIN,
+  RIGHT_TO_TRIAL_DOIS,
   RIGHT_TO_TRIAL_IMPACT_PAPER_URL,
   RIGHT_TO_TRIAL_SOURCE_PARAMETERS,
+  OFF_PATENT_ECONOMICS_URL,
+  PHASE_1_PASSED_COMPOUNDS,
 } from "@/lib/right-to-trial-impact";
+
+const SCENARIO_PRESETS = [
+  { label: "Skeptical 2×", multiplier: 2 },
+  { label: "Paper central 5.48×", multiplier: 5.48 },
+  { label: "Optimistic 10×", multiplier: 10 },
+] as const;
 
 const buttonClass =
   "rounded-none border-4 border-primary px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
@@ -244,6 +254,26 @@ export function RightToTrialImpactExplorer() {
               <span>{RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_MAX}×</span>
             </div>
 
+            <div className="mt-5 flex flex-wrap gap-3">
+              {SCENARIO_PRESETS.map((preset) => {
+                const isActive =
+                  Math.abs(discoveryMultiplier - preset.multiplier) < 0.005;
+                return (
+                  <button
+                    key={preset.label}
+                    aria-pressed={isActive}
+                    className={`border-4 border-primary px-3 py-2 text-sm font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 ${
+                      isActive ? "bg-brutal-pink" : "bg-background"
+                    }`}
+                    onClick={() => setDiscoveryMultiplier(preset.multiplier)}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+
             <div
               aria-live="polite"
               className="mt-10 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]"
@@ -299,6 +329,34 @@ export function RightToTrialImpactExplorer() {
             />
           </div>
 
+          <p className="mx-auto mt-6 max-w-4xl text-center font-bold text-brutal-pink-foreground">
+            The cards above track your slider setting. At the paper&apos;s
+            central {RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT}×, the
+            10,000-draw Monte Carlo puts the 90% range at{" "}
+            {compactNumber(
+              RIGHT_TO_TRIAL_CANONICAL_RESULTS.livesSaved
+                .confidenceInterval?.[0] ?? 0,
+              1,
+            )}
+            –
+            {compactNumber(
+              RIGHT_TO_TRIAL_CANONICAL_RESULTS.livesSaved
+                .confidenceInterval?.[1] ?? 0,
+              1,
+            )}{" "}
+            future deaths prevented and $
+            {(
+              RIGHT_TO_TRIAL_CANONICAL_RESULTS.costPerDaly
+                .confidenceInterval?.[0] ?? 0
+            ).toFixed(6)}
+            –$
+            {(
+              RIGHT_TO_TRIAL_CANONICAL_RESULTS.costPerDaly
+                .confidenceInterval?.[1] ?? 0
+            ).toFixed(6)}{" "}
+            per healthy year.
+          </p>
+
           <details className="mt-8 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <summary className="cursor-pointer text-xl font-black uppercase">
               How we calculated it
@@ -329,9 +387,122 @@ export function RightToTrialImpactExplorer() {
                 per year and clears today&apos;s untreated-disease queue in{" "}
                 {impact.queueYears.toFixed(1)} years.
               </p>
+              <p>
+                The arithmetic, in one line: 2.88 billion healthy years are
+                lost to disease every year, medicine can eventually prevent
+                92.6% of that, and the central scenario delivers treatments
+                181 years sooner — 2.88B × 92.6% × 181 ≈ 483 billion healthy
+                years. Deaths follow the same chain from 150,000 disease
+                deaths per day.
+              </p>
               <SourceLink href={RIGHT_TO_TRIAL_CALCULATIONS_URL}>
                 Open every parameter, formula, and citation
               </SourceLink>
+              <p className="text-sm">
+                Peer-archived versions:{" "}
+                {RIGHT_TO_TRIAL_DOIS.map((doi, index) => (
+                  <span key={doi.url}>
+                    {index > 0 ? " · " : ""}
+                    <a
+                      className="underline underline-offset-4"
+                      href={doi.url}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      {doi.label}
+                    </a>
+                  </span>
+                ))}
+              </p>
+            </div>
+          </details>
+
+          <details className="mt-5 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <summary className="cursor-pointer text-xl font-black uppercase">
+              Read this before quoting the numbers
+            </summary>
+            <div className="mt-5 space-y-4 font-bold">
+              <p>
+                The death total can exceed today&apos;s world population
+                because it sums premature deaths prevented across roughly 181
+                years of future generations, not people alive right now.
+              </p>
+              <p>
+                The {RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT}× multiplier
+                is an assumption calibrated to move discovery from 15 to 82.2
+                first treatments per year — not an observed effect. That is
+                why the slider exists: set it where your own skepticism
+                lands.
+              </p>
+              <p>
+                Every result is conditional on 50-state adoption producing the
+                modeled discovery shift. Multiply the headline by your own
+                probability that it does. Even the skeptical preset — 2×
+                discovery — prevents{" "}
+                {compactNumber(calculateRightToTrialImpact(2).livesSaved, 1)}{" "}
+                future deaths, so the case does not depend on the central
+                estimate being right.
+              </p>
+              <p>
+                At the central estimate, preventing one premature death costs
+                about $
+                {RIGHT_TO_TRIAL_CANONICAL_RESULTS.costPerLifeSaved.value.toFixed(
+                  4,
+                )}{" "}
+                of launch spending — roughly{" "}
+                {compactNumber(
+                  RIGHT_TO_TRIAL_CANONICAL_RESULTS.vsGiveWellPerLife.value,
+                  0,
+                )}
+                × less than the ~$4,500 a GiveWell top charity spends per life
+                saved. The cost scopes differ: our numerator is only the $65
+                million campaign and registry, with patients and payers funding
+                the treatments themselves, while GiveWell&apos;s figure covers
+                full program costs. Quote it as leverage, not a like-for-like
+                charity comparison — and apply the same probability discount as
+                everything else here.
+              </p>
+            </div>
+          </details>
+
+          <details className="mt-5 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <summary className="cursor-pointer text-xl font-black uppercase">
+              What the model leaves out — all of it upside
+            </summary>
+            <div className="mt-5 space-y-4 font-bold">
+              <p>
+                {(
+                  PHASE_1_PASSED_COMPOUNDS.confidenceInterval?.[0] ?? 0
+                ).toLocaleString("en-US")}
+                –
+                {(
+                  PHASE_1_PASSED_COMPOUNDS.confidenceInterval?.[1] ?? 0
+                ).toLocaleString("en-US")}{" "}
+                investigational compounds have already passed Phase I safety
+                testing — the same bar Montana&apos;s law uses. Many are
+                off-patent or unpatentable, so at $41,000 per trial
+                participant{" "}
+                <a
+                  className="underline underline-offset-4"
+                  href={OFF_PATENT_ECONOMICS_URL}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  no company can ever recoup the cost of testing them
+                </a>
+                . At $929, testing them becomes viable. The model counts
+                nothing for unlocking this pool.
+              </p>
+              <p>
+                Every cheap off-patent treatment validated against a condition
+                competes with the patented drugs treating it. The model counts
+                zero price effects for patients or payers.
+              </p>
+              <p>
+                Compounds that slow aging itself would cut costs across every
+                age-related disease at once. The model treats aging research
+                like any other disease and counts none of those offsets.
+              </p>
             </div>
           </details>
         </Container>
@@ -345,10 +516,10 @@ export function RightToTrialImpactExplorer() {
               Give more patients a place in the trial.
             </h2>
             <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-              Traditional trials spend about $41,000 per participant. Pragmatic
-              trials can collect useful results for $929 per participant. Move
-              the budget and see how many people those same dollars can
-              include.
+              Traditional trials spend about $41,000 per participant (range
+              $20,000–$120,000). Pragmatic trials can collect useful results
+              for $929 per participant (range $97–$3,000). Move the budget and
+              see how many people those same dollars can include.
             </p>
           </div>
 
