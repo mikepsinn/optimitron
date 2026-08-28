@@ -141,7 +141,7 @@ export default function MontanaPage() {
             {[
               {
                 title: "Rules in force",
-                text: "The operating rules for experimental treatment centers took effect July 25, 2026, with an independent five-expert review board evaluating treatments.",
+                text: "The operating rules for experimental treatment centers took effect July 25, 2026, with an independent expert review board evaluating treatments.",
               },
               {
                 title: "$12,500 to apply",

@@ -49,7 +49,7 @@
 - The statute covers drugs, biologics, devices, procedures, and individualized treatments that meet its conditions.
 ### THIS IS ALREADY HAPPENING.
 #### RULES IN FORCE
-- The operating rules for experimental treatment centers took effect July 25, 2026, with an independent five-expert review board evaluating treatments.
+- The operating rules for experimental treatment centers took effect July 25, 2026, with an independent expert review board evaluating treatments.
 #### $12,500 TO APPLY
 - A company with a drug through preliminary safety testing pays $12,500 to ask the review board for approval to offer it in Montana.
 #### FIRST APPLICATIONS FILED

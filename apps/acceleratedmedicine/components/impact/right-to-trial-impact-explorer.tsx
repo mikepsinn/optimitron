@@ -255,20 +255,23 @@ export function RightToTrialImpactExplorer() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
-              {SCENARIO_PRESETS.map((preset) => (
-                <button
-                  key={preset.label}
-                  className={`border-4 border-primary px-3 py-2 text-sm font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 ${
-                    Math.abs(discoveryMultiplier - preset.multiplier) < 0.005
-                      ? "bg-brutal-pink"
-                      : "bg-background"
-                  }`}
-                  onClick={() => setDiscoveryMultiplier(preset.multiplier)}
-                  type="button"
-                >
-                  {preset.label}
-                </button>
-              ))}
+              {SCENARIO_PRESETS.map((preset) => {
+                const isActive =
+                  Math.abs(discoveryMultiplier - preset.multiplier) < 0.005;
+                return (
+                  <button
+                    key={preset.label}
+                    aria-pressed={isActive}
+                    className={`border-4 border-primary px-3 py-2 text-sm font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 ${
+                      isActive ? "bg-brutal-pink" : "bg-background"
+                    }`}
+                    onClick={() => setDiscoveryMultiplier(preset.multiplier)}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
             </div>
 
             <div
