@@ -649,7 +649,7 @@ export const NAV_ITEMS_MAP = {
   // Manual / Podcast / Media
   manual: {
     id: "manual",
-    label: "The Field Manual",
+    label: "How to End War and Disease",
     path: MANUAL_URLS.readOnline,
     description:
       "An alien wrote 300 pages on how to point everyone's greed at diseases instead of each other. Read, listen, or buy the complete idiot's guide to legally bribing your way to utopia",

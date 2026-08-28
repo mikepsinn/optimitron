@@ -97,7 +97,7 @@ export function TreatyPostVoteFlow({
           referralCode={referralCode}
           inviteToken={inviteToken}
           compact={true}
-          emailOnly
+          defaultEmailOpen
           showNameField={false}
           showSubscribe={false}
           subscribeDefault={false}
