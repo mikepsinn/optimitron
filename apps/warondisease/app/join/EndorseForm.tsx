@@ -21,6 +21,7 @@ import { defaultButtonClassName } from "@optimitron/site-kit/components/ui/defau
 interface ManageableOrg {
   id: string;
   name: string;
+  slug: string | null;
   status: string;
 }
 
@@ -34,6 +35,12 @@ type FormMode = "idle" | "auth" | "saving" | "saved" | "syncing" | "error";
 interface SavedOrganization {
   name: string;
   organizationId?: string;
+  /**
+   * The organization's slug, which is what `/organizations/[slug]` resolves
+   * on. The id is a cuid and that route looks up by slug, so linking with the
+   * id lands on nothing.
+   */
+  organizationSlug?: string | null;
   taskId?: string | null;
 }
 
@@ -54,6 +61,7 @@ function savedOrganizationFromSync(
   return {
     name: organization.organizationName,
     organizationId: organization.organizationId,
+    organizationSlug: organization.organizationSlug ?? null,
     taskId: organization.taskId ?? null,
   };
 }
@@ -62,9 +70,9 @@ function getSingleJoinedOrganizationHref(
   organizations: SavedOrganization[],
 ): string | null {
   if (organizations.length !== 1) return null;
-  const organizationId = organizations[0]?.organizationId;
-  return organizationId
-    ? `${getOrganizationPath(organizationId)}?joined=1`
+  const organizationSlug = organizations[0]?.organizationSlug;
+  return organizationSlug
+    ? `${getOrganizationPath(organizationSlug)}?joined=1`
     : null;
 }
 
@@ -212,16 +220,19 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
     const data = (await res.json().catch(() => null)) as {
       error?: string;
       organizationId?: string;
+      organizationSlug?: string | null;
       taskId?: string | null;
     } | null;
     if (!res.ok) {
       throw new Error(data?.error ?? "Failed to add organization");
     }
+    const selected = manageableOrgs.find(
+      (organization) => organization.id === selectedOrgId,
+    );
     return {
       organizationId: data?.organizationId ?? selectedOrgId,
-      name:
-        manageableOrgs.find((organization) => organization.id === selectedOrgId)
-          ?.name ?? "your organization",
+      organizationSlug: data?.organizationSlug ?? selected?.slug ?? null,
+      name: selected?.name ?? "your organization",
       taskId: data?.taskId ?? null,
     };
   }
@@ -357,8 +368,8 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
     const names = savedOrganizations
       .map((organization) => organization.name)
       .join(", ");
-    const organizationHref = first?.organizationId
-      ? getOrganizationPath(first.organizationId)
+    const organizationHref = first?.organizationSlug
+      ? getOrganizationPath(first.organizationSlug)
       : ROUTES.organizations;
     const taskHref = first?.taskId
       ? `${ROUTES.tasks}/${encodeURIComponent(first.taskId)}`

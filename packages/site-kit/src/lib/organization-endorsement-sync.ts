@@ -12,6 +12,12 @@ export interface SyncedOrganizationEndorsement {
   draft: PendingOrganizationEndorsementDraft;
   organizationId: string;
   organizationName: string;
+  /**
+   * Present only where the endorsement route returns it. `/organizations/[slug]`
+   * resolves on the slug, so a caller linking to the organization needs this
+   * rather than the id.
+   */
+  organizationSlug?: string | null;
   taskId?: string | null;
 }
 
@@ -81,17 +87,22 @@ function draftPayload(draft: PendingOrganizationEndorsementDraft) {
   };
 }
 
-function parsePostResponse(
-  value: unknown,
-): { organizationId: string; taskId?: string | null } | null {
+function parsePostResponse(value: unknown): {
+  organizationId: string;
+  organizationSlug?: string | null;
+  taskId?: string | null;
+} | null {
   if (typeof value !== "object" || value === null) return null;
   const organizationId = (value as { organizationId?: unknown }).organizationId;
   if (typeof organizationId !== "string" || organizationId.trim() === "") {
     return null;
   }
   const rawTaskId = (value as { taskId?: unknown }).taskId;
+  const rawSlug = (value as { organizationSlug?: unknown }).organizationSlug;
   return {
     organizationId,
+    organizationSlug:
+      typeof rawSlug === "string" && rawSlug.trim() ? rawSlug : null,
     taskId:
       typeof rawTaskId === "string" && rawTaskId.trim() ? rawTaskId : null,
   };
@@ -122,6 +133,7 @@ export async function postOrganizationEndorsementDraft(
       draft,
       organizationId: payload.organizationId,
       organizationName: draft.organizationName,
+      organizationSlug: payload.organizationSlug ?? null,
       taskId: payload.taskId ?? null,
     };
   } finally {

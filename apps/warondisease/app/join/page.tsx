@@ -189,6 +189,7 @@ export default async function EndorsePage() {
             manageableOrgs={manageableOrgs.map((o) => ({
               id: o.id,
               name: o.name,
+              slug: o.slug ?? null,
               status: o.status,
             }))}
           />
