@@ -28,6 +28,8 @@ import {
   RIGHT_TO_TRIAL_DOIS,
   RIGHT_TO_TRIAL_IMPACT_PAPER_URL,
   RIGHT_TO_TRIAL_SOURCE_PARAMETERS,
+  OFF_PATENT_ECONOMICS_URL,
+  PHASE_1_PASSED_COMPOUNDS,
 } from "@/lib/right-to-trial-impact";
 
 const SCENARIO_PRESETS = [
@@ -456,6 +458,47 @@ export function RightToTrialImpactExplorer() {
                 full program costs. Quote it as leverage, not a like-for-like
                 charity comparison — and apply the same probability discount as
                 everything else here.
+              </p>
+            </div>
+          </details>
+
+          <details className="mt-5 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <summary className="cursor-pointer text-xl font-black uppercase">
+              What the model leaves out — all of it upside
+            </summary>
+            <div className="mt-5 space-y-4 font-bold">
+              <p>
+                {(
+                  PHASE_1_PASSED_COMPOUNDS.confidenceInterval?.[0] ?? 0
+                ).toLocaleString("en-US")}
+                –
+                {(
+                  PHASE_1_PASSED_COMPOUNDS.confidenceInterval?.[1] ?? 0
+                ).toLocaleString("en-US")}{" "}
+                investigational compounds have already passed Phase I safety
+                testing — the same bar Montana&apos;s law uses. Many are
+                off-patent or unpatentable, so at $41,000 per trial
+                participant{" "}
+                <a
+                  className="underline underline-offset-4"
+                  href={OFF_PATENT_ECONOMICS_URL}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  no company can ever recoup the cost of testing them
+                </a>
+                . At $929, testing them becomes viable. The model counts
+                nothing for unlocking this pool.
+              </p>
+              <p>
+                Every cheap off-patent treatment validated against a condition
+                competes with the patented drugs treating it. The model counts
+                zero price effects for patients or payers.
+              </p>
+              <p>
+                Compounds that slow aging itself would cut costs across every
+                age-related disease at once. The model treats aging research
+                like any other disease and counts none of those offsets.
               </p>
             </div>
           </details>

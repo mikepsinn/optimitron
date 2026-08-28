@@ -59,6 +59,10 @@
 - The 5.48× multiplier is an assumption calibrated to move discovery from 15 to 82.2 first treatments per year — not an observed effect. That is why the slider exists: set it where your own skepticism lands.
 - Every result is conditional on 50-state adoption producing the modeled discovery shift. Multiply the headline by your own probability that it does. Even the skeptical preset — 2× discovery — prevents 5.6B future deaths, so the case does not depend on the central estimate being right.
 - At the central estimate, preventing one premature death costs about $0.0071 of launch spending — roughly 636K× less than the ~$4,500 a GiveWell top charity spends per life saved. The cost scopes differ: our numerator is only the $65 million campaign and registry, with patients and payers funding the treatments themselves, while GiveWell's figure covers full program costs. Quote it as leverage, not a like-for-like charity comparison — and apply the same probability discount as everything else here.
+- WHAT THE MODEL LEAVES OUT — ALL OF IT UPSIDE
+- 5,000–10,000 investigational compounds have already passed Phase I safety testing — the same bar Montana's law uses. Many are off-patent or unpatentable, so at $41,000 per trial participant [no company can ever recoup the cost of testing them](https://manual.warondisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html). At $929, testing them becomes viable. The model counts nothing for unlocking this pool.
+- Every cheap off-patent treatment validated against a condition competes with the patented drugs treating it. The model counts zero price effects for patients or payers.
+- Compounds that slow aging itself would cut costs across every age-related disease at once. The model treats aging research like any other disease and counts none of those offsets.
 ### GIVE MORE PATIENTS A PLACE IN THE TRIAL.
 - Traditional trials spend about $41,000 per participant (range $20,000–$120,000). Pragmatic trials can collect useful results for $929 per participant (range $97–$3,000). Move the budget and see how many people those same dollars can include.
 - TRIAL BUDGET: $1M
