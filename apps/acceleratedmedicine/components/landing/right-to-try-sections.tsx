@@ -438,7 +438,7 @@ export function StateSupportSection({
   initialRole,
   initialState,
   heading = "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
-  body = "Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Shared outcome data reveals which treatments work best and their real benefits and side effects.",
+  body = "Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.",
   headingAs: Heading = "h2",
 }: {
   initialRole?: SupporterRole;
