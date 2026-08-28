@@ -59,7 +59,13 @@ export function ParameterValue({
       : formatParameter(param, resolvedFormat))
   // Copy-preview snapshots turn this into a markdown link so source-backed
   // values keep their source (see scripts/lib/copy-preview-dom.ts).
-  const referenceUrl = param.manualPageUrl ?? param.calculationsUrl ?? undefined
+  // sourceUrl comes last: the dialog below renders it as the original source,
+  // so a parameter carrying only that would otherwise lose its citation in the
+  // copy preview while still showing one on screen. Ordering it after the other
+  // two keeps the preferred links preferred, and the trailing ?? undefined
+  // keeps an absent sourceUrl from publishing "(undefined)" as an href.
+  const referenceUrl =
+    param.manualPageUrl ?? param.calculationsUrl ?? param.sourceUrl ?? undefined
 
   const hasMetadata = [
     param.displayName,

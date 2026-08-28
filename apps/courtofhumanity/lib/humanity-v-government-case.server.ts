@@ -12,7 +12,15 @@ export const HUMANITY_V_GOVERNMENT_CASE_SLUG =
   DB_HUMANITY_V_GOVERNMENT_CASE_SLUG;
 export const HUMANITY_V_GOVERNMENT_CASE_TITLE = "Humanity v Government";
 
-export type HumanityVGovernmentVerdictAnswer = "YES" | "NO" | "ABSTAIN";
+/**
+ * The verdict answers this case accepts. Derived from the database enum rather
+ * than restated as string literals, so the three spellings cannot drift from
+ * what `ReferendumVote.answer` actually stores.
+ */
+export type HumanityVGovernmentVerdictAnswer = Extract<
+  VotePosition,
+  "YES" | "NO" | "ABSTAIN"
+>;
 
 export interface HumanityVGovernmentVerdictStats {
   abstainCount: number;
@@ -61,8 +69,11 @@ export async function getHumanityVGovernmentVerdictStats(
     yesCount: 0,
   } satisfies HumanityVGovernmentVerdictStats;
 
-  const referendum = await prisma.referendum.findUnique({
-    where: { slug: HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG },
+  // Both vote endpoints filter on `deletedAt: null`. Without the same filter
+  // here, a soft-deleted referendum still renders its counts and the reader's
+  // existing answer while every attempt to vote answers 404.
+  const referendum = await prisma.referendum.findFirst({
+    where: { deletedAt: null, slug: HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG },
     select: { id: true },
   });
   if (!referendum) return fallback;

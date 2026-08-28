@@ -235,7 +235,7 @@ export const COURT_OF_HUMANITY_FAQ: FaqConfig = {
     buttons: [
       // These point at the case surfaces on warondisease.org until the court
       // routes land in this app (issue #254), then they become local paths.
-      { label: 'READ THE CASE', href: 'https://warondisease.org/humanity-v-government', variant: 'primary' },
+      { label: 'READ THE CASE', href: '/humanity-v-government', variant: 'primary' },
       { label: 'CONTACT US', href: '/contact', variant: 'secondary' },
     ],
   },

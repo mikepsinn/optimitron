@@ -33,14 +33,17 @@ function toArrayBuffer(buffer: Buffer): ArrayBuffer {
 }
 
 function getBlackWhiteTextOgFonts(): Promise<BlackWhiteTextOgFont[]> {
-  fontPromise ??= Promise.all([
+  const cached = fontPromise;
+  if (cached) return cached;
+
+  const loading = Promise.all([
     readFile(
       path.join(process.cwd(), "public/fonts/libre-baskerville-400.ttf"),
     ),
     readFile(
       path.join(process.cwd(), "public/fonts/libre-baskerville-700.ttf"),
     ),
-  ]).then(([regular, bold]) => [
+  ]).then<BlackWhiteTextOgFont[]>(([regular, bold]) => [
     {
       data: toArrayBuffer(regular),
       name: BLACK_WHITE_TEXT_OG_SERIF_FONT_FAMILY,
@@ -54,6 +57,14 @@ function getBlackWhiteTextOgFonts(): Promise<BlackWhiteTextOgFont[]> {
       weight: 700,
     },
   ]);
+
+  // Cache the success but not the failure. A rejected promise left in
+  // fontPromise would be handed to every later OG request, so one unreadable
+  // font file would keep the route broken for the life of the process.
+  fontPromise = loading.catch((error: unknown) => {
+    fontPromise = null;
+    throw error;
+  });
   return fontPromise;
 }
 

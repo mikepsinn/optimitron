@@ -219,16 +219,12 @@ export function CourtJoinSignatureBox({
     );
   }
 
-  // Session still resolving, or authenticated but the already-joined
-  // check hasn't answered yet: don't flash a signature box at someone
-  // who may have joined.
-  if (
-    status === "loading" ||
-    (status === "authenticated" && existingVote === undefined)
-  ) {
-    return <div className="mx-auto w-full max-w-md" />;
-  }
-
+  // Ordered before the loading placeholder on purpose. useSession returns to
+  // "loading" whenever the session refetches -- window focus is the default
+  // trigger -- and this form's whole job is to tell a signed-out visitor to go
+  // and check their email. Leaving the placeholder first meant that tabbing to
+  // the inbox and back replaced those instructions with an empty box, stranding
+  // them mid-signature until a reload.
   if (signed) {
     return (
       <div className="mx-auto w-full max-w-md">
@@ -243,6 +239,16 @@ export function CourtJoinSignatureBox({
         />
       </div>
     );
+  }
+
+  // Session still resolving, or authenticated but the already-joined
+  // check hasn't answered yet: don't flash a signature box at someone
+  // who may have joined.
+  if (
+    status === "loading" ||
+    (status === "authenticated" && existingVote === undefined)
+  ) {
+    return <div className="mx-auto w-full max-w-md" />;
   }
 
   return (
