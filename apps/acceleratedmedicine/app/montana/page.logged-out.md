@@ -47,6 +47,14 @@
 - Licensing boards retain authority over professional conduct and care provided under the law.
 #### A BROADER TREATMENT DEFINITION
 - The statute covers drugs, biologics, devices, procedures, and individualized treatments that meet its conditions.
+### THIS IS ALREADY HAPPENING.
+#### RULES IN FORCE
+- The operating rules for experimental treatment centers took effect July 25, 2026, with an independent expert review board evaluating treatments.
+#### $12,500 TO APPLY
+- A company with a drug through preliminary safety testing pays $12,500 to ask the review board for approval to offer it in Montana.
+#### FIRST APPLICATIONS FILED
+- Treatments for neuropathy and hearing loss are already under review. The first licensed clinics are expected around the end of 2026.
+- Reported by [MIT Technology Review (July 30, 2026)](https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/) · Board details at [montanaetrb.org](https://montanaetrb.org)
 ### THE LAW OPENS ACCESS. BETTER OUTCOME DATA MAKES THE ACCESS LEARN.
 - SB 535 establishes access, licensing, consent, and oversight. The Institute's decentralized FDA proposal would add standardized outcome measures and pooled public evidence across participating patients and centers.
 - [SEE THE EVIDENCE MODEL](/#evidence)
