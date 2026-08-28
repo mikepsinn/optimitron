@@ -111,9 +111,11 @@ function isSiteAppServerOnlyJsx(appRelative) {
     /^app\/(?:.*\/)?(?:apple-icon|icon|opengraph-image|twitter-image)\.(?:jsx|tsx)$/i.test(
       appRelative,
     ) ||
-    // Error, loading, and not-found boundaries only render in exceptional
-    // states the screenshot smoke cannot reach deterministically.
-    /^app\/(?:.*\/)?(?:error|global-error|loading|not-found)\.(?:jsx|tsx)$/i.test(
+    // Error and loading boundaries only render in exceptional or transient
+    // states the screenshot smoke cannot reach deterministically. Not-found
+    // boundaries stay in the gate: an unknown URL renders them on demand,
+    // and each app registers a not-found capture.
+    /^app\/(?:.*\/)?(?:error|global-error|loading)\.(?:jsx|tsx)$/i.test(
       appRelative,
     )
   );

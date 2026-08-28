@@ -136,6 +136,10 @@ test("classifies site-app UI sources with their server-only exclusions", () => {
     "apps/dfda/app/conditions/[conditionSlug]/page.tsx",
     "apps/warondisease/app/globals.css",
     "apps/acceleratedmedicine/public/images/hero.png",
+    // Not-found boundaries render deterministically via any unknown URL, so
+    // each app registers a 404 capture and the files stay in the gate.
+    "apps/warondisease/app/not-found.tsx",
+    "apps/warondisease/app/survey/[slug]/not-found.tsx",
   ];
   for (const filePath of included) {
     assert.equal(isVisualUiSourceFile(filePath), true, filePath);
@@ -145,7 +149,6 @@ test("classifies site-app UI sources with their server-only exclusions", () => {
     "apps/warondisease/app/api/og/route.tsx",
     "apps/warondisease/emails/referral-invitation.tsx",
     "apps/warondisease/app/opengraph-image.tsx",
-    "apps/warondisease/app/not-found.tsx",
     "apps/warondisease/app/global-error.tsx",
     "apps/warondisease/app/soldiers/loading.tsx",
     "apps/warondisease/lib/treaty-votes.server.ts",

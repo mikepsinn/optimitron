@@ -205,6 +205,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
 
           for (const {
             authenticated,
+            expectNotFound,
             routeName,
             routePath,
             captureSelector,
@@ -221,9 +222,13 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               timeout: 30_000,
               waitUntil: "load",
             });
-            if (!response || response.status() >= 400) {
+            const status = response?.status() ?? 0;
+            const statusIsExpected = expectNotFound
+              ? status === 404
+              : status >= 200 && status < 400;
+            if (!response || !statusIsExpected) {
               throw new Error(
-                `${url} returned HTTP ${response?.status() ?? "unknown"}`,
+                `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
               );
             }
             if (authenticated) {

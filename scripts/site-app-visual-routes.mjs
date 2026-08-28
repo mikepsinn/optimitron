@@ -293,6 +293,22 @@ export const publicSiteAppRoutes = Object.freeze({
       routePath: "/auth/verify-request",
       sourcePage: "apps/warondisease/app/auth/verify-request/page.tsx",
     },
+    {
+      covers: ["apps/warondisease/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/warondisease/app/not-found.tsx",
+    },
+    {
+      covers: ["apps/warondisease/app/survey/[slug]/not-found.tsx"],
+      expectNotFound: true,
+      label: "Survey not found",
+      routeName: "survey-not-found",
+      routePath: "/survey/this-org-does-not-exist",
+      sourcePage: "apps/warondisease/app/survey/[slug]/not-found.tsx",
+    },
   ],
   dfda: [
     {
@@ -326,6 +342,14 @@ export const publicSiteAppRoutes = Object.freeze({
       routePath: "/auth/signin",
       sourcePage: "apps/dfda/app/auth/signin/page.tsx",
     },
+    {
+      covers: ["apps/dfda/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/dfda/app/not-found.tsx",
+    },
   ],
   wishocracy: [
     {
@@ -342,6 +366,14 @@ export const publicSiteAppRoutes = Object.freeze({
       routePath: "/auth/signin",
       sourcePage: "apps/wishocracy/app/auth/signin/page.tsx",
     },
+    {
+      covers: ["apps/wishocracy/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/wishocracy/app/not-found.tsx",
+    },
   ],
   trialabundancesurvey: [
     {
@@ -357,6 +389,34 @@ export const publicSiteAppRoutes = Object.freeze({
       routeName: "auth-signin",
       routePath: "/auth/signin",
       sourcePage: "apps/trialabundancesurvey/app/auth/signin/page.tsx",
+    },
+    {
+      covers: ["apps/trialabundancesurvey/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/trialabundancesurvey/app/not-found.tsx",
+    },
+  ],
+  curedao: [
+    {
+      covers: ["apps/curedao/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/curedao/app/not-found.tsx",
+    },
+  ],
+  acceleratedmedicine: [
+    {
+      covers: ["apps/acceleratedmedicine/app/not-found.tsx"],
+      expectNotFound: true,
+      label: "Page not found",
+      routeName: "not-found",
+      routePath: "/this-page-does-not-exist",
+      sourcePage: "apps/acceleratedmedicine/app/not-found.tsx",
     },
   ],
 });
