@@ -1,8 +1,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { SITE_APP_NAMES } from "./visual-capture-contract.mjs";
 
 const WEB_PREFIX = "apps/optimitron/";
+const SITE_APP_PREFIXES = SITE_APP_NAMES.map((appName) => `apps/${appName}/`);
 
 const REPO_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -92,27 +94,73 @@ function isServerOnlyJsx(webRelative) {
   );
 }
 
+function getSiteAppRelativePath(normalized) {
+  for (const prefix of SITE_APP_PREFIXES) {
+    if (normalized.startsWith(prefix)) {
+      return normalized.slice(prefix.length);
+    }
+  }
+  return null;
+}
+
+function isSiteAppServerOnlyJsx(appRelative) {
+  return (
+    /^app\/api\//.test(appRelative) ||
+    /^emails\//.test(appRelative) ||
+    /\.email\.(?:jsx|tsx)$/i.test(appRelative) ||
+    /^app\/(?:.*\/)?(?:apple-icon|icon|opengraph-image|twitter-image)\.(?:jsx|tsx)$/i.test(
+      appRelative,
+    ) ||
+    // Error and loading boundaries only render in exceptional or transient
+    // states the screenshot smoke cannot reach deterministically. Not-found
+    // boundaries stay in the gate: an unknown URL renders them on demand,
+    // and each app registers a not-found capture.
+    /^app\/(?:.*\/)?(?:error|global-error|loading)\.(?:jsx|tsx)$/i.test(
+      appRelative,
+    )
+  );
+}
+
 /** Rendered web source that requires a registered screenshot state when changed. */
 export function isVisualUiSourceFile(filePath) {
   const normalized = normalizeRepoPath(filePath);
-  if (!normalized.startsWith(WEB_PREFIX) || isTestOrStory(normalized)) {
+  if (isTestOrStory(normalized)) {
     return false;
   }
 
-  const webRelative = normalized.slice(WEB_PREFIX.length);
+  if (normalized.startsWith(WEB_PREFIX)) {
+    const webRelative = normalized.slice(WEB_PREFIX.length);
+    if (
+      /^src\/.*\.(?:jsx|tsx)$/i.test(webRelative) &&
+      !isServerOnlyJsx(webRelative)
+    ) {
+      return true;
+    }
+    if (/^src\/.*\.css$/.test(webRelative)) {
+      return true;
+    }
+    if (
+      /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(webRelative)
+    ) {
+      return true;
+    }
+    return /^(?:postcss|tailwind)\.config\.[cm]?[jt]s$/.test(webRelative);
+  }
+
+  const appRelative = getSiteAppRelativePath(normalized);
+  if (appRelative === null) {
+    return false;
+  }
   if (
-    /^src\/.*\.(?:jsx|tsx)$/i.test(webRelative) &&
-    !isServerOnlyJsx(webRelative)
+    /^(?:app|components)\/.*\.(?:jsx|tsx)$/i.test(appRelative) &&
+    !isSiteAppServerOnlyJsx(appRelative)
   ) {
     return true;
   }
-  if (/^src\/.*\.css$/.test(webRelative)) {
+  if (/^(?:app|components)\/.*\.css$/.test(appRelative)) {
     return true;
   }
-  if (/^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(webRelative)) {
-    return true;
-  }
-  return /^(?:postcss|tailwind)\.config\.[cm]?[jt]s$/.test(webRelative);
+  return /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(appRelative);
 }
 
 /**
