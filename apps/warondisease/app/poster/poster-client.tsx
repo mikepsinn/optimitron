@@ -152,8 +152,10 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
     if (!signedIn) return;
     void loadNearby();
     // Initial load uses saved profile/IP location; browser geolocation is
-    // opt-in via the button below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // opt-in via the button below, so loadNearby is deliberately not a
+    // dependency. Optimitron silenced react-hooks/exhaustive-deps here, but
+    // warondisease's eslint config does not register that plugin, so the
+    // directive was an unused-rule error rather than a suppression.
   }, [signedIn]);
 
   function requestBrowserLocation() {
