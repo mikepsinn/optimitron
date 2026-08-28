@@ -730,7 +730,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: "International Campaign to End War and Disease",
+      fromName: "The War on Disease",
       primaryColor: "#FF6B9D",
       secondaryColor: "#00D4FF",
       orgName: "The War on Disease",
