@@ -4,6 +4,7 @@ import {
   ensureVercelDiffBase,
   ensureVercelProductionDiffBase,
   getVercelAppBuildMatches,
+  shouldAutoBuildPreview,
   getVercelDiffBase,
   getVercelGitFetchRemotes,
   getOptimitronProductionDeployMatches,
@@ -283,4 +284,56 @@ test("does not compare a production deployment with its own HEAD", () => {
     null,
   );
   assert.equal(called, false);
+});
+
+test("ignores copy-review snapshots as build inputs", () => {
+  assert.deepEqual(
+    getVercelAppBuildMatches("warondisease", [
+      "apps/warondisease/app/soldiers/page.logged-out.md",
+      "apps/warondisease/emails/promo.email.md",
+      "apps/warondisease/app/soldiers/page.tsx",
+    ]),
+    ["apps/warondisease/app/soldiers/page.tsx"],
+  );
+  assert.deepEqual(
+    getVercelAppBuildMatches("acceleratedmedicine", [
+      "apps/acceleratedmedicine/app/page.logged-out.md",
+    ]),
+    [],
+  );
+});
+
+test("gates preview builds behind the allowlist with commit-message opt-in", () => {
+  const preview = { VERCEL_ENV: "preview" };
+  for (const appName of ["optimitron", "warondisease", "acceleratedmedicine"]) {
+    assert.equal(shouldAutoBuildPreview(appName, preview).build, true);
+  }
+  assert.equal(shouldAutoBuildPreview("dfda", preview).build, false);
+  assert.equal(
+    shouldAutoBuildPreview("dfda", {
+      VERCEL_ENV: "preview",
+      VERCEL_GIT_COMMIT_MESSAGE: "Fix condition page [preview:dfda]",
+    }).build,
+    true,
+  );
+  assert.equal(
+    shouldAutoBuildPreview("curedao", {
+      VERCEL_ENV: "preview",
+      VERCEL_GIT_COMMIT_MESSAGE: "Rebrand shared footer [preview:all]",
+    }).build,
+    true,
+  );
+  assert.equal(
+    shouldAutoBuildPreview("wishocracy", {
+      VERCEL_ENV: "preview",
+      VERCEL_GIT_COMMIT_MESSAGE: "Ship [preview:dfda] only",
+    }).build,
+    false,
+  );
+  // Production and non-Vercel runs are never gated.
+  assert.equal(
+    shouldAutoBuildPreview("dfda", { VERCEL_ENV: "production" }).build,
+    true,
+  );
+  assert.equal(shouldAutoBuildPreview("dfda", {}).build, true);
 });

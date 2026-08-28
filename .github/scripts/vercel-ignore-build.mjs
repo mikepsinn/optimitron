@@ -4,9 +4,16 @@ import {
   ensureVercelProductionDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
+  shouldAutoBuildPreview,
 } from "./vercel-app-build-scope.mjs";
 
 const appName = process.argv[2] ?? "optimitron";
+
+const previewDecision = shouldAutoBuildPreview(appName);
+if (!previewDecision.build) {
+  console.log(`Skipping ${appName}: ${previewDecision.reason}.`);
+  process.exit(0);
+}
 const requestedDiffBase = getVercelDiffBase(process.env, () => null);
 const verifiedRequestedDiffBase = requestedDiffBase
   ? ensureVercelDiffBase(requestedDiffBase)
