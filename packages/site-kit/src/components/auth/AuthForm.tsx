@@ -144,16 +144,22 @@ export function AuthForm({
   // so reading it inline renders one tree on the server and a different one in
   // the browser. That was tolerable while this only drove a hint, but it now
   // also decides whether a button exists.
-  const [isInIframe, setIsInIframe] = useState(false)
+  // null until resolved. Defaulting to false would render the Google button on
+  // the server and the first client paint, so an embedded voter would see it
+  // -- and could click it -- for a tick before the effect removed it. Starting
+  // unresolved means the server and the first client render agree on omitting
+  // it, and it appears a tick later only where it actually works.
+  const [isInIframe, setIsInIframe] = useState<boolean | null>(null)
   useEffect(() => {
     setIsInIframe(window.self !== window.top)
   }, [])
+  const canUseSocialSignIn = !emailOnly && isInIframe === false
 
   return (
     <div className="w-full">
 
       {/* Iframe-specific tip */}
-      {isInIframe && compact && !emailOnly && (
+      {isInIframe === true && compact && !emailOnly && (
         <div className="mb-4 border-4 border-brutal-cyan bg-brutal-cyan p-3">
           <p className="text-xs font-bold text-center text-foreground">
             Email verification works best in embedded surveys.
@@ -208,7 +214,7 @@ export function AuthForm({
               through TreatyVoteSection -> TreatyPostVoteFlow, which is exactly
               the case the "email works best in embedded surveys" hint above
               was written for. Email verification still works there. */}
-          {!emailOnly && !isInIframe && (
+          {canUseSocialSignIn && (
             <div className="mb-4">
               <Button
                 type="button"
@@ -234,7 +240,10 @@ export function AuthForm({
             </Button>
           ) : (
             <>
-              {!emailOnly && (
+              {/* "OR USE EMAIL" only means something when a social option
+                  precedes it. In an iframe there is none, so the separator
+                  would divide the email form from nothing. */}
+              {canUseSocialSignIn && (
                 <div className="relative mb-4">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t-4 border-black"></div>
