@@ -1647,7 +1647,7 @@ export const fullManualPaperLink: NavItem = {
   href: "https://manual.warondisease.org",
   emoji: "📖",
   description:
-    "The complete idiot's guide to legally bribing your way to utopia. Contains pictures, because reading is hard when you are diseased and dying.",
+    "A step-by-step guide to optimizing your terrible civilization. Contains pictures, because reading is hard when you are diseased and dying.",
   external: true,
 
   cta: "Read",
