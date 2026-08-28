@@ -31,6 +31,12 @@ export interface ParameterValueProps {
   className?: string
   /** Render as inline span or block div when modal is disabled */
   as?: "span" | "div"
+  /**
+   * Override the rendered text (metadata details still use `param`). Useful
+   * when the displayed value is derived from `param` but needs custom
+   * formatting the auto-formatter can't express.
+   */
+  valueOverride?: string
 }
 
 export function ParameterValue({
@@ -41,14 +47,19 @@ export function ParameterValue({
   showPopover = true,
   className,
   as: Component = "span",
+  valueOverride,
 }: ParameterValueProps) {
   const [open, setOpen] = React.useState(false)
 
   const resolvedFormat = resolveFormatOptions(param, format, display, figures)
   const text =
-    display === "integer"
+    valueOverride ??
+    (display === "integer"
       ? String(Math.round(param.value))
-      : formatParameter(param, resolvedFormat)
+      : formatParameter(param, resolvedFormat))
+  // Copy-preview snapshots turn this into a markdown link so source-backed
+  // values keep their source (see scripts/lib/copy-preview-dom.ts).
+  const referenceUrl = param.manualPageUrl ?? param.calculationsUrl ?? undefined
 
   const hasMetadata = [
     param.displayName,
@@ -66,7 +77,11 @@ export function ParameterValue({
   ].some(Boolean)
 
   if (!showPopover || !hasMetadata) {
-    return <Component className={className}>{text}</Component>
+    return (
+      <Component className={className} data-copy-preview-href={referenceUrl}>
+        {text}
+      </Component>
+    )
   }
 
   return (
@@ -74,6 +89,7 @@ export function ParameterValue({
       <DialogTrigger asChild>
         <button
           type="button"
+          data-copy-preview-href={referenceUrl}
           className={cn(
             "inline cursor-help text-left underline decoration-dotted decoration-foreground/30 underline-offset-2",
             className
@@ -311,12 +327,14 @@ export function ParameterInline({
   display,
   figures,
   className,
+  valueOverride,
 }: Omit<ParameterValueProps, "showPopover" | "as">) {
   const resolvedFormat = resolveFormatOptions(param, format, display, figures ?? 3)
   const text =
-    display === "integer"
+    valueOverride ??
+    (display === "integer"
       ? String(Math.round(param.value))
-      : formatParameter(param, resolvedFormat)
+      : formatParameter(param, resolvedFormat))
 
   return <span className={className}>{text}</span>
 }

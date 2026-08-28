@@ -11,7 +11,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { defaultButtonClassName } from "@/components/default-button";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -95,7 +95,7 @@ export function HumanityVGovernmentVerdictVote({
     } finally {
       setSubmittingAnswer(null);
     }
-  }, [answer, referendumSlug, status]);
+  }, [referendumSlug, status]);
 
   useEffect(() => {
     const answerFromUrl = normalizeVerdictAnswer(searchParams.get("verdict"));
@@ -124,10 +124,9 @@ export function HumanityVGovernmentVerdictVote({
             callbackUrl={callbackUrl}
             compact
             emailButtonLabel="Email me a link to finish voting"
-            emailPendingButtonLabel="Sending finish-voting link..."
-            googleButtonLabel="Finish with Google"
-            title="Finish voting"
-            variant="document"
+            emailLoadingLabel="Sending finish-voting link..."
+            showNameField={false}
+            showSubscribe={false}
           />
         </div>
       </section>

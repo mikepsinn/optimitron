@@ -7,11 +7,11 @@ import {
 } from "@optimitron/data/parameters"
 import { ParameterValue } from "./shared/ParameterValue"
 
-// The case surfaces still live on warondisease.org until the court routes
-// land in this app (issue #254); these become local paths then.
-const CASE_URL = "https://warondisease.org/humanity-v-government"
+// The case and verdict surfaces live in this app (issue #254). Plaintiff
+// registration still lives on warondisease.org until it migrates too.
+const CASE_URL = "/humanity-v-government"
 const PLAINTIFFS_URL = "https://warondisease.org/plaintiffs"
-const VERDICT_URL = "https://warondisease.org/court"
+const VERDICT_URL = "/court"
 
 const actionButtonClassName =
   "inline-block border-4 border-primary px-6 py-3 text-center text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"

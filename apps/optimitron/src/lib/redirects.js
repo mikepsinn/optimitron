@@ -69,6 +69,17 @@ const REDIRECTS = [
   // automatically for redirect responses).
   { source: "/find-trials", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials", permanent: true },
   { source: "/find-trials/:path*", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials/:path*", permanent: true },
+
+  // The Humanity v. Government case and Court of Humanity join surfaces
+  // moved to the dedicated courtofhumanity.org app (apps/courtofhumanity),
+  // so the court is not hosted by a party to the case. Same slugs on the
+  // new domain, so external links survive with one hop. Next preserves the
+  // query string (?ref=... referral codes) automatically.
+  { source: "/court", destination: "https://courtofhumanity.org/court", permanent: true },
+  { source: "/humanity-v-government", destination: "https://courtofhumanity.org/humanity-v-government", permanent: true },
+  // Old share cards embed /humanity-v-government/opengraph-image; the new
+  // app serves the same subpath.
+  { source: "/humanity-v-government/:path*", destination: "https://courtofhumanity.org/humanity-v-government/:path*", permanent: true },
 ];
 
 const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [

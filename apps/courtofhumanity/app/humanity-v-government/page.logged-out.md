@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: You May Be Owed $2.74 Million | Humanity v. Government | International Campaign to End War and Disease
+- Page title: You May Be Owed $2.74 Million | Humanity v. Government
 - Meta description: Render your verdict in the Court of Humanity class action against the governments of Earth. The claim says each living human may be owed $2.74 million in full damages.
-- Canonical: https://warondisease.org/humanity-v-government
+- Canonical: https://courtofhumanity.org/humanity-v-government
 - Open Graph title: You May Be Owed $2.74 Million | Humanity v. Government
 - Open Graph description: Render your verdict in the Court of Humanity class action against the governments of Earth. The claim says each living human may be owed $2.74 million in full damages.
-- Open Graph image: https://warondisease.org/humanity-v-government/opengraph-image
+- Open Graph image: https://courtofhumanity.org/humanity-v-government/opengraph-image
 - Twitter title: You May Be Owed $2.74 Million | Humanity v. Government
 - Twitter description: Render your verdict in the Court of Humanity class action against the governments of Earth. The claim says each living human may be owed $2.74 million in full damages.
 
@@ -78,4 +78,4 @@
 - PLAINTIFFS
 ### NAME THE HUMANS THE CASE SHOULD COUNT.
 - The case already has [plaintiff-count] named plaintiffs. If someone in your family died of war, regulatory delay, or preventable disease, add them. A civilization should at least be able to count its dead. On my planet, we counted every one.
-- [ADD A PLAINTIFF](/plaintiffs)
+- [ADD A PLAINTIFF](https://warondisease.org/plaintiffs)

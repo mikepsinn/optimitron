@@ -2,20 +2,19 @@
 
 ## Metadata
 
-- Page title: Court of Humanity | International Campaign to End War and Disease
+- Page title: Court of Humanity
 - Meta description: Should humans be able to sue a government that kills, injures, or ruins their family?
-- Canonical: https://warondisease.org/court
+- Canonical: https://courtofhumanity.org/court
 - Open Graph title: Court of Humanity
 - Open Graph description: Should humans be able to sue a government that kills, injures, or ruins their family?
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://courtofhumanity.org/assets/courtofhumanity/courtofhumanity-og-1200x630.png
 - Twitter title: Court of Humanity
 - Twitter description: Should humans be able to sue a government that kills, injures, or ruins their family?
 
 ## Visible Page Copy
 
+- COURT OF HUMANITY - MEMBERSHIP REFERENDUM
 ## If a government kills, injures, or harms you or your family, should you have the same right to sue it that you would have if a corporation did the same?
-- YES
-- NO
 - This is the question your species never put to itself. The reason is structural: the people who would have called the vote are the people who would have lost it.
 - WHEREAS, if a hospital kills your mother through negligence, you can sue. If a drug company hides safety data, you can sue. If a private security contractor shoots a child by accident, you can sue. If a government does the exact same thing, you cannot;
 - WHEREAS, the legal doctrine that protects governments is called sovereign immunity, and it descends, without architectural modification, from the principle that the king can do no wrong;

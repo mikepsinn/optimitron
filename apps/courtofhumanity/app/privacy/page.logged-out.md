@@ -55,6 +55,9 @@
 - Email: hello@courtofhumanity.org
 - Website: CourtOfHumanity.org
 - HUMANITY V. GOVERNMENT
+#### THE CASE
+- [HUMANITY V. GOVERNMENT](/humanity-v-government)
+- [JOIN THE COURT](/court)
 #### LEARN MORE
 - [ABOUT](/about)
 - [FAQ](/faq)

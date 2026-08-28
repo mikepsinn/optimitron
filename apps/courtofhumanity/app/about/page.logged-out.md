@@ -17,4 +17,4 @@
 - Read Humanity v. Government — the public case for redirecting 1% of military spending from weapons to cures — and put your name on the record as a plaintiff.
 ### WHAT SHOULD YOU DO NEXT?
 - The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
-- [READ THE CASE](https://warondisease.org/humanity-v-government)
+- [READ THE CASE](/humanity-v-government)

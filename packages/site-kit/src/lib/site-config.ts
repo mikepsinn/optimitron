@@ -1382,14 +1382,20 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     topLevelNavItems: [],
     sidebarSections: [
       {
+        id: "case",
+        label: "THE CASE",
+        items: ["humanityVGovernment", "joinCourt"],
+      },
+      {
         id: "learn",
         label: "THE COURT",
         items: ["about", "faq", "contact"],
       },
     ],
-    // No vote CTA: this app has no vote surface, so the shared sidebar
-    // button would render "Answer the Question" over a /#vote anchor that
-    // does not exist here. It arrives with the court vote routes (#254).
+    // No vote CTA: the shared sidebar button renders "Answer the Question"
+    // over a /#vote anchor that does not exist here. The court's vote
+    // surfaces are the /humanity-v-government verdict and /court join
+    // pages, linked from THE CASE section above.
     sidebarVoteCtaEnabled: false,
 
     footerBranding: {
@@ -1398,6 +1404,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
 
     footerSections: [
+      {
+        id: "case",
+        label: "THE CASE",
+        items: ["humanityVGovernment", "joinCourt"],
+      },
       {
         id: "learn",
         label: "LEARN MORE",

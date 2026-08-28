@@ -19,6 +19,9 @@
 - Send your question, correction, partnership idea, or media request. A human will read it.
 - [EMAIL HELLO@COURTOFHUMANITY.ORG](mailto:hello@courtofhumanity.org?subject=The%20Court%20of%20Humanity%20question)
 - HUMANITY V. GOVERNMENT
+#### THE CASE
+- [HUMANITY V. GOVERNMENT](/humanity-v-government)
+- [JOIN THE COURT](/court)
 #### LEARN MORE
 - [ABOUT](/about)
 - [FAQ](/faq)

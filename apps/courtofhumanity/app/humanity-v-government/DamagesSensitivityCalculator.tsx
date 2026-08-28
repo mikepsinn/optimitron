@@ -11,7 +11,7 @@ import {
   WAR_DEATHS_SINCE_1900,
   WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE,
 } from "@optimitron/data/parameters";
-import { defaultButtonClassName } from "@/components/ui/default-button";
+import { defaultButtonClassName } from "@/components/default-button";
 import { cn } from "@/lib/utils";
 
 /**
