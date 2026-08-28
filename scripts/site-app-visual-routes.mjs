@@ -255,6 +255,18 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/warondisease/app/soldiers/page.tsx",
     },
     {
+      covers: [
+        "apps/warondisease/app/employees/page.tsx",
+        "packages/site-kit/src/components/landing/treaty-reminder-composer.tsx",
+        "packages/site-kit/src/components/tasks/overdue-signer-list.tsx",
+        "packages/site-kit/src/components/tasks/reminder-composer.tsx",
+      ],
+      label: "President management system",
+      routeName: "employees",
+      routePath: "/employees",
+      sourcePage: "apps/warondisease/app/employees/page.tsx",
+    },
+    {
       covers: ["apps/warondisease/app/survey/demo/page.tsx"],
       label: "Survey embed demo",
       routeName: "survey-demo",
