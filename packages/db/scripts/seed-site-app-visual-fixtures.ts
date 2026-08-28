@@ -80,6 +80,12 @@ try {
       where: { id: user.id },
       data: { isAdmin: true },
     }),
+    // The managed seed keeps the demo person private. The /u/demo capture
+    // needs the public-profile rendering, so this local-only fixture flips it.
+    prisma.person.update({
+      where: { id: user.personId },
+      data: { isPublic: true },
+    }),
     prisma.referendumVote.upsert({
       where: {
         referendumId_personId: {

@@ -83,6 +83,90 @@ test("every internal site-app navigation route has a Next.js page", async (t) =>
   }
 });
 
+test("declared public site-app routes are valid", async () => {
+  const { publicSiteAppRoutes } = await import("./site-app-visual-routes.mjs");
+
+  const routeNames = new Set<string>();
+  for (const [appName, routes] of Object.entries(publicSiteAppRoutes)) {
+    assert.ok(routes.length > 0, `${appName} must declare at least one public route`);
+    for (const route of routes) {
+      assert.ok(
+        !route.authenticated,
+        `${appName}:${route.routeName} is authenticated; declare it in authenticatedSiteAppRoutes instead`,
+      );
+      assert.ok(route.routePath.startsWith("/"), `${appName}:${route.routeName} must use an absolute route path`);
+      assert.ok(route.sourcePage, `${appName}:${route.routeName} must name its source page`);
+      assert.ok(route.covers.includes(route.sourcePage), `${appName}:${route.routeName} must cover its source page`);
+      assert.ok(
+        existsSync(path.join(repoRoot, route.sourcePage)),
+        `${appName}:${route.routeName} references missing page ${route.sourcePage}`,
+      );
+      assert.ok(
+        !isAuthenticatedPage(path.join(repoRoot, route.sourcePage)),
+        `${appName}:${route.routeName} source page has an auth guard; declare it in authenticatedSiteAppRoutes instead`,
+      );
+
+      const uniqueRouteName = `${appName}:${route.routeName}`;
+      assert.ok(!routeNames.has(uniqueRouteName), `Duplicate visual route ${uniqueRouteName}`);
+      routeNames.add(uniqueRouteName);
+    }
+  }
+});
+
+test("every site-app page is captured by the visual review or has a documented exemption", async (t) => {
+  const {
+    authenticatedSiteAppRouteExemptions,
+    getSiteAppScreenshotRoutes,
+    publicSiteAppRouteExemptions,
+  } = await import("./site-app-visual-routes.mjs");
+  const { VARIANTS } = await import(
+    "../packages/site-kit/src/lib/site-config.ts"
+  );
+  const apps = [
+    ["warondisease", VARIANTS.WAR_ON_DISEASE],
+    ["dfda", VARIANTS.DFDA],
+    ["wishocracy", VARIANTS.WISHOCRACY],
+    ["trialabundancesurvey", VARIANTS.SURVEY],
+    ["curedao", VARIANTS.CUREDAO],
+    ["acceleratedmedicine", VARIANTS.ACCELERATED_MEDICINE],
+  ] as const;
+
+  const exemptPages = new Set<string>();
+  for (const exemption of [
+    ...authenticatedSiteAppRouteExemptions,
+    ...publicSiteAppRouteExemptions,
+  ]) {
+    assert.ok(exemption.reason?.trim(), `${exemption.sourcePage} needs an exemption reason`);
+    assert.ok(
+      existsSync(path.join(repoRoot, exemption.sourcePage)),
+      `Exemption references missing page ${exemption.sourcePage}`,
+    );
+    exemptPages.add(exemption.sourcePage);
+  }
+
+  for (const [appName, siteVariant] of apps) {
+    await t.test(appName, () => {
+      const capturedPages = new Set(
+        getSiteAppScreenshotRoutes(appName, siteVariant).map(
+          (route) => route.sourcePage,
+        ),
+      );
+      const missing = listPageFiles(path.join(repoRoot, "apps", appName, "app"))
+        .map((filePath) => normalizePath(path.relative(repoRoot, filePath)))
+        .filter(
+          (filePath) =>
+            !capturedPages.has(filePath) && !exemptPages.has(filePath),
+        )
+        .sort();
+      assert.deepEqual(
+        missing,
+        [],
+        `${appName} pages are missing from the visual review. Add each to publicSiteAppRoutes or authenticatedSiteAppRoutes in scripts/site-app-visual-routes.mjs, or exempt it with a reason:\n${missing.join("\n")}`,
+      );
+    });
+  }
+});
+
 test("every authenticated site-app page has visual coverage or a documented exemption", async () => {
   const {
     authenticatedSiteAppRouteExemptions,

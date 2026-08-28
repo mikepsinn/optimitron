@@ -2,6 +2,17 @@ export const LEGACY_VISUAL_CAPTURE_VERSION = 1;
 export const VISUAL_CAPTURE_VERSION = 3;
 export const SITE_APP_VISUAL_CAPTURE_VERSION = 4;
 
+/** Standalone site apps whose captures ride the visual review. Must match the
+ * app matrix in scripts/smoke-site-apps.mjs and .github/workflows/ci.yml. */
+export const SITE_APP_NAMES = Object.freeze([
+  "warondisease",
+  "dfda",
+  "wishocracy",
+  "trialabundancesurvey",
+  "curedao",
+  "acceleratedmedicine",
+]);
+
 export function getVisualCaptureVersion(value) {
   return value &&
     typeof value === "object" &&
