@@ -1,6 +1,7 @@
 import { Resend } from "resend"
 import { EMAIL_CONFIG } from "./constants"
 import { env } from "./env"
+import { getSiteConfig } from "./site-config"
 
 /**
  * Get or create Resend client instance
@@ -23,6 +24,18 @@ export function getEmailFrom(): string {
 
   // If name is provided, use "Name <email>" format, otherwise just email
   return name ? `${name} <${address}>` : address
+}
+
+/**
+ * Get the email "from" using the current site variant's brand identity.
+ *
+ * This is the one place a site's sender name comes from: the variant's
+ * `emailBranding.fromName` in site-config. Prefer this over `getEmailFrom`
+ * for user-facing mail so every email from a site carries the same sender.
+ */
+export function getBrandedEmailFrom(): string {
+  const address = env.EMAIL_FROM_ADDRESS || EMAIL_CONFIG.DEFAULT_FROM_ADDRESS
+  return `${getSiteConfig().emailBranding.fromName} <${address}>`
 }
 
 /**
