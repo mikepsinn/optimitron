@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { signIn } from "next-auth/react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Input } from "@optimitron/neobrutalist-ui/ui/input"
@@ -138,8 +138,16 @@ export function AuthForm({
   const buttonHeight = compact ? "h-12" : "h-14"
   const textSize = compact ? "text-base" : "text-lg"
 
-  // Detect if running in iframe
-  const isInIframe = typeof window !== 'undefined' && window.self !== window.top
+  // Detect if running in iframe.
+  //
+  // Resolved after mount rather than during render: the server has no window,
+  // so reading it inline renders one tree on the server and a different one in
+  // the browser. That was tolerable while this only drove a hint, but it now
+  // also decides whether a button exists.
+  const [isInIframe, setIsInIframe] = useState(false)
+  useEffect(() => {
+    setIsInIframe(window.self !== window.top)
+  }, [])
 
   return (
     <div className="w-full">
@@ -191,8 +199,16 @@ export function AuthForm({
             </div>
           )}
 
-          {/* Google Login */}
-          {!emailOnly && (
+          {/* Google Login.
+              Hidden inside an iframe: NextAuth's signIn() navigates the frame
+              it runs in, and Google refuses to render its account pages in a
+              third-party frame, so an embedded voter who clicks this lands on
+              a blocked frame instead of a sign-in. The partner survey embed at
+              apps/trialabundancesurvey/app/embed/page.tsx reaches this form
+              through TreatyVoteSection -> TreatyPostVoteFlow, which is exactly
+              the case the "email works best in embedded surveys" hint above
+              was written for. Email verification still works there. */}
+          {!emailOnly && !isInIframe && (
             <div className="mb-4">
               <Button
                 type="button"
