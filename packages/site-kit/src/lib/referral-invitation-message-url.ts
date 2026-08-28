@@ -15,14 +15,14 @@ export function insertGeneratedReferralInviteUrl(
   let withGeneratedLink = text;
   if (draftReferralUrl && draftReferralUrl !== inviteUrl) {
     const draftPattern = new RegExp(escapeRegex(draftReferralUrl), "g");
-    withGeneratedLink = withGeneratedLink.replace(draftPattern, inviteUrl);
+    withGeneratedLink = withGeneratedLink.replace(draftPattern, () => inviteUrl);
   }
 
   if (withGeneratedLink.includes(inviteUrl)) return withGeneratedLink;
 
   const legacyDraftUrlPattern =
     /https?:\/\/warondisease\.org(?:\/[^\s<>"']*)?|warondisease\.org(?:\/[^\s<>"']*)?/g;
-  withGeneratedLink = withGeneratedLink.replace(legacyDraftUrlPattern, inviteUrl);
+  withGeneratedLink = withGeneratedLink.replace(legacyDraftUrlPattern, () => inviteUrl);
 
   return withGeneratedLink.includes(inviteUrl)
     ? withGeneratedLink

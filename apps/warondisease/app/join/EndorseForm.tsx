@@ -447,10 +447,14 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
       {entryMode === "new" ? (
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <label
+              htmlFor="organization-name"
+              className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
+            >
               Organization name *
             </label>
             <input
+              id="organization-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -458,10 +462,14 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <label
+              htmlFor="organization-website"
+              className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
+            >
               Website
             </label>
             <input
+              id="organization-website"
               type="url"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
@@ -470,10 +478,14 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <label
+              htmlFor="organization-donation-url"
+              className="mb-1 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
+            >
               Donation URL
             </label>
             <input
+              id="organization-donation-url"
               type="url"
               value={donationUrl}
               onChange={(e) => setDonationUrl(e.target.value)}

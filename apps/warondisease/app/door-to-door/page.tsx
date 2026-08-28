@@ -227,6 +227,15 @@ export default async function DoorToDoorPage({
               display: none !important;
             }
 
+            /*
+             * The rule above is deliberately broad, but each canvass sheet has
+             * its own <header> for the sheet heading. Specificity (0,1,1 vs
+             * 0,0,1) restores those regardless of order.
+             */
+            .canvass-sheet header {
+              display: block !important;
+            }
+
             main {
               min-height: 0 !important;
             }

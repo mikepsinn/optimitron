@@ -139,15 +139,17 @@ export function ImpactExplainer({
             </div>
           </div>
 
-          <Link
-            href={impactAnalysis.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
-          >
-            See the full analysis
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
+          {showFullAnalysisLink ? (
+            <Link
+              href={impactAnalysis.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs font-black text-brutal-pink underline"
+            >
+              See the full analysis
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          ) : null}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

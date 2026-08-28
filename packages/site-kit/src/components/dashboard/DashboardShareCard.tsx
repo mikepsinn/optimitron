@@ -59,7 +59,12 @@ function copyWithTextarea(text: string): Promise<void> {
   document.body.appendChild(textarea);
   textarea.select();
   try {
-    document.execCommand("copy");
+    // execCommand returns false on failure without throwing, so ignoring the
+    // result reported the invite URL as copied when nothing reached the
+    // clipboard.
+    if (!document.execCommand("copy")) {
+      return Promise.reject(new Error("Copy failed"));
+    }
     return Promise.resolve();
   } catch (error) {
     return Promise.reject(
