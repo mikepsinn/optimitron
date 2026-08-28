@@ -35,5 +35,5 @@
 - The treaty is designed for universal participation, but the top 15 military spenders (US, China, Russia, India, Saudi Arabia, UK, Germany, France, Japan, South Korea, Italy, Australia, Canada, Israel, Spain) account for 81% of global military spending. Their participation alone would fund the entire system.
 ### READY TO JOIN THE CASE?
 - Read the filing, then put your name on the record
-- [READ THE CASE](https://warondisease.org/humanity-v-government)
+- [READ THE CASE](/humanity-v-government)
 - [CONTACT US](/contact)
