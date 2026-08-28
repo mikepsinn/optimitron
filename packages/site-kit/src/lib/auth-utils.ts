@@ -65,6 +65,21 @@ export async function getSessionUserId(): Promise<string | null> {
 }
 
 /**
+ * The session user object, or null when signed out. No DB query.
+ *
+ * Pages that only need session-resident fields (id, handle, referralCode) use
+ * this instead of calling `getServerSession(authOptions)` themselves. Importing
+ * `authOptions` from inside an app pulls in a second next-auth instance and the
+ * adapter types stop matching — which is the same clash `pinAppNextAuthInstance`
+ * exists to prevent at bundle time. Keeping the call in site-kit keeps every app
+ * on one instance.
+ */
+export async function getSessionUser() {
+  const session = await getServerSession(authOptions)
+  return session?.user ?? null
+}
+
+/**
  * Require authentication (lightweight) - throws error if not authenticated
  * Returns just session data (userId, email) without DB query
  * Use in API routes for fast auth checks

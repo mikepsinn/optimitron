@@ -20,4 +20,4 @@
 - [👥Humans Who Can End War and Disease TELL SOMEONE ELSE Find the right human](/people)
 - [🩺Conditions POPULAR Find disease evidence](/agencies/dfda/conditions)
 - [💊Treatments POPULAR Compare treatment evidence](/agencies/dfda/treatments)
-- [📖Earth Repair Manual MANUAL The complete idiot's guide to legally bribing your way to utopia. Contains pictures, because reading is hard when you are diseased and dying.](https://manual.warondisease.org)
+- [📖Earth Repair Manual MANUAL A step-by-step guide to optimizing your terrible civilization. Contains pictures, because reading is hard when you are diseased and dying.](https://manual.warondisease.org)

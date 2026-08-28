@@ -1851,6 +1851,9 @@ importers:
       '@optimitron/site-kit':
         specifier: workspace:^
         version: link:../../packages/site-kit
+      '@optimitron/wishonia-widget':
+        specifier: workspace:^
+        version: link:../../packages/wishonia-widget
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.9.1
@@ -2840,9 +2843,15 @@ importers:
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../neobrutalist-ui
+      '@optimitron/wishonia-widget':
+        specifier: workspace:^
+        version: link:../wishonia-widget
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.9.1
+      '@radix-ui/react-avatar':
+        specifier: 1.1.2
+        version: 1.1.2(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
       '@sentry/nextjs':
         specifier: '*'
         version: 10.69.0(@opentelemetry/core@2.10.0)(@opentelemetry/sdk-trace-base@2.10.0)(next@15.5.15)(react@18.3.1)(webpack@5.105.4)
@@ -2879,6 +2888,9 @@ importers:
       pino:
         specifier: ^10.3.1
         version: 10.3.1
+      qrcode.react:
+        specifier: ^4.0.1
+        version: 4.2.0(react@18.3.1)
       react:
         specifier: '>=18'
         version: 18.3.1
@@ -2888,6 +2900,12 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.6.0(react@18.3.1)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@18.3.28)(react@18.3.1)
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
       resend:
         specifier: ^4.0.0
         version: 4.8.0(react-dom@18.3.1)(react@18.3.1)
@@ -12079,7 +12097,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       estree-walker: 2.0.2
       picomatch: 4.0.4
       rollup: 4.60.0
@@ -12094,7 +12112,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       estree-walker: 2.0.2
       picomatch: 4.0.4
       rollup: 4.62.4
@@ -22589,7 +22607,7 @@ packages:
   /is-reference@1.2.1:
     resolution: {integrity: sha512-U82MsXXiFIrjCK4otLT+o2NA2Cd2g5MLoOVXUZjIOhLurrRxpEXzI8O0KZHr3IjLvlAH1kTPYSuqer5T9ZVBKQ==}
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
     dev: false
 
   /is-regex@1.2.1:

@@ -652,7 +652,7 @@ export const NAV_ITEMS_MAP = {
     label: "How to End War and Disease",
     path: MANUAL_URLS.readOnline,
     description:
-      "An alien wrote 300 pages on how to point everyone's greed at diseases instead of each other. Read, listen, or buy the complete idiot's guide to legally bribing your way to utopia",
+      "An alien wrote 300 pages on how to point everyone's greed at diseases instead of each other. Read, listen, or buy the step-by-step guide to optimizing your terrible civilization",
     emoji: "📖",
     isExternal: true,
     keywords: [

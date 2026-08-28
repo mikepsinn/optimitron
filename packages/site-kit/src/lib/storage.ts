@@ -1,5 +1,22 @@
 import { STORAGE_KEYS, type StorageKey } from "./constants"
 
+export type PendingOrganizationEndorsementDraft = {
+  clientDraftId: string
+  description?: string
+  organizationName: string
+  originUrl?: string
+  referendumSlug: string
+  statement?: string
+  timestamp: string
+  version: 1
+  website?: string
+}
+
+export type PendingOrganizationEndorsementsSyncLock = {
+  expiresAt: number
+  ownerId: string
+}
+
 /**
  * Type-safe localStorage utilities
  * ALWAYS use these instead of calling localStorage directly
@@ -106,6 +123,51 @@ export interface PendingVote {
 
 export const storage = {
   // Signup flow
+  getPendingOrganizationEndorsements: () =>
+    getStorageItem<PendingOrganizationEndorsementDraft[]>(
+      STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS,
+    ) ?? [],
+  setPendingOrganizationEndorsements: (
+    data: PendingOrganizationEndorsementDraft[],
+  ) => setStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS, data),
+  addPendingOrganizationEndorsement: (
+    draft: PendingOrganizationEndorsementDraft,
+  ) => {
+    const drafts =
+      getStorageItem<PendingOrganizationEndorsementDraft[]>(
+        STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS,
+      ) ?? [];
+    setStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS, [
+      ...drafts.filter((item) => item.clientDraftId !== draft.clientDraftId),
+      draft,
+    ]);
+  },
+  removePendingOrganizationEndorsements: (clientDraftIds: string[]) => {
+    const ids = new Set(clientDraftIds);
+    const drafts =
+      getStorageItem<PendingOrganizationEndorsementDraft[]>(
+        STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS,
+      ) ?? [];
+    const remaining = drafts.filter((draft) => !ids.has(draft.clientDraftId));
+    if (remaining.length > 0) {
+      setStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS, remaining);
+    } else {
+      removeStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS);
+    }
+  },
+  clearPendingOrganizationEndorsements: () =>
+    removeStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS),
+  getPendingOrganizationEndorsementsSyncLock: () =>
+    getStorageItem<PendingOrganizationEndorsementsSyncLock>(
+      STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK,
+    ),
+  setPendingOrganizationEndorsementsSyncLock: (
+    lock: PendingOrganizationEndorsementsSyncLock,
+  ) =>
+    setStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK, lock),
+  clearPendingOrganizationEndorsementsSyncLock: () =>
+    removeStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK),
+
   getSignupName: () => getStorageItem<string>(STORAGE_KEYS.SIGNUP_NAME),
   setSignupName: (name: string) => setStorageItem(STORAGE_KEYS.SIGNUP_NAME, name),
   removeSignupName: () => removeStorageItem(STORAGE_KEYS.SIGNUP_NAME),

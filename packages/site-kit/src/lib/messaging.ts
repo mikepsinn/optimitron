@@ -326,3 +326,32 @@ export const composeImpactMessage = (options: {
  * MESSAGING.impact.curesArriveXYearsSooner.full
  * // → "getting new cures to patients at least 8.2 years sooner"
  */
+
+/**
+ * Print-surface copy shared by the flyer, poster, door-to-door and shirt
+ * pages migrated from Optimitron.
+ *
+ * These are broken into lines rather than sentences because each line is a
+ * separate typographic block on a physical artifact — a flyer headline or a
+ * shirt panel — where the line breaks are part of the design, not incidental
+ * wrapping. Joining them back into strings is what SHIRT_FRONT_COPY and
+ * SHIRT_BACK_COPY below are for.
+ */
+export const CAMPAIGN_PRINT_COPY = {
+  flyerHeadlineLines: [
+    'Please take',
+    '30 seconds',
+    'to end',
+    'war and disease',
+  ],
+  shirtBackLines: [
+    'Trade one apocalypse',
+    'for disease eradication',
+    'at warondisease.org.',
+  ],
+  shirtFrontLines: ['THIS T-SHIRT', 'ENDED WAR', 'AND DISEASE.'],
+} as const
+
+export const SHIRT_FRONT_COPY = CAMPAIGN_PRINT_COPY.shirtFrontLines.join(' ')
+export const SHIRT_BACK_COPY_LINES = CAMPAIGN_PRINT_COPY.shirtBackLines
+export const SHIRT_BACK_COPY = SHIRT_BACK_COPY_LINES.join(' ')
