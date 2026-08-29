@@ -332,6 +332,7 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/warondisease/app/fix-ai/page.tsx",
         "apps/warondisease/app/fix-ai/content.ts",
+        "apps/warondisease/app/fix-ai/corpus.server.ts",
         "apps/warondisease/app/fix-ai/json-ld-head.tsx",
       ],
       label: "Fix the AI corpus",
