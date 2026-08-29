@@ -17,6 +17,7 @@ export const VARIANTS = {
   USER: 'user',
   CUREDAO: 'curedao.org',
   ACCELERATED_MEDICINE: 'acceleratedmedicine.org',
+  COURT_OF_HUMANITY: 'courtofhumanity.org',
 } as const
 
 /**
@@ -36,6 +37,7 @@ export const SITE_VARIANTS = [
   VARIANTS.WISHOCRACY,
   VARIANTS.CUREDAO,
   VARIANTS.ACCELERATED_MEDICINE,
+  VARIANTS.COURT_OF_HUMANITY,
 ] as const
 
 /**
@@ -56,6 +58,7 @@ export const VARIANT_DOMAINS: Record<SiteVariant, string> = {
   [VARIANTS.CUREDAO]: 'curedao.org',
   [VARIANTS.USER]: 'warondisease.org', // User profiles are on warondisease.org
   [VARIANTS.ACCELERATED_MEDICINE]: 'acceleratedmedicine.org',
+  [VARIANTS.COURT_OF_HUMANITY]: 'courtofhumanity.org',
 }
 
 /**
