@@ -156,15 +156,92 @@ export async function prepareFullPageVisualCapture(page) {
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
-      window.dispatchEvent(new Event("optimitron:visual-capture"));
     });
   });
-  await retryAfterNavigation(page, async () => {
-    await page
-      .locator('[data-visual-capture-ready="false"]')
-      .waitFor({ state: "detached", timeout: 10_000 });
-  });
+
+  await waitForCaptureReady(page);
+  await waitForImagesSettled(page);
   await waitForPaint(page);
+}
+
+/**
+ * Announce the capture to components that render a deterministic completed
+ * state, and wait for each to report it is ready.
+ *
+ * The event is re-dispatched on every poll rather than fired once. A component
+ * that has rendered its `[data-visual-capture-ready="false"]` marker but has
+ * not yet attached its listener — React paints before it runs effects — would
+ * otherwise miss a single dispatch entirely and never flip to ready, and the
+ * only symptom is this wait timing out ten seconds later on a page that looks
+ * fine. Re-dispatching costs nothing and makes that race harmless.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForCaptureReady(page, timeout = 10_000) {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const pending = await retryingEvaluate(page, () => {
+      window.dispatchEvent(new Event("optimitron:visual-capture"));
+      return document.querySelectorAll('[data-visual-capture-ready="false"]')
+        .length;
+    });
+    if (pending === 0) return true;
+    if (Date.now() >= deadline) return false;
+    await page.waitForTimeout(100);
+  }
+}
+
+/**
+ * Wait for every image to finish loading and decoding.
+ *
+ * Promoting `loading="lazy"` to eager and scrolling the page starts the
+ * requests but nothing waits for them, so a capture can be taken while an
+ * image is still in flight. The failure is silent and asymmetric: the text
+ * around the image is pixel-identical, the page height is unchanged, and only
+ * the artwork is missing, which reads as a real visual regression.
+ *
+ * `complete` is the right predicate because it also becomes true for an image
+ * that errored — a genuinely broken `src` must not hold capture open. `decode`
+ * then guarantees the bitmap is ready to paint rather than merely downloaded.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForImagesSettled(page, timeout = 15_000) {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const pending = await retryingEvaluate(page, () =>
+      Array.from(document.images).filter((image) => !image.complete).length,
+    );
+    if (pending === 0) break;
+    if (Date.now() >= deadline) break;
+    await page.waitForTimeout(100);
+  }
+
+  await retryingEvaluate(page, async () => {
+    await Promise.allSettled(
+      Array.from(document.images)
+        .filter((image) => image.complete && image.naturalWidth > 0)
+        .map((image) => image.decode()),
+    );
+  });
+}
+
+/**
+ * `page.evaluate` that survives a navigation racing the evaluation.
+ *
+ * @template T
+ * @param {import("@playwright/test").Page} page
+ * @param {() => T | Promise<T>} fn
+ * @returns {Promise<T | undefined>}
+ */
+async function retryingEvaluate(page, fn) {
+  let result;
+  await retryAfterNavigation(page, async () => {
+    result = await page.evaluate(fn);
+  });
+  return result;
 }
 
 /**
