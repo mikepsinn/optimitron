@@ -35,6 +35,12 @@ const DONATION_TYPES = ["oneTime", "monthly"] as const;
 type DonationTypeKey = (typeof DONATION_TYPES)[number];
 
 const MANAGED_BY = "setup-stripe-products";
+/**
+ * The foundation's account. A different target requires setting
+ * STRIPE_EXPECTED_ACCOUNT_ID explicitly, so a mispasted key alone can never
+ * change where the generated links point.
+ */
+const EXPECTED_ACCOUNT_ID = "acct_1TPCJFD5epyB9qRx";
 const PRODUCT_DESCRIPTION =
   "Accelerated Medicine Foundation (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.";
 const SUCCESS_REDIRECT_URL =
@@ -74,6 +80,14 @@ async function assertNonProfitAccount(stripe: Stripe): Promise<string> {
     throw new Error(
       `REFUSING TO CONTINUE: account ${account.id} ("${name}") has business_type "${account.business_type}", not "non_profit". ` +
         "Donation products must only ever be created on the foundation's nonprofit account.",
+    );
+  }
+  const expectedAccountId =
+    process.env.STRIPE_EXPECTED_ACCOUNT_ID || EXPECTED_ACCOUNT_ID;
+  if (account.id !== expectedAccountId) {
+    throw new Error(
+      `REFUSING TO CONTINUE: account ${account.id} is not the expected ${expectedAccountId}. ` +
+        "Set STRIPE_EXPECTED_ACCOUNT_ID only for a deliberate account migration.",
     );
   }
   console.log(`Target account: ${account.id} ("${name}") — non_profit ✓`);
