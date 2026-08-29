@@ -76,9 +76,9 @@ export function UniversalRightToTryHero() {
             <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
               The Right to Trial
             </p>
-            <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
+            <h2 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
               We can eradicate disease.
-            </h1>
+            </h2>
             <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
               Give every patient the right to join a clinical trial for the most
               promising treatments—with a clinician, at a licensed treatment
@@ -438,7 +438,7 @@ export function StateSupportSection({
   initialRole,
   initialState,
   heading = "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
-  body = "Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.",
+  body = "Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.",
   headingAs: Heading = "h2",
 }: {
   initialRole?: SupporterRole;
@@ -456,10 +456,7 @@ export function StateSupportSection({
     >
       <Container size="lg">
         <div className="mx-auto mb-10 max-w-4xl text-center">
-          <p className="font-black uppercase">
-            Bring Right to Trial to every state
-          </p>
-          <Heading className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+          <Heading className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
             {heading}
           </Heading>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">

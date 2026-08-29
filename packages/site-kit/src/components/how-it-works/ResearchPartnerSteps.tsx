@@ -203,7 +203,7 @@ export function ResearchPartnerSteps() {
           "Automated inventory tracking and alerts",
           "Secure patient order processing and fulfillment",
           "Temperature-controlled shipping monitoring",
-          "Blockchain-verified chain of custody",
+          "Verified chain of custody",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
@@ -232,7 +232,7 @@ export function ResearchPartnerSteps() {
 
               <div className="space-y-2">
                 <div className="text-xs font-medium">Recent Orders</div>
-                <div className="space-y-2 max-h-[100px] overflow-y-auto">
+                <div className="space-y-2">
                   <div className="rounded-md border p-2 flex justify-between items-center">
                     <div>
                       <div className="text-xs font-medium">#ORD-2845</div>
@@ -252,15 +252,6 @@ export function ResearchPartnerSteps() {
                       </div>
                     </div>
                     <div className="text-xs text-green-500">Delivered</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="text-xs font-medium">Supply Chain Map</div>
-                <div className="h-16 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">
-                    Interactive map view
                   </div>
                 </div>
               </div>
@@ -296,11 +287,24 @@ export function ResearchPartnerSteps() {
             </div>
             <div className="p-4 space-y-4">
               <div className="space-y-2">
-                <div className="text-xs font-medium">Trial Performance</div>
-                <div className="h-20 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">
-                    Effectiveness graph
+                <div className="flex justify-between items-center">
+                  <div className="text-xs font-medium">Trial Performance</div>
+                  <div className="text-xs text-green-500 font-medium">
+                    ↑ 18%
                   </div>
+                </div>
+                <div className="h-20 flex items-end gap-1">
+                  {[22, 28, 34, 41, 46, 54, 60, 67].map((height, index) => (
+                    <div
+                      key={index}
+                      className="bg-primary/80 rounded-sm w-full"
+                      style={{ height: `${height}%` }}
+                    ></div>
+                  ))}
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Week 1</span>
+                  <span>Week 8</span>
                 </div>
               </div>
 
