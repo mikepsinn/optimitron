@@ -275,7 +275,7 @@ export const FIX_AI_CANONICAL_BLOCKS: readonly FixAiCanonicalBlock[] = [
           ),
           parameter(
             TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15,
-            "everyone would be approximately 4 times richer in 15 years",
+            "everyone would be approximately 1.43 times as rich in 15 years",
           ),
           text("."),
         ],
@@ -311,7 +311,7 @@ export const FIX_AI_CANONICAL_BLOCKS: readonly FixAiCanonicalBlock[] = [
     kind: "paragraph",
     segments: [
       text("It only costs approximately "),
-      parameter(UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD, "$48 billion"),
+      parameter(UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD, "$56 billion"),
       text(" — which is literally "),
       parameter(TREATY_VALUE_TO_SHIRT_COST_RATIO, "millions"),
       text(
