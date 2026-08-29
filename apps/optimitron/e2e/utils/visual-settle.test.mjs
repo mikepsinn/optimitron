@@ -3,7 +3,9 @@ import test from "node:test";
 import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
+  waitForCaptureReady,
   waitForFonts,
+  waitForImagesSettled,
 } from "./visual-settle.mjs";
 
 test("waits for a quiet pass after finishing newly-created animations", async () => {
@@ -40,32 +42,101 @@ test("waits for a quiet pass after finishing newly-created animations", async ()
   assert.match(stabilizationCss, /\[data-visual-force-complete\]/);
 });
 
-test("waits for custom visual-capture state to commit", async () => {
-  let readinessWait;
-  const mainFrame = {};
+/**
+ * A page double whose evaluated results are scripted per call. Each helper is
+ * driven by its own queue so a test states exactly what the browser reports on
+ * each poll.
+ *
+ * @param {unknown[]} results
+ */
+function pageReturning(results) {
+  const remaining = [...results];
   const page = {
-    async evaluate() {},
+    calls: 0,
+    waits: 0,
+    async evaluate() {
+      page.calls++;
+      return remaining.length > 1 ? remaining.shift() : remaining[0];
+    },
+    async waitForTimeout() {
+      page.waits++;
+    },
+    async waitForLoadState() {},
+  };
+  return page;
+}
+
+test("re-announces capture until every marker reports ready", async () => {
+  // A listener that attaches late leaves the marker pending for two polls.
+  // The old single dispatch could not recover from this; the poll must keep
+  // announcing rather than announce once and wait.
+  const page = pageReturning([["div[president-task-list]"], ["div"], []]);
+
+  await waitForCaptureReady(page, 10_000);
+
+  assert.equal(page.calls, 3);
+  assert.equal(page.waits, 2);
+});
+
+test("fails loudly when a capture marker never becomes ready", async () => {
+  // Capturing a half-built page would write a wrong baseline, which is worse
+  // than a failed run because every later comparison inherits it.
+  const page = pageReturning([["section[timeline]"]]);
+
+  await assert.rejects(
+    () => waitForCaptureReady(page, 0),
+    /visual capture readiness.*section\[timeline\]/s,
+  );
+});
+
+test("waits for in-flight images and then decodes", async () => {
+  const page = pageReturning([["/slow.png"], []]);
+
+  await waitForImagesSettled(page, 10_000);
+
+  // Two readiness polls plus the decode pass.
+  assert.equal(page.calls, 3);
+  assert.equal(page.waits, 1);
+});
+
+test("fails loudly when an image never arrives", async () => {
+  // Proceeding here would capture exactly the missing artwork this helper
+  // exists to prevent, and would do it without any signal.
+  const page = pageReturning([["/never.png"]]);
+
+  await assert.rejects(
+    () => waitForImagesSettled(page, 0),
+    /images to load.*\/never\.png/s,
+  );
+});
+
+test("waits for custom visual-capture state to commit", async () => {
+  const mainFrame = {};
+  let dispatches = 0;
+  const page = {
+    async evaluate(action) {
+      const source = action.toString();
+      if (source.includes("optimitron:visual-capture")) {
+        dispatches++;
+        return [];
+      }
+      if (source.includes("document.images")) return [];
+      return undefined;
+    },
     frames() {
       return [mainFrame];
     },
     mainFrame() {
       return mainFrame;
     },
-    locator(selector) {
-      assert.equal(selector, '[data-visual-capture-ready="false"]');
-      return {
-        async waitFor(options) {
-          readinessWait = options;
-        },
-      };
-    },
     async waitForFunction() {},
     async waitForLoadState() {},
+    async waitForTimeout() {},
   };
 
   await prepareFullPageVisualCapture(page);
 
-  assert.deepEqual(readinessWait, { state: "detached", timeout: 10_000 });
+  assert.ok(dispatches >= 1);
 });
 
 test("bounds font readiness waits", async () => {

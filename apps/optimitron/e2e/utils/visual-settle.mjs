@@ -175,6 +175,11 @@ export async function prepareFullPageVisualCapture(page) {
  * only symptom is this wait timing out ten seconds later on a page that looks
  * fine. Re-dispatching costs nothing and makes that race harmless.
  *
+ * Throws on timeout. The wait this replaces was a `locator.waitFor` that threw,
+ * and a capture is worth less than nothing if it silently records a half-built
+ * page as a baseline: a phantom diff wastes a review, but a bad baseline
+ * quietly redefines "correct" for every run after it.
+ *
  * @param {import("@playwright/test").Page} page
  * @param {number} [timeout]
  */
@@ -183,11 +188,21 @@ export async function waitForCaptureReady(page, timeout = 10_000) {
   for (;;) {
     const pending = await retryingEvaluate(page, () => {
       window.dispatchEvent(new Event("optimitron:visual-capture"));
-      return document.querySelectorAll('[data-visual-capture-ready="false"]')
-        .length;
+      return Array.from(
+        document.querySelectorAll('[data-visual-capture-ready="false"]'),
+      ).map(
+        (element) =>
+          `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}` +
+          `${element.dataset.visualSection ? `[${element.dataset.visualSection}]` : ""}`,
+      );
     });
-    if (pending === 0) return true;
-    if (Date.now() >= deadline) return false;
+    if (!pending || pending.length === 0) return;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `Timed out after ${timeout}ms waiting for visual capture readiness. ` +
+          `Still not ready: ${pending.join(", ")}`,
+      );
+    }
     await page.waitForTimeout(100);
   }
 }
@@ -205,6 +220,10 @@ export async function waitForCaptureReady(page, timeout = 10_000) {
  * that errored — a genuinely broken `src` must not hold capture open. `decode`
  * then guarantees the bitmap is ready to paint rather than merely downloaded.
  *
+ * Throws on timeout for the same reason as `waitForCaptureReady`: proceeding
+ * would capture exactly the missing artwork this helper exists to prevent, and
+ * would do it silently.
+ *
  * @param {import("@playwright/test").Page} page
  * @param {number} [timeout]
  */
@@ -212,10 +231,17 @@ export async function waitForImagesSettled(page, timeout = 15_000) {
   const deadline = Date.now() + timeout;
   for (;;) {
     const pending = await retryingEvaluate(page, () =>
-      Array.from(document.images).filter((image) => !image.complete).length,
+      Array.from(document.images)
+        .filter((image) => !image.complete)
+        .map((image) => image.currentSrc || image.src || "(no src)"),
     );
-    if (pending === 0) break;
-    if (Date.now() >= deadline) break;
+    if (!pending || pending.length === 0) break;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `Timed out after ${timeout}ms waiting for images to load. ` +
+          `Still in flight: ${pending.join(", ")}`,
+      );
+    }
     await page.waitForTimeout(100);
   }
 
