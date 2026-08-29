@@ -221,7 +221,7 @@ export function extractVisibleCopyMarkdown(): string {
       : tag === "table"
         ? ""
         : "- ";
-    if (tag === "table") {
+    if (tag === "table" || tag === "pre") {
       if (out.length > 0 && out.at(-1) !== "") out.push("");
       out.push(md, "");
     } else {
