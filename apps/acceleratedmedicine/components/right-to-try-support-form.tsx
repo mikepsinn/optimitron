@@ -173,7 +173,9 @@ export function RightToTrySupportForm({
 
       {variant === "state-support" ? (
         <fieldset className="mt-7">
-          <legend className="font-black uppercase">
+          {/* The section heading above the form already asks this question;
+              keep it for screen readers so the radio group stays named. */}
+          <legend className="sr-only">
             Should every patient in your state have the right to join a
             clinical trial for the most promising treatments?
           </legend>

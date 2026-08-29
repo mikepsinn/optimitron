@@ -64,9 +64,8 @@
 - [FINAL 2026 RULES](https://dphhs.mt.gov/assets/rules/2026-427-Adp-Arm.pdf)
 - [CURRENT MONTANA CODE](https://mca.legmt.gov/bills/mca/title_0500/chapter_0120/part_0010/sections_index.html)
 - [TREATMENT CENTER LICENSING](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters)
-- BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
-- Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
+- Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
 - YES

@@ -5,7 +5,7 @@ import { OutcomeLabelPreview } from "../OutcomeLabelPreview";
 // Convert the old data structure to the new format expected by OutcomeLabel
 const klothoGeneTherapyData = {
   title: "Klotho-Increasing Gene Therapy",
-  // No subtitle or tag needed for this example
+  subtitle: "Illustrative demo data — hypothetical future therapy",
   data: [
     {
       title: "Cognitive Improvements (Example)", // Provide a category title
