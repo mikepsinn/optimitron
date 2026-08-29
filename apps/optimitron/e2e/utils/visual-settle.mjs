@@ -156,15 +156,152 @@ export async function prepareFullPageVisualCapture(page) {
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
-      window.dispatchEvent(new Event("optimitron:visual-capture"));
     });
   });
-  await retryAfterNavigation(page, async () => {
-    await page
-      .locator('[data-visual-capture-ready="false"]')
-      .waitFor({ state: "detached", timeout: 10_000 });
-  });
+
+  await waitForCaptureReady(page);
+  await waitForImagesSettled(page);
   await waitForPaint(page);
+}
+
+/**
+ * Announce the capture to components that render a deterministic completed
+ * state, and wait for each to report it is ready.
+ *
+ * The event is re-dispatched on every poll rather than fired once. A component
+ * that has rendered its `[data-visual-capture-ready="false"]` marker but has
+ * not yet attached its listener — React paints before it runs effects — would
+ * otherwise miss a single dispatch entirely and never flip to ready, and the
+ * only symptom is this wait timing out ten seconds later on a page that looks
+ * fine. Re-dispatching costs nothing and makes that race harmless.
+ *
+ * Throws on timeout. The wait this replaces was a `locator.waitFor` that threw,
+ * and a capture is worth less than nothing if it silently records a half-built
+ * page as a baseline: a phantom diff wastes a review, but a bad baseline
+ * quietly redefines "correct" for every run after it.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForCaptureReady(page, timeout = 10_000) {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const pending = (
+      await Promise.all(
+        evaluationTargets(page).map((target) =>
+          retryingEvaluate(target, () => {
+            window.dispatchEvent(new Event("optimitron:visual-capture"));
+            return Array.from(
+              document.querySelectorAll(
+                '[data-visual-capture-ready="false"]',
+              ),
+            ).map(
+              (element) =>
+                `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}` +
+                `${element.dataset.visualSection ? `[${element.dataset.visualSection}]` : ""}`,
+            );
+          }),
+        ),
+      )
+    ).flatMap((result) => result ?? []);
+    if (pending.length === 0) return;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `Timed out after ${timeout}ms waiting for visual capture readiness. ` +
+          `Still not ready: ${pending.join(", ")}`,
+      );
+    }
+    await page.waitForTimeout(100);
+  }
+}
+
+/**
+ * Wait for every image to finish loading and decoding.
+ *
+ * Promoting `loading="lazy"` to eager and scrolling the page starts the
+ * requests but nothing waits for them, so a capture can be taken while an
+ * image is still in flight. The failure is silent and asymmetric: the text
+ * around the image is pixel-identical, the page height is unchanged, and only
+ * the artwork is missing, which reads as a real visual regression.
+ *
+ * `complete` is the right predicate because it also becomes true for an image
+ * that errored — a genuinely broken `src` must not hold capture open. `decode`
+ * then guarantees the bitmap is ready to paint rather than merely downloaded.
+ *
+ * Throws on timeout for the same reason as `waitForCaptureReady`: proceeding
+ * would capture exactly the missing artwork this helper exists to prevent, and
+ * would do it silently.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForImagesSettled(page, timeout = 15_000) {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const pending = (
+      await Promise.all(
+        evaluationTargets(page).map((target) =>
+          retryingEvaluate(target, () =>
+            Array.from(document.images)
+              .filter((image) => !image.complete)
+              .map((image) => image.currentSrc || image.src || "(no src)"),
+          ),
+        ),
+      )
+    ).flatMap((result) => result ?? []);
+    if (pending.length === 0) break;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `Timed out after ${timeout}ms waiting for images to load. ` +
+          `Still in flight: ${pending.join(", ")}`,
+      );
+    }
+    await page.waitForTimeout(100);
+  }
+
+  await Promise.all(
+    evaluationTargets(page).map((target) =>
+      retryingEvaluate(target, async () => {
+        await Promise.allSettled(
+          Array.from(document.images)
+            .filter((image) => image.complete && image.naturalWidth > 0)
+            .map((image) => image.decode()),
+        );
+      }),
+    ),
+  );
+}
+
+/**
+ * Return the page for its main document plus every currently attached child
+ * frame. Rebuilding this list on each poll also catches frames mounted during
+ * capture settlement.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @returns {(import("@playwright/test").Page | import("@playwright/test").Frame)[]}
+ */
+function evaluationTargets(page) {
+  if (typeof page.frames !== "function" || typeof page.mainFrame !== "function") {
+    return [page];
+  }
+  const mainFrame = page.mainFrame();
+  return [page, ...page.frames().filter((frame) => frame !== mainFrame)];
+}
+
+/**
+ * `page.evaluate` that survives a navigation racing the evaluation.
+ *
+ * @template T
+ * @param {import("@playwright/test").Page | import("@playwright/test").Frame} target
+ * @param {() => T | Promise<T>} fn
+ * @returns {Promise<T | undefined>}
+ */
+async function retryingEvaluate(target, fn) {
+  let result;
+  await retryAfterNavigation(target, async () => {
+    result = await target.evaluate(fn);
+  });
+  return result;
 }
 
 /**
@@ -201,11 +338,11 @@ export async function waitForPaint(page) {
 }
 
 /**
- * @param {import("@playwright/test").Page} page
+ * @param {import("@playwright/test").Page | import("@playwright/test").Frame} target
  * @param {() => Promise<void>} action
  * @param {number} [maxRetries]
  */
-export async function retryAfterNavigation(page, action, maxRetries = 2) {
+export async function retryAfterNavigation(target, action, maxRetries = 2) {
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     try {
       await action();
@@ -215,8 +352,8 @@ export async function retryAfterNavigation(page, action, maxRetries = 2) {
         throw error;
       }
 
-      await page.waitForLoadState("domcontentloaded").catch(() => {});
-      await page.waitForTimeout(250);
+      await target.waitForLoadState("domcontentloaded").catch(() => {});
+      await target.waitForTimeout(250);
     }
   }
 }
