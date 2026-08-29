@@ -131,8 +131,13 @@ test("creates Git previews only for auto-build or explicit preview branches", ()
       main: true,
       [`feature/preview-${project.appName}-*`]: true,
       "feature/preview-all-*": true,
-      "*": false,
+      "**": false,
     });
+    assert.equal(
+      "*" in vercelJson.git.deploymentEnabled,
+      false,
+      `${project.appName} must use a globstar fallback for feature/* branches`,
+    );
   }
 });
 

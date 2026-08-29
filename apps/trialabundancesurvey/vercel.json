@@ -7,7 +7,7 @@
       "main": true,
       "feature/preview-trialabundancesurvey-*": true,
       "feature/preview-all-*": true,
-      "*": false
+      "**": false
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
