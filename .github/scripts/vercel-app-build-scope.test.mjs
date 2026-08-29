@@ -301,6 +301,14 @@ test("ignores copy-review snapshots as build inputs", () => {
     ]),
     [],
   );
+  // Optimitron serves its own snapshots at runtime (MCP getPageContent), so
+  // a snapshot-only change there must still deploy.
+  assert.deepEqual(
+    getVercelAppBuildMatches("optimitron", [
+      "apps/optimitron/src/app/treaty/page.logged-out.md",
+    ]),
+    ["apps/optimitron/src/app/treaty/page.logged-out.md"],
+  );
 });
 
 test("gates preview builds behind the allowlist with commit-message opt-in", () => {

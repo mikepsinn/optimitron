@@ -96,8 +96,21 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
       file,
     ) ||
     /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(file) ||
-    // Copy-review snapshots are generated FROM the rendered site and are
-    // never imported at runtime, so refreshing them must not trigger builds.
+    isReviewOnlySnapshot(file)
+  );
+}
+
+// apps/optimitron serves its own copy snapshots at runtime: site-inventory
+// reads page.logged-out.md for MCP getPageContent and next.config traces them
+// into the /api/mcp deployment. Those snapshots must keep triggering builds;
+// every other app's snapshots are review-only artifacts.
+const runtimeSnapshotPrefixes = ["apps/optimitron/src/"];
+
+function isReviewOnlySnapshot(file) {
+  if (runtimeSnapshotPrefixes.some((prefix) => file.startsWith(prefix))) {
+    return false;
+  }
+  return (
     /(?:^|\/)page\.logged-out\.md$/u.test(file) ||
     /\.email\.md$/u.test(file)
   );
