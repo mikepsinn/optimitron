@@ -32,11 +32,12 @@ deployment settings. The `Reconcile Vercel app projects` workflow provides the
 same audit or apply operation with the Production environment's Vercel token.
 The reconciler does not move domains or copy secrets.
 
-Affected-project deployments are enabled for every project. Vercel uses the
+Affected-project detection stays enabled for every project. Vercel uses the
 pnpm workspace graph and each app's declared internal dependencies to decide
-which projects need a preview or production deployment. Root configuration and
-lockfile changes can still affect every project. Every app disables deployment
-from `gh-pages` because that branch contains generated visual-review files.
+which projects need a preview or production deployment after its branch rules
+allow a deployment. Root configuration and lockfile changes can still affect
+every allowed project. Every app disables deployment from `gh-pages` because
+that branch contains generated visual-review files.
 
 All projects use Standard build machines with on-demand concurrency disabled.
 Builds share the included queue, prioritize production, and skip stale queued
@@ -45,13 +46,14 @@ repairs drift from these settings.
 
 Preview deployments build automatically only for `optimitron-web`,
 `warondisease`, and `acceleratedmedicine` — the surfaces under active
-iteration. The other apps skip previews unless the commit message contains
-`[preview:<app>]` (for example `[preview:dfda]`) or `[preview:all]`. This keeps
-a shared `site-kit` push from queueing seven sequential builds on the shared
-queue. Production deployments are never gated this way, and GitHub Actions
-still builds every affected app on each pull request. Copy-review snapshots
-(`page.logged-out.md`, `*.email.md`) are generated from the rendered site and
-never trigger deployments.
+iteration. The other apps do not create Git previews from routine feature
+branches. Use `feature/preview-<app>-<description>` for one app or
+`feature/preview-all-<description>` for all apps. These explicit branches enter
+the build queue; other feature branches do not. Production deployments from
+`main` are never gated this way, and GitHub Actions still builds every affected
+app on each pull request. Copy-review snapshots (`page.logged-out.md`,
+`*.email.md`) are generated from the rendered site and never trigger
+deployments.
 
 Vercel treats changes outside the pnpm workspace as global. Each app therefore
 uses the same dependency-aware ignore script to reject documentation, review

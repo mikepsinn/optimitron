@@ -4,7 +4,10 @@
   "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs trialabundancesurvey",
   "git": {
     "deploymentEnabled": {
-      "gh-pages": false
+      "main": true,
+      "feature/preview-trialabundancesurvey-*": true,
+      "feature/preview-all-*": true,
+      "*": false
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",

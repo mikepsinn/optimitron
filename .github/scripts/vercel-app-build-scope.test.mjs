@@ -311,7 +311,7 @@ test("ignores copy-review snapshots as build inputs", () => {
   );
 });
 
-test("gates preview builds behind the allowlist with commit-message opt-in", () => {
+test("gates preview builds behind the allowlist with branch opt-in", () => {
   const preview = { VERCEL_ENV: "preview" };
   for (const appName of ["optimitron", "warondisease", "acceleratedmedicine"]) {
     assert.equal(shouldAutoBuildPreview(appName, preview).build, true);
@@ -320,21 +320,28 @@ test("gates preview builds behind the allowlist with commit-message opt-in", () 
   assert.equal(
     shouldAutoBuildPreview("dfda", {
       VERCEL_ENV: "preview",
-      VERCEL_GIT_COMMIT_MESSAGE: "Fix condition page [preview:dfda]",
+      VERCEL_GIT_COMMIT_MESSAGE: "Legacy tag [preview:dfda]",
+    }).build,
+    false,
+  );
+  assert.equal(
+    shouldAutoBuildPreview("dfda", {
+      VERCEL_ENV: "preview",
+      VERCEL_GIT_COMMIT_REF: "feature/preview-dfda-condition-page",
     }).build,
     true,
   );
   assert.equal(
     shouldAutoBuildPreview("curedao", {
       VERCEL_ENV: "preview",
-      VERCEL_GIT_COMMIT_MESSAGE: "Rebrand shared footer [preview:all]",
+      VERCEL_GIT_COMMIT_REF: "feature/preview-all-shared-footer",
     }).build,
     true,
   );
   assert.equal(
     shouldAutoBuildPreview("wishocracy", {
       VERCEL_ENV: "preview",
-      VERCEL_GIT_COMMIT_MESSAGE: "Ship [preview:dfda] only",
+      VERCEL_GIT_COMMIT_REF: "feature/preview-dfda-only",
     }).build,
     false,
   );

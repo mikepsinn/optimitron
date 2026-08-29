@@ -10,6 +10,7 @@ import {
 import {
   getVercelAppBuildMatches,
   loadWorkspacePackages,
+  shouldAutoBuildPreview,
 } from "./vercel-app-build-scope.mjs";
 
 const ciWorkflow = readFileSync(
@@ -107,19 +108,31 @@ test("classifies custom domains and Vercel deployment URLs", () => {
   assert.equal(getVercelAppByUrl("https://dih-earth.vercel.app"), undefined);
 });
 
-test("deploys only affected apps and ignores visual-review publishing", () => {
+test("creates Git previews only for auto-build or explicit preview branches", () => {
   for (const project of VERCEL_APP_PROJECTS) {
     const vercelJson = JSON.parse(
       readFileSync(
         new URL(`../../${project.rootDirectory}/vercel.json`, import.meta.url),
       ),
     );
-    assert.equal(vercelJson.git.deploymentEnabled["gh-pages"], false);
-    assert.equal(
-      "*" in vercelJson.git.deploymentEnabled,
-      false,
-      `${project.appName} must allow affected pull-request previews`,
-    );
+    const autoBuilds = shouldAutoBuildPreview(project.appName, {
+      VERCEL_ENV: "preview",
+    }).build;
+    if (autoBuilds) {
+      assert.equal(vercelJson.git.deploymentEnabled["gh-pages"], false);
+      assert.equal(
+        "*" in vercelJson.git.deploymentEnabled,
+        false,
+        `${project.appName} must allow affected pull-request previews`,
+      );
+      continue;
+    }
+    assert.deepEqual(vercelJson.git.deploymentEnabled, {
+      main: true,
+      [`feature/preview-${project.appName}-*`]: true,
+      "feature/preview-all-*": true,
+      "*": false,
+    });
   }
 });
 
