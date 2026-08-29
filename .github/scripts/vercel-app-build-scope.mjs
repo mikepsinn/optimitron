@@ -95,8 +95,55 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
     /\/(?:e2e|output|playwright-report|screenshots|test-results)\//u.test(
       file,
     ) ||
-    /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(file)
+    /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(file) ||
+    isReviewOnlySnapshot(file)
   );
+}
+
+// apps/optimitron serves its own copy snapshots at runtime: site-inventory
+// reads page.logged-out.md for MCP getPageContent and next.config traces them
+// into the /api/mcp deployment. Those snapshots must keep triggering builds;
+// every other app's snapshots are review-only artifacts.
+const runtimeSnapshotPrefixes = ["apps/optimitron/src/"];
+
+function isReviewOnlySnapshot(file) {
+  if (runtimeSnapshotPrefixes.some((prefix) => file.startsWith(prefix))) {
+    return false;
+  }
+  return (
+    /(?:^|\/)page\.logged-out\.md$/u.test(file) ||
+    /\.email\.md$/u.test(file)
+  );
+}
+
+// Preview deployments build automatically only for the surfaces under active
+// iteration; every other app's preview is opt-in via commit message. This is
+// what keeps a shared site-kit push from queueing seven sequential builds.
+// Production deployments are never gated here.
+const previewAutoBuildApps = new Set([
+  "optimitron",
+  "warondisease",
+  "acceleratedmedicine",
+]);
+
+export function shouldAutoBuildPreview(appName, environment = process.env) {
+  if (String(environment.VERCEL_ENV ?? "").trim() !== "preview") {
+    return { build: true, reason: "not a preview deployment" };
+  }
+  if (previewAutoBuildApps.has(appName)) {
+    return { build: true, reason: "preview allowlist" };
+  }
+  const message = String(environment.VERCEL_GIT_COMMIT_MESSAGE ?? "");
+  if (
+    message.includes(`[preview:${appName}]`) ||
+    message.includes("[preview:all]")
+  ) {
+    return { build: true, reason: "commit message opt-in" };
+  }
+  return {
+    build: false,
+    reason: `previews for ${appName} are opt-in — add [preview:${appName}] or [preview:all] to the commit message`,
+  };
 }
 
 export function getVercelDiffBase(

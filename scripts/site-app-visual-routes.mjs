@@ -254,6 +254,92 @@ export const publicSiteAppRoutes = Object.freeze({
       routePath: "/soldiers",
       sourcePage: "apps/warondisease/app/soldiers/page.tsx",
     },
+    // The distribution and pressure pages migrated from Optimitron in #276.
+    // None of them is linked from the navigation, so the nav walk cannot reach
+    // them and only these entries put them in front of a reviewer.
+    {
+      covers: [
+        "apps/warondisease/app/search/campaign-search.server.ts",
+        "apps/warondisease/app/search/page.tsx",
+      ],
+      label: "Campaign search",
+      routeName: "search",
+      routePath: "/search?q=treaty",
+      sourcePage: "apps/warondisease/app/search/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/signatories/page.tsx",
+        "packages/site-kit/src/components/referendum/SignatoriesLeaderboard.tsx",
+      ],
+      label: "Signatories leaderboard",
+      routeName: "signatories",
+      routePath: "/signatories",
+      sourcePage: "apps/warondisease/app/signatories/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/foundations/page.tsx",
+        "packages/site-kit/src/components/foundations/CopyGrantEmailButton.tsx",
+        "packages/site-kit/src/components/foundations/LoveLetterCalculator.tsx",
+      ],
+      label: "Foundations",
+      routeName: "foundations",
+      routePath: "/foundations",
+      sourcePage: "apps/warondisease/app/foundations/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/poster/page.tsx",
+        "apps/warondisease/app/poster/poster-client.tsx",
+      ],
+      label: "Printable poster",
+      routeName: "poster",
+      routePath: "/poster",
+      sourcePage: "apps/warondisease/app/poster/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/door-to-door/page.tsx",
+        "packages/site-kit/src/components/sharing/campaign-qr-code.tsx",
+      ],
+      label: "Door-to-door canvassing",
+      routeName: "door-to-door",
+      routePath: "/door-to-door",
+      sourcePage: "apps/warondisease/app/door-to-door/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/love/page.tsx",
+        "apps/warondisease/app/love/love-client.tsx",
+      ],
+      label: "Love letter",
+      routeName: "love",
+      routePath: "/love",
+      sourcePage: "apps/warondisease/app/love/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/joke/page.tsx",
+        "apps/warondisease/app/joke/joke-client.tsx",
+      ],
+      label: "Joke",
+      routeName: "joke",
+      routePath: "/joke",
+      sourcePage: "apps/warondisease/app/joke/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/fix-ai/page.tsx",
+        "apps/warondisease/app/fix-ai/content.ts",
+        "apps/warondisease/app/fix-ai/corpus.server.ts",
+        "apps/warondisease/app/fix-ai/json-ld-head.tsx",
+      ],
+      label: "Fix the AI corpus",
+      routeName: "fix-ai",
+      routePath: "/fix-ai",
+      sourcePage: "apps/warondisease/app/fix-ai/page.tsx",
+    },
     {
       covers: ["apps/warondisease/app/survey/demo/page.tsx"],
       label: "Survey embed demo",
