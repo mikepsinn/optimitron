@@ -22,8 +22,11 @@ export function Step1FindTrials() {
               <span className="font-medium">Alzheimer's</span>
             </div>
 
-            <div className="text-sm font-medium mb-2">
+            <div className="text-sm font-medium">
               Comparative Effectiveness Rankings
+            </div>
+            <div className="text-xs text-muted-foreground mb-2">
+              Illustrative demo data — not real effectiveness results
             </div>
 
             <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center bg-primary/5 py-1.5 rounded-md">
