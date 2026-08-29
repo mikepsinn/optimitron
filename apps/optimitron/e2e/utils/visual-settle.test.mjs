@@ -70,12 +70,59 @@ test("re-announces capture until every marker reports ready", async () => {
   // A listener that attaches late leaves the marker pending for two polls.
   // The old single dispatch could not recover from this; the poll must keep
   // announcing rather than announce once and wait.
-  const page = pageReturning([["div[president-task-list]"], ["div"], []]);
+  const states = [["president-task-list"], ["president-task-list"], []];
+  const page = {
+    dispatches: 0,
+    waits: 0,
+    async evaluate(action) {
+      const sections = states.shift() ?? [];
+      const previousDocument = globalThis.document;
+      const previousWindow = globalThis.window;
+      globalThis.document = {
+        querySelectorAll() {
+          return sections.map((visualSection) => ({
+            dataset: { visualSection },
+            id: "",
+            tagName: "DIV",
+          }));
+        },
+      };
+      globalThis.window = {
+        dispatchEvent() {
+          page.dispatches++;
+        },
+      };
+      try {
+        return await action();
+      } finally {
+        globalThis.document = previousDocument;
+        globalThis.window = previousWindow;
+      }
+    },
+    async waitForTimeout() {
+      page.waits++;
+    },
+    async waitForLoadState() {},
+  };
 
   await waitForCaptureReady(page, 10_000);
 
-  assert.equal(page.calls, 3);
+  assert.equal(page.dispatches, 3);
   assert.equal(page.waits, 2);
+});
+
+test("settles capture readiness inside child frames", async () => {
+  const mainFrame = {};
+  const childFrame = pageReturning([["section[embed]"], []]);
+  const page = pageReturning([[]]);
+  page.frames = () => [mainFrame, childFrame];
+  page.mainFrame = () => mainFrame;
+
+  await waitForCaptureReady(page, 10_000);
+
+  assert.equal(page.calls, 2);
+  assert.equal(childFrame.calls, 2);
+  assert.equal(page.waits, 1);
 });
 
 test("fails loudly when a capture marker never becomes ready", async () => {
@@ -96,6 +143,20 @@ test("waits for in-flight images and then decodes", async () => {
 
   // Two readiness polls plus the decode pass.
   assert.equal(page.calls, 3);
+  assert.equal(page.waits, 1);
+});
+
+test("waits for images inside child frames", async () => {
+  const mainFrame = {};
+  const childFrame = pageReturning([["/embedded-slow.png"], [], undefined]);
+  const page = pageReturning([[], [], undefined]);
+  page.frames = () => [mainFrame, childFrame];
+  page.mainFrame = () => mainFrame;
+
+  await waitForImagesSettled(page, 10_000);
+
+  assert.equal(page.calls, 3);
+  assert.equal(childFrame.calls, 3);
   assert.equal(page.waits, 1);
 });
 

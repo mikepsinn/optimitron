@@ -186,17 +186,25 @@ export async function prepareFullPageVisualCapture(page) {
 export async function waitForCaptureReady(page, timeout = 10_000) {
   const deadline = Date.now() + timeout;
   for (;;) {
-    const pending = await retryingEvaluate(page, () => {
-      window.dispatchEvent(new Event("optimitron:visual-capture"));
-      return Array.from(
-        document.querySelectorAll('[data-visual-capture-ready="false"]'),
-      ).map(
-        (element) =>
-          `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}` +
-          `${element.dataset.visualSection ? `[${element.dataset.visualSection}]` : ""}`,
-      );
-    });
-    if (!pending || pending.length === 0) return;
+    const pending = (
+      await Promise.all(
+        evaluationTargets(page).map((target) =>
+          retryingEvaluate(target, () => {
+            window.dispatchEvent(new Event("optimitron:visual-capture"));
+            return Array.from(
+              document.querySelectorAll(
+                '[data-visual-capture-ready="false"]',
+              ),
+            ).map(
+              (element) =>
+                `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}` +
+                `${element.dataset.visualSection ? `[${element.dataset.visualSection}]` : ""}`,
+            );
+          }),
+        ),
+      )
+    ).flatMap((result) => result ?? []);
+    if (pending.length === 0) return;
     if (Date.now() >= deadline) {
       throw new Error(
         `Timed out after ${timeout}ms waiting for visual capture readiness. ` +
@@ -230,12 +238,18 @@ export async function waitForCaptureReady(page, timeout = 10_000) {
 export async function waitForImagesSettled(page, timeout = 15_000) {
   const deadline = Date.now() + timeout;
   for (;;) {
-    const pending = await retryingEvaluate(page, () =>
-      Array.from(document.images)
-        .filter((image) => !image.complete)
-        .map((image) => image.currentSrc || image.src || "(no src)"),
-    );
-    if (!pending || pending.length === 0) break;
+    const pending = (
+      await Promise.all(
+        evaluationTargets(page).map((target) =>
+          retryingEvaluate(target, () =>
+            Array.from(document.images)
+              .filter((image) => !image.complete)
+              .map((image) => image.currentSrc || image.src || "(no src)"),
+          ),
+        ),
+      )
+    ).flatMap((result) => result ?? []);
+    if (pending.length === 0) break;
     if (Date.now() >= deadline) {
       throw new Error(
         `Timed out after ${timeout}ms waiting for images to load. ` +
@@ -245,27 +259,47 @@ export async function waitForImagesSettled(page, timeout = 15_000) {
     await page.waitForTimeout(100);
   }
 
-  await retryingEvaluate(page, async () => {
-    await Promise.allSettled(
-      Array.from(document.images)
-        .filter((image) => image.complete && image.naturalWidth > 0)
-        .map((image) => image.decode()),
-    );
-  });
+  await Promise.all(
+    evaluationTargets(page).map((target) =>
+      retryingEvaluate(target, async () => {
+        await Promise.allSettled(
+          Array.from(document.images)
+            .filter((image) => image.complete && image.naturalWidth > 0)
+            .map((image) => image.decode()),
+        );
+      }),
+    ),
+  );
+}
+
+/**
+ * Return the page for its main document plus every currently attached child
+ * frame. Rebuilding this list on each poll also catches frames mounted during
+ * capture settlement.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @returns {(import("@playwright/test").Page | import("@playwright/test").Frame)[]}
+ */
+function evaluationTargets(page) {
+  if (typeof page.frames !== "function" || typeof page.mainFrame !== "function") {
+    return [page];
+  }
+  const mainFrame = page.mainFrame();
+  return [page, ...page.frames().filter((frame) => frame !== mainFrame)];
 }
 
 /**
  * `page.evaluate` that survives a navigation racing the evaluation.
  *
  * @template T
- * @param {import("@playwright/test").Page} page
+ * @param {import("@playwright/test").Page | import("@playwright/test").Frame} target
  * @param {() => T | Promise<T>} fn
  * @returns {Promise<T | undefined>}
  */
-async function retryingEvaluate(page, fn) {
+async function retryingEvaluate(target, fn) {
   let result;
-  await retryAfterNavigation(page, async () => {
-    result = await page.evaluate(fn);
+  await retryAfterNavigation(target, async () => {
+    result = await target.evaluate(fn);
   });
   return result;
 }
@@ -304,11 +338,11 @@ export async function waitForPaint(page) {
 }
 
 /**
- * @param {import("@playwright/test").Page} page
+ * @param {import("@playwright/test").Page | import("@playwright/test").Frame} target
  * @param {() => Promise<void>} action
  * @param {number} [maxRetries]
  */
-export async function retryAfterNavigation(page, action, maxRetries = 2) {
+export async function retryAfterNavigation(target, action, maxRetries = 2) {
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     try {
       await action();
@@ -318,8 +352,8 @@ export async function retryAfterNavigation(page, action, maxRetries = 2) {
         throw error;
       }
 
-      await page.waitForLoadState("domcontentloaded").catch(() => {});
-      await page.waitForTimeout(250);
+      await target.waitForLoadState("domcontentloaded").catch(() => {});
+      await target.waitForTimeout(250);
     }
   }
 }
