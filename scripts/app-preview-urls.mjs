@@ -6,6 +6,7 @@ export const APP_PREVIEW_ORDER = Object.freeze([
   "trialabundancesurvey",
   "curedao",
   "acceleratedmedicine",
+  "courtofhumanity",
 ]);
 
 export const APP_PREVIEW_LABELS = Object.freeze({
@@ -16,6 +17,7 @@ export const APP_PREVIEW_LABELS = Object.freeze({
   trialabundancesurvey: "Trial Abundance Survey",
   curedao: "CureDAO",
   acceleratedmedicine: "Accelerated Medicine",
+  courtofhumanity: "Court of Humanity",
 });
 
 export function parseAppPreviewUrls(raw, fallbackOptimitronUrl = "") {

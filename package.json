@@ -46,6 +46,7 @@
     "dev:trialabundancesurvey": "pnpm --filter @apps/trialabundancesurvey dev",
     "dev:curedao": "pnpm --filter @apps/curedao dev",
     "dev:acceleratedmedicine": "pnpm --filter @apps/acceleratedmedicine dev",
+    "dev:courtofhumanity": "pnpm --filter @apps/courtofhumanity dev",
     "typecheck:warondisease": "pnpm --filter @apps/warondisease run typecheck",
     "typecheck:apps": "pnpm --filter \"@apps/*\" run typecheck",
     "lint:apps": "pnpm --filter \"@apps/*\" run lint",
