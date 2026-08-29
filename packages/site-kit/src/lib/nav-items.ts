@@ -534,6 +534,43 @@ export const NAV_ITEMS_MAP = {
     ],
   },
 
+  // Court of Humanity (courtofhumanity.org canonical)
+  humanityVGovernment: {
+    id: "humanityVGovernment",
+    label: "Humanity v. Government",
+    path: ROUTES.humanityVGovernment,
+    description:
+      "The damages case against the governments of Earth: war deaths, regulatory delay, and misallocation of public money. Read the case and render your verdict.",
+    emoji: "⚖️",
+    canonicalVariant: VARIANTS.COURT_OF_HUMANITY,
+    allowedVariants: [VARIANTS.COURT_OF_HUMANITY],
+    keywords: [
+      "Humanity v Government",
+      "Court of Humanity",
+      "damages case",
+      "sovereign immunity",
+      "class action",
+    ],
+    useSiteDefaultOg: true,
+  },
+  joinCourt: {
+    id: "joinCourt",
+    label: "Join the Court",
+    path: ROUTES.court,
+    description:
+      "Should humans be able to sue a government that kills, injures, or ruins their family? Read the case for the Court of Humanity and join as a member.",
+    emoji: "⚖️",
+    canonicalVariant: VARIANTS.COURT_OF_HUMANITY,
+    allowedVariants: [VARIANTS.COURT_OF_HUMANITY],
+    keywords: [
+      "Court of Humanity",
+      "join the court",
+      "sovereign immunity",
+      "sue governments",
+    ],
+    useSiteDefaultOg: true,
+  },
+
   // Dashboard (not shown in menus, accessed via avatar button)
   dashboard: {
     id: "dashboard",

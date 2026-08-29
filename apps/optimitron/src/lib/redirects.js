@@ -69,6 +69,22 @@ const REDIRECTS = [
   // automatically for redirect responses).
   { source: "/find-trials", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials", permanent: true },
   { source: "/find-trials/:path*", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials/:path*", permanent: true },
+
+  // The Humanity v. Government case and Court of Humanity join surfaces
+  // moved to the dedicated courtofhumanity.org app (apps/courtofhumanity),
+  // so the court is not hosted by a party to the case. Same slugs on the
+  // new domain, so external links survive with one hop. Next preserves the
+  // query string (?ref=... referral codes) automatically.
+  //
+  // Temporary (307) rather than permanent (308) until courtofhumanity.org
+  // resolves. A 308 is cached by browsers and CDNs, so shipping one ahead of
+  // DNS would leave clients pinned to a dead host even after the domain goes
+  // live. Switch these to permanent once the cutover is done.
+  { source: "/court", destination: "https://courtofhumanity.org/court", permanent: false },
+  { source: "/humanity-v-government", destination: "https://courtofhumanity.org/humanity-v-government", permanent: false },
+  // Old share cards embed /humanity-v-government/opengraph-image; the new
+  // app serves the same subpath.
+  { source: "/humanity-v-government/:path*", destination: "https://courtofhumanity.org/humanity-v-government/:path*", permanent: false },
 ];
 
 const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [

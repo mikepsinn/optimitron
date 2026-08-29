@@ -15,6 +15,7 @@ before `warondisease.org` moves off the temporary `apps/optimitron` host.
 | `optimitron-web`       | `apps/optimitron`           | `optimitron.com`           |
 | `warondisease`         | `apps/warondisease`         | `warondisease.org`         |
 | `acceleratedmedicine`  | `apps/acceleratedmedicine`  | `acceleratedmedicine.org`  |
+| `courtofhumanity`      | `apps/courtofhumanity`      | `courtofhumanity.org`      |
 | `trialabundancesurvey` | `apps/trialabundancesurvey` | `trialabundancesurvey.org` |
 | `dfda`                 | `apps/dfda`                 | `dfda.earth`               |
 | `wishocracy`           | `apps/wishocracy`           | `wishocracy.org`           |
@@ -81,7 +82,9 @@ are truly shared. Link each shared variable to the projects that need it.
 
 Good shared candidates:
 
-- `DATABASE_URL` for War on Disease, dFDA, Wishocracy, and Trial Abundance Survey.
+- `DATABASE_URL` for War on Disease, dFDA, Wishocracy, Trial Abundance Survey,
+  and Court of Humanity. Court of Humanity authenticates against the same shared
+  database, so it needs this variable before its first production deploy.
 - `NEXTAUTH_SECRET` for the optimitron web project and dFDA only. optimitron.com
   signs MCP Bearer tokens with it and dfda.earth/api/mcp verifies them, so those
   two projects must share one value (decided 2026-08-14: one secret, no separate
@@ -125,7 +128,7 @@ them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
 
 ## Cutover order
 
-1. Create the six projects with their root directories.
+1. Create the seven projects with their root directories.
 2. Add Development, Preview, and Production variables for each project.
 3. Deploy `trialabundancesurvey` and verify `/embed?embed=1` before Accelerated Medicine.
 4. Deploy the remaining apps to Vercel preview URLs.

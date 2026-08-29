@@ -181,6 +181,14 @@ const SITES: Site[] = [
     renderer: "nav",
     variant: VARIANTS.ACCELERATED_MEDICINE,
   },
+  {
+    directory: "apps/courtofhumanity",
+    host: "127.0.0.1",
+    label: "@apps/courtofhumanity",
+    port: 3017,
+    renderer: "nav",
+    variant: VARIANTS.COURT_OF_HUMANITY,
+  },
 ];
 
 /** Stable selector used by the optional CLI site filter. */
