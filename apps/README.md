@@ -18,6 +18,7 @@ each standalone app passes preview checks and its domain moves.
 | `@apps/trialabundancesurvey` | 3014 | trialabundancesurvey.org | **Survey host** + `/embed` + lite participant home + `embed.js` |
 | `@apps/curedao` | 3015 | curedao.org | Landing + product links (**no donate**) |
 | `@apps/acceleratedmedicine` | 3016 | acceleratedmedicine.org | Case + **donate** + embedded survey |
+| `@apps/courtofhumanity` | 3017 | courtofhumanity.org | Court of Humanity — **Humanity v. Government** case, plaintiffs, verdicts |
 
 Architecture decisions (host vs campaign, email, embeds): **`SURVEY-AND-SATELLITES.md`**.
 
@@ -58,6 +59,7 @@ pnpm dev:warondisease            # :3010
 pnpm dev:wishocracy              # :3013 — allocations product
 pnpm dev:trialabundancesurvey    # :3014  — set NEXT_PUBLIC_SURVEY_ORIGIN=http://localhost:3014 for embeds
 pnpm dev:acceleratedmedicine     # :3016
+pnpm dev:courtofhumanity         # :3017
 pnpm dev:curedao                 # :3015
 
 pnpm smoke:warondisease-db
@@ -79,7 +81,7 @@ Job **`site-apps-static-validate`** (on peer app or `packages/db` changes):
 
 1. verify public navigation and authenticated screenshot coverage
 2. migrate + `prisma generate`
-3. **`pnpm typecheck:apps`** — all six `@apps/*`
+3. **`pnpm typecheck:apps`** — all seven `@apps/*`
 4. **`pnpm smoke:warondisease-db`** — ReferendumVote path
 5. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
 

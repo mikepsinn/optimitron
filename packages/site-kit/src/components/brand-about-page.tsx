@@ -11,6 +11,12 @@ const ABOUT_CONTENT: Partial<Record<SiteVariant, {
   action: string
   href: string
 }>> = {
+  "courtofhumanity.org": {
+    outcome:
+      "Read Humanity v. Government — the public case for redirecting 1% of military spending from weapons to cures — and put your name on the record as a plaintiff.",
+    action: "Read the case",
+    href: "/humanity-v-government",
+  },
   "wishocracy.org": {
     outcome: "Compare public priorities two at a time. Wishocracy turns your choices into a budget allocation you can inspect and revise.",
     action: "Start allocating",

@@ -70,6 +70,15 @@ export function ParameterValue({
     (display === "integer"
       ? String(Math.round(param.value))
       : formatParameter(param, resolvedFormat))
+  // Copy-preview snapshots turn this into a markdown link so source-backed
+  // values keep their source (see scripts/lib/copy-preview-dom.ts).
+  // sourceUrl comes last: the dialog below renders it as the original source,
+  // so a parameter carrying only that would otherwise lose its citation in the
+  // copy preview while still showing one on screen. Ordering it after the other
+  // two keeps the preferred links preferred, and the trailing ?? undefined
+  // keeps an absent sourceUrl from publishing "(undefined)" as an href.
+  const referenceUrl =
+    param.manualPageUrl ?? param.calculationsUrl ?? param.sourceUrl ?? undefined
 
   const hasMetadata = [
     param.displayName,
@@ -87,7 +96,11 @@ export function ParameterValue({
   ].some(Boolean)
 
   if (!popoverEnabled || !hasMetadata) {
-    return <Component className={className}>{text}</Component>
+    return (
+      <Component className={className} data-copy-preview-href={referenceUrl}>
+        {text}
+      </Component>
+    )
   }
 
   return (
@@ -95,6 +108,7 @@ export function ParameterValue({
       <DialogTrigger asChild>
         <button
           type="button"
+          data-copy-preview-href={referenceUrl}
           className={cn(
             "inline cursor-help text-left underline decoration-dotted decoration-foreground/30 underline-offset-2",
             className

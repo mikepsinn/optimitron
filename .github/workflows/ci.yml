@@ -165,6 +165,7 @@ jobs:
               - 'docs/canonical-argument-2026-05-20.md'
             site_apps_changed:
               - 'apps/acceleratedmedicine/**'
+              - 'apps/courtofhumanity/**'
               - 'apps/curedao/**'
               - 'apps/dfda/**'
               - 'apps/trialabundancesurvey/**'
@@ -435,6 +436,11 @@ jobs:
             port: 4016
             postgres_image: ""
             requires_database: false
+          - app: courtofhumanity
+            variant: courtofhumanity.org
+            port: 4017
+            postgres_image: postgres:16
+            requires_database: true
     env:
       CI: true
       DATABASE_URL: postgresql://test:test@localhost:5432/test
@@ -1035,7 +1041,10 @@ jobs:
             const changed = files.map((file) => file.filename);
             const targetApps = new Set(
               projectModule.VERCEL_APP_PROJECTS
-                .filter(({ appName }) =>
+                // previewPending apps have no Vercel project yet (it is created
+                // post-merge), so no preview deployment can ever appear for them.
+                .filter(({ appName, previewPending }) =>
+                  !previewPending &&
                   scopeModule.getVercelAppBuildMatches(appName, changed).length > 0
                 )
                 .map(({ appName }) => appName)
@@ -1047,6 +1056,13 @@ jobs:
             });
             const latestAffectedCommitIndex = new Map();
             for (const [index, commit] of commits.entries()) {
+              // A merge commit's first-parent diff contains every file the
+              // merged branch brought in, so it would pin an app's "latest
+              // affecting commit" to the merge even when that app's own
+              // sources never changed on this branch. Vercel skips rebuilding
+              // those apps, so the merge would demand a preview that is never
+              // created. Branch commits alone decide what is affected.
+              if ((commit.parents?.length ?? 0) > 1) continue;
               const parentSha = commit.parents?.[0]?.sha;
               if (!parentSha) continue;
               const commitFiles = execFileSync(
@@ -1064,7 +1080,12 @@ jobs:
               }
             }
             async function collectPreviewUrls() {
-              const previewUrls = {};
+              const freshUrls = {};
+              // Vercel creates a GitHub deployment record for every build it
+              // runs, including failed ones, but creates none at all when its
+              // ignore step skips an app. "No record anywhere in this PR"
+              // therefore means Vercel decided the app did not change.
+              const appsWithDeployment = new Set();
               for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
                 const commit = commits[commitIndex];
                 const deployments = await github.paginate(github.rest.repos.listDeployments, {
@@ -1072,39 +1093,60 @@ jobs:
                 });
                 for (const deployment of deployments) {
                   if ((deployment.environment || '').startsWith('visual-review')) continue;
+                  const environmentName = deployment.environment || '';
+                  for (const { appName, projectName } of projectModule.VERCEL_APP_PROJECTS) {
+                    if (
+                      targetApps.has(appName) &&
+                      environmentName === `Preview – ${projectName}`
+                    ) {
+                      appsWithDeployment.add(appName);
+                    }
+                  }
                   const statuses = await github.rest.repos.listDeploymentStatuses({
                     owner,
                     repo,
                     deployment_id: deployment.id,
                     per_page: 20,
                   });
-                  const ready = statuses.data.find((status) =>
-                    status.state === 'success' &&
+                  // Vercel reports two outcomes for an app it did not rebuild.
+                  // "Skipped - Not affected" is an inactive status that still
+                  // carries the URL of the deployment that remains current for
+                  // that app, so it is exactly what the visual review should
+                  // screenshot. Only a build that never produced a URL at all
+                  // is treated as missing.
+                  const usable = (status) =>
                     status.environment_url &&
-                    /^https?:\/\//.test(status.environment_url)
+                    /^https?:\/\//.test(status.environment_url) &&
+                    (status.state === 'success' ||
+                      (status.state === 'inactive' &&
+                        (status.description || '').startsWith('Skipped')));
+                  // GitHub returns deployment statuses newest first. Take the
+                  // newest conclusive status rather than the first usable one
+                  // anywhere in the list, so a build that ended in failure can
+                  // never be masked by a success it posted earlier on the same
+                  // deployment. This also makes paging the status list moot:
+                  // the decisive entry is always among the most recent.
+                  const failed = (status) =>
+                    status.state === 'error' || status.state === 'failure';
+                  const conclusive = statuses.data.find(
+                    (status) => usable(status) || failed(status),
                   );
-                  if (!ready) continue;
+                  if (!conclusive || !usable(conclusive)) continue;
+                  const ready = conclusive;
                   const app = projectModule.getVercelAppByUrl(ready.environment_url);
-                  const affectedCommitIndex = app
-                    ? latestAffectedCommitIndex.get(app.appName)
-                    : undefined;
+                  if (!app || !targetApps.has(app.appName)) continue;
+                  const affectedCommitIndex = latestAffectedCommitIndex.get(
+                    app.appName,
+                  );
                   if (
-                    app &&
-                    targetApps.has(app.appName) &&
                     affectedCommitIndex !== undefined &&
                     commitIndex >= affectedCommitIndex &&
-                    !previewUrls[app.appName]
+                    !freshUrls[app.appName]
                   ) {
-                    previewUrls[app.appName] = ready.environment_url;
+                    freshUrls[app.appName] = ready.environment_url;
                   }
                 }
-                if ([...targetApps].every((appName) => previewUrls[appName])) break;
-                if (
-                  [...targetApps].every((appName) =>
-                    previewUrls[appName] ||
-                    commitIndex <= latestAffectedCommitIndex.get(appName)
-                  )
-                ) break;
+                if ([...targetApps].every((appName) => freshUrls[appName])) break;
               }
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner, repo, issue_number, per_page: 100,
@@ -1113,31 +1155,57 @@ jobs:
                 .filter((comment) => comment.user?.login === 'vercel[bot]')
                 .reverse()
                 .map((comment) => String(comment.body || ''));
-              return previewCommentModule.mergeVercelPreviewUrls(
-                previewUrls,
-                vercelCommentBodies,
-                [...targetApps],
-              );
+              return {
+                previewUrls: previewCommentModule.mergeVercelPreviewUrls(
+                  freshUrls,
+                  vercelCommentBodies,
+                  [...targetApps],
+                ),
+                appsWithDeployment,
+              };
             }
 
             let previewUrls = {};
+            let appsWithDeployment = new Set();
             const maxAttempts = 18;
-            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-              previewUrls = await collectPreviewUrls();
-              const missingApps = [...targetApps].filter(
-                (appName) => !previewUrls[appName]
+            // Vercel registers its deployment records moments after the push,
+            // so an app can legitimately have no record on the first lookups.
+            // Keep polling those for a grace period before concluding Vercel
+            // skipped them, otherwise a slow registration would be mistaken
+            // for a skip and the preview dropped from the review silently.
+            const graceAttempts = 6;
+            const pendingApps = (attempt) =>
+              [...targetApps].filter(
+                (appName) =>
+                  !previewUrls[appName] &&
+                  (appsWithDeployment.has(appName) || attempt <= graceAttempts)
               );
-              if (missingApps.length === 0) break;
+            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+              ({ previewUrls, appsWithDeployment } = await collectPreviewUrls());
+              const waitingApps = pendingApps(attempt);
+              if (waitingApps.length === 0) break;
               if (attempt < maxAttempts) {
                 console.log(
-                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${missingApps.join(', ')}`
+                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${waitingApps.join(', ')}`
                 );
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
               }
             }
 
+            const skippedApps = [...targetApps].filter(
+              (appName) => !previewUrls[appName] && !appsWithDeployment.has(appName)
+            );
+            if (skippedApps.length > 0) {
+              // Not a failure: Vercel judged these apps unchanged, so there is
+              // no new rendering to review. The build matrix still compiles
+              // them, and their routes keep their existing screenshots.
+              console.log(
+                `Vercel skipped deploying (no preview to review): ${skippedApps.join(', ')}`
+              );
+            }
+
             const missingApps = [...targetApps].filter(
-              (appName) => !previewUrls[appName]
+              (appName) => !previewUrls[appName] && appsWithDeployment.has(appName)
             );
             if (missingApps.length > 0) {
               core.warning(

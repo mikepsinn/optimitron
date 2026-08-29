@@ -75,6 +75,10 @@ export const ROUTES = {
   team: '/team',
   institutes: '/institutes',
 
+  // Court of Humanity (courtofhumanity.org)
+  court: '/court',
+  humanityVGovernment: '/humanity-v-government',
+
   // Media / Manual
   manual: '/manual',
 

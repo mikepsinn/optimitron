@@ -131,6 +131,7 @@ import {
   WISHOCRACY_FAQ,
   DFDA_FAQ,
   SURVEY_FAQ,
+  COURT_OF_HUMANITY_FAQ,
 } from "./faq";
 import { createLogger } from "./logger";
 import { MESSAGING } from "./messaging";
@@ -1327,6 +1328,121 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     faviconPrompt: `Purple hexagon with white heart inside, thick black outline, magenta (#FF00FF) background.`,
 
     ogPrompt: `"CUREDAO" neobrutalist. Purple/white/black. Medical cross, network nodes, connected people, globe. Decentralized autonomous organization. Mass-scale coordination for disease eradication. "ALIGN INCENTIVES • ${MESSAGING.impact.globalImpactAtTippingPoint.totalLivesSaved.toUpperCase()} • COLLECTIVE ACTION".`,
+  },
+
+  // ============================================================================
+  // courtofhumanity.org - THE COURT OF HUMANITY
+  // ============================================================================
+  // Purpose: Independent institutional home for Humanity v. Government — the
+  //          case record, plaintiff registration, and public verdicts. Kept on
+  //          its own domain so the court is not hosted by a party to the case.
+  // Audience: Plaintiffs, treaty signers, journalists, lawyers, named officials
+  // Tone: Judicial, factual, plain language
+  // Goal: Read the case, register as a plaintiff, render a verdict
+  "courtofhumanity.org": {
+    name: "Court of Humanity",
+    title: "The Court of Humanity",
+    description:
+      "The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.",
+    domains: ["courtofhumanity.org", "www.courtofhumanity.org"],
+    baseUrl: "https://courtofhumanity.org",
+    domain: "courtofhumanity.org",
+    email: "hello@courtofhumanity.org",
+    defaultRoute: "/",
+    enabledFeatures: [SITE_FEATURES.ADVOCACY, SITE_FEATURES.FAQ],
+    showPoliticalContent: true,
+    authEnabled: true,
+    dashboardEnabled: true,
+
+    icons: {
+      icon: [
+        {
+          url: "/assets/courtofhumanity/courtofhumanity-icon-square.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/courtofhumanity/courtofhumanity-icon-square.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/courtofhumanity/courtofhumanity-icon-square.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+      apple: {
+        url: "/assets/courtofhumanity/courtofhumanity-icon-square.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    },
+
+    topLevelNavItems: [],
+    sidebarSections: [
+      {
+        id: "case",
+        label: "THE CASE",
+        items: ["humanityVGovernment", "joinCourt"],
+      },
+      {
+        id: "learn",
+        label: "THE COURT",
+        items: ["about", "faq", "contact"],
+      },
+    ],
+    // No vote CTA: the shared sidebar button renders "Answer the Question"
+    // over a /#vote anchor that does not exist here. The court's vote
+    // surfaces are the /humanity-v-government verdict and /court join
+    // pages, linked from THE CASE section above.
+    sidebarVoteCtaEnabled: false,
+
+    footerBranding: {
+      title: "COURT OF HUMANITY",
+      tagline: "HUMANITY V. GOVERNMENT",
+    },
+
+    footerSections: [
+      {
+        id: "case",
+        label: "THE CASE",
+        items: ["humanityVGovernment", "joinCourt"],
+      },
+      {
+        id: "learn",
+        label: "LEARN MORE",
+        items: ["about", "faq", "contact"],
+      },
+    ],
+
+    contactInfo: {
+      email: "hello@courtofhumanity.org",
+      website: "https://courtofhumanity.org",
+      websiteLabel: "CourtOfHumanity.org",
+    },
+    legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
+
+    emailBranding: {
+      fromName: "Court of Humanity",
+      primaryColor: "#000000",
+      secondaryColor: "#FFE66D",
+      orgName: "Court of Humanity",
+    },
+    ogMetadata: {
+      image: "/assets/courtofhumanity/courtofhumanity-og-1200x630.png",
+      width: 1200,
+      height: 630,
+      alt: "The Court of Humanity — Humanity v. Government",
+    },
+
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2026 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    faq: COURT_OF_HUMANITY_FAQ,
+
+    faviconPrompt: `Black scales of justice on yellow (#FFE66D), thick black outline, neobrutalist.`,
+
+    ogPrompt: `"THE COURT OF HUMANITY" neobrutalist. Black/white/yellow. Scales of justice, gavel, signature lines. "HUMANITY V. GOVERNMENT • READ THE CASE • RENDER YOUR VERDICT".`,
   },
 
   // ============================================================================

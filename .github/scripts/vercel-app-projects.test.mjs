@@ -56,6 +56,11 @@ test("declares one Vercel project for every deployed app", () => {
         projectName: "acceleratedmedicine",
         rootDirectory: "apps/acceleratedmedicine",
       },
+      {
+        appName: "courtofhumanity",
+        projectName: "courtofhumanity",
+        rootDirectory: "apps/courtofhumanity",
+      },
     ],
   );
 
