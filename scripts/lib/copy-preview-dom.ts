@@ -107,6 +107,14 @@ export function extractVisibleCopyMarkdown(): string {
         const child = node as Element;
         if (child.hasAttribute("data-copy-preview-ignore")) continue;
         if (!allowHidden && isHiddenForRender(child)) continue;
+        if (child.tagName === "PRE") {
+          // Markdown tables cannot contain block-level fences. Their nested
+          // <pre> is emitted by the outer walker immediately after the table.
+          if (child.closest("table")) continue;
+          const text = (child as HTMLElement).innerText.trim();
+          if (text) appendFragment(`\n\n\`\`\`text\n${text}\n\`\`\`\n\n`);
+          continue;
+        }
         if (
           child.tagName === "A" ||
           child.hasAttribute("data-copy-preview-href")
@@ -127,6 +135,16 @@ export function extractVisibleCopyMarkdown(): string {
     }
     return buf;
   };
+  const normalizeMarkdown = (markdown: string): string =>
+    markdown
+      .split(/(\`\`\`text\n[\s\S]*?\n\`\`\`)/g)
+      .map((part) =>
+        part.startsWith("```text\n")
+          ? part.trim()
+          : part.replace(/\s+/g, " ").trim(),
+      )
+      .filter(Boolean)
+      .join("\n\n");
   // Render an HTML <table> as a GFM markdown table. First row becomes the
   // header line; if it's all <td> with no <th>, we still treat it as the
   // header — markdown requires a divider row regardless.
@@ -166,6 +184,9 @@ export function extractVisibleCopyMarkdown(): string {
   // Layout tables (and their cells) don't count as a containing tag — their
   // children should be captured as their own bullets.
   const hasContainingTag = (el: Element): boolean => {
+    // Markdown tables cannot hold a fenced block inside a cell. Visit those
+    // <pre> elements separately after rendering the table itself.
+    if (el.tagName === "PRE" && el.closest("table")) return false;
     let p = el.parentElement;
     while (p && p !== root) {
       if (
@@ -210,7 +231,7 @@ export function extractVisibleCopyMarkdown(): string {
       }
       md = withMarkdownLink(el, inner);
     } else {
-      md = toMarkdown(el).replace(/\s+/g, " ").trim();
+      md = normalizeMarkdown(toMarkdown(el));
     }
     if (!md || md.length < 2) continue;
     if (seen.has(md)) continue;
@@ -221,7 +242,7 @@ export function extractVisibleCopyMarkdown(): string {
       : tag === "table"
         ? ""
         : "- ";
-    if (tag === "table" || tag === "pre") {
+    if (tag === "table" || tag === "pre" || md.startsWith("```text\n")) {
       if (out.length > 0 && out.at(-1) !== "") out.push("");
       out.push(md, "");
     } else {
