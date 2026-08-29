@@ -14,8 +14,20 @@
 ## Visible Page Copy
 
 - [RIGHT TO TRIAL INITIATIVE](/)
+## SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
+- Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.
+- YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
+- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
+- YES
+- SHOW ME MORE
+- NO
+- WHY DOES THIS MATTER TO YOU? (optional)
+- EMAIL (optional)
+- Send me occasional updates about Right to Trial in my state.
+- RECORD MY STATE RESPONSE
+- If you provide an email, we will send a confirmation. We will not sell or rent it.
 - THE RIGHT TO TRIAL
-## WE CAN ERADICATE DISEASE.
+### WE CAN ERADICATE DISEASE.
 - Give every patient the right to join a clinical trial for the most promising treatments—with a clinician, at a licensed treatment center, wherever they live. Every patient gets more options. Every result helps us find what works.
 - [SEE HOW MONTANA DID IT](/montana)
 - [BRING IT TO MY STATE](#state-support)
@@ -73,19 +85,6 @@
 - At today's pace, the average untreated disease waits 222 years for its first effective treatment. Give willing patients a place in low-cost clinical trials, and the central estimate falls to 41 years.
 - [SEE HOW MUCH FASTER](/impact)
 - [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
-- BRING RIGHT TO TRIAL TO EVERY STATE
-### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
-- Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
-- YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
-- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
-- YES
-- SHOW ME MORE
-- NO
-- WHY DOES THIS MATTER TO YOU? (optional)
-- EMAIL (optional)
-- Send me occasional updates about Right to Trial in my state.
-- RECORD MY STATE RESPONSE
-- If you provide an email, we will send a confirmation. We will not sell or rent it.
 ### MONTANA PROVED IT. PUT YOUR STATE ON THE MAP.
 - Montana is the enacted precedent. The original Right to Try spread from one state in 2014 to 41 states by 2018 — tap your state to see what Right to Trial would mean there, then add your voice.
 - ENACTED PRECEDENT
@@ -282,6 +281,7 @@
 - Compare with standard of care treatments
 - Read about experiences from patients like you
 - Klotho-Increasing Gene Therapy
+- Illustrative demo data — hypothetical future therapy
 - Cognitive Function (ADAS-Cog)
 - +28%
 - Memory Recall
@@ -356,21 +356,23 @@
 - Screening
 - 82%
 ##### Assign Patients to Trial Arms with Confidence
-- Review detailed outcome labels, compare trial arms (including placebo/standard of care), and assign patients directly.
+- Review detailed outcome labels, compare trial arms (including standard of care), and assign patients directly.
 - Make informed decisions with transparent outcome data
 - Compare effectiveness and side effect profiles easily
 - Assign patients to specific trial arms seamlessly
 - Integrate assignment with patient management workflows
 - Arm 1: Lecanemab (Bi-weekly IV)
 - Active
+- Decline slowed vs standard care (ADAS-Cog)
+- 27%
 - Immune Response (ARIA)
 - 12%
 - Assign to Lecanemab Arm
-- Arm 2: Placebo (Bi-weekly IV)
-- Control
-- -5%
+- Arm 2: Standard of Care
+- Reference
+- Usual rate of decline
 - 5%
-- Assign to Placebo Arm
+- Continue Standard of Care
 ##### Monitor Patient Progress & Trial Performance
 - Track key metrics, patient-reported outcomes, and overall trial status through an intuitive dashboard.
 - Visualize patient progress over time
@@ -422,7 +424,7 @@
 - Automated inventory tracking and alerts
 - Secure patient order processing and fulfillment
 - Temperature-controlled shipping monitoring
-- Blockchain-verified chain of custody
+- Verified chain of custody
 - New
 - Manage Inventory
 ##### Analyze Trial Data
@@ -431,6 +433,8 @@
 - Participant compliance tracking
 - Advanced statistical analysis tools
 - Regulatory submission preparation
+- Week 1
+- Week 8
 - View Full Analytics
 - [Create a Trial](https://dfda.earth/contact)
 ### TREATMENT BECOMES EVIDENCE
