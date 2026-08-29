@@ -61,7 +61,7 @@ export function DfdaLandingContent() {
             </h1>
             <p className="text-xl md:text-2xl font-bold mb-8 text-balance">
               A decentralized framework that makes clinical trials{" "}
-              {costReductionFactor}x cheaper,{" "}
+              {costReductionFactor} cheaper,{" "}
               {(DRUG_DISCOVERY_TO_APPROVAL_YEARS.value / 2).toFixed(1)} years
               faster, and saves millions of lives
             </p>
@@ -230,7 +230,7 @@ export function DfdaLandingContent() {
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
                     <p className="font-bold">
                       Cost: {pragmaticTrialCostM} per drug (
-                      {costReductionFactor}x cheaper)
+                      {costReductionFactor} cheaper)
                     </p>
                   </div>
                   <div className="flex items-start gap-3">

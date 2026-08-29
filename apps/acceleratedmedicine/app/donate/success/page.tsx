@@ -1,201 +1,148 @@
-"use client"
+import type { Metadata } from "next"
+import Link from "next/link"
+import { Check } from "lucide-react"
 
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { Layout } from "@/components/layout"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
-import { Check, Loader2 } from "lucide-react"
-import Link from "next/link"
-import confetti from "canvas-confetti"
-import { ROUTES } from '@/lib/routes'
-import { trackDonationCompleted } from "@/lib/analytics"
+import { SuccessConfetti } from "@/components/donate/success-confetti"
+import { ROUTES } from "@/lib/routes"
 
-export default function DonateSuccessPage() {
-  const searchParams = useSearchParams()
-  const sessionId = searchParams?.get("session_id")
-  const [loading, setLoading] = useState(true)
-  const [sessionData, setSessionData] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
+export const metadata: Metadata = {
+  title: "Donation Received",
+  description:
+    "Your donation to Accelerated Medicine Foundation (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.",
+}
 
-  useEffect(() => {
-    if (sessionId) {
-      // Fetch session details
-      fetch(`/api/stripe/session?session_id=${sessionId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            setError(data.error)
-          } else {
-            setSessionData(data)
-            // Track donation completed event
-            trackDonationCompleted({
-              amount: data.amount_total ? data.amount_total / 100 : 0,
-              type: data.mode === "subscription" ? "monthly" : "one_time",
-              transactionId: sessionId || undefined,
-            })
-          }
-          setLoading(false)
-        })
-        .catch(() => {
-          setError("Failed to load donation details")
-          setLoading(false)
-        })
-
-      // Trigger confetti
-      const duration = 3000
-      const end = Date.now() + duration
-
-      const frame = () => {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ["#FF6B9D", "#00D4FF", "#FFE66D"],
-        })
-
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ["#FF6B9D", "#00D4FF", "#FFE66D"],
-        })
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame)
-        }
-      }
-
-      frame()
-    } else {
-      setError("No session ID provided")
-      setLoading(false)
-    }
-  }, [sessionId])
+/**
+ * Stripe Payment Links redirect here after checkout with
+ * ?session_id={CHECKOUT_SESSION_ID}. There is no webhook and no API call:
+ * arriving with a session_id IS the confirmation, and Stripe emails the
+ * receipt. Donors from warondisease.org land here too, so the page names the
+ * legal entity every donation goes to.
+ */
+export default async function DonateSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>
+}) {
+  const { session_id: sessionId } = await searchParams
+  const confirmed = Boolean(sessionId)
 
   return (
     <Layout>
-      <SectionContainer bgColor="background" borderPosition="none" padding="lg" className="min-h-screen">
+      <SectionContainer
+        bgColor="background"
+        borderPosition="none"
+        padding="lg"
+        className="min-h-screen"
+      >
         <Container size="sm">
-          {loading ? (
-            <Card className="p-12 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" />
-              <p className="text-lg font-bold">Loading donation details...</p>
-            </Card>
-          ) : error ? (
-            <Card className="p-12 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-              <div className="text-6xl mb-4">❌</div>
-              <h1 className="text-3xl font-black uppercase mb-4">ERROR</h1>
-              <p className="text-lg mb-6">{error}</p>
-              <Button
-                asChild
-                className="h-12 px-8 font-black uppercase bg-brutal-pink text-white border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <Link href={ROUTES.donate}>BACK TO DONATE</Link>
-              </Button>
-            </Card>
-          ) : (
-            <>
-              {/* Success Header */}
-              <Card className="p-12 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow text-center mb-8">
-                <div className="inline-block p-4 bg-brutal-pink rounded-full mb-6">
-                  <Check className="w-16 h-16 text-white" strokeWidth={4} />
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4">
-                  DONATION <span className="text-brutal-pink">SUCCESSFUL!</span>
-                </h1>
-                <p className="text-xl font-bold mb-2">
-                  Thank you for helping patients make better-informed choices, {sessionData?.metadata?.donorName || "friend"}!
-                </p>
-                <p className="text-lg">Your support funds education, pragmatic-trial research, and public treatment evidence.</p>
-              </Card>
+          {confirmed ? <SuccessConfetti /> : null}
 
-              {/* Donation Details */}
-              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
-                <h2 className="text-2xl font-black uppercase mb-6">DONATION DETAILS</h2>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b-2 border-gray-200 pb-3">
-                    <span className="font-bold uppercase">Amount</span>
-                    <span className="text-2xl font-black text-brutal-pink">
-                      ${sessionData?.amount_total ? (sessionData.amount_total / 100).toFixed(2) : "0.00"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center border-b-2 border-gray-200 pb-3">
-                    <span className="font-bold uppercase">Type</span>
-                    <span className="font-black">
-                      {sessionData?.mode === "subscription" ? "MONTHLY RECURRING" : "ONE-TIME"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center border-b-2 border-gray-200 pb-3">
-                    <span className="font-bold uppercase">Email</span>
-                    <span className="font-bold">
-                      {sessionData?.customer_email || sessionData?.customer_details?.email || "N/A"}
-                    </span>
-                  </div>
-                  {sessionData?.mode === "subscription" && (
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold uppercase">Next Payment</span>
-                      <span className="font-bold" data-volatile="date">
-                        {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Card>
+          <Card className="p-12 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow text-center mb-8">
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brutal-pink">
+              <Check className="w-16 h-16 text-white" strokeWidth={4} />
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4">
+              {confirmed ? (
+                <>
+                  DONATION <span className="text-brutal-pink">RECEIVED!</span>
+                </>
+              ) : (
+                <>
+                  THANK <span className="text-brutal-pink">YOU!</span>
+                </>
+              )}
+            </h1>
+            <p className="text-xl font-bold">
+              Your support funds patient education, pragmatic-trial research,
+              and public treatment evidence.
+            </p>
+          </Card>
 
-              {/* What's Next */}
-              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-cyan-400 mb-8">
-                <h2 className="text-2xl font-black uppercase mb-4">WHAT HAPPENS NEXT?</h2>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
-                    <div>
-                      <div className="font-black uppercase">Confirmation Email</div>
-                      <div className="text-sm">
-                        Receipt sent to {sessionData?.customer_email || sessionData?.customer_details?.email || "your email"}
-                      </div>
-                    </div>
+          <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
+            <h2 className="text-2xl font-black uppercase mb-4">
+              WHERE YOUR DONATION WENT
+            </h2>
+            <p className="text-lg font-bold mb-3">
+              Every donation — including gifts made on warondisease.org — goes
+              to Accelerated Medicine Foundation Inc, a 501(c)(3) nonprofit
+              operating as the Institute for Accelerated Medicine.
+            </p>
+            <p className="mb-3">
+              EIN 41-2555651. Your donation is tax-deductible to the extent
+              allowed by law. Stripe emails your receipt — keep it for your
+              records.
+            </p>
+            {sessionId ? (
+              <p className="text-sm text-muted-foreground break-all">
+                Reference: {sessionId}. Questions? Email{" "}
+                <a className="underline" href="mailto:hello@acceleratedmedicine.org">
+                  hello@acceleratedmedicine.org
+                </a>{" "}
+                with that reference.
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Just donated? Your Stripe receipt email is the confirmation.
+                Questions? Email{" "}
+                <a className="underline" href="mailto:hello@acceleratedmedicine.org">
+                  hello@acceleratedmedicine.org
+                </a>
+                .
+              </p>
+            )}
+          </Card>
+
+          <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-cyan-400 mb-8">
+            <h2 className="text-2xl font-black uppercase mb-4">
+              KEEP THE MOMENTUM
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
+                <div>
+                  <div className="font-black uppercase">
+                    Vote on the 1% Treaty
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
-                    <div>
-                      <div className="font-black uppercase">Impact Updates</div>
-                      <div className="text-sm">Updates on patient education, pragmatic trials, and treatment-outcome research</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
-                    <div>
-                      <div className="font-black uppercase">Quarterly Reports</div>
-                      <div className="text-sm">Financial transparency and progress on the educational and research work you funded</div>
-                    </div>
+                  <div className="text-sm">
+                    30 seconds to say military budgets should fund cures
+                    instead.
                   </div>
                 </div>
-              </Card>
-
-              {/* Action Buttons */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Button
-                  asChild
-                  className="h-14 text-lg font-black uppercase bg-brutal-pink text-white border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                >
-                  <Link href="/">
-                    BACK TO HOME
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  className="h-14 text-lg font-black uppercase bg-brutal-cyan border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                >
-                  <Link href={ROUTES.faq}>READ THE EVIDENCE</Link>
-                </Button>
               </div>
-            </>
-          )}
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
+                <div>
+                  <div className="font-black uppercase">
+                    Put your state on the Right to Trial map
+                  </div>
+                  <div className="text-sm">
+                    Tell us whether every patient in your state should be able
+                    to join a clinical trial.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Button
+              asChild
+              className="h-14 text-lg font-black uppercase bg-brutal-pink text-white border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              <a href="https://warondisease.org/vote">VOTE ON THE TREATY</a>
+            </Button>
+            <Button
+              asChild
+              className="h-14 text-lg font-black uppercase bg-brutal-cyan border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              <Link href={ROUTES.survey}>TAKE THE STATE SURVEY</Link>
+            </Button>
+          </div>
         </Container>
       </SectionContainer>
     </Layout>

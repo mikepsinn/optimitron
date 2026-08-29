@@ -533,6 +533,17 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     {
+      covers: [
+        "apps/acceleratedmedicine/app/donate/success/page.tsx",
+        "apps/acceleratedmedicine/components/donate/success-confetti.tsx",
+        "apps/warondisease/app/donate/success/page.tsx",
+      ],
+      label: "Donation received",
+      routeName: "donate-success",
+      routePath: "/donate/success?session_id=cs_test_visual_review",
+      sourcePage: "apps/acceleratedmedicine/app/donate/success/page.tsx",
+    },
+    {
       covers: ["apps/acceleratedmedicine/app/not-found.tsx"],
       expectNotFound: true,
       label: "Page not found",
@@ -546,7 +557,7 @@ export const publicSiteAppRoutes = Object.freeze({
 export const publicSiteAppRouteExemptions = Object.freeze([
   {
     reason:
-      "The success content requires a live Stripe checkout session; without one the page can only render its error card.",
+      "This legacy route immediately redirects to the captured acceleratedmedicine donation-success page and has no local visual state.",
     sourcePage: "apps/warondisease/app/donate/success/page.tsx",
   },
   {
@@ -609,11 +620,6 @@ export const publicSiteAppRouteExemptions = Object.freeze([
     reason:
       "Shared auth scaffolding; this app captures /auth/signin and warondisease captures the full auth set.",
     sourcePage: "apps/trialabundancesurvey/app/auth/complete-signup/page.tsx",
-  },
-  {
-    reason:
-      "The success content requires a live Stripe checkout session; without one the page can only render its error card.",
-    sourcePage: "apps/acceleratedmedicine/app/donate/success/page.tsx",
   },
 ]);
 

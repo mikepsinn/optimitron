@@ -121,10 +121,6 @@ Tests run automatically on:
 - Run `pnpm install` to ensure all dependencies are installed
 - Check path aliases in `vitest.config.ts`
 
-### "Stripe webhook tests failing"
-- Verify `STRIPE_WEBHOOK_SECRET` is set in `tests/setup.ts`
-- Check mock data in `tests/fixtures/stripe.ts`
-
 ### "E2E tests timeout"
 - Increase timeout in `playwright.config.ts`
 - Check that dev server is running (`pnpm dev`)
