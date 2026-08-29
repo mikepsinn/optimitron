@@ -31,12 +31,12 @@ import {
 export default function HomePage() {
   return (
     <Layout>
+      <StateSupportSection headingAs="h1" />
       <UniversalRightToTryHero />
       <MontanaProofSection />
       <RightToTryEvolutionSection />
       <PatientAccessFlowSection />
       <RightToTrialImpactPreviewSection />
-      <StateSupportSection />
       <StateCampaignMapSection />
       <ParticipationGapSection />
       <ProblemStatement useExactPatientCount />
