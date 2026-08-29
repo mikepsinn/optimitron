@@ -42,6 +42,16 @@ Builds share the included queue, prioritize production, and skip stale queued
 commits when a newer commit reaches the same branch. The project reconciler
 repairs drift from these settings.
 
+Preview deployments build automatically only for `optimitron-web`,
+`warondisease`, and `acceleratedmedicine` — the surfaces under active
+iteration. The other apps skip previews unless the commit message contains
+`[preview:<app>]` (for example `[preview:dfda]`) or `[preview:all]`. This keeps
+a shared `site-kit` push from queueing seven sequential builds on the shared
+queue. Production deployments are never gated this way, and GitHub Actions
+still builds every affected app on each pull request. Copy-review snapshots
+(`page.logged-out.md`, `*.email.md`) are generated from the rendered site and
+never trigger deployments.
+
 Vercel treats changes outside the pnpm workspace as global. Each app therefore
 uses the same dependency-aware ignore script to reject documentation, review
 automation, and unrelated app changes before build CPU starts. App source,
