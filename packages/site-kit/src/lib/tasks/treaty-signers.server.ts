@@ -5,6 +5,7 @@ import {
   type TreatySignerTask,
 } from "./treaty-signers"
 import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@optimitron/db/task-keys"
+import { TaskStatus } from "@optimitron/db"
 
 /**
  * Annual military spending for a signer's government, or `null` when the
@@ -25,7 +26,11 @@ function getMilitarySpending(countryCode: string | null): number | null {
  */
 export async function getTreatySignerTasks(): Promise<TreatySignerTask[]> {
   const rows = await prisma.task.findMany({
-    where: { taskKey: { startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:` } },
+    where: {
+      deletedAt: null,
+      status: { not: TaskStatus.VERIFIED },
+      taskKey: { startsWith: `${TREATY_SIGNER_TASK_KEY_PREFIX}:` },
+    },
     select: {
       id: true,
       title: true,

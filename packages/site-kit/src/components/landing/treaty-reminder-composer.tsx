@@ -3,7 +3,7 @@
 import { nanoid } from "nanoid";
 import { Mail, MessageCircle, Send, Smartphone } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Button } from "@optimitron/neobrutalist-ui/ui/button";
 import { Input } from "@optimitron/neobrutalist-ui/ui/input";
@@ -58,6 +58,14 @@ type TreatyReminderRecipientMode = "president" | "humanity" | "one_human";
 type OneHumanDirectChannel = "email-app" | "sms" | "telegram" | "whatsapp";
 type CopyState = "idle" | "copied" | "error";
 type SendState = "idle" | "sending" | "sent";
+type SessionStatus = "authenticated" | "loading" | "unauthenticated";
+
+export function recipientModeRequiresSignIn(
+  mode: TreatyReminderRecipientMode,
+  sessionStatus: SessionStatus,
+) {
+  return mode === "one_human" && sessionStatus === "unauthenticated";
+}
 
 interface GovernmentLeaderClientContext {
   countryCode: string;
@@ -136,7 +144,7 @@ export function TreatyReminderComposer({
   // from PostVoteReminders → TreatyReminderComposer; the surface did not.
   surface = "post_vote_reminders",
 }: TreatyReminderComposerProps = {}) {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const now = useHydratedNow();
   const requestOrigin = useRequestSiteOrigin();
   const initialRecipientMode =
@@ -757,7 +765,12 @@ export function TreatyReminderComposer({
                 index > 0 ? "border-t-2 border-foreground sm:border-l-2 sm:border-t-0" : "",
                 selected && "bg-foreground text-background",
               )}
+              disabled={mode === "one_human" && sessionStatus === "loading"}
               onClick={() => {
+                if (recipientModeRequiresSignIn(mode, sessionStatus)) {
+                  void signIn(undefined, { callbackUrl: window.location.href });
+                  return;
+                }
                 setRecipientMode(mode);
                 setMessageCopyState("idle");
                 setDirectChannelState(null);
