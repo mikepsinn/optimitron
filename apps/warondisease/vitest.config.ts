@@ -1,9 +1,13 @@
 import { defineConfig } from "vitest/config"
 import react from "@vitejs/plugin-react"
+import { createRequire } from "node:module"
 import path from "path"
 import fs from "fs"
 
 const appRoot = __dirname
+const require = createRequire(import.meta.url)
+const appNextAuthReact = require.resolve("next-auth/react")
+const appNextNavigation = require.resolve("next/navigation")
 const siteKitLib = path.resolve(appRoot, "../../packages/site-kit/src/lib")
 const localLib = path.resolve(appRoot, "lib")
 
@@ -40,6 +44,14 @@ export default defineConfig({
   resolve: {
     // customResolver is deprecated in Vite 9; keep until apps migrate to a resolveId plugin.
     alias: [
+      {
+        find: /^next-auth\/react$/,
+        replacement: appNextAuthReact,
+      },
+      {
+        find: /^next\/navigation$/,
+        replacement: appNextNavigation,
+      },
       {
         find: /^@\/lib\/(.*)$/,
         replacement: "$1",

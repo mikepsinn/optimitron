@@ -40,7 +40,7 @@ export default async function VotePage() {
 
   return (
     <Layout>
-      <TreatyVoteSection sectionId="vote" />
+      <TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" sectionId="vote" />
     </Layout>
   )
 }
