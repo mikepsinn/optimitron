@@ -111,15 +111,14 @@ function isReviewOnlySnapshot(file) {
     return false;
   }
   return (
-    /(?:^|\/)page\.logged-out\.md$/u.test(file) ||
-    /\.email\.md$/u.test(file)
+    /(?:^|\/)page\.logged-out\.md$/u.test(file) || /\.email\.md$/u.test(file)
   );
 }
 
 // Preview deployments build automatically only for the surfaces under active
-// iteration; every other app's preview is opt-in via commit message. This is
-// what keeps a shared site-kit push from queueing seven sequential builds.
-// Production deployments are never gated here.
+// iteration. Every other app requires an explicit feature/preview-<app>-* or
+// feature/preview-all-* branch, which prevents routine Git pushes from entering
+// Vercel's shared build queue. Production deployments are never gated here.
 const previewAutoBuildApps = new Set([
   "optimitron",
   "warondisease",
@@ -133,16 +132,16 @@ export function shouldAutoBuildPreview(appName, environment = process.env) {
   if (previewAutoBuildApps.has(appName)) {
     return { build: true, reason: "preview allowlist" };
   }
-  const message = String(environment.VERCEL_GIT_COMMIT_MESSAGE ?? "");
+  const branch = String(environment.VERCEL_GIT_COMMIT_REF ?? "").trim();
   if (
-    message.includes(`[preview:${appName}]`) ||
-    message.includes("[preview:all]")
+    branch.startsWith(`feature/preview-${appName}-`) ||
+    branch.startsWith("feature/preview-all-")
   ) {
-    return { build: true, reason: "commit message opt-in" };
+    return { build: true, reason: "preview branch opt-in" };
   }
   return {
     build: false,
-    reason: `previews for ${appName} are opt-in — add [preview:${appName}] or [preview:all] to the commit message`,
+    reason: `previews for ${appName} require a feature/preview-${appName}-* or feature/preview-all-* branch`,
   };
 }
 

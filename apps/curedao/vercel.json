@@ -4,7 +4,10 @@
   "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs curedao",
   "git": {
     "deploymentEnabled": {
-      "gh-pages": false
+      "main": true,
+      "feature/preview-curedao-*": true,
+      "feature/preview-all-*": true,
+      "**": false
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
