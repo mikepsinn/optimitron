@@ -135,6 +135,18 @@ export function Layout({ children }: LayoutProps) {
   const legalItems = getLegalItems();
   const copyrightText = getCopyrightText();
   const footerComplianceNotice = siteConfig.footerComplianceNotice;
+  const sidebarVoteCta =
+    siteConfig.sidebarVoteCtaEnabled !== false ? (
+      <VoteOrShareButton
+        variant="default"
+        size="lg"
+        className="w-full py-6"
+        onClick={(e: React.MouseEvent) => {
+          handleHashLinkClick(e, "/#vote");
+          setOpen(false);
+        }}
+      />
+    ) : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -201,6 +213,10 @@ export function Layout({ children }: LayoutProps) {
                   involved
                 </SheetDescription>
                 <nav className="flex flex-col gap-6 mt-8">
+                  {siteConfig.sidebarVoteCtaPlacement === "top"
+                    ? sidebarVoteCta
+                    : null}
+
                   {/* Top-level nav items (outside accordion) */}
                   {topLevelItems.map((item) =>
                     renderNavLink(
@@ -247,17 +263,9 @@ export function Layout({ children }: LayoutProps) {
                     </Link>
                   )}
 
-                  {siteConfig.sidebarVoteCtaEnabled !== false && (
-                    <VoteOrShareButton
-                      variant="default"
-                      size="lg"
-                      className="w-full py-6"
-                      onClick={(e: React.MouseEvent) => {
-                        handleHashLinkClick(e, "/#vote");
-                        setOpen(false);
-                      }}
-                    />
-                  )}
+                  {siteConfig.sidebarVoteCtaPlacement !== "top"
+                    ? sidebarVoteCta
+                    : null}
                 </nav>
               </SheetContent>
             </Sheet>

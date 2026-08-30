@@ -248,6 +248,7 @@ export const publicSiteAppRoutes = Object.freeze({
     {
       covers: [
         "apps/warondisease/app/treaty/page.tsx",
+        "apps/warondisease/app/treaty/treaty-markdown.tsx",
         "packages/site-kit/src/components/landing/TreatySignatureBox.tsx",
       ],
       label: "Treaty text and signature",
@@ -807,9 +808,13 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     });
   }
 
+  const publicRoutes = getPublicSiteAppRoutes(appName);
+  const publicRouteNames = new Set(publicRoutes.map(({ routeName }) => routeName));
   const screenshotRoutes = [
-    ...routes,
-    ...getPublicSiteAppRoutes(appName),
+    // Hand-authored public captures can carry fixtures, query parameters, and
+    // component coverage. Prefer them over a generic nav-derived capture.
+    ...routes.filter(({ routeName }) => !publicRouteNames.has(routeName)),
+    ...publicRoutes,
     ...getAuthenticatedSiteAppRoutes(appName),
   ].map((route) => {
     const sourcePage =

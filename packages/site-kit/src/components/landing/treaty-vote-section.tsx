@@ -7,7 +7,7 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { useState, useEffect, useRef } from "react"
 import { Square, CheckSquare } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { storage } from "../../lib/storage"
 import { syncPendingVote } from "../../lib/vote-utils"
 import { getUsernameOrReferralCode } from "../../lib/referral.client"
@@ -41,6 +41,7 @@ interface TreatyVoteSectionProps {
   bgColor?: SectionBgColor
   showManualPromo?: boolean
   postVoteMode?: TreatyPostVoteMode
+  authenticatedPostVoteRedirectUrl?: string
   disableIntroAnimation?: boolean
 }
 
@@ -52,6 +53,7 @@ export default function TreatyVoteSection({
   bgColor = "yellow",
   showManualPromo = true,
   postVoteMode = "full",
+  authenticatedPostVoteRedirectUrl,
   disableIntroAnimation = false
 }: TreatyVoteSectionProps = {}) {
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null)
@@ -62,6 +64,7 @@ export default function TreatyVoteSection({
   const [showAnimation, setShowAnimation] = useState(false)
   const [animatedValue, setAnimatedValue] = useState(50)
   const { data: session, status } = useSession()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const referralCode = searchParams?.get("ref") || null
   const inviteToken = searchParams?.get("invite") || null
@@ -216,9 +219,15 @@ export default function TreatyVoteSection({
   useEffect(() => {
     if (status === "authenticated" && session && !hasSyncedRef.current) {
       hasSyncedRef.current = true
-      syncPendingVote(session)
+      const pendingVote = storage.getPendingVote()
+      const hasCompletedPendingVote = pendingVote?.answer === "YES" || pendingVote?.answer === "NO"
+      void syncPendingVote(session).then(() => {
+        if (hasCompletedPendingVote && authenticatedPostVoteRedirectUrl) {
+          router.push(authenticatedPostVoteRedirectUrl)
+        }
+      })
     }
-  }, [status, session])
+  }, [authenticatedPostVoteRedirectUrl, router, session, status])
 
   // Trigger confetti celebration
   const triggerConfetti = () => {
@@ -357,6 +366,10 @@ export default function TreatyVoteSection({
           VotePosition: choice.toUpperCase(),
           referralCode: referralIdentifier,
         })
+      }
+      if (authenticatedPostVoteRedirectUrl) {
+        router.push(authenticatedPostVoteRedirectUrl)
+        return
       }
     }
     // No need to show auth dialog anymore - signup form shows inline
@@ -582,15 +595,24 @@ export default function TreatyVoteSection({
               }}
               className="max-w-2xl mx-auto mb-16"
             >
-              <TreatyPostVoteFlow
-                answer={answer}
-                mode={postVoteMode}
-                status={status}
-                session={session}
-                shareUrl={shareUrl}
-                referralCode={referralCode}
-                inviteToken={inviteToken}
-              />
+              {authenticatedPostVoteRedirectUrl && status === "authenticated" && session ? (
+                <Card
+                  className="border-4 border-primary bg-background p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                  data-testid="treaty-vote-saving"
+                >
+                  <p className="text-2xl font-black uppercase">Saving your vote.</p>
+                </Card>
+              ) : (
+                <TreatyPostVoteFlow
+                  answer={answer}
+                  mode={postVoteMode}
+                  status={status}
+                  session={session}
+                  shareUrl={shareUrl}
+                  referralCode={referralCode}
+                  inviteToken={inviteToken}
+                />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

@@ -9,9 +9,11 @@ export default function HomePage() {
   return (
     <Layout>
       <CampaignHomePage
-        primaryVoteSection={votingEnabled ? <TreatyVoteSection /> : null}
+        primaryVoteSection={votingEnabled ? <TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" /> : null}
         finalVoteSection={
-          votingEnabled ? <TreatyVoteSection sectionId="vote-final" /> : null
+          votingEnabled ? (
+            <TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" sectionId="vote-final" />
+          ) : null
         }
       />
     </Layout>

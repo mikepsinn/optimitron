@@ -28,7 +28,7 @@ const treatyMarkdownComponents: MarkdownComponents = {
     <h4 className="mt-6 text-lg font-black sm:text-xl">{children}</h4>
   ),
   p: ({ children }) => (
-    <p className="mt-4 text-base font-medium leading-relaxed sm:text-lg">
+    <p className="mb-8 text-left text-lg leading-9 last:mb-0 sm:mb-10 sm:text-[1.35rem]">
       {children}
     </p>
   ),

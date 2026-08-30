@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Libre_Baskerville } from "next/font/google"
 import Layout from "@/components/layout"
 import { TreatySignatureBox } from "@/components/landing/TreatySignatureBox"
 import { Container } from "@/components/ui/container"
@@ -12,6 +13,13 @@ import {
   TREATY_REDUCTION_PCT,
 } from "@/lib/parameters-calculations-citations"
 import { TreatyMarkdown } from "./treaty-markdown"
+
+const libreBaskerville = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  variable: "--v0-font-libre-baskerville",
+})
 
 const treatyReduction = `${Math.round(TREATY_REDUCTION_PCT.value * 100)}%`
 const statusQuoYears = Math.round(
@@ -27,9 +35,9 @@ export const metadata: Metadata = {
 }
 
 /**
- * `/treaty` — the skim-and-sign surface: one centered headline, the treaty
- * body rendered as a single continuous markdown document, and a single
- * signature box at the bottom. No multi-step prelude, no competing CTAs.
+ * `/treaty` — the skim-and-sign surface: a centered title and instruction,
+ * the treaty body as one continuous document, and one signature box at the
+ * bottom. No multi-step prelude and no competing CTAs.
  */
 export default async function TreatyPage() {
   const treaty = await getTreatyPageContent()
@@ -45,11 +53,18 @@ export default async function TreatyPage() {
     <Layout>
       <SectionContainer bgColor="background" borderPosition="bottom" padding="md">
         <Container size="md">
-          <article className="mx-auto max-w-3xl">
-            <h1 className="text-center text-3xl font-black uppercase sm:text-4xl md:text-5xl">
-              Please quickly skim and sign to end war and disease.
-            </h1>
-            <TreatyMarkdown markdown={treaty.bodyMarkdown} />
+          <article className={`mx-auto max-w-3xl ${libreBaskerville.variable}`}>
+            <header className="mb-10 text-center">
+              <h1 className="text-5xl font-bold tracking-[0.04em] [font-family:var(--v0-font-libre-baskerville)] sm:text-6xl md:text-7xl">
+                The 1% Treaty
+              </h1>
+              <p className="mt-6 text-3xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+                Please quickly skim and sign to end war and disease.
+              </p>
+            </header>
+            <div className="[font-family:var(--v0-font-libre-baskerville)]">
+              <TreatyMarkdown markdown={treaty.bodyMarkdown} />
+            </div>
             <section id="sign" className="mt-12">
               <TreatySignatureBox initialSignedYes={initialSignedYes} />
             </section>

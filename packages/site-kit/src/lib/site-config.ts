@@ -422,6 +422,9 @@ export interface SiteConfig {
   /** Whether the sidebar includes the treaty vote/share CTA. Defaults to true. */
   sidebarVoteCtaEnabled?: boolean;
 
+  /** Where the treaty vote/share CTA appears in the sidebar. Defaults to bottom. */
+  sidebarVoteCtaPlacement?: "top" | "bottom";
+
   /** Footer branding (first column) */
   footerBranding?: FooterBranding;
 
@@ -694,11 +697,27 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation: flat, action-first. No sidebar accordion — every extra label dilutes the CTA.
-    // Primary: Vote (core action).
-    // Manual (long-form conversion). Secondary links live in the footer.
-    topLevelNavItems: ["vote", "manual"],
-    sidebarSections: [],
+    // Navigation: keep the vote button primary, then expose the next useful
+    // campaign actions without turning the sidebar into a route inventory.
+    topLevelNavItems: [],
+    sidebarVoteCtaPlacement: "top",
+    sidebarSections: [
+      {
+        id: "take-action",
+        label: "Take Action",
+        items: ["treaty", "send", "join", "employees"],
+      },
+      {
+        id: "see-progress",
+        label: "See Progress",
+        items: ["signatories", "search"],
+      },
+      {
+        id: "understand",
+        label: "Understand",
+        items: ["thePlan", "manual", "faq"],
+      },
+    ],
     footerBranding: {
       title: "THE WAR ON DISEASE",
       tagline: "MAKING SUFFERING OPTIONAL",
@@ -707,17 +726,26 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "act",
         label: "ACT",
-        items: ["vote", "donate"],
+        items: ["vote", "treaty", "send", "join", "employees", "donate"],
       },
       {
-        id: "learn",
-        label: "LEARN",
-        items: ["about", "faq", "thePlan", "manual", "listenPodcast"],
+        id: "progress",
+        label: "PROGRESS",
+        items: ["signatories", "search", "thePlan"],
       },
       {
-        id: "connect",
-        label: "CONNECT",
-        items: ["institutes", "volunteer"],
+        id: "learn-share",
+        label: "LEARN & SHARE",
+        items: [
+          "manual",
+          "faq",
+          "about",
+          "listenPodcast",
+          "poster",
+          "doorToDoor",
+          "institutes",
+          "volunteer",
+        ],
       },
     ],
     contactInfo: {
