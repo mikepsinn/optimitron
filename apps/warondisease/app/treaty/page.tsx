@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Libre_Baskerville } from "next/font/google"
 import Layout from "@/components/layout"
 import { TreatySignatureBox } from "@/components/landing/TreatySignatureBox"
 import { Container } from "@/components/ui/container"
@@ -12,6 +13,13 @@ import {
   TREATY_REDUCTION_PCT,
 } from "@/lib/parameters-calculations-citations"
 import { TreatyMarkdown } from "./treaty-markdown"
+
+const libreBaskerville = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  variable: "--v0-font-libre-baskerville",
+})
 
 const treatyReduction = `${Math.round(TREATY_REDUCTION_PCT.value * 100)}%`
 const statusQuoYears = Math.round(
@@ -45,7 +53,7 @@ export default async function TreatyPage() {
     <Layout>
       <SectionContainer bgColor="background" borderPosition="bottom" padding="md">
         <Container size="md">
-          <article className="mx-auto max-w-3xl">
+          <article className={`mx-auto max-w-3xl ${libreBaskerville.variable}`}>
             <header className="mb-10 text-center">
               <h1 className="text-5xl font-bold tracking-[0.04em] [font-family:var(--v0-font-libre-baskerville)] sm:text-6xl md:text-7xl">
                 The 1% Treaty
