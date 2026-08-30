@@ -26,8 +26,10 @@ const log = createLogger("referral-invitations-api")
 type RawInvitation = {
   recipientName?: unknown
   inviteeContact?: unknown
+  recipientEmail?: unknown
   contactMethod?: unknown
   messageText?: unknown
+  originUrl?: unknown
 }
 
 export async function GET() {
@@ -52,7 +54,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth()
-    const body = await req.json().catch(() => ({}))
+    const rawBody: unknown = await req.json().catch(() => ({}))
+    const body =
+      rawBody && typeof rawBody === "object"
+        ? (rawBody as Record<string, unknown>)
+        : {}
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -153,7 +159,7 @@ export async function POST(req: NextRequest) {
           referendumId: referendum?.id ?? null,
           copiedAt: action === "copy" ? now : null,
           status: action === "copy" ? ReferralInvitationStatus.COPIED : ReferralInvitationStatus.PENDING,
-          originUrl: null,
+          originUrl: item.originUrl,
         },
       })
 
@@ -208,7 +214,14 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ invitations: created, created: created.length }, { status: 201 })
+    return NextResponse.json(
+      {
+        invitation: created.length === 1 ? created[0] : undefined,
+        invitations: created,
+        created: created.length,
+      },
+      { status: 201 },
+    )
   } catch (error) {
     if (error instanceof Error && error.message.includes("Unauthorized")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -228,7 +241,11 @@ function emailResultId(result: unknown): string | null {
 export async function PATCH(req: NextRequest) {
   try {
     const { userId } = await requireAuth()
-    const body = await req.json().catch(() => ({}))
+    const rawBody: unknown = await req.json().catch(() => ({}))
+    const body =
+      rawBody && typeof rawBody === "object"
+        ? (rawBody as Record<string, unknown>)
+        : {}
     const { id, status, action } = body
 
     if (typeof id !== "string") {
@@ -245,7 +262,13 @@ export async function PATCH(req: NextRequest) {
       convertedAt?: Date | null
       copiedAt?: Date
       sentAt?: Date
+      messageText?: string
     } = {}
+
+    const messageText =
+      typeof body.messageText === "string"
+        ? body.messageText.trim().slice(0, MAX_INVITATION_MESSAGE_LENGTH)
+        : null
 
     if (typeof status === "string") {
       const validStatuses: ReferralInvitationStatus[] = [
@@ -268,11 +291,93 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    if (action === "copy") {
+    if (action === "copy" || action === "markCopied" || action === "markManualContacted") {
       updateData.copiedAt = new Date()
+      if (messageText) updateData.messageText = messageText
       if (!updateData.status) {
         updateData.status = ReferralInvitationStatus.COPIED
       }
+    }
+
+    if (action === "sendMessage") {
+      if (existing.sentAt) {
+        return NextResponse.json({ error: "This invitation was already sent." }, { status: 409 })
+      }
+
+      if (!existing.recipientEmail || !isValidInviteEmail(existing.recipientEmail)) {
+        return NextResponse.json(
+          { error: "This invitation has no recipient email." },
+          { status: 400 },
+        )
+      }
+
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
+      const sendsToday = await prisma.referralInvitation.count({
+        where: { referrerUserId: userId, sentAt: { gte: since } },
+      })
+      if (sendsToday >= MAX_REFERRAL_INVITATION_EMAILS_PER_DAY) {
+        return NextResponse.json({ error: "Daily referral email limit reached" }, { status: 429 })
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          referralCode: true,
+          person: { select: { displayName: true, handle: true } },
+        },
+      })
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 })
+      }
+
+      const referralUrl = buildUserInviteReferralUrl(
+        { handle: user.person?.handle, referralCode: user.referralCode },
+        existing.inviteToken,
+      )
+      const outboundMessage =
+        messageText ||
+        existing.messageText ||
+        buildDefaultReferralInvitationMessage(existing.recipientName, referralUrl)
+      const senderName = user.person?.displayName || "Someone who voted"
+      const result = await sendReferralInviteEmail({
+        to: existing.recipientEmail,
+        recipientName: existing.recipientName,
+        senderName,
+        messageText: outboundMessage,
+        surveyUrl: referralUrl,
+      })
+      if (!result.success) {
+        return NextResponse.json(
+          { error: result.error || "Failed to send referral email" },
+          { status: 503 },
+        )
+      }
+
+      const now = new Date()
+      const invitation = await prisma.referralInvitation.update({
+        where: { id },
+        data: {
+          messageText: outboundMessage,
+          sentAt: now,
+          status: ReferralInvitationStatus.SENT,
+        },
+      })
+      await prisma.emailLog.create({
+        data: {
+          userId,
+          toAddress: existing.recipientEmail,
+          templateId: "referral-invite-share",
+          subject: `${senderName} wants you to not die of a horrible disease`,
+          status: EmailLogStatus.SENT,
+          providerMessageId: emailResultId(result.data),
+          dedupeKey: `referral-invite:${invitation.id}`,
+        },
+      })
+
+      return NextResponse.json(
+        { invitation, dispatched: true, status: "sent" },
+        { status: 200 },
+      )
     }
 
     // sender nudge cadence columns do not exist on optimitron ReferralInvitation —
@@ -306,7 +411,8 @@ function cleanInvitation(raw: unknown) {
   const name = typeof obj.recipientName === "string" ? obj.recipientName.trim() : ""
   if (!name) return null
 
-  const contact = typeof obj.inviteeContact === "string" ? obj.inviteeContact.trim() : null
+  const rawContact = obj.inviteeContact ?? obj.recipientEmail
+  const contact = typeof rawContact === "string" ? rawContact.trim() : null
   const allowed: ReferralInvitationContactMethod[] = [
     ReferralInvitationContactMethod.EMAIL,
     ReferralInvitationContactMethod.SMS,
@@ -323,11 +429,13 @@ function cleanInvitation(raw: unknown) {
       ? ReferralInvitationContactMethod.EMAIL
       : explicitMethod
   const messageText = typeof obj.messageText === "string" ? obj.messageText.trim() : null
+  const originUrl = typeof obj.originUrl === "string" ? obj.originUrl.trim() : null
 
   return {
     recipientName: name.slice(0, MAX_INVITEE_NAME_LENGTH),
     inviteeContact: contact ? contact.slice(0, MAX_INVITEE_CONTACT_LENGTH) : null,
     contactMethod: inferredMethod,
     messageText: messageText ? messageText.slice(0, MAX_INVITATION_MESSAGE_LENGTH) : null,
+    originUrl: originUrl ? originUrl.slice(0, 2048) : null,
   }
 }

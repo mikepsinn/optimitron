@@ -178,6 +178,22 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
   },
   {
     description:
+      "Every head of government who has not signed the 1% Treaty, and the message to send them.",
+    emoji: "🏛️",
+    href: ROUTES.employees,
+    keywords: [
+      "employees",
+      "presidents",
+      "leaders",
+      "remind",
+      "overdue",
+      "accountability",
+    ],
+    section: "Fund and pressure",
+    title: "Remind Presidents",
+  },
+  {
+    description:
       "Shareholder letters, board pressure, and the expected lives saved.",
     emoji: "🏛️",
     href: ROUTES.foundations,
