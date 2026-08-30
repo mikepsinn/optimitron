@@ -2,9 +2,13 @@ import { getGovernmentMetrics } from "@optimitron/data/datasets/government-repor
 import { prisma } from "../prisma"
 import {
   compareSignersByMilitarySpending,
+  type TreatyPresidentManagementData,
   type TreatySignerTask,
 } from "./treaty-signers"
-import { TREATY_SIGNER_TASK_KEY_PREFIX } from "@optimitron/db/task-keys"
+import {
+  TREATY_PARENT_TASK_KEY,
+  TREATY_SIGNER_TASK_KEY_PREFIX,
+} from "@optimitron/db/task-keys"
 import { TaskStatus } from "@optimitron/db"
 
 /**
@@ -35,7 +39,16 @@ export async function getTreatySignerTasks(): Promise<TreatySignerTask[]> {
       id: true,
       title: true,
       dueAt: true,
-      assigneePerson: { select: { countryCode: true, displayName: true } },
+      estimatedEffortHours: true,
+      assigneeAffiliationSnapshot: true,
+      assigneePerson: {
+        select: {
+          countryCode: true,
+          displayName: true,
+          handle: true,
+          image: true,
+        },
+      },
     },
     // Every signer task shares one due date and one title ("Sign the 1%
     // Treaty"), so the database cannot order them meaningfully — and with no
@@ -51,10 +64,17 @@ export async function getTreatySignerTasks(): Promise<TreatySignerTask[]> {
 
   return rows
     .map((row) => ({
+      assigneeAffiliation: row.assigneeAffiliationSnapshot,
       assigneeCountryCode: row.assigneePerson?.countryCode ?? null,
+      assigneeHandle: row.assigneePerson?.handle ?? null,
+      assigneeImage: row.assigneePerson?.image ?? null,
       assigneeName: row.assigneePerson?.displayName ?? null,
       dueAt: row.dueAt,
+      estimatedEffortHours: row.estimatedEffortHours,
       id: row.id,
+      militarySpendingAnnualUsd: getMilitarySpending(
+        row.assigneePerson?.countryCode ?? null,
+      ),
       title: row.title,
     }))
     .sort((a, b) =>
@@ -63,4 +83,42 @@ export async function getTreatySignerTasks(): Promise<TreatySignerTask[]> {
         getMilitarySpending(b.assigneeCountryCode),
       ),
     )
+}
+
+/**
+ * The project plus its executable president tasks.
+ *
+ * This keeps the campaign route narrow while preserving the project-management
+ * structure that the original Optimitron page exposed.
+ */
+export async function getTreatyPresidentManagementData(): Promise<TreatyPresidentManagementData> {
+  const [signerTasks, treatyProgram] = await Promise.all([
+    getTreatySignerTasks(),
+    prisma.task.findUnique({
+      where: { taskKey: TREATY_PARENT_TASK_KEY },
+      select: {
+        deletedAt: true,
+        dueAt: true,
+        estimatedEffortHours: true,
+        id: true,
+        status: true,
+        title: true,
+      },
+    }),
+  ])
+
+  return {
+    signerTasks,
+    treatyProgram:
+      treatyProgram &&
+      treatyProgram.deletedAt == null &&
+      treatyProgram.status !== TaskStatus.VERIFIED
+        ? {
+            dueAt: treatyProgram.dueAt,
+            estimatedEffortHours: treatyProgram.estimatedEffortHours,
+            id: treatyProgram.id,
+            title: treatyProgram.title,
+          }
+        : null,
+  }
 }

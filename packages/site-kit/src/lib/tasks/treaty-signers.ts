@@ -1,18 +1,47 @@
 /**
  * One treaty-signer task: a head of government who owes humanity a signature.
  *
- * Deliberately narrower than Optimitron's `TaskCardTask`. The campaign page
- * renders a roster, not the task-management UI, so it needs a name, a due
- * date, and a link — not estimates, claims, funding, or child tasks. Keeping
- * the shape small is what lets this read from one indexed query instead of
- * Optimitron's whole-tree `getTasksPageData`.
+ * Narrower than Optimitron's `TaskCardTask`, but complete for the public
+ * president project board: assignee, deadline, effort, impact attribution,
+ * task link, and reminder action. Keeping the shape focused avoids loading the
+ * private and authenticated task-management fields the campaign page cannot use.
  */
 export interface TreatySignerTask {
+  assigneeAffiliation: string | null
   assigneeCountryCode: string | null
+  assigneeHandle: string | null
+  assigneeImage: string | null
   assigneeName: string | null
   dueAt: Date | null
+  estimatedEffortHours: number | null
+  id: string
+  militarySpendingAnnualUsd: number | null
+  title: string
+}
+
+export interface TreatyProgramTask {
+  dueAt: Date | null
+  estimatedEffortHours: number | null
   id: string
   title: string
+}
+
+export interface TreatyPresidentManagementData {
+  signerTasks: TreatySignerTask[]
+  treatyProgram: TreatyProgramTask | null
+}
+
+/**
+ * Never let a frozen or misconfigured browser clock rewind accountability.
+ *
+ * The server timestamp is part of the rendered record. A client can advance
+ * it after hydration, but it cannot turn an overdue task back into "on time."
+ */
+export function getAccountabilityReferenceMs(
+  serverNowMs: number,
+  clientNowMs: number | null,
+) {
+  return Math.max(serverNowMs, clientNowMs ?? serverNowMs)
 }
 
 /**

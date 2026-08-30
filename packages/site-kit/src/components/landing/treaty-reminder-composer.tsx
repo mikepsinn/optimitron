@@ -78,6 +78,7 @@ interface GovernmentLeaderClientContext {
 interface TreatyReminderComposerProps {
   cardClassName?: string;
   defaultCowardMode?: boolean;
+  defaultCountryCode?: string;
   defaultRecipientMode?: TreatyReminderRecipientMode;
   referralBaseUrl?: string;
   referralUser?: {
@@ -136,6 +137,7 @@ function getSessionCountryCode(user: unknown): string | null {
 export function TreatyReminderComposer({
   cardClassName,
   defaultCowardMode = false,
+  defaultCountryCode,
   defaultRecipientMode,
   referralBaseUrl,
   referralUser,
@@ -166,6 +168,7 @@ export function TreatyReminderComposer({
     useState<GovernmentLeaderClientContext | null>(null);
 
   const countryCode =
+    defaultCountryCode?.trim().toUpperCase() ||
     getSessionCountryCode(session?.user) ||
     (now ? getCountryFromLocale() : null) ||
     "US";

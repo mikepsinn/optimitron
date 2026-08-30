@@ -1,5 +1,23 @@
 import { describe, expect, it } from "vitest"
-import { compareSignersByMilitarySpending } from "@optimitron/site-kit/lib/tasks/treaty-signers"
+import {
+  compareSignersByMilitarySpending,
+  getAccountabilityReferenceMs,
+} from "@optimitron/site-kit/lib/tasks/treaty-signers"
+
+describe("getAccountabilityReferenceMs", () => {
+  it("does not let a frozen browser clock turn an overdue task back into on time", () => {
+    const serverNow = new Date("2026-08-29T00:00:00.000Z").getTime()
+    const frozenBrowserNow = new Date("2026-01-15T00:00:00.000Z").getTime()
+
+    expect(getAccountabilityReferenceMs(serverNow, frozenBrowserNow)).toBe(
+      serverNow,
+    )
+  })
+
+  it("accepts a browser clock that advances beyond the server render", () => {
+    expect(getAccountabilityReferenceMs(100, 101)).toBe(101)
+  })
+})
 
 /**
  * All 189 signer tasks carry the same title and the same due date, so the
@@ -8,8 +26,12 @@ import { compareSignersByMilitarySpending } from "@optimitron/site-kit/lib/tasks
  */
 describe("compareSignersByMilitarySpending", () => {
   it("puts the larger military budget first", () => {
-    expect(compareSignersByMilitarySpending(886_000_000_000, 296_000_000_000)).toBeLessThan(0)
-    expect(compareSignersByMilitarySpending(296_000_000_000, 886_000_000_000)).toBeGreaterThan(0)
+    expect(
+      compareSignersByMilitarySpending(886_000_000_000, 296_000_000_000),
+    ).toBeLessThan(0)
+    expect(
+      compareSignersByMilitarySpending(296_000_000_000, 886_000_000_000),
+    ).toBeGreaterThan(0)
   })
 
   it("ranks a government with a report card above one without", () => {
@@ -46,7 +68,13 @@ describe("compareSignersByMilitarySpending", () => {
         .sort(([, a], [, b]) => compareSignersByMilitarySpending(a, b))
         .map(([code]) => code)
 
-    expect(sortBySpending(spending)).toEqual(["us", "cn", "ru", "albania", "belize"])
+    expect(sortBySpending(spending)).toEqual([
+      "us",
+      "cn",
+      "ru",
+      "albania",
+      "belize",
+    ])
     expect(sortBySpending([...spending].reverse())).toEqual([
       "us",
       "cn",

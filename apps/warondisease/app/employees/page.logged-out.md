@@ -34,20 +34,40 @@
 - FACEBOOK
 - REDDIT
 - COPY LINK
-### ↳ [OVERDUE-EMPLOYEE-COUNT] EMPLOYEES HAVE OVERDUE TASKS
-- [🇺🇸 DONALD TRUMP](https://optimitron.com/tasks/1-pct-treaty-signer-us) [SIGNER-OVERDUE-DURATION]
-- [🇨🇳 LI QIANG](https://optimitron.com/tasks/1-pct-treaty-signer-cn) [SIGNER-OVERDUE-DURATION]
-- [🇷🇺 MIKHAIL MISHUSTIN](https://optimitron.com/tasks/1-pct-treaty-signer-ru) [SIGNER-OVERDUE-DURATION]
-- [🇮🇳 NARENDRA MODI](https://optimitron.com/tasks/1-pct-treaty-signer-in) [SIGNER-OVERDUE-DURATION]
-- [🇸🇦 SALMAN BIN ABDULAZIZ AL SAUD](https://optimitron.com/tasks/1-pct-treaty-signer-sa) [SIGNER-OVERDUE-DURATION]
-- [🇬🇧 KEIR STARMER](https://optimitron.com/tasks/1-pct-treaty-signer-gb) [SIGNER-OVERDUE-DURATION]
-- [🇩🇪 FRIEDRICH MERZ](https://optimitron.com/tasks/1-pct-treaty-signer-de) [SIGNER-OVERDUE-DURATION]
-- [🇫🇷 SÉBASTIEN LECORNU](https://optimitron.com/tasks/1-pct-treaty-signer-fr) [SIGNER-OVERDUE-DURATION]
-- [🇯🇵 SANAE TAKAICHI](https://optimitron.com/tasks/1-pct-treaty-signer-jp) [SIGNER-OVERDUE-DURATION]
-- [🇰🇷 LEE JAE MYUNG](https://optimitron.com/tasks/1-pct-treaty-signer-kr) [SIGNER-OVERDUE-DURATION]
-- ← PREV
+- [RATIFY THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty)
+- 1.7 YEARS OVERDUE
+- TIME REQUIRED: 1.6 HOURS COMBINED
+- [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
+- Humanity maintains enough nuclear weapons to trigger a civilization-ending nuclear winter [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. This treaty asks us to settle for enough weapons to do it 121.2 times in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
+- This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [2 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
+- 💀 DEAD ALREADY FROM THE DELAY
+- [treaty-deaths-from-delay]
+- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 607 DAYS
+- 💸 WASTED ON DISEASE WHILE THEY DELAY
+- [treaty-money-wasted]
+- RATE: [$10T/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
+### ↳ [overdue-employee-count] employees have overdue tasks
+- 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
+- ASSIGNEE
+- TASK
+- 💀 DEATHS FROM DELAY
+- 💸 WASTED BY DELAY
+- ⏱ TIME
+- REMIND
+- [🇺🇸 Donald Trump](https://optimitron.com/people/donald-trump-us) Government of United States [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-us) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=US#treaty-reminder-composer)
+- [🇨🇳 Li Qiang](https://optimitron.com/people/li-qiang-cn) Government of China [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-cn) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=CN#treaty-reminder-composer)
+- [🇷🇺 Mikhail Mishustin](https://optimitron.com/people/mikhail-mishustin-ru) Government of Russia [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-ru) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=RU#treaty-reminder-composer)
+- [🇮🇳 Narendra Modi](https://optimitron.com/people/narendra-modi-in) Government of India [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-in) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=IN#treaty-reminder-composer)
+- [🇸🇦 Salman bin Abdulaziz Al Saud](https://optimitron.com/people/salman-bin-abdulaziz-al-saud-sa) Government of Saudi Arabia [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-sa) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=SA#treaty-reminder-composer)
+- [🇬🇧 Keir Starmer](https://optimitron.com/people/keir-starmer-gb) Government of United Kingdom [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-gb) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=GB#treaty-reminder-composer)
+- [🇩🇪 Friedrich Merz](https://optimitron.com/people/friedrich-merz-de) Government of Germany [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-de) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=DE#treaty-reminder-composer)
+- [🇫🇷 Sébastien Lecornu](https://optimitron.com/people/sebastien-lecornu-fr) Government of France [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-fr) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=FR#treaty-reminder-composer)
+- [🇯🇵 Sanae Takaichi](https://optimitron.com/people/sanae-takaichi-jp) Government of Japan [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-jp) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=JP#treaty-reminder-composer)
+- [🇰🇷 Lee Jae Myung](https://optimitron.com/people/lee-jae-myung-kr) Government of South Korea [SIGN THE 1% TREATY](https://optimitron.com/tasks/1-pct-treaty-signer-kr) [signer-deaths-from-delay] [signer-money-wasted] 30s [REMIND](/employees?country=KR#treaty-reminder-composer)
+- 1–10 OF 189
+- ← Prev
 - PAGE 1 / 19
-- NEXT →
+- Next →
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
