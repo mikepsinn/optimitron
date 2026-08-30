@@ -15,7 +15,8 @@
 
 - [THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE](/)
 - [Go to Dashboard](/dashboard)
-## PLEASE QUICKLY SKIM AND SIGN TO END WAR AND DISEASE.
+- PLEASE QUICKLY SKIM AND SIGN TO END WAR AND DISEASE.
+## The 1% Treaty
 - WHEREAS, humanity pays governments approximately [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) per year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;
 - WHEREAS, the citizenry would like to actually receive this service at some point;
 - WHEREAS, these public servants instead used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment;
