@@ -248,6 +248,7 @@ export const publicSiteAppRoutes = Object.freeze({
     {
       covers: [
         "apps/warondisease/app/treaty/page.tsx",
+        "apps/warondisease/app/treaty/treaty-markdown.tsx",
         "packages/site-kit/src/components/landing/TreatySignatureBox.tsx",
       ],
       label: "Treaty text and signature",
