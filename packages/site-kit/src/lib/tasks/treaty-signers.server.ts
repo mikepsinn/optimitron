@@ -1,15 +1,23 @@
+import { listGovernmentLeaders } from "@optimitron/data/datasets/government-leaders"
 import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards"
 import { prisma } from "../prisma"
+import { createLogger } from "../logger"
 import {
   compareSignersByMilitarySpending,
   type TreatyPresidentManagementData,
   type TreatySignerTask,
 } from "./treaty-signers"
 import {
+  TREATY_PARENT_TASK_ID,
   TREATY_PARENT_TASK_KEY,
   TREATY_SIGNER_TASK_KEY_PREFIX,
 } from "@optimitron/db/task-keys"
 import { TaskStatus } from "@optimitron/db"
+
+const log = createLogger("treaty-signers")
+const TREATY_PROGRAM_DUE_AT = new Date("2024-12-31T00:00:00.000Z")
+const TREATY_SIGNER_DUE_AT = new Date("2026-04-14T00:00:00.000Z")
+const TREATY_SIGNER_EFFORT_HOURS = 30 / 3600
 
 /**
  * Annual military spending for a signer's government, or `null` when the
@@ -86,39 +94,76 @@ export async function getTreatySignerTasks(): Promise<TreatySignerTask[]> {
 }
 
 /**
+ * Keep the public accountability board useful when a preview database is
+ * unavailable or has not received its schema yet. The same canonical leader
+ * dataset and stable task ids seed the database-backed version.
+ */
+export function buildTreatyPresidentManagementFallback(): TreatyPresidentManagementData {
+  const signerTasks = listGovernmentLeaders().map((leader) => ({
+    assigneeAffiliation: leader.governmentName,
+    assigneeCountryCode: leader.countryCode,
+    assigneeHandle: null,
+    assigneeImage: leader.leaderImageUrl,
+    assigneeName: leader.leaderName ?? leader.decisionMakerLabel,
+    dueAt: TREATY_SIGNER_DUE_AT,
+    estimatedEffortHours: TREATY_SIGNER_EFFORT_HOURS,
+    id: `1-pct-treaty-signer-${leader.countryCode.toLowerCase()}`,
+    militarySpendingAnnualUsd: leader.militaryBudgetUsd,
+    title: "Sign the 1% Treaty",
+  }))
+
+  return {
+    signerTasks,
+    treatyProgram: {
+      dueAt: TREATY_PROGRAM_DUE_AT,
+      estimatedEffortHours: null,
+      id: TREATY_PARENT_TASK_ID,
+      title: "Ratify the 1% Treaty",
+    },
+  }
+}
+
+/**
  * The project plus its executable president tasks.
  *
  * This keeps the campaign route narrow while preserving the project-management
  * structure that the original Optimitron page exposed.
  */
 export async function getTreatyPresidentManagementData(): Promise<TreatyPresidentManagementData> {
-  const [signerTasks, treatyProgram] = await Promise.all([
-    getTreatySignerTasks(),
-    prisma.task.findUnique({
-      where: { taskKey: TREATY_PARENT_TASK_KEY },
-      select: {
-        deletedAt: true,
-        dueAt: true,
-        estimatedEffortHours: true,
-        id: true,
-        status: true,
-        title: true,
-      },
-    }),
-  ])
+  try {
+    const [signerTasks, treatyProgram] = await Promise.all([
+      getTreatySignerTasks(),
+      prisma.task.findUnique({
+        where: { taskKey: TREATY_PARENT_TASK_KEY },
+        select: {
+          deletedAt: true,
+          dueAt: true,
+          estimatedEffortHours: true,
+          id: true,
+          status: true,
+          title: true,
+        },
+      }),
+    ])
 
-  return {
-    signerTasks,
-    treatyProgram:
-      treatyProgram &&
-      treatyProgram.deletedAt == null &&
-      treatyProgram.status !== TaskStatus.VERIFIED
-        ? {
-            dueAt: treatyProgram.dueAt,
-            estimatedEffortHours: treatyProgram.estimatedEffortHours,
-            id: treatyProgram.id,
-            title: treatyProgram.title,
-          }
-        : null,
+    return {
+      signerTasks,
+      treatyProgram:
+        treatyProgram &&
+        treatyProgram.deletedAt == null &&
+        treatyProgram.status !== TaskStatus.VERIFIED
+          ? {
+              dueAt: treatyProgram.dueAt,
+              estimatedEffortHours: treatyProgram.estimatedEffortHours,
+              id: treatyProgram.id,
+              title: treatyProgram.title,
+            }
+          : null,
+    }
+  } catch (error) {
+    log.warn("Treaty task data unavailable; rendering the managed roster fallback", {
+      error,
+    })
+    return buildTreatyPresidentManagementFallback()
   }
 }
