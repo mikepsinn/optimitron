@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import * as Sentry from "@sentry/nextjs";
-import {
-  DM_Sans,
-  Libre_Baskerville,
-  Source_Serif_4,
-  Space_Mono,
-} from "next/font/google";
+import { DM_Sans, Source_Serif_4, Space_Mono } from "next/font/google";
 import Script from "next/script";
 import type { ReactNode } from "react";
 
@@ -39,14 +34,8 @@ const sourceSerif = Source_Serif_4({
   weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
   variable: "--v0-font-source-serif-4",
 });
-const libreBaskerville = Libre_Baskerville({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  variable: "--v0-font-libre-baskerville",
-});
 
-const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif.variable} ${libreBaskerville.variable}`;
+const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif.variable}`;
 
 export function buildSiteMetadata(): Metadata {
   const config = getSiteConfig();
