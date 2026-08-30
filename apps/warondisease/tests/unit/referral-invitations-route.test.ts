@@ -139,4 +139,30 @@ describe("the shared referral invitation contract", () => {
     expect(payload).toMatchObject({ dispatched: true, status: "sent" })
     expect(mocks.sendReferralInviteEmail).toHaveBeenCalledOnce()
   })
+
+  it("does not send an invitation that was already sent", async () => {
+    mocks.invitationFindUnique.mockResolvedValue({
+      id: "INVITATION1",
+      inviteToken: "invite-token",
+      messageText: "Bob, vote on the 1% Treaty.",
+      recipientEmail: "bob@example.com",
+      recipientName: "Bob",
+      referrerUserId: "USER1",
+      sentAt: new Date("2026-08-29T12:00:00Z"),
+    })
+
+    const response = await PATCH(
+      request("PATCH", {
+        action: "sendMessage",
+        id: "INVITATION1",
+        messageText: "Bob, vote on the 1% Treaty.",
+      }),
+    )
+    const payload = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(payload).toEqual({ error: "This invitation was already sent." })
+    expect(mocks.invitationCount).not.toHaveBeenCalled()
+    expect(mocks.sendReferralInviteEmail).not.toHaveBeenCalled()
+  })
 })

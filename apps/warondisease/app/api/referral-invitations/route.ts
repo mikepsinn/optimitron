@@ -300,6 +300,10 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (action === "sendMessage") {
+      if (existing.sentAt) {
+        return NextResponse.json({ error: "This invitation was already sent." }, { status: 409 })
+      }
+
       if (!existing.recipientEmail || !isValidInviteEmail(existing.recipientEmail)) {
         return NextResponse.json(
           { error: "This invitation has no recipient email." },
