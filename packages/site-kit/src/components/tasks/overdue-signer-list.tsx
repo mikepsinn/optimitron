@@ -456,7 +456,9 @@ export function OverdueSignerList({
             </ul>
           ) : (
             <p className="px-4 py-8 text-center text-sm font-black uppercase">
-              No president tasks match that filter.
+              {normalizedQuery
+                ? "No president tasks match that filter."
+                : "No president tasks are open right now."}
             </p>
           )}
 
