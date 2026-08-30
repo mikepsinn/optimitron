@@ -4,7 +4,10 @@
   "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs wishocracy",
   "git": {
     "deploymentEnabled": {
-      "gh-pages": false
+      "main": true,
+      "feature/preview-wishocracy-*": true,
+      "feature/preview-all-*": true,
+      "**": false
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
