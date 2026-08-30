@@ -219,9 +219,15 @@ export default function TreatyVoteSection({
   useEffect(() => {
     if (status === "authenticated" && session && !hasSyncedRef.current) {
       hasSyncedRef.current = true
-      syncPendingVote(session)
+      const pendingVote = storage.getPendingVote()
+      const hasCompletedPendingVote = pendingVote?.answer === "YES" || pendingVote?.answer === "NO"
+      void syncPendingVote(session).then(() => {
+        if (hasCompletedPendingVote && authenticatedPostVoteRedirectUrl) {
+          router.push(authenticatedPostVoteRedirectUrl)
+        }
+      })
     }
-  }, [status, session])
+  }, [authenticatedPostVoteRedirectUrl, router, session, status])
 
   // Trigger confetti celebration
   const triggerConfetti = () => {

@@ -106,4 +106,29 @@ describe("authenticated treaty voting", () => {
     await waitFor(() => expect(mocks.push).toHaveBeenCalledWith("/dashboard"))
     expect(mocks.pendingVote?.answer).toBe("YES")
   })
+
+  it("syncs a restored completed vote and goes to the dashboard", async () => {
+    let finishSync: ((synced: boolean) => void) | undefined
+    mocks.pendingVote = {
+      answer: "YES",
+      militaryAllocationPercent: 40,
+      timestamp: "2026-08-30T00:00:00.000Z",
+    }
+    mocks.syncPendingVote.mockImplementation(
+      () =>
+        new Promise<boolean>((resolve) => {
+          finishSync = resolve
+        }),
+    )
+
+    render(<TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" disableIntroAnimation />)
+
+    expect(await screen.findByTestId("treaty-vote-saving")).toHaveTextContent("Saving your vote.")
+    expect(screen.queryByTestId("full-post-vote-flow")).toBeNull()
+    expect(mocks.syncPendingVote).toHaveBeenCalledTimes(1)
+
+    await act(async () => finishSync?.(true))
+
+    await waitFor(() => expect(mocks.push).toHaveBeenCalledWith("/dashboard"))
+  })
 })
