@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 /**
- * `/treaty` — the skim-and-sign surface: a centered instruction and title,
+ * `/treaty` — the skim-and-sign surface: a centered title and instruction,
  * the treaty body as one continuous document, and one signature box at the
  * bottom. No multi-step prelude and no competing CTAs.
  */
@@ -47,12 +47,12 @@ export default async function TreatyPage() {
         <Container size="md">
           <article className="mx-auto max-w-3xl">
             <header className="mb-10 text-center">
-              <p className="text-4xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)] sm:text-5xl md:text-6xl">
-                Please quickly skim and sign to end war and disease.
-              </p>
-              <h1 className="mt-6 text-3xl font-bold tracking-[0.04em] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+              <h1 className="text-5xl font-bold tracking-[0.04em] [font-family:var(--v0-font-libre-baskerville)] sm:text-6xl md:text-7xl">
                 The 1% Treaty
               </h1>
+              <p className="mt-6 text-3xl font-black uppercase tracking-[0.08em] [font-family:var(--v0-font-libre-baskerville)] sm:text-4xl md:text-5xl">
+                Please quickly skim and sign to end war and disease.
+              </p>
             </header>
             <div className="[font-family:var(--v0-font-libre-baskerville)]">
               <TreatyMarkdown markdown={treaty.bodyMarkdown} />
