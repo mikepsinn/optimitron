@@ -700,7 +700,12 @@ describeIfDatabase("syncManagedData", () => {
     });
     const originalReferendum = await prisma.referendum.findUniqueOrThrow({
       where: { slug: "one-percent-treaty" },
-      select: { title: true, description: true, status: true },
+      select: {
+        title: true,
+        description: true,
+        publishedAt: true,
+        status: true,
+      },
     });
     const originalOrganization = await prisma.organization.findUniqueOrThrow({
       where: { slug: "humanity" },
@@ -719,6 +724,7 @@ describeIfDatabase("syncManagedData", () => {
       data: {
         title: "drifted referendum title",
         description: "drifted referendum description",
+        publishedAt: new Date("2000-01-01T00:00:00.000Z"),
       },
     });
     await prisma.organization.update({
