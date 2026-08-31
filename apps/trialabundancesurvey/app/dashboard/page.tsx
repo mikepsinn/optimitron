@@ -1,32 +1,61 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import Layout from "../../components/layout"
-import { requireAuth } from "@/lib/auth-utils"
+import { getSessionUser } from "@/lib/auth-utils"
 import { Card } from "@/components/ui/card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
-import { getUserTreatyVote } from "@/lib/treaty-votes.server"
+import {
+  getUserTrialAbundanceAllocation,
+  getUserTrialAbundanceVote,
+} from "@/lib/trial-abundance-votes.server"
+import { buildUserReferralUrl } from "@/lib/url"
+import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
+
+interface LiteDashboardPageProps {
+  searchParams?: Promise<{ visual?: string }>
+}
 
 /**
  * Lite participant home — vote status + share survey.
  * Scores / badges / soldiers stay on warondisease.org (optional opt-in).
  */
-export default async function LiteDashboardPage() {
-  let userId: string
-  try {
-    ;({ userId } = await requireAuth())
-  } catch {
+export default async function LiteDashboardPage({
+  searchParams,
+}: LiteDashboardPageProps) {
+  const visualPreview =
+    process.env.NODE_ENV === "development" &&
+    (await searchParams)?.visual === "1"
+  const sessionUser = visualPreview
+    ? { id: "visual-preview", handle: null, referralCode: "SURVEY-DEMO" }
+    : await getSessionUser()
+  if (!sessionUser?.id) {
     redirect("/auth/signin?callbackUrl=/dashboard")
   }
 
-  const vote = await getUserTreatyVote(userId).catch(() => null)
+  const [vote, allocation] = visualPreview
+    ? [{ answer: "YES" as const }, { allocationA: 35, allocationB: 65 }]
+    : await Promise.all([
+        getUserTrialAbundanceVote(sessionUser.id).catch(() => null),
+        getUserTrialAbundanceAllocation(sessionUser.id).catch(() => null),
+      ])
   const headersList = await headers()
   const host = headersList.get("host") ?? "trialabundancesurvey.org"
   const proto = host.includes("localhost") ? "http" : "https"
-  const surveyUrl = `${proto}://${host}`
+  const surveyUrl = buildUserReferralUrl(sessionUser, `${proto}://${host}`)
+  const shareTemplates = [
+    {
+      label: "Question",
+      text: `Should eligible patients be able to join pragmatic clinical trials through their regular physician? I answered the Trial Abundance Survey: ${surveyUrl}`,
+    },
+    {
+      label: "Plain",
+      text: `I answered a short survey about patient access to pragmatic clinical trials. Add your response: ${surveyUrl}`,
+    },
+  ]
 
   return (
     <Layout>
@@ -37,10 +66,20 @@ export default async function LiteDashboardPage() {
           </h1>
           <Card className="border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-6">
             {vote ? (
-              <p className="text-lg font-bold">
-                Recorded:{" "}
-                <span className="text-brutal-cyan">{String(vote.answer)}</span>
-              </p>
+              <div className="space-y-2 text-lg font-bold">
+                <p>
+                  Patient access:{" "}
+                  <span className="text-brutal-cyan">
+                    {vote.answer === "ABSTAIN" ? "NOT SURE" : String(vote.answer)}
+                  </span>
+                </p>
+                {allocation ? (
+                  <p>
+                    Allocation: {allocation.allocationA}% military and weapons,
+                    {" "}{allocation.allocationB}% pragmatic clinical trials
+                  </p>
+                ) : null}
+              </div>
             ) : (
               <p className="text-lg font-bold">
                 No response on file yet.{" "}
@@ -51,15 +90,15 @@ export default async function LiteDashboardPage() {
             )}
           </Card>
 
-          <Card className="border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-6">
-            <h2 className="text-2xl font-black uppercase mb-3">Share the survey</h2>
-            <p className="mb-4 font-medium">
-              Help measure support for pragmatic trials. Copy and share this link.
-            </p>
-            <code className="block border-4 border-primary bg-brutal-yellow p-3 font-mono text-sm break-all">
-              {surveyUrl}
-            </code>
-          </Card>
+          <ReferralLinkCard
+            referralLink={surveyUrl}
+            shareTemplates={shareTemplates}
+            hashtags="PragmaticTrials,ClinicalResearch"
+            introText="Invite someone else to answer the same two questions with your personal referral link."
+            copyLinkLabel="COPY SURVEY LINK"
+            linkContentType="trial_abundance_referral"
+            className="mb-6"
+          />
 
           <Card className="border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="text-2xl font-black uppercase mb-3">

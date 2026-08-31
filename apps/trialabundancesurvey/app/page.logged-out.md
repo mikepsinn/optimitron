@@ -15,8 +15,10 @@
 
 - [GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY](/)
 - [Go to Dashboard](/dashboard)
-### THE QUESTION
-- Adjust slider to show how you'd split your country's finite resources between the weapons and military vs pragmatic clinical trials to cure diseases.
+## TRIAL ABUNDANCE SURVEY
+- Two questions about how we fund medical evidence and how patients can take part in producing it.
+- How would you split your country's finite resources between weapons and military and pragmatic clinical trials?
+- Move the slider to continue.
 - AN INDEPENDENT RESEARCH INITIATIVE
 #### ABOUT
 - [ABOUT](/about)

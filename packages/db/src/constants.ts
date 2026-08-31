@@ -6,6 +6,10 @@
  */
 
 export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
+export const TRIAL_ABUNDANCE_REFERENDUM_SLUG =
+  "patient-access-to-pragmatic-clinical-trials";
+export const TRIAL_ABUNDANCE_REFERENDUM_QUESTION =
+  "Should eligible patients be able to participate in pragmatic clinical trials through their regular physician, with informed consent and appropriate safety oversight?";
 export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
 export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
 export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";

@@ -9,6 +9,7 @@ export const STORAGE_KEYS = {
   SIGNUP_REFERRAL: "signup_referral",
   SIGNUP_INVITE_TOKEN: "signup_invite_token",
   PENDING_VOTE: "pendingVote",
+  PENDING_TRIAL_ABUNDANCE_RESPONSE: "pendingTrialAbundanceResponse",
   MILITARY_ALLOCATION: "militaryAllocation",
   PENDING_ORGANIZATION: "pendingOrganization",
   PENDING_WISHOCRACY: "pendingWishocracy",

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Layout } from "@/components/layout"
 import { storage } from "@/lib/storage"
-import { syncPendingVote } from "@/lib/vote-utils"
+import { syncPendingTrialAbundanceResponse } from "@/lib/trial-abundance-survey"
 import { createLogger } from "@/lib/logger"
 
 const log = createLogger("complete-signup-page")
@@ -14,11 +14,14 @@ export default function CompleteSignupPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { data: session, status } = useSession()
+  const visualPreview = searchParams?.get("visual") === "1"
   const [isProcessing, setIsProcessing] = useState(true)
   const [error, setError] = useState("")
 
   useEffect(() => {
     const processVerification = async () => {
+      if (visualPreview) return
+
       // Wait for session to be available
       if (status === "loading") return
       if (status === "unauthenticated") {
@@ -50,14 +53,14 @@ export default function CompleteSignupPage() {
 
           if (!response.ok) {
             const data = await response.json()
-            setError(data.error || "Failed to verify vote")
+            setError(data.error || "Failed to verify your response")
           } else {
             // Clear localStorage
             storage.clearSignupData()
           }
         }
 
-        await syncPendingVote(session)
+        await syncPendingTrialAbundanceResponse(session)
 
         // Redirect to callback URL or dashboard
         const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
@@ -74,7 +77,7 @@ export default function CompleteSignupPage() {
     }
 
     processVerification()
-  }, [session, status, router, searchParams])
+  }, [session, status, router, searchParams, visualPreview])
 
   if (isProcessing || status === "loading") {
     return (
@@ -82,8 +85,8 @@ export default function CompleteSignupPage() {
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-beige">
           <div className="w-full max-w-md">
             <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <h1 className="text-4xl font-black mb-2">Verifying vote...</h1>
-              <p className="text-lg">Please wait while we save your verified vote.</p>
+              <h1 className="text-4xl font-black mb-2">Verifying response...</h1>
+              <p className="text-lg">Please wait while we save your survey response.</p>
             </div>
           </div>
         </div>
@@ -110,4 +113,3 @@ export default function CompleteSignupPage() {
 
   return null
 }
-

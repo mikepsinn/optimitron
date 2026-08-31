@@ -7,6 +7,8 @@ import {
 import {
   COURT_OF_HUMANITY_REFERENDUM_SLUG,
   DECLARATION_REFERENDUM_SLUG,
+  TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
+  TRIAL_ABUNDANCE_REFERENDUM_SLUG,
   TREATY_REFERENDUM_SLUG,
 } from "../constants.js";
 import { MANAGED_HUMANITY_V_GOVERNMENT_VERDICT } from "./managed-humanity-v-government.js";
@@ -33,6 +35,7 @@ interface ManagedReferendumRecord {
   description: string;
   bodyMarkdown: string;
   status: ReferendumStatusValue;
+  publishedAt?: Date;
 }
 
 export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
@@ -46,6 +49,18 @@ export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
       "The 1% Treaty redirects one percent of military spending into pragmatic clinical trials so disease gets less time to kill people.",
     bodyMarkdown: shareableSnippets.onePercentTreatyText.markdown,
     status: ReferendumStatus.ACTIVE,
+  },
+  {
+    slug: TRIAL_ABUNDANCE_REFERENDUM_SLUG,
+    title: "Patient Access to Pragmatic Clinical Trials",
+    question: TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
+    kind: ReferendumKind.GENERAL,
+    description:
+      "Measures public support for eligible patients joining pragmatic clinical trials through their regular physician.",
+    bodyMarkdown:
+      "Pragmatic clinical trials compare treatments during routine medical care. Participation is voluntary and requires informed consent and appropriate safety oversight.",
+    status: ReferendumStatus.ACTIVE,
+    publishedAt: new Date("2026-08-31T00:00:00.000Z"),
   },
   {
     slug: DECLARATION_REFERENDUM_SLUG,
@@ -143,7 +158,7 @@ export async function syncManagedReferendums(
       kind: record.kind,
       description: record.description,
       bodyMarkdown: record.bodyMarkdown,
-      publishedAt: REFERENDUM_PUBLISHED_AT,
+      publishedAt: record.publishedAt ?? REFERENDUM_PUBLISHED_AT,
       lockedAt: null,
       status: record.status,
       contentHash: buildReferendumContentHash(record),

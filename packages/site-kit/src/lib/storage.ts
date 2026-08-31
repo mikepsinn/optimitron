@@ -121,6 +121,23 @@ export interface PendingVote {
   makePublic?: boolean
 }
 
+export type TrialAbundanceAnswer = "YES" | "NO" | "ABSTAIN"
+
+/**
+ * A complete Trial Abundance response staged until the respondent verifies.
+ * The referendum answer and allocation sync together, so neither is lost.
+ */
+export interface PendingTrialAbundanceResponse {
+  answer: TrialAbundanceAnswer
+  inviteToken?: string | null
+  militaryAllocationPercent: number
+  organizationId?: string | null
+  referredBy: string | null
+  sourceReferrer?: string | null
+  sourceUrl?: string | null
+  timestamp: string
+}
+
 export const storage = {
   // Signup flow
   getPendingOrganizationEndorsements: () =>
@@ -197,6 +214,17 @@ export const storage = {
   setPendingVote: (voteData: PendingVote) =>
     setStorageItem(STORAGE_KEYS.PENDING_VOTE, voteData),
   removePendingVote: () => removeStorageItem(STORAGE_KEYS.PENDING_VOTE),
+
+  getPendingTrialAbundanceResponse: () =>
+    getStorageItem<PendingTrialAbundanceResponse>(
+      STORAGE_KEYS.PENDING_TRIAL_ABUNDANCE_RESPONSE,
+    ),
+  setPendingTrialAbundanceResponse: (
+    response: PendingTrialAbundanceResponse,
+  ) =>
+    setStorageItem(STORAGE_KEYS.PENDING_TRIAL_ABUNDANCE_RESPONSE, response),
+  removePendingTrialAbundanceResponse: () =>
+    removeStorageItem(STORAGE_KEYS.PENDING_TRIAL_ABUNDANCE_RESPONSE),
 
   getPostVoteFlowState: () => getStorageItem<{ dismissedVerification?: boolean; screen?: number; sentCount?: number }>(STORAGE_KEYS.POST_VOTE_FLOW_STATE),
   setPostVoteFlowState: (data: { dismissedVerification?: boolean; screen?: number; sentCount?: number }) =>

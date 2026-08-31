@@ -1,4 +1,6 @@
-import TreatyVoteSection from "@/components/landing/treaty-vote-section";
+import TrialAbundanceSurveySection, {
+  type TrialAbundanceVisualState,
+} from "@/components/landing/trial-abundance-survey-section";
 import { EmbedReadySignal } from "@optimitron/survey-embed";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +20,10 @@ type EmbedPageProps = {
 export default async function EmbedPage({ searchParams }: EmbedPageProps) {
   const resolved = (await searchParams) ?? {};
   const ref = resolved.ref;
+  const visualState: TrialAbundanceVisualState | undefined =
+    resolved.visual === "question" || resolved.visual === "complete"
+      ? resolved.visual
+      : undefined;
 
   return (
     <div
@@ -26,9 +32,9 @@ export default async function EmbedPage({ searchParams }: EmbedPageProps) {
       data-ref={ref ?? ""}
     >
       <EmbedReadySignal />
-      <TreatyVoteSection
-        postVoteMode="lite"
-        disableIntroAnimation={resolved.visual === "1"}
+      <TrialAbundanceSurveySection
+        disableIntroAnimation={resolved.visual === "1" || Boolean(visualState)}
+        visualState={visualState}
       />
       {ref ? <p className="sr-only">Referral code {ref}</p> : null}
     </div>
