@@ -49,7 +49,7 @@
 - [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Modeled increase in diseases receiving a first effective treatment each year.
-- One-time modelled effect of cures arriving earlier across the backlog.
+- One-time modeled effect of cures arriving earlier across the backlog.
 - This is the model's answer to years of suffering prevented.
 - [1.93 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
 - In the same model, the combined capacity expansion plus efficacy-lag removal shifts treatment timelines by [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years on average and avoids [1.93 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering. That is the plain language version of the [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) DALYs figure.

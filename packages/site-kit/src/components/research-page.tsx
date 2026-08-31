@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import Layout from "./layout"
 import { ParameterValue } from "./shared/ParameterValue"
 import { VoteOrShareButton } from "./shared/VoteOrShareButton"
+import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { CTASection } from "@optimitron/neobrutalist-ui/ui/cta-section"
@@ -198,9 +200,9 @@ export function generateCampaignResearchMetadata(): Metadata {
 
 export function generateSurveyResearchMetadata(): Metadata {
   const canonicalBaseUrl = getSiteConfigForVariant(VARIANTS.SURVEY).baseUrl
-  const title = "Research Methodology and Data Sources"
+  const title = "Clinical Trial Evidence and Data Sources"
   const description =
-    "How the Global Clinical Trial Abundance Survey is designed, and the evidence behind pragmatic clinical trials."
+    "Peer-reviewed evidence for pragmatic trials and the assumptions behind the Global Clinical Trial Abundance Survey's capacity model."
 
   return {
     title,
@@ -232,11 +234,12 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
           <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
             <Container size="md">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase text-center mb-6">
-                METHODOLOGY &<br />
+                CLINICAL TRIAL EVIDENCE &<br />
                 <span className="text-brutal-cyan">DATA SOURCES</span>
               </h1>
               <p className="text-lg sm:text-xl font-bold text-center max-w-2xl mx-auto">
-                How we designed the survey and the peer-reviewed evidence behind pragmatic clinical trials.
+                Peer-reviewed evidence on pragmatic clinical trials and the assumptions behind the survey&apos;s
+                capacity model.
               </p>
             </Container>
           </SectionContainer>
@@ -289,8 +292,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     <span className="font-black">years</span>.
                   </p>
                   <p>
-                    Scaling pragmatic trials with additional funding would increase clinical trial
-                    capacity by{" "}
+                    At the modeled funding level of about{" "}
+                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} className="font-black" />{" "}
+                    per year, scaling pragmatic trials would increase clinical trial capacity by{" "}
                     <ParameterValue
                       param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
                       format={{ precision: 1 }}
@@ -325,7 +329,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     label: "CAPACITY INCREASE",
                     detail: (
                       <>
-                        Scaling pragmatic trials compresses the disease eradication timeline from{" "}
+                        At the model&apos;s{" "}
+                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> annual funding level,
+                        scaling pragmatic trials compresses the disease eradication timeline from{" "}
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
                         years to{" "}
                         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years.
@@ -396,11 +402,12 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               </>
             }
           >
-            <VoteOrShareButton
-              variant="default"
-              size="xl"
-              className="bg-foreground text-background border-4 border-foreground hover:bg-background hover:text-foreground px-8 sm:px-12"
-            />
+            <Button
+              asChild
+              className="h-14 bg-foreground text-background border-4 border-foreground hover:bg-background hover:text-foreground px-8 sm:px-12 text-lg font-black uppercase"
+            >
+              <Link href="/#vote">Take the survey</Link>
+            </Button>
           </CTASection>
         </div>
       </Layout>
@@ -529,7 +536,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />
                   </div>
                   <div className="text-sm font-black uppercase">Lives saved</div>
-                  <p className="text-sm">One-time modelled effect of cures arriving earlier across the backlog.</p>
+                  <p className="text-sm">One-time modeled effect of cures arriving earlier across the backlog.</p>
                 </Card>
                 <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow gap-3">
                   <div className="text-4xl sm:text-5xl font-black">
