@@ -288,7 +288,7 @@ export const publicSiteAppRoutes = Object.freeze({
       ],
       label: "Campaign search",
       routeName: "search",
-      routePath: "/search?q=treaty",
+      routePath: "/search?q=research",
       sourcePage: "apps/warondisease/app/search/page.tsx",
     },
     {

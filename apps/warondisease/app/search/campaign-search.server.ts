@@ -219,6 +219,15 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     title: "Institutes",
   },
   {
+    description:
+      "The evidence and calculations behind the 1% Treaty's projected clinical-trial capacity.",
+    emoji: "📊",
+    href: ROUTES.research,
+    keywords: ["research", "evidence", "math", "calculations", "clinical trials"],
+    section: "About",
+    title: "Research",
+  },
+  {
     description: "Who runs this campaign and why.",
     emoji: "ℹ️",
     href: ROUTES.about,
