@@ -7,8 +7,10 @@ import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import {
   getUserTrialAbundanceAllocation,
+  getUserTrialAbundanceSelfFundedAccessVote,
   getUserTrialAbundanceVote,
 } from "@/lib/trial-abundance-votes.server"
+import { TRIAL_ABUNDANCE_REFERENDUM_QUESTION } from "@optimitron/db/constants"
 import { buildUserReferralUrl } from "@/lib/url"
 import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
 import Link from "next/link"
@@ -36,10 +38,17 @@ export default async function LiteDashboardPage({
     redirect("/auth/signin?callbackUrl=/dashboard")
   }
 
-  const [vote, allocation] = visualPreview
-    ? [{ answer: "YES" as const }, { allocationA: 35, allocationB: 65 }]
+  const [vote, selfFundedAccessVote, allocation] = visualPreview
+    ? [
+        { answer: "YES" as const },
+        { answer: "ABSTAIN" as const },
+        { allocationA: 35, allocationB: 65 },
+      ]
     : await Promise.all([
         getUserTrialAbundanceVote(sessionUser.id).catch(() => null),
+        getUserTrialAbundanceSelfFundedAccessVote(sessionUser.id).catch(
+          () => null,
+        ),
         getUserTrialAbundanceAllocation(sessionUser.id).catch(() => null),
       ])
   const headersList = await headers()
@@ -49,11 +58,11 @@ export default async function LiteDashboardPage({
   const shareTemplates = [
     {
       label: "Question",
-      text: `Should eligible patients be able to join pragmatic clinical trials through their regular physician? I answered the Trial Abundance Survey: ${surveyUrl}`,
+      text: `${TRIAL_ABUNDANCE_REFERENDUM_QUESTION} I answered the Trial Abundance Survey: ${surveyUrl}`,
     },
     {
       label: "Plain",
-      text: `I answered a short survey about patient access to pragmatic clinical trials. Add your response: ${surveyUrl}`,
+      text: `I answered three questions about patient access to pragmatic clinical trials and how trials should be funded. Add your response: ${surveyUrl}`,
     },
   ]
 
@@ -73,6 +82,16 @@ export default async function LiteDashboardPage({
                     {vote.answer === "ABSTAIN" ? "NOT SURE" : String(vote.answer)}
                   </span>
                 </p>
+                {selfFundedAccessVote ? (
+                  <p>
+                    Patient-funded access:{" "}
+                    <span className="text-brutal-cyan">
+                      {selfFundedAccessVote.answer === "ABSTAIN"
+                        ? "NOT SURE"
+                        : String(selfFundedAccessVote.answer)}
+                    </span>
+                  </p>
+                ) : null}
                 {allocation ? (
                   <p>
                     Allocation: {allocation.allocationA}% military and weapons,
@@ -94,7 +113,7 @@ export default async function LiteDashboardPage({
             referralLink={surveyUrl}
             shareTemplates={shareTemplates}
             hashtags="PragmaticTrials,ClinicalResearch"
-            introText="Invite someone else to answer the same two questions with your personal referral link."
+            introText="Invite someone else to answer the same three questions with your personal referral link."
             copyLinkLabel="COPY SURVEY LINK"
             linkContentType="trial_abundance_referral"
             className="mb-6"

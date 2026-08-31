@@ -1,7 +1,8 @@
 import { z } from "zod"
 
 export const trialAbundanceResponseSchema = z.object({
-  answer: z.enum(["YES", "NO", "ABSTAIN"]),
+  patientAccessAnswer: z.enum(["YES", "NO", "ABSTAIN"]),
+  selfFundedAccessAnswer: z.enum(["YES", "NO", "ABSTAIN"]),
   inviteToken: z.string().trim().max(200).nullable().optional(),
   militaryAllocationPercent: z.number().int().min(0).max(100),
   organizationId: z.string().trim().max(200).nullable().optional(),

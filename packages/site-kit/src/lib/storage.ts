@@ -128,11 +128,12 @@ export type TrialAbundanceAnswer = "YES" | "NO" | "ABSTAIN"
  * The referendum answer and allocation sync together, so neither is lost.
  */
 export interface PendingTrialAbundanceResponse {
-  answer: TrialAbundanceAnswer
   inviteToken?: string | null
   militaryAllocationPercent: number
   organizationId?: string | null
+  patientAccessAnswer: TrialAbundanceAnswer
   referredBy: string | null
+  selfFundedAccessAnswer: TrialAbundanceAnswer
   sourceReferrer?: string | null
   sourceUrl?: string | null
   timestamp: string

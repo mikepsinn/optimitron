@@ -842,6 +842,18 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         covers: [surveyComponent],
       },
       {
+        label: "Patient-funded access question",
+        routeName: "home-self-funded",
+        routePath: "/?visual=self-funded",
+        covers: [surveyComponent],
+      },
+      {
+        label: "Public-resource allocation",
+        routeName: "home-allocation",
+        routePath: "/?visual=allocation",
+        covers: [surveyComponent],
+      },
+      {
         label: "Completed response and verification",
         routeName: "home-complete",
         routePath: "/?visual=complete",

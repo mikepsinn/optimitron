@@ -14,7 +14,12 @@ interface HomePageProps {
 export default async function HomePage({ searchParams }: HomePageProps) {
   const visual = (await searchParams)?.visual
   const visualState: TrialAbundanceVisualState | undefined =
-    visual === "question" || visual === "complete" ? visual : undefined
+    visual === "question" ||
+    visual === "self-funded" ||
+    visual === "allocation" ||
+    visual === "complete"
+      ? visual
+      : undefined
 
   return (
     <Layout>

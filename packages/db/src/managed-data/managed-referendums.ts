@@ -9,6 +9,8 @@ import {
   DECLARATION_REFERENDUM_SLUG,
   TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
   TRIAL_ABUNDANCE_REFERENDUM_SLUG,
+  TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION,
+  TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
   TREATY_REFERENDUM_SLUG,
 } from "../constants.js";
 import { MANAGED_HUMANITY_V_GOVERNMENT_VERDICT } from "./managed-humanity-v-government.js";
@@ -59,6 +61,18 @@ export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
       "Measures public support for eligible patients joining pragmatic clinical trials through their regular physician.",
     bodyMarkdown:
       "Pragmatic clinical trials compare treatments during routine medical care. Participation is voluntary and requires informed consent and appropriate safety oversight.",
+    status: ReferendumStatus.ACTIVE,
+    publishedAt: new Date("2026-08-31T00:00:00.000Z"),
+  },
+  {
+    slug: TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
+    title: "Patient-Funded Access to Pragmatic Clinical Trials",
+    question: TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION,
+    kind: ReferendumKind.GENERAL,
+    description:
+      "Measures public support for patients paying the costs of receiving an otherwise unavailable treatment through a pragmatic clinical trial.",
+    bodyMarkdown:
+      "This question concerns patient-funded access when a promising treatment would otherwise be unavailable. The treatment must be provided through a pragmatic clinical trial with informed consent and appropriate safety oversight.",
     status: ReferendumStatus.ACTIVE,
     publishedAt: new Date("2026-08-31T00:00:00.000Z"),
   },

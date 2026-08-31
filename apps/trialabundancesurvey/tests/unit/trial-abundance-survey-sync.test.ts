@@ -4,11 +4,12 @@ import { storage } from "@/lib/storage"
 import { syncPendingTrialAbundanceResponse } from "@/lib/trial-abundance-survey"
 
 const pendingResponse = {
-  answer: "YES" as const,
   inviteToken: null,
   militaryAllocationPercent: 35,
   organizationId: null,
+  patientAccessAnswer: "YES" as const,
   referredBy: "REFERRAL123",
+  selfFundedAccessAnswer: "ABSTAIN" as const,
   sourceReferrer: null,
   sourceUrl: "https://trialabundancesurvey.org/",
   timestamp: "2026-08-31T12:00:00.000Z",

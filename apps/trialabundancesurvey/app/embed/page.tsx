@@ -21,7 +21,10 @@ export default async function EmbedPage({ searchParams }: EmbedPageProps) {
   const resolved = (await searchParams) ?? {};
   const ref = resolved.ref;
   const visualState: TrialAbundanceVisualState | undefined =
-    resolved.visual === "question" || resolved.visual === "complete"
+    resolved.visual === "question" ||
+    resolved.visual === "self-funded" ||
+    resolved.visual === "allocation" ||
+    resolved.visual === "complete"
       ? resolved.visual
       : undefined;
 

@@ -16,9 +16,13 @@
 - [GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY](/)
 - [Go to Dashboard](/dashboard)
 ## TRIAL ABUNDANCE SURVEY
-- Two questions about how we fund medical evidence and how patients can take part in producing it.
-- How would you split your country's finite resources between weapons and military and pragmatic clinical trials?
-- Move the slider to continue.
+- Three questions about patient access, who may fund trial participation, and public priorities.
+- QUESTION 1 OF 3
+### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
+- Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
+- YES
+- NOT SURE
+- NO
 - AN INDEPENDENT RESEARCH INITIATIVE
 #### ABOUT
 - [ABOUT](/about)

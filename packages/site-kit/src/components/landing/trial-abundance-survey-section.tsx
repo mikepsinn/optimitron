@@ -1,6 +1,9 @@
 "use client"
 
-import { TRIAL_ABUNDANCE_REFERENDUM_QUESTION } from "@optimitron/db/constants"
+import {
+  TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
+  TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION,
+} from "@optimitron/db/constants"
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
@@ -31,8 +34,16 @@ import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
 const ratio = MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value
 const formattedRatio = `$${Math.round(ratio)}`
 
-type SurveyStage = "allocation" | "question" | "complete"
-export type TrialAbundanceVisualState = "question" | "complete"
+type SurveyStage =
+  | "patient-access"
+  | "self-funded-access"
+  | "allocation"
+  | "complete"
+export type TrialAbundanceVisualState =
+  | "question"
+  | "self-funded"
+  | "allocation"
+  | "complete"
 
 interface TrialAbundanceSurveySectionProps {
   disableIntroAnimation?: boolean
@@ -49,6 +60,19 @@ const answerOptions: Array<{
   { answer: "ABSTAIN", label: "Not sure" },
   { answer: "NO", label: "No" },
 ]
+
+function getInitialStage(
+  visualState: TrialAbundanceVisualState | undefined,
+): SurveyStage {
+  if (visualState === "self-funded") return "self-funded-access"
+  if (visualState === "allocation") return "allocation"
+  if (visualState === "complete") return "complete"
+  return "patient-access"
+}
+
+function formatAnswer(answer: TrialAbundanceAnswer | null) {
+  return answer === "ABSTAIN" ? "NOT SURE" : answer
+}
 
 function celebrateResponse() {
   const colors = ["#FF6B9D", "#00D9FF", "#FFE66D"]
@@ -75,16 +99,15 @@ export default function TrialAbundanceSurveySection({
   const referralCode = searchParams?.get("ref") ?? null
   const inviteToken = searchParams?.get("invite") ?? null
   const isVisualCapture = visualState !== undefined
-  const [stage, setStage] = useState<SurveyStage>(
-    visualState === "complete"
-      ? "complete"
-      : visualState === "question"
-        ? "question"
-        : "allocation",
-  )
-  const [answer, setAnswer] = useState<TrialAbundanceAnswer | null>(
-    visualState === "complete" ? "YES" : null,
-  )
+  const [stage, setStage] = useState<SurveyStage>(getInitialStage(visualState))
+  const [patientAccessAnswer, setPatientAccessAnswer] =
+    useState<TrialAbundanceAnswer | null>(
+      visualState === "complete" ? "YES" : null,
+    )
+  const [selfFundedAccessAnswer, setSelfFundedAccessAnswer] =
+    useState<TrialAbundanceAnswer | null>(
+      visualState === "complete" ? "YES" : null,
+    )
   const [militaryAllocation, setMilitaryAllocation] = useState(50)
   const [userHasDragged, setUserHasDragged] = useState(
     disableIntroAnimation || isVisualCapture,
@@ -101,8 +124,14 @@ export default function TrialAbundanceSurveySection({
     const pending = storage.getPendingTrialAbundanceResponse()
     if (!pending) return
 
+    if (!pending.patientAccessAnswer || !pending.selfFundedAccessAnswer) {
+      storage.removePendingTrialAbundanceResponse()
+      return
+    }
+
     setMilitaryAllocation(pending.militaryAllocationPercent)
-    setAnswer(pending.answer)
+    setPatientAccessAnswer(pending.patientAccessAnswer)
+    setSelfFundedAccessAnswer(pending.selfFundedAccessAnswer)
     setStage("complete")
     setUserHasDragged(true)
     setSyncState("local")
@@ -138,7 +167,7 @@ export default function TrialAbundanceSurveySection({
       },
       {
         label: "Plain",
-        text: `I answered a short survey about patient access to pragmatic clinical trials. Add your response: ${shareUrl}`,
+        text: `I answered three questions about patient access to pragmatic clinical trials and how trials should be funded. Add your response: ${shareUrl}`,
       },
     ],
     [shareUrl],
@@ -149,22 +178,36 @@ export default function TrialAbundanceSurveySection({
     setUserHasDragged(true)
   }
 
-  const handleAnswer = async (selectedAnswer: TrialAbundanceAnswer) => {
-    setAnswer(selectedAnswer)
+  const handlePatientAccessAnswer = (selectedAnswer: TrialAbundanceAnswer) => {
+    setPatientAccessAnswer(selectedAnswer)
+    setStage("self-funded-access")
+  }
+
+  const handleSelfFundedAccessAnswer = (
+    selectedAnswer: TrialAbundanceAnswer,
+  ) => {
+    setSelfFundedAccessAnswer(selectedAnswer)
+    setStage("allocation")
+  }
+
+  const handleComplete = async () => {
+    if (!patientAccessAnswer || !selfFundedAccessAnswer) return
+
     setStage("complete")
     trackVoteSubmitted({
-      answer: selectedAnswer,
+      answer: patientAccessAnswer,
       authenticated: status === "authenticated",
       voteType: "trial_abundance_survey",
     })
     celebrateResponse()
 
     const response = {
-      answer: selectedAnswer,
       inviteToken,
       militaryAllocationPercent: militaryAllocation,
       organizationId: organizationId ?? null,
+      patientAccessAnswer,
       referredBy: referralCode,
+      selfFundedAccessAnswer,
       sourceReferrer: document.referrer || null,
       sourceUrl: `${window.location.origin}${window.location.pathname}`,
       timestamp: new Date().toISOString(),
@@ -199,23 +242,81 @@ export default function TrialAbundanceSurveySection({
           Trial <span className="text-brutal-pink">Abundance</span> Survey
         </h1>
         <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
-          Two questions about how we fund medical evidence and how patients can
-          take part in producing it.
+          Three questions about patient access, who may fund trial
+          participation, and public priorities.
         </p>
 
         <AnimatePresence mode="wait">
-          {stage === "allocation" ? (
+          {stage === "patient-access" ? (
             <motion.div
-              key="allocation"
+              key="patient-access"
               initial={disableIntroAnimation ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
               <SurveyCard>
-                <p className="mb-8 text-center text-lg font-bold leading-snug sm:text-2xl">
-                  How would you split your country&apos;s finite resources between{" "}
-                  <span className="text-brutal-pink">weapons and military</span>{" "}
-                  and{" "}
+                <p className="text-sm font-black uppercase text-brutal-pink">
+                  Question 1 of 3
+                </p>
+                <h2 className="text-xl font-black leading-snug sm:text-3xl">
+                  {TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
+                </h2>
+                <p className="font-bold text-muted-foreground">
+                  Pragmatic trials compare treatments during routine care.
+                  Participation remains voluntary and requires informed consent
+                  and appropriate safety oversight.
+                </p>
+                <AnswerButtons
+                  selectedAnswer={patientAccessAnswer}
+                  onSelect={handlePatientAccessAnswer}
+                />
+              </SurveyCard>
+            </motion.div>
+          ) : null}
+
+          {stage === "self-funded-access" ? (
+            <motion.div
+              key="self-funded-access"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <SurveyCard>
+                <p className="text-sm font-black uppercase text-brutal-pink">
+                  Question 2 of 3
+                </p>
+                <h2 className="text-xl font-black leading-snug sm:text-3xl">
+                  {TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION}
+                </h2>
+                <p className="font-bold text-muted-foreground">
+                  This asks whether the patient may cover trial costs. It does
+                  not waive informed consent or safety oversight.
+                </p>
+                <AnswerButtons
+                  selectedAnswer={selfFundedAccessAnswer}
+                  onSelect={handleSelfFundedAccessAnswer}
+                />
+                <BackButton onClick={() => setStage("patient-access")}>
+                  Back to patient access
+                </BackButton>
+              </SurveyCard>
+            </motion.div>
+          ) : null}
+
+          {stage === "allocation" ? (
+            <motion.div
+              key="allocation"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <SurveyCard>
+                <p className="text-sm font-black uppercase text-brutal-pink">
+                  Question 3 of 3
+                </p>
+                <p className="text-center text-lg font-bold leading-snug sm:text-2xl">
+                  Considering only these two priorities, how would you split
+                  public spending between military and weapons and{" "}
                   <PragmaticTrialsDialog triggerClassName="inline text-brutal-pink underline decoration-dotted underline-offset-2">
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>
@@ -242,68 +343,21 @@ export default function TrialAbundanceSurveySection({
                       "linear-gradient(to right, #FF6B9D 0%, #FF6B9D 49%, #FFE66D 49%, #FFE66D 51%, #00D9FF 51%, #00D9FF 100%)",
                   }}
                 />
-                <p className="mt-3 text-center text-sm font-bold text-muted-foreground">
-                  Move the slider to continue.
+                <p className="text-center text-sm font-bold text-muted-foreground">
+                  Move the slider to record your allocation.
                 </p>
 
                 {userHasDragged ? (
                   <Button
-                    onClick={() => setStage("question")}
-                    className="mt-6 h-16 w-full border-4 border-primary bg-brutal-cyan text-xl font-black uppercase text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                    onClick={() => void handleComplete()}
+                    className="h-16 w-full border-4 border-primary bg-brutal-cyan text-xl font-black uppercase text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    Next question
+                    Submit response
                   </Button>
                 ) : null}
-              </SurveyCard>
-            </motion.div>
-          ) : null}
-
-          {stage === "question" ? (
-            <motion.div
-              key="question"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <SurveyCard>
-                <p className="text-sm font-black uppercase text-brutal-pink">
-                  Question 2 of 2
-                </p>
-                <h2 className="text-xl font-black leading-snug sm:text-3xl">
-                  {TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
-                </h2>
-                <p className="font-bold text-muted-foreground">
-                  Pragmatic trials compare treatments during routine care.
-                  Participation remains voluntary.
-                </p>
-
-                <div className="grid gap-4 sm:grid-cols-3">
-                  {answerOptions.map((option) => (
-                    <Button
-                      key={option.answer}
-                      type="button"
-                      variant="outline"
-                      onClick={() => void handleAnswer(option.answer)}
-                      className="h-16 justify-start border-4 border-primary bg-background px-5 text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                    >
-                      {answer === option.answer ? (
-                        <CheckSquare className="mr-2 h-6 w-6" />
-                      ) : (
-                        <Square className="mr-2 h-6 w-6" />
-                      )}
-                      {option.label}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setStage("allocation")}
-                  className="self-start px-0 font-black uppercase underline"
-                >
-                  Back to allocation
-                </Button>
+                <BackButton onClick={() => setStage("self-funded-access")}>
+                  Back to patient-funded access
+                </BackButton>
               </SurveyCard>
             </motion.div>
           ) : null}
@@ -318,15 +372,16 @@ export default function TrialAbundanceSurveySection({
               <h2 className="text-3xl font-black uppercase sm:text-4xl">
                 Thank you
               </h2>
-              <p className="text-lg font-bold">
-                You allocated {militaryAllocation}% to military and weapons and{" "}
-                {clinicalTrialsAllocation}% to pragmatic clinical trials. Your
-                patient-access answer was{" "}
-                <span className="text-brutal-pink">
-                  {answer === "ABSTAIN" ? "NOT SURE" : answer}
-                </span>
-                .
-              </p>
+              <div className="space-y-2 text-lg font-bold">
+                <p>Patient access: {formatAnswer(patientAccessAnswer)}.</p>
+                <p>
+                  Patient-funded access: {formatAnswer(selfFundedAccessAnswer)}.
+                </p>
+                <p>
+                  Allocation: {militaryAllocation}% to military and weapons and{" "}
+                  {clinicalTrialsAllocation}% to pragmatic clinical trials.
+                </p>
+              </div>
               <p className="font-bold text-muted-foreground">
                 {syncState === "saved"
                   ? "Your verified response is saved."
@@ -343,7 +398,7 @@ export default function TrialAbundanceSurveySection({
                 referralLink={shareUrl}
                 shareTemplates={shareTemplates}
                 hashtags="PragmaticTrials,ClinicalResearch"
-                introText="Invite someone else to answer the same two questions. Their response will be attributed to your referral link."
+                introText="Invite someone else to answer the same three questions. Their response will be attributed to your referral link."
                 copyLinkLabel="COPY SURVEY LINK"
                 linkContentType="trial_abundance_referral"
               />
@@ -380,6 +435,54 @@ function SurveyCard({ children }: { children: React.ReactNode }) {
     <Card className="mx-auto flex max-w-3xl flex-col gap-6 border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-10">
       {children}
     </Card>
+  )
+}
+
+function AnswerButtons({
+  onSelect,
+  selectedAnswer,
+}: {
+  onSelect: (answer: TrialAbundanceAnswer) => void
+  selectedAnswer: TrialAbundanceAnswer | null
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      {answerOptions.map((option) => (
+        <Button
+          key={option.answer}
+          type="button"
+          variant="outline"
+          onClick={() => onSelect(option.answer)}
+          className="h-16 justify-start border-4 border-primary bg-background px-5 text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+        >
+          {selectedAnswer === option.answer ? (
+            <CheckSquare className="mr-2 h-6 w-6" />
+          ) : (
+            <Square className="mr-2 h-6 w-6" />
+          )}
+          {option.label}
+        </Button>
+      ))}
+    </div>
+  )
+}
+
+function BackButton({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode
+  onClick: () => void
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={onClick}
+      className="self-start px-0 font-black uppercase underline"
+    >
+      {children}
+    </Button>
   )
 }
 

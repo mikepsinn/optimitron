@@ -800,6 +800,7 @@ describeIfDatabase("syncManagedData", () => {
           in: [
             "one-percent-treaty",
             "patient-access-to-pragmatic-clinical-trials",
+            "patient-funded-access-to-pragmatic-clinical-trials",
             "declaration-of-optimization",
             "court-of-humanity",
             "court-humanity-v-government-verdict",
@@ -820,7 +821,7 @@ describeIfDatabase("syncManagedData", () => {
       },
     });
 
-    expect(referendums).toHaveLength(5);
+    expect(referendums).toHaveLength(6);
     expect(referendums).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -832,9 +833,16 @@ describeIfDatabase("syncManagedData", () => {
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
         expect.objectContaining({
+          slug: "patient-funded-access-to-pragmatic-clinical-trials",
+          kind: ReferendumKind.GENERAL,
+          question: expect.stringContaining("right to pay the costs"),
+          bodyMarkdown: expect.stringContaining("patient-funded access"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+        expect.objectContaining({
           slug: "patient-access-to-pragmatic-clinical-trials",
           kind: ReferendumKind.GENERAL,
-          question: expect.stringContaining("through their regular physician"),
+          question: expect.stringContaining("through their physician"),
           bodyMarkdown: expect.stringContaining("routine medical care"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
