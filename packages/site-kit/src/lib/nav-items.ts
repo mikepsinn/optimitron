@@ -480,7 +480,11 @@ export const NAV_ITEMS_MAP = {
       "Comprehensive economic analysis showing pragmatic trials deliver 637:1 ROI with $172B+ recurring annual benefits. Peer-reviewed methodology and sensitivity testing",
     emoji: "📚",
     canonicalVariant: VARIANTS.WAR_ON_DISEASE,
-    allowedVariants: [VARIANTS.WAR_ON_DISEASE, VARIANTS.DFDA],
+    allowedVariants: [
+      VARIANTS.WAR_ON_DISEASE,
+      VARIANTS.DFDA,
+      VARIANTS.SURVEY,
+    ],
     keywords: [
       "health economics",
       "ROI analysis",

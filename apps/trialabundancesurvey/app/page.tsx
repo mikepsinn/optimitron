@@ -1,5 +1,4 @@
 import Layout from "../components/layout"
-import SurveyHeroSection from "@/components/landing/survey-hero-section"
 import TreatyVoteSection from "@/components/landing/treaty-vote-section"
 
 /**
@@ -9,7 +8,6 @@ import TreatyVoteSection from "@/components/landing/treaty-vote-section"
 export default function HomePage() {
   return (
     <Layout>
-      <SurveyHeroSection />
       <TreatyVoteSection postVoteMode="lite" />
     </Layout>
   )

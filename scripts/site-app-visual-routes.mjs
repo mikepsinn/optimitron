@@ -5,6 +5,8 @@ import {
 
 const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
+const researchPageFile =
+  "packages/site-kit/src/components/research-page.tsx";
 const dfdaHowItWorksFiles = [
   "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
   "packages/site-kit/src/components/how-it-works/HowItWorksStep.tsx",
@@ -235,6 +237,16 @@ export const authenticatedSiteAppRouteExemptions = Object.freeze([
  */
 export const publicSiteAppRoutes = Object.freeze({
   warondisease: [
+    {
+      covers: [
+        "apps/warondisease/app/research/page.tsx",
+        researchPageFile,
+      ],
+      label: "Research and evidence",
+      routeName: "research",
+      routePath: "/research",
+      sourcePage: "apps/warondisease/app/research/page.tsx",
+    },
     {
       covers: [
         "apps/warondisease/app/vote/page.tsx",
@@ -499,6 +511,17 @@ export const publicSiteAppRoutes = Object.freeze({
     },
   ],
   trialabundancesurvey: [
+    {
+      covers: [
+        "apps/trialabundancesurvey/app/research/page.tsx",
+        researchPageFile,
+        "packages/site-kit/src/lib/nav-items.ts",
+      ],
+      label: "Research methodology",
+      routeName: "research",
+      routePath: "/research",
+      sourcePage: "apps/trialabundancesurvey/app/research/page.tsx",
+    },
     {
       covers: ["apps/trialabundancesurvey/app/contact/page.tsx"],
       label: "Contact",
