@@ -45,11 +45,9 @@ export default async function LiteDashboardPage({
         { allocationA: 35, allocationB: 65 },
       ]
     : await Promise.all([
-        getUserTrialAbundanceVote(sessionUser.id).catch(() => null),
-        getUserTrialAbundanceSelfFundedAccessVote(sessionUser.id).catch(
-          () => null,
-        ),
-        getUserTrialAbundanceAllocation(sessionUser.id).catch(() => null),
+        getUserTrialAbundanceVote(sessionUser.id),
+        getUserTrialAbundanceSelfFundedAccessVote(sessionUser.id),
+        getUserTrialAbundanceAllocation(sessionUser.id),
       ])
   const headersList = await headers()
   const host = headersList.get("host") ?? "trialabundancesurvey.org"

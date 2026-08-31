@@ -107,11 +107,10 @@ export async function saveTrialAbundanceResponse(
       ? invitation
       : null
   const directReferrer = await findUserByUsernameOrReferralCode(input.referredBy)
-  const referredByUserId =
-    usableInvitation?.referrerUserId ??
-    (directReferrer?.id && directReferrer.id !== userId
+  const directReferrerUserId =
+    directReferrer?.id && directReferrer.id !== userId
       ? directReferrer.id
-      : null)
+      : null
   const organization = input.organizationId
     ? await prisma.organization.findUnique({
         where: { id: input.organizationId },
@@ -122,6 +121,27 @@ export async function saveTrialAbundanceResponse(
     cleanOriginUrl(input.sourceUrl) ?? cleanOriginUrl(input.sourceReferrer)
 
   const votes = await prisma.$transaction(async (transaction) => {
+    const claimedInvitation =
+      usableInvitation &&
+      usableInvitation.status !== ReferralInvitationStatus.CONVERTED &&
+      !usableInvitation.convertedVoteId &&
+      (
+        await transaction.referralInvitation.updateMany({
+          where: {
+            convertedVoteId: null,
+            id: usableInvitation.id,
+            status: { not: ReferralInvitationStatus.CONVERTED },
+          },
+          data: {
+            convertedAt: new Date(),
+            status: ReferralInvitationStatus.CONVERTED,
+          },
+        })
+      ).count === 1
+    const referredByUserId = claimedInvitation
+      ? usableInvitation.referrerUserId
+      : directReferrerUserId
+
     const patientAccessVote = await transaction.referendumVote.upsert({
       where: {
         referendumId_personId: {
@@ -220,20 +240,14 @@ export async function saveTrialAbundanceResponse(
       })
     }
 
-    if (
-      usableInvitation &&
-      usableInvitation.status !== ReferralInvitationStatus.CONVERTED &&
-      !usableInvitation.convertedVoteId
-    ) {
+    if (claimedInvitation) {
       await transaction.referralInvitation.update({
         where: { id: usableInvitation.id },
         data: {
-          convertedAt: new Date(),
           convertedVoteId:
             usableInvitation.referendumId === selfFundedAccessReferendum.id
               ? selfFundedAccessVote.id
               : patientAccessVote.id,
-          status: ReferralInvitationStatus.CONVERTED,
         },
       })
     }

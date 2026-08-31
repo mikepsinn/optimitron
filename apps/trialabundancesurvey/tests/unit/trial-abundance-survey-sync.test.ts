@@ -50,4 +50,12 @@ describe("Trial Abundance local response sync", () => {
     await expect(syncPendingTrialAbundanceResponse()).resolves.toBe(false)
     expect(storage.getPendingTrialAbundanceResponse()).toEqual(pendingResponse)
   })
+
+  it("keeps the local copy when the request fails before a response", async () => {
+    storage.setPendingTrialAbundanceResponse(pendingResponse)
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"))
+
+    await expect(syncPendingTrialAbundanceResponse()).resolves.toBe(false)
+    expect(storage.getPendingTrialAbundanceResponse()).toEqual(pendingResponse)
+  })
 })

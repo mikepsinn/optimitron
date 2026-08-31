@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
+import { AuthenticationRequiredError } from "@/lib/auth-utils"
 import { createPostHandler } from "../../lib/trial-abundance-response-route"
 
 const validResponse = {
@@ -66,11 +67,22 @@ describe("Trial Abundance response POST", () => {
   it("returns 401 when an authenticated save is not available", async () => {
     const post = createPostHandler({
       submit: async () => {
-        throw new Error("Unauthorized - authentication required")
+        throw new AuthenticationRequiredError()
       },
     })
     const response = await post(makeRequest(validResponse))
 
     expect(response.status).toBe(401)
+  })
+
+  it("returns 503 for non-authentication failures with misleading messages", async () => {
+    const post = createPostHandler({
+      submit: async () => {
+        throw new Error("Unauthorized database connection")
+      },
+    })
+    const response = await post(makeRequest(validResponse))
+
+    expect(response.status).toBe(503)
   })
 })

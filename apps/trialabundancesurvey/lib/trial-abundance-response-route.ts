@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
 
+import { AuthenticationRequiredError } from "@/lib/auth-utils"
+
 import {
   trialAbundanceResponseSchema,
   type TrialAbundanceResponseInput,
@@ -31,7 +33,7 @@ export function createPostHandler(dependencies: PostDependencies = {}) {
         )
       }
 
-      if (error instanceof Error && error.message.includes("Unauthorized")) {
+      if (error instanceof AuthenticationRequiredError) {
         return NextResponse.json(
           { success: false, error: "Unauthorized" },
           { status: 401 },
