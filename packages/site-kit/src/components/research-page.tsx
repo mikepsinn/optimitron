@@ -24,8 +24,13 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  GLOBAL_POPULATION_2024,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  RECOVERY_TRIAL_COST_PER_PATIENT,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TREATY_ANNUAL_FUNDING,
@@ -44,6 +49,37 @@ const queueStatusQuo = formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS)
 const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)
 const livesSaved = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const trialCapacityMultiplier = formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER, { precision: 1 })
+const SURVEY_MAJORITY_SHARE = 0.51
+const governmentTrialShareOfMilitarySpending =
+  (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value /
+    GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value) *
+  100
+const compressedTimelineShare =
+  (DFDA_QUEUE_CLEARANCE_YEARS.value / STATUS_QUO_QUEUE_CLEARANCE_YEARS.value) * 100
+const surveyMajorityTarget: Parameter = {
+  ...GLOBAL_POPULATION_2024,
+  value: GLOBAL_POPULATION_2024.value * SURVEY_MAJORITY_SHARE,
+  parameterName: "SURVEY_MAJORITY_RESPONSE_TARGET",
+  displayName: "51% of the current global population",
+  sourceType: "calculated",
+  formula: "GLOBAL_POPULATION_2024 × 51%",
+  inputs: ["GLOBAL_POPULATION_2024"],
+  computeExpr: "GLOBAL_POPULATION_2024 * 0.51",
+  confidenceInterval: GLOBAL_POPULATION_2024.confidenceInterval
+    ? [
+        GLOBAL_POPULATION_2024.confidenceInterval[0] * SURVEY_MAJORITY_SHARE,
+        GLOBAL_POPULATION_2024.confidenceInterval[1] * SURVEY_MAJORITY_SHARE,
+      ]
+    : undefined,
+  stdError: undefined,
+}
+const coordinationFlow = [
+  { emoji: "🗳️", label: "Verified public support", color: "bg-background" },
+  { emoji: "📣", label: "Public mandate", color: "bg-brutal-cyan" },
+  { emoji: "🏛️", label: "Trial access laws + public funding", color: "bg-brutal-yellow" },
+  { emoji: "🩺", label: "More trials + faster evidence", color: "bg-background" },
+  { emoji: "❤️", label: "Earlier treatment + less disease", color: "bg-brutal-cyan" },
+] as const
 
 const headlineStats: StatCardProps[] = [
   {
@@ -225,7 +261,7 @@ export function generateSurveyResearchMetadata(): Metadata {
 
 export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
 
-  // Survey variant: stripped-down methodology page — no advocacy, no military ROI, no quadrillions
+  // Survey variant: concise evidence page in the survey's original style.
   if (variant === "survey") {
     return (
       <Layout>
@@ -238,8 +274,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <span className="text-brutal-cyan">DATA SOURCES</span>
               </h1>
               <p className="text-lg sm:text-xl font-bold text-center max-w-2xl mx-auto">
-                Peer-reviewed evidence on pragmatic clinical trials and the assumptions behind the survey&apos;s
-                capacity model.
+                Peer-reviewed evidence and the numbers behind the survey&apos;s treatment timeline and funding model.
               </p>
             </Container>
           </SectionContainer>
@@ -261,51 +296,87 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   <p>
                     The landmark{" "}
                     <span className="font-black text-brutal-pink">RECOVERY trial</span> at Oxford
-                    University demonstrated this approach at scale: it enrolled 40,000+ patients across
-                    176 NHS hospitals, identified effective COVID-19 treatments months ahead of
-                    traditional trials, and did so at{" "}
-                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />{" "}
-                    <span className="font-black">lower cost</span> per patient.
+                    University demonstrated this approach at scale. Embedded in routine NHS care, it
+                    enrolled 40,000+ patients across 176 hospitals and produced three treatment findings
+                    within 100 days.
                   </p>
                   <p>
-                    RECOVERY is estimated to have saved over{" "}
-                    <span className="font-black">1 million lives</span> worldwide by rapidly
-                    identifying that dexamethasone reduces COVID mortality by one-third.
+                    It recruited its first patient on March 19, 2020, and announced the dexamethasone
+                    mortality result <span className="font-black">89 days later</span>. The result is
+                    estimated to have saved over <span className="font-black">1 million lives</span>.
+                  </p>
+                  <p>
+                    RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
+                    patient, compared with a $41,413 median for pivotal drug trials—about{" "}
+                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />.
+                    A separate review of 64 embedded trials found a $97 median.
                   </p>
                 </div>
               </Card>
 
               <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
-                TIMELINE <span className="text-brutal-pink">COMPRESSION</span>
+                DISEASE ERADICATION <span className="text-brutal-pink">TIMELINE</span>
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
-                <div className="space-y-4 text-lg leading-relaxed">
-                  <p>
-                    At the current rate of ~15 diseases per year receiving a first effective treatment,
-                    finding treatments for all ~6,650 currently untreatable diseases would take an
-                    estimated{" "}
-                    <ParameterValue
-                      param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                      format={{ precision: 0 }}
-                      className="font-black"
-                    />{" "}
-                    <span className="font-black">years</span>.
-                  </p>
-                  <p>
-                    At the modeled funding level of about{" "}
-                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} className="font-black" />{" "}
-                    per year, scaling pragmatic trials would increase clinical trial capacity by{" "}
-                    <ParameterValue
-                      param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                      format={{ precision: 1 }}
-                      className="font-black text-brutal-pink"
-                    />, compressing that timeline to approximately{" "}
-                    <ParameterValue
-                      param={DFDA_QUEUE_CLEARANCE_YEARS}
-                      format={{ precision: 0 }}
-                      className="font-black text-brutal-pink"
-                    />{" "}
-                    <span className="font-black text-brutal-pink">years</span>.
+                <p className="mb-8 text-lg font-bold leading-relaxed">
+                  About{" "}
+                  <ParameterValue
+                    param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+                    valueOverride="6,650"
+                    className="font-black"
+                  />{" "}
+                  rare diseases have no FDA-approved treatment. About{" "}
+                  <ParameterValue
+                    param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+                    valueOverride="15"
+                    className="font-black"
+                  />{" "}
+                  diseases get their first effective treatment each year. At that rate, clearing today&apos;s
+                  treatment backlog takes{" "}
+                  <ParameterValue
+                    param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                    format={{ precision: 0 }}
+                    className="font-black"
+                  />{" "}
+                  years.
+                </p>
+                <div
+                  aria-label={`Disease eradication timeline falls from ${Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value)} years to ${Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value)} years`}
+                  className="space-y-6"
+                  role="group"
+                >
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Today&apos;s treatment rate</span>
+                      <span className="text-3xl">
+                        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div className="h-full w-full bg-primary" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>
+                        With <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> trial
+                        capacity
+                      </span>
+                      <span className="text-3xl text-brutal-pink">
+                        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div
+                        className="h-full bg-brutal-pink"
+                        style={{ width: `${compressedTimelineShare}%` }}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-base font-bold text-center">
+                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
+                    patient trial slots.
                   </p>
                 </div>
               </Card>
@@ -317,21 +388,21 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 {[
                   {
                     stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
-                    label: "COST REDUCTION",
+                    label: "RECOVERY COST COMPARISON",
                     detail:
-                      "Pragmatic trials cost a fraction of traditional trials by using existing healthcare infrastructure.",
+                      "About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.",
                     color: "bg-brutal-cyan",
                   },
                   {
                     stat: (
                       <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />
                     ),
-                    label: "CAPACITY INCREASE",
+                    label: "PATIENT TRIAL CAPACITY",
                     detail: (
                       <>
-                        At the model&apos;s{" "}
-                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> annual funding level,
-                        scaling pragmatic trials compresses the disease eradication timeline from{" "}
+                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                        <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
+                        patient trial slots, cutting the disease eradication timeline from{" "}
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
                         years to{" "}
                         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years.
@@ -347,10 +418,10 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     color: "bg-brutal-pink",
                   },
                   {
-                    stat: "MONTHS",
-                    label: "VS. YEARS",
+                    stat: "89 DAYS",
+                    label: "89 DAYS TO A TREATMENT RESULT",
                     detail:
-                      "Pragmatic designs deliver actionable results in months, while traditional trials can take 5-10 years.",
+                      "March 19 to June 16, 2020; RECOVERY produced three treatment findings within 100 days.",
                     color: "bg-brutal-cyan",
                   },
                 ].map((item, i) => (
@@ -366,25 +437,165 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               </div>
 
               <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                PUBLIC SPENDING <span className="text-brutal-pink">GAP</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
+                <div
+                  aria-label="Annual weapons and military spending is $2.718 trillion versus $4.5 billion in publicly funded clinical trial spending"
+                  className="space-y-6"
+                  role="group"
+                >
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Annual weapons and military spending</span>
+                      <span className="text-3xl">$2.718T</span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div className="h-full w-full bg-primary" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Annual publicly funded clinical trial spending</span>
+                      <span className="text-3xl text-brutal-pink">
+                        <ParameterValue
+                          param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL}
+                          valueOverride="$4.5B"
+                        />
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div
+                        className="h-full min-w-1 bg-brutal-pink"
+                        style={{ width: `${governmentTrialShareOfMilitarySpending}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-8 grid gap-4 text-center sm:grid-cols-2">
+                  <div className="border-4 border-primary bg-background p-4">
+                    <div className="text-3xl font-black">{governmentTrialShareOfMilitarySpending.toFixed(3)}%</div>
+                    <div className="text-sm font-black uppercase">Trial share of weapons and military spending</div>
+                  </div>
+                  <div className="border-4 border-primary bg-background p-4">
+                    <div className="text-3xl font-black">
+                      <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />
+                    </div>
+                    <div className="text-sm font-black uppercase">Weapons and military dollars per public trial dollar</div>
+                  </div>
+                </div>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                WHY CAN&apos;T EVERY DOCTOR <span className="text-brutal-pink">OFFER A TRIAL?</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="space-y-5 text-lg leading-relaxed">
+                  <p>
+                    Pragmatic trials are legal. Doctors can generally prescribe approved drugs off-label,
+                    but a systematic study adds research duties: an FDA investigational new drug application
+                    unless exempt, ethics review, consent, privacy approval, safety reporting, contracts, data
+                    systems, and a research sponsor. Insurance may cover routine care without paying for the
+                    research work.
+                  </p>
+                  <p>
+                    Universal access needs reusable study plans, central ethics review, simpler rules for
+                    low-risk comparisons, reliable funding, connected health records, and a shared trial network
+                    to handle monitoring, reporting, and liability.
+                  </p>
+                </div>
+              </Card>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-cyan">
+                <h3 className="text-2xl font-black uppercase mb-3">Right to Try does not create trials</h3>
+                <p className="text-base font-bold leading-relaxed">
+                  Federal Right to Try covers some patients with life-threatening conditions who cannot
+                  join a relevant trial. Montana&apos;s 2025 SB 535 also created licensed experimental-treatment
+                  centers; final rules took effect July 25, 2026. These laws expand treatment access, but
+                  they do not require treatment supply, payment, trial enrollment, randomization, or useful
+                  comparative evidence.
+                </p>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                WHAT COULD A <span className="text-brutal-pink">GLOBAL MAJORITY</span> CHANGE?
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-pink">
+                <div className="grid gap-6 md:grid-cols-[0.35fr_1fr] md:items-center">
+                  <div className="text-center">
+                    <div className="text-6xl font-black">51%</div>
+                    <div className="text-lg font-black">
+                      <ParameterValue
+                        param={surveyMajorityTarget}
+                        valueOverride={`${(surveyMajorityTarget.value / 1_000_000_000).toFixed(2)}B`}
+                      />{" "}
+                      people
+                    </div>
+                  </div>
+                  <div className="text-base font-bold leading-relaxed">
+                    <p>
+                      If 51% of people publicly verify their support, governments can see an election-scale
+                      mandate for laws and public funding that let patients join trials through their physicians.
+                    </p>
+                  </div>
+                </div>
+                <ol
+                  aria-label="How verified preferences could lead to less disease"
+                  className="mt-8 flex flex-col items-stretch gap-2 lg:flex-row lg:items-center"
+                >
+                  {coordinationFlow.map((step, index) => (
+                    <li
+                      key={step.label}
+                      className="flex flex-col items-center gap-2 lg:min-w-0 lg:flex-1 lg:flex-row"
+                    >
+                      <div
+                        className={`${step.color} flex min-h-28 w-full flex-col items-center justify-center border-4 border-primary p-3 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                      >
+                        <span aria-hidden="true" className="mb-2 text-3xl">
+                          {step.emoji}
+                        </span>
+                        <span className="text-sm font-black uppercase leading-tight">{step.label}</span>
+                      </div>
+                      {index < coordinationFlow.length - 1 ? (
+                        <span
+                          aria-hidden="true"
+                          className="rotate-90 text-3xl font-black leading-none lg:rotate-0"
+                        >
+                          →
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
                 <span className="text-brutal-pink">SOURCES</span>
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <ul className="space-y-4 text-base leading-relaxed">
                   <li>
-                    <span className="font-black">RECOVERY Trial</span> — Horby, P. et al. (2021).
-                    Dexamethasone in Hospitalized Patients with Covid-19. <em>New England Journal of Medicine</em>, 384(8), 693-704.
+                    <a className="font-black underline" href="https://www.ndm.ox.ac.uk/covid-19/covid-research/drug-trials-recovery" target="_blank" rel="noopener noreferrer">Oxford RECOVERY</a>
+                    {" — "}design, enrollment, dates, results, and NHS integration.
                   </li>
                   <li>
-                    <span className="font-black">Trial Cost Analysis</span> — Martin, L. et al. (2017).
-                    How much do clinical trials cost? <em>Nature Reviews Drug Discovery</em>, 16(6), 381-382.
+                    <a className="font-black underline" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/" target="_blank" rel="noopener noreferrer">Pivotal trial costs</a>
+                    {" and "}
+                    <a className="font-black underline" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/" target="_blank" rel="noopener noreferrer">embedded pragmatic trial costs</a>.
                   </li>
                   <li>
-                    <span className="font-black">Pragmatic Trial Design</span> — Ford, I. & Norrie, J. (2016).
-                    Pragmatic Trials. <em>New England Journal of Medicine</em>, 375(5), 454-463.
+                    <a className="font-black underline" href="https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024" target="_blank" rel="noopener noreferrer">SIPRI military spending</a>
+                    {" — "}the $2.718 trillion 2024 estimate.
                   </li>
                   <li>
-                    <span className="font-black">RECOVERY Impact</span> — Wellcome Trust (2022).
-                    The RECOVERY trial: one of the most important clinical trials ever run.
+                    <a className="font-black underline" href="https://www.fda.gov/drugs/investigational-new-drug-ind-application/ind-application-procedures-exemptions-ind-requirements" target="_blank" rel="noopener noreferrer">FDA IND rules</a>,{" "}
+                    <a className="font-black underline" href="https://www.hhs.gov/ohrp/regulations-and-policy/regulations/45-cfr-46/index.html" target="_blank" rel="noopener noreferrer">Common Rule</a>,{" "}
+                    <a className="font-black underline" href="https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/research/index.html" target="_blank" rel="noopener noreferrer">HIPAA research rules</a>, and{" "}
+                    <a className="font-black underline" href="https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?NCDId=1&NCDver=3" target="_blank" rel="noopener noreferrer">Medicare trial coverage</a>.
+                  </li>
+                  <li>
+                    <a className="font-black underline" href="https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try" target="_blank" rel="noopener noreferrer">Federal Right to Try</a>
+                    {" and "}
+                    <a className="font-black underline" href="https://archive.legmt.gov/content/Sessions/69th/Contractor_index/CH0621.pdf" target="_blank" rel="noopener noreferrer">Montana SB 535</a>.
                   </li>
                 </ul>
               </Card>

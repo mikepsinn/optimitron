@@ -4,12 +4,6 @@ import {
   TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
   TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION,
 } from "@optimitron/db/constants"
-import {
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/data/parameters"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
@@ -28,11 +22,7 @@ import { syncPendingTrialAbundanceResponse } from "../../lib/trial-abundance-sur
 import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
 import { AuthForm } from "../auth/AuthForm"
 import { ReferralLinkCard } from "../shared/ReferralLinkCard"
-import { ParameterValue } from "../shared/ParameterValue"
 import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
-
-const ratio = MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value
-const formattedRatio = `$${Math.round(ratio)}`
 
 type SurveyStage =
   | "patient-access"
@@ -68,10 +58,6 @@ function getInitialStage(
   if (visualState === "allocation") return "allocation"
   if (visualState === "complete") return "complete"
   return "patient-access"
-}
-
-function formatAnswer(answer: TrialAbundanceAnswer | null) {
-  return answer === "ABSTAIN" ? "NOT SURE" : answer
 }
 
 function celebrateResponse() {
@@ -112,9 +98,6 @@ export default function TrialAbundanceSurveySection({
   const [userHasDragged, setUserHasDragged] = useState(
     disableIntroAnimation || isVisualCapture,
   )
-  const [syncState, setSyncState] = useState<
-    "idle" | "saving" | "saved" | "local"
-  >(visualState === "complete" ? "local" : "idle")
   const completionRef = useRef<HTMLDivElement>(null)
   const hasRetriedSync = useRef(false)
 
@@ -134,7 +117,6 @@ export default function TrialAbundanceSurveySection({
     setSelfFundedAccessAnswer(pending.selfFundedAccessAnswer)
     setStage("complete")
     setUserHasDragged(true)
-    setSyncState("local")
   }, [isVisualCapture])
 
   useEffect(() => {
@@ -149,10 +131,7 @@ export default function TrialAbundanceSurveySection({
     }
 
     hasRetriedSync.current = true
-    setSyncState("saving")
-    void syncPendingTrialAbundanceResponse(session).then((saved) => {
-      setSyncState(saved ? "saved" : "local")
-    })
+    void syncPendingTrialAbundanceResponse(session)
   }, [isVisualCapture, session, status])
 
   const clinicalTrialsAllocation = 100 - militaryAllocation
@@ -213,7 +192,6 @@ export default function TrialAbundanceSurveySection({
       timestamp: new Date().toISOString(),
     }
     storage.setPendingTrialAbundanceResponse(response)
-    setSyncState("local")
 
     window.setTimeout(() => {
       completionRef.current?.scrollIntoView({
@@ -223,9 +201,7 @@ export default function TrialAbundanceSurveySection({
     }, 350)
 
     if (status === "authenticated" && session) {
-      setSyncState("saving")
-      const saved = await syncPendingTrialAbundanceResponse(session)
-      setSyncState(saved ? "saved" : "local")
+      await syncPendingTrialAbundanceResponse(session)
     }
   }
 
@@ -238,13 +214,17 @@ export default function TrialAbundanceSurveySection({
       className="pb-24"
     >
       <Container>
-        <h1 className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
-          Trial <span className="text-brutal-pink">Abundance</span> Survey
-        </h1>
-        <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
-          Three questions about patient access, who may fund trial
-          participation, and public priorities.
-        </p>
+        {stage === "patient-access" ? (
+          <>
+            <h1 className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
+              Trial <span className="text-brutal-pink">Abundance</span> Survey
+            </h1>
+            <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
+              Three questions about patient access, who may fund trial
+              participation, and public priorities.
+            </p>
+          </>
+        ) : null}
 
         <AnimatePresence mode="wait">
           {stage === "patient-access" ? (
@@ -365,34 +345,6 @@ export default function TrialAbundanceSurveySection({
 
         {stage === "complete" ? (
           <div ref={completionRef} className="space-y-8">
-            <SurveyCard>
-              <p className="text-sm font-black uppercase text-brutal-pink">
-                Response complete
-              </p>
-              <h2 className="text-3xl font-black uppercase sm:text-4xl">
-                Thank you
-              </h2>
-              <div className="space-y-2 text-lg font-bold">
-                <p>Patient access: {formatAnswer(patientAccessAnswer)}.</p>
-                <p>
-                  Patient-funded access: {formatAnswer(selfFundedAccessAnswer)}.
-                </p>
-                <p>
-                  Allocation: {militaryAllocation}% to military and weapons and{" "}
-                  {clinicalTrialsAllocation}% to pragmatic clinical trials.
-                </p>
-              </div>
-              <p className="font-bold text-muted-foreground">
-                {syncState === "saved"
-                  ? "Your verified response is saved."
-                  : syncState === "saving"
-                    ? "Saving your verified response..."
-                    : "Your response is saved on this device. Verify below to store it with your account."}
-              </p>
-            </SurveyCard>
-
-            <RealityCheck />
-
             {status === "authenticated" && session?.user ? (
               <ReferralLinkCard
                 referralLink={shareUrl}
@@ -426,6 +378,29 @@ export default function TrialAbundanceSurveySection({
           </div>
         ) : null}
       </Container>
+
+      <style jsx>{`
+        .slider-brutal::-webkit-slider-thumb {
+          appearance: none;
+          width: 32px;
+          height: 32px;
+          background: black;
+          border: 4px solid black;
+          border-radius: 0;
+          cursor: pointer;
+          box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .slider-brutal::-moz-range-thumb {
+          width: 32px;
+          height: 32px;
+          background: black;
+          border: 4px solid black;
+          cursor: pointer;
+          box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+          border-radius: 0;
+        }
+      `}</style>
     </SectionContainer>
   )
 }
@@ -515,41 +490,5 @@ function AllocationDisplay({
         </div>
       </div>
     </div>
-  )
-}
-
-function RealityCheck() {
-  return (
-    <Card className="mx-auto max-w-3xl border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-      <h2 className="mb-4 text-2xl font-black uppercase">After you answer</h2>
-      <p className="mb-4 text-lg font-bold">
-        Governments spend about{" "}
-        <span className="text-brutal-pink">{formattedRatio}</span> on military
-        systems for every <span className="text-brutal-pink">$1</span> on
-        government-funded clinical trials.
-      </p>
-      <p className="font-bold">
-        The current model estimates that a 1% reallocation could increase trial
-        capacity by{" "}
-        <ParameterValue
-          param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-          format={{ precision: 1 }}
-          className="font-black text-brutal-pink"
-        />
-        , reducing the modeled treatment-research queue from{" "}
-        <ParameterValue
-          param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-          format={{ precision: 0 }}
-          className="font-black text-brutal-pink"
-        />{" "}
-        years to{" "}
-        <ParameterValue
-          param={DFDA_QUEUE_CLEARANCE_YEARS}
-          format={{ precision: 0 }}
-          className="font-black text-brutal-pink"
-        />{" "}
-        years.
-      </p>
-    </Card>
   )
 }
