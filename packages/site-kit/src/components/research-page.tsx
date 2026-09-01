@@ -50,6 +50,7 @@ const queueStatusQuo = formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS)
 const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)
 const livesSaved = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const trialCapacityMultiplier = formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER, { precision: 1 })
+const SURVEY_MAJORITY_SHARE = 0.51
 const governmentTrialSpendingRange = GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.confidenceInterval
   ?.map((value) => formatParameter({ ...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL, value }))
   .join("–")
@@ -57,13 +58,20 @@ const governmentTrialShareOfMilitarySpending =
   (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value / 2_718_000_000_000) * 100
 const surveyMajorityTarget: Parameter = {
   ...GLOBAL_POPULATION_2024,
-  value: GLOBAL_POPULATION_2024.value * 0.51,
+  value: GLOBAL_POPULATION_2024.value * SURVEY_MAJORITY_SHARE,
   parameterName: "SURVEY_MAJORITY_RESPONSE_TARGET",
   displayName: "51% of the current global population",
   sourceType: "calculated",
   formula: "GLOBAL_POPULATION_2024 × 51%",
   inputs: ["GLOBAL_POPULATION_2024"],
   computeExpr: "GLOBAL_POPULATION_2024 * 0.51",
+  confidenceInterval: GLOBAL_POPULATION_2024.confidenceInterval
+    ? [
+        GLOBAL_POPULATION_2024.confidenceInterval[0] * SURVEY_MAJORITY_SHARE,
+        GLOBAL_POPULATION_2024.confidenceInterval[1] * SURVEY_MAJORITY_SHARE,
+      ]
+    : undefined,
+  stdError: undefined,
 }
 
 const headlineStats: StatCardProps[] = [
@@ -467,7 +475,11 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   <div className="text-center">
                     <div className="text-6xl font-black">51%</div>
                     <div className="text-lg font-black">
-                      <ParameterValue param={surveyMajorityTarget} valueOverride="4.08B" /> people
+                      <ParameterValue
+                        param={surveyMajorityTarget}
+                        valueOverride={`${(surveyMajorityTarget.value / 1_000_000_000).toFixed(2)}B`}
+                      />{" "}
+                      people
                     </div>
                   </div>
                   <div className="space-y-4 text-base font-bold leading-relaxed">
