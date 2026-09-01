@@ -21,10 +21,13 @@
 - Pragmatic clinical trials test treatments in real-world healthcare settings using existing medical records and routine care, rather than creating expensive artificial research environments.
 - The landmark RECOVERY trial at Oxford University demonstrated this approach at scale. Embedded in routine NHS care, it enrolled 40,000+ patients across 176 hospitals and produced three actionable treatment results within 100 days.
 - It recruited its first patient on March 19, 2020, and announced the dexamethasone mortality result 89 days later. The result is estimated to have saved over 1 million lives.
-- RECOVERY cost about [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient, compared with a $41,413 median for pivotal drug trials—about [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). A separate review of 64 embedded trials found a $97 median. These studies show the cost potential; they do not set one price for every pragmatic trial.
+- RECOVERY cost about [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient, compared with a $41,413 median for pivotal drug trials—about [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). A separate review of 64 embedded trials found a $97 median.
 ### TIMELINE COMPRESSION
-- At the current rate of ~15 diseases per year receiving a first effective treatment, finding treatments for all ~6,650 currently untreatable diseases would take an estimated [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
-- At the modeled funding level of about [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year, scaling pragmatic trials would increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), compressing that timeline to approximately [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
+- CURRENT PACE
+- [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS
+- EXPANDED TRIAL CAPACITY
+- [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS
+- [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more trial capacity at [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year
 ### KEY FINDINGS
 - [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.
@@ -33,10 +36,11 @@
 - RECOVERY's identification of dexamethasone as an effective treatment saved over 1 million lives globally.
 - March 19 to June 16, 2020; RECOVERY produced three actionable results within 100 days.
 ### PUBLIC SPENDING GAP
+- MILITARY SPENDING
+- $2.718T
+- CLINICAL TRIAL SPENDING
 - [$4.5B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
-- This is a government-to-government comparison. No complete global accounting exists, so the $4.5 billion trial figure is our estimate; its range is $3B–$6B.
-- Including private trial spending raises the denominator to about [$60B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and lowers the ratio to about [45:1](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html).
 ### WHY CAN'T EVERY DOCTOR OFFER A TRIAL?
 - Pragmatic trials are legal. Doctors can generally prescribe approved drugs off-label, but a systematic study adds research duties: an IND unless exempt, IRB review, consent, privacy approval, safety reporting, contracts, data systems, and an accountable sponsor. Insurance may cover routine care without paying for the research work.
 - Universal access needs reusable protocols, central review, proportionate rules for minimal-risk comparisons, reliable funding, interoperable records, and a shared trial network to handle monitoring, reporting, and liability.
@@ -45,8 +49,11 @@
 ### WHAT COULD A GLOBAL MAJORITY CHANGE?
 - [4.08B](https://manual.WarOnDisease.org/knowledge/solution/dih.html)
 - A verified majority could make private preferences common knowledge and create an election-scale mandate for trial access and funding reform.
-- Verified preferences → public mandate → access and funding reform → more physician-embedded trials → faster evidence → earlier treatment → less disease
-- The survey would not change law by itself. Patients and physicians must participate; health systems must embed trials; researchers must publish; foundations and insurers must fund; developers must supply treatments; and politicians and governments must act.
+- 🗳️VERIFIED PREFERENCES→
+- 📣PUBLIC MANDATE→
+- 🏛️ACCESS + FUNDING REFORM→
+- 🩺MORE TRIALS + FASTER EVIDENCE→
+- ❤️EARLIER TREATMENT + LESS DISEASE
 ### SOURCES
 - [Oxford RECOVERY](https://www.ndm.ox.ac.uk/covid-19/covid-research/drug-trials-recovery) — design, enrollment, dates, results, and NHS integration.
 - [Pivotal trial costs](https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/) and [embedded pragmatic trial costs](https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/).

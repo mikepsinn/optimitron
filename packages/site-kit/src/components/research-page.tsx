@@ -24,11 +24,9 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL,
-  GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_POPULATION_2024,
-  MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   RECOVERY_TRIAL_COST_PER_PATIENT,
@@ -51,11 +49,12 @@ const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)
 const livesSaved = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const trialCapacityMultiplier = formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER, { precision: 1 })
 const SURVEY_MAJORITY_SHARE = 0.51
-const governmentTrialSpendingRange = GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.confidenceInterval
-  ?.map((value) => formatParameter({ ...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL, value }))
-  .join("–")
 const governmentTrialShareOfMilitarySpending =
-  (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value / 2_718_000_000_000) * 100
+  (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value /
+    GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value) *
+  100
+const compressedTimelineShare =
+  (DFDA_QUEUE_CLEARANCE_YEARS.value / STATUS_QUO_QUEUE_CLEARANCE_YEARS.value) * 100
 const surveyMajorityTarget: Parameter = {
   ...GLOBAL_POPULATION_2024,
   value: GLOBAL_POPULATION_2024.value * SURVEY_MAJORITY_SHARE,
@@ -73,6 +72,13 @@ const surveyMajorityTarget: Parameter = {
     : undefined,
   stdError: undefined,
 }
+const coordinationFlow = [
+  { emoji: "🗳️", label: "Verified preferences", color: "bg-background" },
+  { emoji: "📣", label: "Public mandate", color: "bg-brutal-cyan" },
+  { emoji: "🏛️", label: "Access + funding reform", color: "bg-brutal-yellow" },
+  { emoji: "🩺", label: "More trials + faster evidence", color: "bg-background" },
+  { emoji: "❤️", label: "Earlier treatment + less disease", color: "bg-brutal-cyan" },
+] as const
 
 const headlineStats: StatCardProps[] = [
   {
@@ -303,8 +309,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
                     patient, compared with a $41,413 median for pivotal drug trials—about{" "}
                     <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />.
-                    A separate review of 64 embedded trials found a $97 median. These studies show the
-                    cost potential; they do not set one price for every pragmatic trial.
+                    A separate review of 64 embedded trials found a $97 median.
                   </p>
                 </div>
               </Card>
@@ -313,33 +318,39 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 TIMELINE <span className="text-brutal-pink">COMPRESSION</span>
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
-                <div className="space-y-4 text-lg leading-relaxed">
-                  <p>
-                    At the current rate of ~15 diseases per year receiving a first effective treatment,
-                    finding treatments for all ~6,650 currently untreatable diseases would take an
-                    estimated{" "}
-                    <ParameterValue
-                      param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                      format={{ precision: 0 }}
-                      className="font-black"
-                    />{" "}
-                    <span className="font-black">years</span>.
-                  </p>
-                  <p>
-                    At the modeled funding level of about{" "}
-                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} className="font-black" />{" "}
-                    per year, scaling pragmatic trials would increase clinical trial capacity by{" "}
-                    <ParameterValue
-                      param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                      format={{ precision: 1 }}
-                      className="font-black text-brutal-pink"
-                    />, compressing that timeline to approximately{" "}
-                    <ParameterValue
-                      param={DFDA_QUEUE_CLEARANCE_YEARS}
-                      format={{ precision: 0 }}
-                      className="font-black text-brutal-pink"
-                    />{" "}
-                    <span className="font-black text-brutal-pink">years</span>.
+                <div
+                  aria-label={`Modeled timeline falls from ${Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value)} years to ${Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value)} years`}
+                  className="space-y-6"
+                  role="group"
+                >
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Current pace</span>
+                      <span className="text-3xl">
+                        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div className="h-full w-full bg-primary" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Expanded trial capacity</span>
+                      <span className="text-3xl text-brutal-pink">
+                        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div
+                        className="h-full bg-brutal-pink"
+                        style={{ width: `${compressedTimelineShare}%` }}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-base font-bold text-center">
+                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more trial
+                    capacity at <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year
                   </p>
                 </div>
               </Card>
@@ -403,38 +414,49 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 PUBLIC SPENDING <span className="text-brutal-pink">GAP</span>
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 text-center mb-6">
+                <div
+                  aria-label="Annual military spending is $2.718 trillion versus $4.5 billion in government clinical trial spending"
+                  className="space-y-6"
+                  role="group"
+                >
                   <div>
-                    <div className="text-3xl font-black">$2.718T</div>
-                    <div className="text-sm font-black uppercase">2024 military spending</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-black">
-                      <ParameterValue param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL} valueOverride="$4.5B" />
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Military spending</span>
+                      <span className="text-3xl">$2.718T</span>
                     </div>
-                    <div className="text-sm font-black uppercase">Government trial estimate</div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div className="h-full w-full bg-primary" />
+                    </div>
                   </div>
                   <div>
+                    <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                      <span>Clinical trial spending</span>
+                      <span className="text-3xl text-brutal-pink">
+                        <ParameterValue
+                          param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL}
+                          valueOverride="$4.5B"
+                        />
+                      </span>
+                    </div>
+                    <div className="h-12 border-4 border-primary bg-background">
+                      <div
+                        className="h-full min-w-1 bg-brutal-pink"
+                        style={{ width: `${governmentTrialShareOfMilitarySpending}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-8 grid gap-4 text-center sm:grid-cols-2">
+                  <div className="border-4 border-primary bg-background p-4">
                     <div className="text-3xl font-black">{governmentTrialShareOfMilitarySpending.toFixed(3)}%</div>
-                    <div className="text-sm font-black uppercase">Trial share</div>
+                    <div className="text-sm font-black uppercase">Trial share of military spending</div>
                   </div>
-                  <div>
+                  <div className="border-4 border-primary bg-background p-4">
                     <div className="text-3xl font-black">
                       <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />
                     </div>
-                    <div className="text-sm font-black uppercase">Military dollars per $1</div>
+                    <div className="text-sm font-black uppercase">Military dollars per trial dollar</div>
                   </div>
-                </div>
-                <div className="space-y-3 text-base font-bold leading-relaxed">
-                  <p>
-                    This is a government-to-government comparison. No complete global accounting exists,
-                    so the $4.5 billion trial figure is our estimate; its range is {governmentTrialSpendingRange}.
-                  </p>
-                  <p>
-                    Including private trial spending raises the denominator to about{" "}
-                    <ParameterValue param={GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL} /> and lowers the ratio to about{" "}
-                    <ParameterValue param={MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />.
-                  </p>
                 </div>
               </Card>
 
@@ -482,27 +504,41 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                       people
                     </div>
                   </div>
-                  <div className="space-y-4 text-base font-bold leading-relaxed">
+                  <div className="text-base font-bold leading-relaxed">
                     <p>
                       A verified majority could make private preferences common knowledge and create an
                       election-scale mandate for trial access and funding reform.
                     </p>
-                    <p className="font-black">
-                      Verified preferences → public mandate → access and funding reform → more physician-embedded
-                      trials → faster evidence → earlier treatment → less disease
-                    </p>
-                    <p>
-                      The survey would not change law by itself. Patients and physicians must participate;
-                      health systems must embed trials; researchers must publish; foundations and insurers
-                      must fund; developers must supply treatments; and politicians and governments must act.
-                    </p>
                   </div>
                 </div>
-              </Card>
-              <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow text-sm font-bold leading-relaxed">
-                A credible majority requires one verified response per person, transparent methods,
-                country results, separate representative and self-selected samples, clear translations,
-                published recruitment sources, respondent privacy, and concrete follow-up paths.
+                <ol
+                  aria-label="How verified preferences could lead to less disease"
+                  className="mt-8 flex flex-col items-stretch gap-2 lg:flex-row lg:items-center"
+                >
+                  {coordinationFlow.map((step, index) => (
+                    <li
+                      key={step.label}
+                      className="flex flex-col items-center gap-2 lg:min-w-0 lg:flex-1 lg:flex-row"
+                    >
+                      <div
+                        className={`${step.color} flex min-h-28 w-full flex-col items-center justify-center border-4 border-primary p-3 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                      >
+                        <span aria-hidden="true" className="mb-2 text-3xl">
+                          {step.emoji}
+                        </span>
+                        <span className="text-sm font-black uppercase leading-tight">{step.label}</span>
+                      </div>
+                      {index < coordinationFlow.length - 1 ? (
+                        <span
+                          aria-hidden="true"
+                          className="rotate-90 text-3xl font-black leading-none lg:rotate-0"
+                        >
+                          →
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
               </Card>
 
               <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
