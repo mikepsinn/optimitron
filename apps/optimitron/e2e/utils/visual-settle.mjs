@@ -151,13 +151,9 @@ export async function prepareFullPageVisualCapture(page) {
   );
 
   await retryAfterNavigation(page, async () => {
-    await page.evaluate(async () => {
-      window.scrollTo(0, 0);
-      await new Promise((resolve) => {
-        requestAnimationFrame(() => requestAnimationFrame(resolve));
-      });
-    });
+    await page.evaluate(() => window.scrollTo(0, 0));
   });
+  await waitForPaint(page);
 
   await waitForCaptureReady(page);
   await waitForImagesSettled(page);
@@ -259,17 +255,59 @@ export async function waitForImagesSettled(page, timeout = 15_000) {
     await page.waitForTimeout(100);
   }
 
-  await Promise.all(
-    evaluationTargets(page).map((target) =>
-      retryingEvaluate(target, async () => {
-        await Promise.allSettled(
-          Array.from(document.images)
-            .filter((image) => image.complete && image.naturalWidth > 0)
-            .map((image) => image.decode()),
+  await withDeadline(
+    Promise.all(
+      evaluationTargets(page).map((target) =>
+        retryingEvaluate(target, async () => {
+          await Promise.allSettled(
+            Array.from(document.images)
+              .filter((image) => image.complete && image.naturalWidth > 0)
+              .map((image) => image.decode()),
+          );
+        }),
+      ),
+    ),
+    Math.max(1_000, deadline - Date.now()),
+    `Timed out after ${timeout}ms waiting for images to decode.`,
+  );
+}
+
+/** Raised by `withDeadline`, so callers can tell a stall from a real failure. */
+class DeadlineExceededError extends Error {}
+
+/**
+ * Reject if `work` has not settled within `timeout`.
+ *
+ * `page.evaluate` has no timeout of its own, so an evaluation whose promise
+ * never resolves — a wedged renderer, an image `decode()` that never settles —
+ * hangs the caller forever rather than failing. A capture that stops
+ * responding then consumes the entire CI job budget and reports nothing but
+ * "The operation was canceled", with no indication of which route stalled.
+ *
+ * Losing the race does not cancel the underlying evaluation; it stays pending
+ * until its context closes.
+ *
+ * @template T
+ * @param {Promise<T>} work
+ * @param {number} timeout
+ * @param {string} message
+ * @returns {Promise<T>}
+ */
+async function withDeadline(work, timeout, message) {
+  let timer;
+  try {
+    return await Promise.race([
+      work,
+      new Promise((_, reject) => {
+        timer = setTimeout(
+          () => reject(new DeadlineExceededError(message)),
+          timeout,
         );
       }),
-    ),
-  );
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -323,17 +361,35 @@ export async function waitForFonts(target, timeout = 10_000) {
   }
 }
 
-/** @param {import("@playwright/test").Page} page */
-export async function waitForPaint(page) {
-  await retryAfterNavigation(page, async () => {
-    await page.evaluate(
-      () =>
-        new Promise((resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve());
-          });
-        }),
-    );
+/**
+ * Settle on a painted frame, but do not require one.
+ *
+ * `requestAnimationFrame` only runs while the renderer is producing frames, so
+ * a page the browser has stopped rendering never invokes the callback. Unlike
+ * the readiness waits above, this is polish: `page.screenshot` forces its own
+ * frame, so proceeding without the extra paint costs nothing.
+ *
+ * @param {import("@playwright/test").Page} page
+ * @param {number} [timeout]
+ */
+export async function waitForPaint(page, timeout = 5_000) {
+  await withDeadline(
+    retryAfterNavigation(page, async () => {
+      await page.evaluate(
+        () =>
+          new Promise((resolve) => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => resolve());
+            });
+          }),
+      );
+    }),
+    timeout,
+    `Timed out after ${timeout}ms waiting for a painted frame.`,
+  ).catch((error) => {
+    if (!(error instanceof DeadlineExceededError)) {
+      throw error;
+    }
   });
 }
 
