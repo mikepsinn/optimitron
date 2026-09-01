@@ -309,7 +309,11 @@ async function smokeApp(appName, port, siteVariant) {
     [nextCli, "start", "--hostname", "127.0.0.1", "--port", String(port)],
     {
       cwd: appDirectory,
-      env: { ...process.env, PORT: String(port) },
+      env: {
+        ...process.env,
+        PORT: String(port),
+        ...(screenshotRoot ? { SITE_APP_VISUAL_FIXTURES: "1" } : {}),
+      },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );

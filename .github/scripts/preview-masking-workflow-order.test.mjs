@@ -64,7 +64,22 @@ test("deploys Optimitron production only when its build inputs change", () => {
     workflow.indexOf("  changes:"),
     workflow.indexOf("  leak-scan:"),
   );
-  const deployJob = workflow.slice(workflow.indexOf("  deploy-production:"));
+  const productionDataJobStart = workflow.indexOf(
+    "  sync-production-managed-data:",
+  );
+  const deployJobStart = workflow.indexOf("  deploy-production:");
+  const productionDataJob = workflow.slice(
+    productionDataJobStart,
+    deployJobStart,
+  );
+  const deployJob = workflow.slice(deployJobStart);
+
+  assert.notEqual(
+    productionDataJobStart,
+    -1,
+    "production managed-data job is missing",
+  );
+  assert.notEqual(deployJobStart, -1, "production deploy job is missing");
 
   assert.match(
     changesJob,
@@ -74,7 +89,16 @@ test("deploys Optimitron production only when its build inputs change", () => {
     changesJob,
     /- name: Detect Optimitron production deployment scope[\s\S]*?getOptimitronProductionDeployMatches\(files\)/u,
   );
-  assert.match(deployJob, /needs: \[changes, web-validate\]/u);
+  assert.match(productionDataJob, /needs: \[changes, web-validate\]/u);
+  assert.match(productionDataJob, /run: pnpm db:deploy/u);
+  assert.match(
+    productionDataJob,
+    /run: pnpm db:sync:managed-data -- --apply/u,
+  );
+  assert.match(
+    deployJob,
+    /needs: \[changes, web-validate, sync-production-managed-data\]/u,
+  );
   assert.match(
     deployJob,
     /fromJSON\(needs\.changes\.outputs\.web_deploy \|\| 'false'\) == true/u,
@@ -94,7 +118,7 @@ test("deploys Optimitron production only when its build inputs change", () => {
 test("verifies preview masking after preview managed-data sync", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const previewJobStart = workflow.indexOf("  sync-preview-managed-data:");
-  const previewJobEnd = workflow.indexOf("  deploy-production:");
+  const previewJobEnd = workflow.indexOf("  sync-production-managed-data:");
   assert.notEqual(previewJobStart, -1, "preview database job is missing");
   assert.notEqual(previewJobEnd, -1, "production job boundary is missing");
   const previewJob = workflow.slice(previewJobStart, previewJobEnd);

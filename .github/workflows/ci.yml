@@ -1931,13 +1931,68 @@ jobs:
             echo "- Verified sampled masked row shapes after the final update pass."
           } >> "$GITHUB_STEP_SUMMARY"
 
+  sync-production-managed-data:
+    name: sync-production-managed-data
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main'
+    needs: [changes, web-validate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: optimitron-production-data
+      cancel-in-progress: false
+      queue: max
+    environment:
+      name: Production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify production database configuration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          test -n "$DATABASE_URL" || { echo "Missing production environment secret DATABASE_URL"; exit 1; }
+
+      - name: Apply production database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
+        run: pnpm db:deploy
+
+      - name: Sync canonical production data (idempotent upserts)
+        # Keep canonical records independent from the Optimitron Vercel deploy.
+        # Site apps deploy separately and rely on these shared records.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MANAGED_DATA_ALLOW_REMOTE_APPLY: "1"
+        run: pnpm db:sync:managed-data -- --apply
+
   deploy-production:
     name: deploy-production
     if: >-
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       github.ref == 'refs/heads/main' &&
       fromJSON(needs.changes.outputs.web_deploy || 'false') == true
-    needs: [changes, web-validate]
+    needs: [changes, web-validate, sync-production-managed-data]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:
@@ -2073,12 +2128,6 @@ jobs:
           console.log(`Verified Vercel project ${name} and wrote .vercel/project.json for CI.`);
           NODE
 
-      - name: Verify production database configuration
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          test -n "$DATABASE_URL" || { echo "Missing production environment secret DATABASE_URL"; exit 1; }
-
       - name: Pull Vercel production settings
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -2090,20 +2139,6 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"
-
-      - name: Apply production database migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
-        run: pnpm db:deploy
-
-      - name: Sync canonical production data (idempotent upserts)
-        # Single managed sync for reference data, campaign records, treaty tasks,
-        # referendums, demo fixtures, and trigger blueprints.
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MANAGED_DATA_ALLOW_REMOTE_APPLY: "1"
-        run: pnpm db:sync:managed-data -- --apply
 
       - name: Deploy production artifact
         id: deploy

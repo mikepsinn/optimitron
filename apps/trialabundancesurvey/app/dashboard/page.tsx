@@ -18,7 +18,7 @@ import { PendingResponseRecovery } from "./pending-response-recovery"
 export const dynamic = "force-dynamic"
 
 interface LiteDashboardPageProps {
-  searchParams?: Promise<{ visual?: string }>
+  searchParams?: Promise<{ recovery?: string; visual?: string }>
 }
 
 /**
@@ -27,9 +27,13 @@ interface LiteDashboardPageProps {
 export default async function LiteDashboardPage({
   searchParams,
 }: LiteDashboardPageProps) {
+  const resolvedSearchParams = await searchParams
   const visualPreview =
-    process.env.NODE_ENV === "development" &&
-    (await searchParams)?.visual === "1"
+    (process.env.NODE_ENV === "development" ||
+      process.env.SITE_APP_VISUAL_FIXTURES === "1") &&
+    resolvedSearchParams?.visual === "1"
+  const recoveryPreview =
+    visualPreview && resolvedSearchParams?.recovery === "error"
   const sessionUser = visualPreview
     ? { id: "visual-preview", handle: null, referralCode: "SURVEY-DEMO" }
     : await getSessionUser()
@@ -37,7 +41,9 @@ export default async function LiteDashboardPage({
     redirect("/auth/signin?callbackUrl=/dashboard")
   }
 
-  const [vote, selfFundedAccessVote, allocation] = visualPreview
+  const [vote, selfFundedAccessVote, allocation] = recoveryPreview
+    ? [null, null, null]
+    : visualPreview
     ? [
         { answer: "YES" as const },
         { answer: "ABSTAIN" as const },
@@ -97,7 +103,9 @@ export default async function LiteDashboardPage({
                 ) : null}
               </div>
             ) : (
-              <PendingResponseRecovery />
+              <PendingResponseRecovery
+                visualState={recoveryPreview ? "error" : undefined}
+              />
             )}
           </Card>
 

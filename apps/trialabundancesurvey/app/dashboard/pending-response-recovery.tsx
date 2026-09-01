@@ -10,9 +10,15 @@ import { syncPendingTrialAbundanceResponse } from "@/lib/trial-abundance-survey"
 
 type RecoveryState = "checking" | "missing" | "saving" | "saved" | "error"
 
-export function PendingResponseRecovery() {
+interface PendingResponseRecoveryProps {
+  visualState?: "error"
+}
+
+export function PendingResponseRecovery({
+  visualState,
+}: PendingResponseRecoveryProps) {
   const router = useRouter()
-  const [state, setState] = useState<RecoveryState>("checking")
+  const [state, setState] = useState<RecoveryState>(visualState ?? "checking")
 
   const recoverResponse = useCallback(async () => {
     if (!storage.getPendingTrialAbundanceResponse()) {
@@ -32,8 +38,9 @@ export function PendingResponseRecovery() {
   }, [router])
 
   useEffect(() => {
+    if (visualState) return
     void recoverResponse()
-  }, [recoverResponse])
+  }, [recoverResponse, visualState])
 
   if (state === "checking" || state === "saving") {
     return (

@@ -138,7 +138,6 @@ export async function syncManagedReferendums(
       kind: true,
       description: true,
       bodyMarkdown: true,
-      deletedAt: true,
       publishedAt: true,
       status: true,
     },
@@ -156,7 +155,6 @@ export async function syncManagedReferendums(
       row.kind === record.kind &&
       row.description === record.description &&
       row.bodyMarkdown === record.bodyMarkdown &&
-      row.deletedAt === null &&
       row.publishedAt?.getTime() ===
         (record.publishedAt ?? REFERENDUM_PUBLISHED_AT).getTime() &&
       row.status === record.status
@@ -177,7 +175,6 @@ export async function syncManagedReferendums(
       kind: record.kind,
       description: record.description,
       bodyMarkdown: record.bodyMarkdown,
-      deletedAt: null,
       publishedAt: record.publishedAt ?? REFERENDUM_PUBLISHED_AT,
       lockedAt: null,
       status: record.status,

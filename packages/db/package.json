@@ -30,10 +30,6 @@
       "types": "./dist/managed-data/index.d.ts",
       "default": "./dist/managed-data/index.js"
     },
-    "./managed-referendums": {
-      "types": "./dist/managed-data/managed-referendums.d.ts",
-      "default": "./dist/managed-data/managed-referendums.js"
-    },
     "./managed-task-triggers": {
       "types": "./dist/managed-data/managed-task-triggers.d.ts",
       "default": "./dist/managed-data/managed-task-triggers.js"

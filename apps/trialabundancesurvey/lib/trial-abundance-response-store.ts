@@ -8,7 +8,6 @@ import {
   TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
   VotePosition,
 } from "@optimitron/db"
-import { syncManagedReferendums } from "@optimitron/db/managed-referendums"
 
 import { requireAuth } from "@/lib/auth-utils"
 import { ensurePersonForUser } from "@/lib/person.server"
@@ -18,88 +17,6 @@ import type { TrialAbundanceResponseInput } from "./trial-abundance-response"
 
 const MILITARY_ITEM_ID = "MILITARY_OPERATIONS"
 const PRAGMATIC_TRIALS_ITEM_ID = "PRAGMATIC_CLINICAL_TRIALS"
-const TRIAL_ABUNDANCE_REFERENDUM_SLUGS = [
-  TRIAL_ABUNDANCE_REFERENDUM_SLUG,
-  TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
-] as const
-
-interface TrialAbundanceReferendum {
-  deletedAt: Date | null
-  id: string
-  slug: string
-  status: ReferendumStatus
-}
-
-interface TrialAbundanceReferendumDependencies {
-  findReferendums: () => Promise<TrialAbundanceReferendum[]>
-  syncReferendums: () => Promise<void>
-}
-
-function selectTrialAbundanceReferendums(
-  referendums: TrialAbundanceReferendum[],
-) {
-  return {
-    patientAccessReferendum: referendums.find(
-      ({ slug }) => slug === TRIAL_ABUNDANCE_REFERENDUM_SLUG,
-    ),
-    selfFundedAccessReferendum: referendums.find(
-      ({ slug }) => slug === TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
-    ),
-  }
-}
-
-function referendumsAreMissingOrDeleted(
-  referendums: ReturnType<typeof selectTrialAbundanceReferendums>,
-) {
-  return (
-    !referendums.patientAccessReferendum ||
-    referendums.patientAccessReferendum.deletedAt !== null ||
-    !referendums.selfFundedAccessReferendum ||
-    referendums.selfFundedAccessReferendum.deletedAt !== null
-  )
-}
-
-function defaultReferendumDependencies(): TrialAbundanceReferendumDependencies {
-  return {
-    findReferendums: () =>
-      prisma.referendum.findMany({
-        where: { slug: { in: [...TRIAL_ABUNDANCE_REFERENDUM_SLUGS] } },
-        select: {
-          deletedAt: true,
-          id: true,
-          slug: true,
-          status: true,
-        },
-      }),
-    syncReferendums: async () => {
-      await syncManagedReferendums(prisma, { apply: true })
-    },
-  }
-}
-
-export async function getTrialAbundanceReferendums(
-  dependencies = defaultReferendumDependencies(),
-) {
-  let referendums = selectTrialAbundanceReferendums(
-    await dependencies.findReferendums(),
-  )
-
-  if (referendumsAreMissingOrDeleted(referendums)) {
-    await dependencies.syncReferendums()
-    referendums = selectTrialAbundanceReferendums(
-      await dependencies.findReferendums(),
-    )
-  }
-
-  if (referendumsAreMissingOrDeleted(referendums)) {
-    throw new Error("Trial Abundance referendums are not available")
-  }
-
-  return {
-    patientAccessReferendum: referendums.patientAccessReferendum!,
-    selfFundedAccessReferendum: referendums.selfFundedAccessReferendum!,
-  }
-}
 
 function cleanOriginUrl(value: string | null | undefined): string | null {
   if (!value) return null
@@ -116,8 +33,32 @@ export async function saveTrialAbundanceResponse(
   input: TrialAbundanceResponseInput,
 ) {
   const { userId } = await requireAuth()
-  const { patientAccessReferendum, selfFundedAccessReferendum } =
-    await getTrialAbundanceReferendums()
+  const referendums = await prisma.referendum.findMany({
+    where: {
+      slug: {
+        in: [
+          TRIAL_ABUNDANCE_REFERENDUM_SLUG,
+          TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
+        ],
+      },
+    },
+  })
+  const patientAccessReferendum = referendums.find(
+    ({ slug }) => slug === TRIAL_ABUNDANCE_REFERENDUM_SLUG,
+  )
+  const selfFundedAccessReferendum = referendums.find(
+    ({ slug }) =>
+      slug === TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
+  )
+
+  if (
+    !patientAccessReferendum ||
+    patientAccessReferendum.deletedAt ||
+    !selfFundedAccessReferendum ||
+    selfFundedAccessReferendum.deletedAt
+  ) {
+    throw new Error("Trial Abundance referendums are not available")
+  }
   if (
     patientAccessReferendum.status !== ReferendumStatus.ACTIVE ||
     selfFundedAccessReferendum.status !== ReferendumStatus.ACTIVE

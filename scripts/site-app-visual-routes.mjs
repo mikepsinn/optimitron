@@ -205,7 +205,6 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       authRole: "user",
       covers: [
         "apps/trialabundancesurvey/app/dashboard/page.tsx",
-        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
         "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
         "packages/site-kit/src/lib/trial-abundance-votes.server.ts",
       ],
@@ -213,6 +212,18 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routeName: "dashboard-authenticated",
       routePath: "/dashboard",
       sourcePage: "apps/trialabundancesurvey/app/dashboard/page.tsx",
+    },
+    {
+      authenticated: true,
+      authRole: "user",
+      covers: [
+        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
+      ],
+      label: "Survey dashboard — pending response recovery",
+      routeName: "dashboard-pending-response",
+      routePath: "/dashboard?visual=1&recovery=error",
+      sourcePage:
+        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
     },
   ],
   courtofhumanity: [
