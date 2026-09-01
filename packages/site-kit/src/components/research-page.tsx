@@ -791,6 +791,8 @@ function SurveyResearchPage() {
           </Container>
         </SectionContainer>
 
+        <SurveyRegulatorySection />
+
         <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
           <Container size="xl">
             <div className="mb-8 max-w-4xl">
@@ -982,6 +984,46 @@ function SurveyResearchPage() {
                 title="RECOVERY cost estimate"
                 detail="Source behind the approximate $500 model parameter."
               />
+              <SourceLink
+                href="https://www.fda.gov/understanding-unapproved-use-approved-drugs-label"
+                title="FDA: Off-label use of approved drugs"
+                detail="What clinicians may prescribe in ordinary medical practice."
+              />
+              <SourceLink
+                href="https://www.fda.gov/drugs/investigational-new-drug-ind-application/ind-application-procedures-exemptions-ind-requirements"
+                title="FDA: IND exemption criteria"
+                detail="Conditions for studies of lawfully marketed drugs."
+              />
+              <SourceLink
+                href="https://www.hhs.gov/ohrp/regulations-and-policy/regulations/45-cfr-46/index.html"
+                title="HHS: Common Rule"
+                detail="IRB and informed-consent protections for covered research."
+              />
+              <SourceLink
+                href="https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/research/index.html"
+                title="HHS: HIPAA and research"
+                detail="Authorization and documented waiver routes for protected health information."
+              />
+              <SourceLink
+                href="https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?NCDId=1&NCDver=3"
+                title="CMS: Routine costs in clinical trials"
+                detail="What Medicare covers in qualifying trials and what it excludes."
+              />
+              <SourceLink
+                href="https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try"
+                title="FDA: Federal Right to Try"
+                detail="Eligibility, manufacturer discretion, and the treatment-access pathway."
+              />
+              <SourceLink
+                href="https://archive.legmt.gov/content/Sessions/69th/Contractor_index/CH0621.pdf"
+                title="Montana SB 535, Chapter 621"
+                detail="The 2025 law establishing experimental-treatment centers."
+              />
+              <SourceLink
+                href="https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters"
+                title="Montana: Experimental-treatment centers"
+                detail="Current licensing applications, statutes, and rules."
+              />
             </div>
           </Container>
         </SectionContainer>
@@ -1005,6 +1047,131 @@ function SurveyResearchPage() {
         </CTASection>
       </div>
     </Layout>
+  )
+}
+
+function SurveyRegulatorySection() {
+  return (
+    <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
+      <Container size="xl" className="text-background">
+        <div className="mb-8 max-w-5xl">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-brutal-cyan">
+            Current legal and operational constraints
+          </p>
+          <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">
+            Why doesn&apos;t every doctor offer a pragmatic trial?
+          </h2>
+          <p className="text-lg font-bold">
+            Pragmatic trials are not categorically illegal. The difficulty is that a physician&apos;s treatment decision
+            becomes research—and often regulated research—when a protocol systematically assigns care and collects
+            data to produce generalizable evidence. That change adds duties that an ordinary clinic usually cannot
+            absorb alone.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <EvidenceTypeCard
+            label="Treatment is not a trial"
+            color="bg-brutal-cyan text-foreground"
+            description="FDA says clinicians generally may prescribe an approved drug off-label when medically appropriate. Randomization and systematic evidence generation still require a research protocol and accountable sponsor."
+          />
+          <EvidenceTypeCard
+            label="IND-exempt is not oversight-free"
+            color="bg-brutal-yellow text-foreground"
+            description="A study of a marketed drug can avoid an IND only when every 21 CFR 312.2(b)(1) condition is met. IRB review and informed consent still apply; riskier or unapproved uses need another FDA pathway."
+          />
+          <EvidenceTypeCard
+            label="Consent and data are risk-dependent"
+            color="bg-background text-foreground"
+            description="The Common Rule and HIPAA allow documented waivers in qualifying minimal-risk research. An IRB or Privacy Board must still assess and document the study, privacy safeguards, and practicability."
+          />
+          <EvidenceTypeCard
+            label="Coverage is incomplete"
+            color="bg-brutal-pink text-white"
+            description="Medicare covers routine costs in qualifying trials, but not every investigational intervention or research-only service. Other coverage, site contracts, and unrecovered clinic work remain variable."
+          />
+        </div>
+
+        <p className="mt-6 text-sm font-bold leading-relaxed text-background/90">
+          A review of embedded pragmatic trials identified research governance, processes incompatible with clinical
+          operations, and unrecoverable costs as recurring barriers. Protections for consent, safety, and privacy
+          remain necessary; the policy question is how to make oversight proportionate and reusable.
+        </p>
+
+        <Card className="mt-8 gap-5 border-4 border-background bg-background p-6 text-foreground shadow-[8px_8px_0px_0px_rgba(0,217,255,1)] sm:p-8">
+          <div>
+            <p className="mb-2 text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
+              Policy design targets—not current rights
+            </p>
+            <h3 className="text-2xl font-black uppercase sm:text-3xl">What universal access would require</h3>
+          </div>
+          <div className="grid gap-4">
+            <PolicyTargetRow
+              label="Patient access"
+              today="No universal right to be screened, enrolled, or supplied an intervention."
+              target="A portable right to be informed and considered for eligible trials—not a right to demand an unsafe or unavailable treatment."
+            />
+            <PolicyTargetRow
+              label="Proportionate review"
+              today="IND, IRB, consent, privacy, and local-site determinations can be repeated or inconsistent."
+              target="Clear pathways for minimal-risk marketed-treatment comparisons, shared protocols, central review, and tiered consent."
+            />
+            <PolicyTargetRow
+              label="Payment"
+              today="Routine care may be covered while research-only work, infrastructure, or the intervention is not."
+              target="Reliable routine-care coverage plus public or shared research funding. Any patient-funded option needs equity and consent safeguards."
+            />
+            <PolicyTargetRow
+              label="Clinic workflow"
+              today="Site contracts, staff training, fragmented records, manual reporting, and unrecovered physician time block participation."
+              target="Reusable agreements, interoperable records, funded clinician time, and automated eligibility, safety, and outcome reporting."
+            />
+            <PolicyTargetRow
+              label="Accountability"
+              today="A clinician cannot safely become sponsor, data center, monitor, and regulator for every study."
+              target="A shared trial network that preserves independent review, privacy, adverse-event monitoring, public registration, results reporting, and clear liability."
+            />
+          </div>
+        </Card>
+
+        <Card className="mt-8 gap-6 border-4 border-background bg-brutal-yellow p-6 text-foreground shadow-[8px_8px_0px_0px_rgba(255,107,157,1)] sm:p-8">
+          <div>
+            <p className="mb-2 text-sm font-black uppercase tracking-[0.2em]">Adjacent legal experiment</p>
+            <h3 className="text-2xl font-black uppercase sm:text-3xl">Right to try is not right to trial</h3>
+          </div>
+          <p className="text-base font-bold leading-relaxed sm:text-lg">
+            Right-to-try and expanded-access laws primarily govern treatment with an investigational product outside a
+            clinical trial. Their purpose is access for an individual patient, not randomization or the production of
+            reliable comparative evidence.
+          </p>
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div className="border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <h4 className="mb-3 text-lg font-black uppercase text-brutal-pink">Federal Right to Try, 2018</h4>
+              <p className="text-sm font-bold leading-relaxed">
+                The federal pathway is limited to a patient with a life-threatening condition who exhausted approved
+                options and cannot participate in a relevant trial. It does not require FDA or IRB review of an
+                individual request, and it does not require a manufacturer to provide the drug.
+              </p>
+            </div>
+            <div className="border-4 border-primary bg-brutal-cyan p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <h4 className="mb-3 text-lg font-black uppercase">Montana SB 535, 2025</h4>
+              <p className="text-sm font-bold leading-relaxed">
+                Montana created licensed experimental-treatment centers for interventions that completed phase 1 and
+                either remain under FDA-approved investigation or meet a state-defined documented-safety route.
+                Patients must evaluate approved options, receive a provider recommendation, and consent. Final
+                center-licensing rules took effect July 25, 2026.
+              </p>
+            </div>
+          </div>
+          <p className="text-sm font-bold leading-relaxed">
+            Montana permits payment arrangements but does not require a manufacturer, facility, insurer, or government
+            program to provide or pay for treatment. The law is therefore a live experiment in treatment access and
+            financing—not a universal right to join a pragmatic trial, a replacement for federal research rules, or a
+            guarantee that useful comparative evidence will result.
+          </p>
+        </Card>
+      </Container>
+    </SectionContainer>
   )
 }
 
@@ -1043,6 +1210,30 @@ function ComparisonRow({ label, value, detail }: { label: string; value: ReactNo
       <h4 className="text-sm font-black uppercase">{label}</h4>
       <p className="text-2xl font-black">{value}</p>
       <p className="text-sm font-bold leading-relaxed">{detail}</p>
+    </div>
+  )
+}
+
+function PolicyTargetRow({
+  label,
+  today,
+  target,
+}: {
+  label: string
+  today: string
+  target: string
+}) {
+  return (
+    <div className="grid gap-3 border-4 border-primary p-4 md:grid-cols-[0.45fr_1fr_1.35fr] md:items-start">
+      <h4 className="text-sm font-black uppercase text-brutal-pink">{label}</h4>
+      <p className="text-sm font-bold leading-relaxed">
+        <span className="font-black uppercase">Today: </span>
+        {today}
+      </p>
+      <p className="text-sm font-bold leading-relaxed">
+        <span className="font-black uppercase">Possible target: </span>
+        {target}
+      </p>
     </div>
   )
 }
