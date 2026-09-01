@@ -13,7 +13,7 @@ import {
 import { TRIAL_ABUNDANCE_REFERENDUM_QUESTION } from "@optimitron/db/constants"
 import { buildUserReferralUrl } from "@/lib/url"
 import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
-import Link from "next/link"
+import { PendingResponseRecovery } from "./pending-response-recovery"
 
 export const dynamic = "force-dynamic"
 
@@ -23,7 +23,6 @@ interface LiteDashboardPageProps {
 
 /**
  * Lite participant home — vote status + share survey.
- * Scores / badges / soldiers stay on warondisease.org (optional opt-in).
  */
 export default async function LiteDashboardPage({
   searchParams,
@@ -98,12 +97,7 @@ export default async function LiteDashboardPage({
                 ) : null}
               </div>
             ) : (
-              <p className="text-lg font-bold">
-                No response on file yet.{" "}
-                <Link href="/#vote" className="underline">
-                  Take the survey
-                </Link>
-              </p>
+              <PendingResponseRecovery />
             )}
           </Card>
 
@@ -116,23 +110,6 @@ export default async function LiteDashboardPage({
             linkContentType="trial_abundance_referral"
             className="mb-6"
           />
-
-          <Card className="border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="text-2xl font-black uppercase mb-3">
-              Optional: campaign dashboard
-            </h2>
-            <p className="mb-4 font-medium">
-              Scores, badges, and campaign tools live on War on Disease — only if you want
-              that. This site stays the research instrument.
-            </p>
-            <a
-              href="https://warondisease.org/dashboard"
-              rel="noopener noreferrer"
-              className="inline-block border-4 border-primary bg-brutal-cyan px-4 py-2 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-            >
-              Open campaign dashboard
-            </a>
-          </Card>
         </Container>
       </SectionContainer>
     </Layout>

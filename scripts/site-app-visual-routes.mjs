@@ -205,6 +205,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       authRole: "user",
       covers: [
         "apps/trialabundancesurvey/app/dashboard/page.tsx",
+        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
         "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
         "packages/site-kit/src/lib/trial-abundance-votes.server.ts",
       ],
