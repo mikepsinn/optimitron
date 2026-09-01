@@ -270,7 +270,7 @@ export function Layout({ children }: LayoutProps) {
                       className="flex w-full items-center gap-3 border-b-4 border-primary pb-2 text-left text-2xl font-black uppercase transition-colors hover:text-brutal-pink"
                       onClick={() => {
                         setOpen(false);
-                        void signOut({ callbackUrl: "/" });
+                        void signOut({ callbackUrl: ROUTES.home });
                       }}
                     >
                       <LogOut className="h-6 w-6 stroke-[3px]" />

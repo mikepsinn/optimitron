@@ -72,6 +72,22 @@ const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/StickyShareFooter.tsx",
 ];
 
+function getAuthenticatedMenuRoute(appName) {
+  const sourcePage = `apps/${appName}/app/dashboard/page.tsx`;
+
+  return {
+    authenticated: true,
+    authRole: "user",
+    captureSelector: '[role="dialog"]',
+    covers: [sourcePage, "packages/site-kit/src/components/layout.tsx"],
+    label: "Navigation menu — signed-in user",
+    openMenu: true,
+    routeName: "navigation-menu-authenticated",
+    routePath: "/dashboard",
+    sourcePage,
+  };
+}
+
 export const authenticatedSiteAppRoutes = Object.freeze({
   warondisease: [
     {
@@ -87,20 +103,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard",
       sourcePage: "apps/warondisease/app/dashboard/page.tsx",
     },
-    {
-      authenticated: true,
-      authRole: "user",
-      captureSelector: '[role="dialog"]',
-      covers: [
-        "apps/warondisease/app/dashboard/page.tsx",
-        "packages/site-kit/src/components/layout.tsx",
-      ],
-      label: "Navigation menu — signed-in user",
-      openMenu: true,
-      routeName: "navigation-menu-authenticated",
-      routePath: "/dashboard",
-      sourcePage: "apps/warondisease/app/dashboard/page.tsx",
-    },
+    getAuthenticatedMenuRoute("warondisease"),
     {
       authenticated: true,
       authRole: "user",
@@ -200,6 +203,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   wishocracy: [
+    getAuthenticatedMenuRoute("wishocracy"),
     {
       authenticated: true,
       authRole: "user",
@@ -214,6 +218,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   trialabundancesurvey: [
+    getAuthenticatedMenuRoute("trialabundancesurvey"),
     {
       authenticated: true,
       authRole: "user",
@@ -229,6 +234,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   courtofhumanity: [
+    getAuthenticatedMenuRoute("courtofhumanity"),
     {
       authenticated: true,
       authRole: "user",

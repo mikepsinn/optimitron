@@ -1,7 +1,8 @@
 import React from "react"
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import Layout from "../../../../packages/site-kit/src/components/layout"
+import { ROUTES } from "../../../../packages/site-kit/src/lib/routes"
 
 const mocks = vi.hoisted(() => ({
   signOut: vi.fn(),
@@ -44,8 +45,6 @@ describe("shared authenticated navigation", () => {
     fireEvent.click(screen.getByRole("button", { name: "Toggle menu" }))
     fireEvent.click(await screen.findByRole("button", { name: "Log Out" }))
 
-    await waitFor(() => {
-      expect(mocks.signOut).toHaveBeenCalledWith({ callbackUrl: "/" })
-    })
+    expect(mocks.signOut).toHaveBeenCalledWith({ callbackUrl: ROUTES.home })
   })
 })
