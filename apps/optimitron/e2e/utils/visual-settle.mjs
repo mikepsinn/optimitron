@@ -211,6 +211,8 @@ export async function waitForCaptureReady(page, timeout = 10_000) {
   }
 }
 
+const DECODE_MINIMUM_BUDGET_MS = 1_000;
+
 /**
  * Wait for every image to finish loading and decoding.
  *
@@ -255,6 +257,15 @@ export async function waitForImagesSettled(page, timeout = 15_000) {
     await page.waitForTimeout(100);
   }
 
+  // Whatever is left of the budget, floored so that a poll which consumed
+  // nearly all of it cannot fail a decode for want of time — these images are
+  // already downloaded, so decoding them is normally instant. The floor means
+  // a slow poll can push the total slightly past `timeout`, which is why the
+  // message below reports the budget actually given rather than `timeout`.
+  const decodeBudgetMs = Math.max(
+    DECODE_MINIMUM_BUDGET_MS,
+    deadline - Date.now(),
+  );
   await withDeadline(
     Promise.all(
       evaluationTargets(page).map((target) =>
@@ -267,8 +278,8 @@ export async function waitForImagesSettled(page, timeout = 15_000) {
         }),
       ),
     ),
-    Math.max(1_000, deadline - Date.now()),
-    `Timed out after ${timeout}ms waiting for images to decode.`,
+    decodeBudgetMs,
+    `Timed out after ${decodeBudgetMs}ms waiting for images to decode.`,
   );
 }
 
@@ -390,6 +401,9 @@ export async function waitForPaint(page, timeout = 5_000) {
     if (!(error instanceof DeadlineExceededError)) {
       throw error;
     }
+    // Bounding this is only useful if the fact reaches the log; a renderer
+    // that has stopped producing frames is worth knowing about.
+    console.warn(error.message);
   });
 }
 
