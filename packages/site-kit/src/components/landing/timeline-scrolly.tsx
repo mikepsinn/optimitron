@@ -60,11 +60,13 @@ export function TimelineScrolly({ userAge, onAgeChange }: TimelineScrollyProps) 
   const [dfdaComplete, setDfdaComplete] = useState(false)
   const timelineRef = useRef<HTMLDivElement>(null)
   const statusQuoRef = useRef<HTMLDivElement>(null)
+  const visualCaptureRef = useRef(false)
 
 
   // Scroll handler to update year counter
   useEffect(() => {
     const handleScroll = () => {
+      if (visualCaptureRef.current) return
       if (!statusQuoRef.current || !timelineRef.current) return
 
       const statusQuoRect = statusQuoRef.current.getBoundingClientRect()
@@ -82,6 +84,7 @@ export function TimelineScrolly({ userAge, onAgeChange }: TimelineScrollyProps) 
     }
 
     const completeVisualCapture = () => {
+      visualCaptureRef.current = true
       setCurrentYear(queueYears)
       setDfdaComplete(true)
     }
