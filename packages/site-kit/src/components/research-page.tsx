@@ -751,7 +751,7 @@ function ResearchFlowCard({ value, label, accent = false }: { value: ReactNode; 
 
 function ResearchFlowArrow({ direction }: { direction?: "down" }) {
   if (direction === "down") {
-    return <div className="py-3 text-center text-4xl font-black">↓</div>
+    return <div className="py-3 text-center text-4xl font-black" aria-hidden="true">↓</div>
   }
 
   return (

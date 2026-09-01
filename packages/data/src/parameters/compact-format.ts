@@ -32,19 +32,8 @@ export interface FormatParameterOptions {
 function toSigFigs(value: number, sigFigs: number = 3): string {
   if (value === 0) return "0"
 
-  const absValue = Math.abs(value)
-
-  // Determine how many decimal places we need
-  let decimals: number
-  if (absValue >= 100) {
-    decimals = Math.max(0, sigFigs - 3)
-  } else if (absValue >= 10) {
-    decimals = Math.max(0, sigFigs - 2)
-  } else if (absValue >= 1) {
-    decimals = Math.max(0, sigFigs - 1)
-  } else {
-    decimals = sigFigs
-  }
+  const magnitude = Math.floor(Math.log10(Math.abs(value)))
+  const decimals = Math.max(0, sigFigs - magnitude - 1)
 
   // Format and strip trailing zeros (but keep at least one digit after decimal if needed for rounding)
   const formatted = value.toFixed(decimals)

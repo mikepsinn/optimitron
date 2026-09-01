@@ -84,6 +84,11 @@ describe('formatParameter', () => {
       const param = createParam(0.01, 'rate')
       expect(formatParameter(param, { figures: 3 })).toBe('1%')
     })
+
+    it('preserves significant figures below one percent', () => {
+      const param = createParam(0.000123, 'percentage')
+      expect(formatParameter(param, { figures: 3 })).toBe('0.0123%')
+    })
   })
 
   describe('ratio formatting', () => {
