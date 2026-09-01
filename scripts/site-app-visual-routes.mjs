@@ -203,7 +203,11 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     {
       authenticated: true,
       authRole: "user",
-      covers: ["apps/trialabundancesurvey/app/dashboard/page.tsx"],
+      covers: [
+        "apps/trialabundancesurvey/app/dashboard/page.tsx",
+        "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
+        "packages/site-kit/src/lib/trial-abundance-votes.server.ts",
+      ],
       label: "Survey dashboard — signed-in user",
       routeName: "dashboard-authenticated",
       routePath: "/dashboard",
@@ -824,10 +828,54 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
   }
 
   if (siteVariant === VARIANTS.SURVEY) {
+    const surveyComponent =
+      "packages/site-kit/src/components/landing/trial-abundance-survey-section.tsx";
+    const landingRoute = routes.find(({ routePath }) => routePath === "/");
+    if (landingRoute) {
+      landingRoute.covers = [surveyComponent];
+    }
+    routes.push(
+      {
+        label: "Patient-access question",
+        routeName: "home-question",
+        routePath: "/?visual=question",
+        covers: [surveyComponent],
+      },
+      {
+        label: "Patient-funded access question",
+        routeName: "home-self-funded",
+        routePath: "/?visual=self-funded",
+        covers: [surveyComponent],
+      },
+      {
+        label: "Public-resource allocation",
+        routeName: "home-allocation",
+        routePath: "/?visual=allocation",
+        covers: [surveyComponent],
+      },
+      {
+        label: "Completed response and verification",
+        routeName: "home-complete",
+        routePath: "/?visual=complete",
+        covers: [surveyComponent],
+      },
+      {
+        label: "Response verification",
+        routeName: "auth-complete-signup",
+        routePath: "/auth/complete-signup?visual=1",
+        covers: [
+          "apps/trialabundancesurvey/app/auth/complete-signup/page.tsx",
+        ],
+      },
+    );
     routes.push({
       label: "Partner embed",
       routeName: "embed",
-      routePath: "/embed?embed=1&visual=1",
+      routePath: "/embed?embed=1&visual=question",
+      covers: [
+        "apps/trialabundancesurvey/app/embed/page.tsx",
+        surveyComponent,
+      ],
     });
   }
 

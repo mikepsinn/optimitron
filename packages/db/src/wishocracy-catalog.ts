@@ -39,7 +39,12 @@ export async function ensureWishocraticItemsExist(
     return prisma.wishocraticItem.upsert({
       where: { id: itemId },
       create: {
-        ...record,
+        id: record.id,
+        name: record.name,
+        description: record.description,
+        sourceUrl: record.sourceUrl,
+        currentAllocationUsd: record.currentAllocationUsd,
+        currentAllocationPct: record.currentAllocationPct,
         jurisdictionId: jurisdiction.id,
         active: true,
       },

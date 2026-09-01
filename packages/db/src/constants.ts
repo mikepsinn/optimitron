@@ -6,6 +6,14 @@
  */
 
 export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
+export const TRIAL_ABUNDANCE_REFERENDUM_SLUG =
+  "patient-access-to-pragmatic-clinical-trials";
+export const TRIAL_ABUNDANCE_REFERENDUM_QUESTION =
+  "Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?";
+export const TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG =
+  "patient-funded-access-to-pragmatic-clinical-trials";
+export const TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION =
+  "If a promising treatment would otherwise be unavailable, should a patient have the right to pay the costs of receiving it through a pragmatic clinical trial?";
 export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
 export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
 export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";

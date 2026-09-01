@@ -15,6 +15,7 @@ import { Check, Copy } from "lucide-react"
 interface ReferralLinkCardProps {
   referralLink: string
   shareTemplates?: ShareTemplateOption[]
+  hashtags?: string
   className?: string
   id?: string
   introText?: string
@@ -26,6 +27,7 @@ interface ReferralLinkCardProps {
 export function ReferralLinkCard({
   referralLink,
   shareTemplates,
+  hashtags = SHARE_TEXT.HASHTAGS,
   className = "",
   id,
   introText = "Help us get 4 billion votes and eradicate disease 12.3 times faster by sharing with all your friends!",
@@ -120,7 +122,7 @@ export function ReferralLinkCard({
       <SocialShareButtons
         url={referralLink}
         text={socialShareText}
-        hashtags={SHARE_TEXT.HASHTAGS}
+        hashtags={hashtags}
         contentType={linkContentType}
         trailingAction={
           <CopyLinkButton

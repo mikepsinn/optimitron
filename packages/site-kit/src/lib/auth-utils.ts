@@ -19,6 +19,13 @@ export function getEnabledProviders() {
 
 export type EnabledProviders = ReturnType<typeof getEnabledProviders>
 
+export class AuthenticationRequiredError extends Error {
+  constructor() {
+    super("Unauthorized - authentication required")
+    this.name = "AuthenticationRequiredError"
+  }
+}
+
 /**
  * Get current user from session with full user data
  */
@@ -88,7 +95,7 @@ export async function requireAuth() {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized - authentication required")
+    throw new AuthenticationRequiredError()
   }
 
   return {
