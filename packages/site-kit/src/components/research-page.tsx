@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import type { ReactNode } from "react"
 
 import Layout from "./layout"
 import { ParameterValue } from "./shared/ParameterValue"
@@ -51,61 +50,21 @@ const queueStatusQuo = formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS)
 const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)
 const livesSaved = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
 const trialCapacityMultiplier = formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER, { precision: 1 })
-
-const SIPRI_2024_MILITARY_SPENDING_USD = 2_718_000_000_000
-const SURVEY_MAJORITY_SHARE = 0.51
-const GOVERNMENT_TRIAL_SHARE_OF_MILITARY_PCT =
-  (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value / SIPRI_2024_MILITARY_SPENDING_USD) * 100
-const RECOVERY_DAYS_TO_DEXAMETHASONE = Math.round(
-  (Date.UTC(2020, 5, 16) - Date.UTC(2020, 2, 19)) / (24 * 60 * 60 * 1000)
-)
+const governmentTrialSpendingRange = GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.confidenceInterval
+  ?.map((value) => formatParameter({ ...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL, value }))
+  .join("–")
+const governmentTrialShareOfMilitarySpending =
+  (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value / 2_718_000_000_000) * 100
 const surveyMajorityTarget: Parameter = {
   ...GLOBAL_POPULATION_2024,
-  value: GLOBAL_POPULATION_2024.value * SURVEY_MAJORITY_SHARE,
+  value: GLOBAL_POPULATION_2024.value * 0.51,
   parameterName: "SURVEY_MAJORITY_RESPONSE_TARGET",
-  displayName: "51% global response threshold",
-  description: "Current global-population parameter multiplied by 51%.",
+  displayName: "51% of the current global population",
   sourceType: "calculated",
   formula: "GLOBAL_POPULATION_2024 × 51%",
   inputs: ["GLOBAL_POPULATION_2024"],
   computeExpr: "GLOBAL_POPULATION_2024 * 0.51",
 }
-const pivotalTrialMedianCostPerParticipant: Parameter = {
-  ...TRADITIONAL_PHASE3_COST_PER_PATIENT,
-  value: 41_413,
-  parameterName: "PIVOTAL_TRIAL_MEDIAN_COST_PER_PARTICIPANT",
-  displayName: "Pivotal trial median cost per participant",
-  description:
-    "Median estimated cost per enrolled participant across 225 pivotal trials supporting US drug approvals from 2015 through 2017.",
-  sourceRef: undefined,
-  sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/",
-  calculationsUrl: undefined,
-  manualPageUrl: undefined,
-  manualPageTitle: undefined,
-  confidenceInterval: undefined,
-}
-const embeddedPragmaticTrialMedianCostPerParticipant: Parameter = {
-  ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
-  value: 97,
-  parameterName: "EMBEDDED_PRAGMATIC_TRIAL_MEDIAN_COST_PER_PARTICIPANT",
-  displayName: "Embedded pragmatic trial median cost per participant",
-  description:
-    "Median research cost per randomized participant among 64 embedded pragmatic trials with available cost data.",
-  sourceRef: undefined,
-  sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/",
-  calculationsUrl: undefined,
-  manualPageUrl: undefined,
-  manualPageTitle: undefined,
-  confidenceInterval: undefined,
-}
-const governmentTrialSpendingRange = GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.confidenceInterval
-  ?.map((value) =>
-    formatParameter({
-      ...GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
-      value,
-    })
-  )
-  .join("–")
 
 const headlineStats: StatCardProps[] = [
   {
@@ -286,8 +245,309 @@ export function generateSurveyResearchMetadata(): Metadata {
 }
 
 export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
+
+  // Survey variant: concise evidence page in the survey's original style.
   if (variant === "survey") {
-    return <SurveyResearchPage />
+    return (
+      <Layout>
+        <div className="min-h-screen bg-background">
+          {/* Neutral Hero */}
+          <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
+            <Container size="md">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase text-center mb-6">
+                CLINICAL TRIAL EVIDENCE &<br />
+                <span className="text-brutal-cyan">DATA SOURCES</span>
+              </h1>
+              <p className="text-lg sm:text-xl font-bold text-center max-w-2xl mx-auto">
+                Peer-reviewed evidence on pragmatic clinical trials and the assumptions behind the survey&apos;s
+                capacity model.
+              </p>
+            </Container>
+          </SectionContainer>
+
+          {/* Pragmatic Trials Evidence */}
+          <SectionContainer bgColor="background" borderPosition="none" padding="lg">
+            <Container size="md" className="space-y-8">
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8">
+                WHAT ARE <span className="text-brutal-pink">PRAGMATIC TRIALS?</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="space-y-6 text-lg leading-relaxed">
+                  <p>
+                    Pragmatic clinical trials test treatments in{" "}
+                    <span className="font-black">real-world healthcare settings</span> using existing
+                    medical records and routine care, rather than creating expensive artificial research
+                    environments.
+                  </p>
+                  <p>
+                    The landmark{" "}
+                    <span className="font-black text-brutal-pink">RECOVERY trial</span> at Oxford
+                    University demonstrated this approach at scale. Embedded in routine NHS care, it
+                    enrolled 40,000+ patients across 176 hospitals and produced three actionable
+                    treatment results within 100 days.
+                  </p>
+                  <p>
+                    It recruited its first patient on March 19, 2020, and announced the dexamethasone
+                    mortality result <span className="font-black">89 days later</span>. The result is
+                    estimated to have saved over <span className="font-black">1 million lives</span>.
+                  </p>
+                  <p>
+                    RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
+                    patient, compared with a $41,413 median for pivotal drug trials—about{" "}
+                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />.
+                    A separate review of 64 embedded trials found a $97 median. These studies show the
+                    cost potential; they do not set one price for every pragmatic trial.
+                  </p>
+                </div>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                TIMELINE <span className="text-brutal-pink">COMPRESSION</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
+                <div className="space-y-4 text-lg leading-relaxed">
+                  <p>
+                    At the current rate of ~15 diseases per year receiving a first effective treatment,
+                    finding treatments for all ~6,650 currently untreatable diseases would take an
+                    estimated{" "}
+                    <ParameterValue
+                      param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                      format={{ precision: 0 }}
+                      className="font-black"
+                    />{" "}
+                    <span className="font-black">years</span>.
+                  </p>
+                  <p>
+                    At the modeled funding level of about{" "}
+                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} className="font-black" />{" "}
+                    per year, scaling pragmatic trials would increase clinical trial capacity by{" "}
+                    <ParameterValue
+                      param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                      format={{ precision: 1 }}
+                      className="font-black text-brutal-pink"
+                    />, compressing that timeline to approximately{" "}
+                    <ParameterValue
+                      param={DFDA_QUEUE_CLEARANCE_YEARS}
+                      format={{ precision: 0 }}
+                      className="font-black text-brutal-pink"
+                    />{" "}
+                    <span className="font-black text-brutal-pink">years</span>.
+                  </p>
+                </div>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                KEY <span className="text-brutal-pink">FINDINGS</span>
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {[
+                  {
+                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                    label: "RECOVERY COST COMPARISON",
+                    detail:
+                      "About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.",
+                    color: "bg-brutal-cyan",
+                  },
+                  {
+                    stat: (
+                      <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />
+                    ),
+                    label: "CAPACITY INCREASE",
+                    detail: (
+                      <>
+                        At the model&apos;s{" "}
+                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> annual funding level,
+                        scaling pragmatic trials compresses the disease eradication timeline from{" "}
+                        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
+                        years to{" "}
+                        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years.
+                      </>
+                    ),
+                    color: "bg-brutal-yellow",
+                  },
+                  {
+                    stat: "1M+",
+                    label: "LIVES SAVED (RECOVERY)",
+                    detail:
+                      "RECOVERY's identification of dexamethasone as an effective treatment saved over 1 million lives globally.",
+                    color: "bg-brutal-pink",
+                  },
+                  {
+                    stat: "89 DAYS",
+                    label: "FIRST PATIENT TO RESULT",
+                    detail:
+                      "March 19 to June 16, 2020; RECOVERY produced three actionable results within 100 days.",
+                    color: "bg-brutal-cyan",
+                  },
+                ].map((item, i) => (
+                  <Card
+                    key={i}
+                    className={`${item.color} border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+                  >
+                    <div className="text-3xl sm:text-4xl font-black mb-1">{item.stat}</div>
+                    <div className="text-sm font-black uppercase mb-3">{item.label}</div>
+                    <p className="text-sm font-bold">{item.detail}</p>
+                  </Card>
+                ))}
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                PUBLIC SPENDING <span className="text-brutal-pink">GAP</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 text-center mb-6">
+                  <div>
+                    <div className="text-3xl font-black">$2.718T</div>
+                    <div className="text-sm font-black uppercase">2024 military spending</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black">
+                      <ParameterValue param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL} valueOverride="$4.5B" />
+                    </div>
+                    <div className="text-sm font-black uppercase">Government trial estimate</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black">{governmentTrialShareOfMilitarySpending.toFixed(3)}%</div>
+                    <div className="text-sm font-black uppercase">Trial share</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black">
+                      <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />
+                    </div>
+                    <div className="text-sm font-black uppercase">Military dollars per $1</div>
+                  </div>
+                </div>
+                <div className="space-y-3 text-base font-bold leading-relaxed">
+                  <p>
+                    This is a government-to-government comparison. No complete global accounting exists,
+                    so the $4.5 billion trial figure is our estimate; its range is {governmentTrialSpendingRange}.
+                  </p>
+                  <p>
+                    Including private trial spending raises the denominator to about{" "}
+                    <ParameterValue param={GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL} /> and lowers the ratio to about{" "}
+                    <ParameterValue param={MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />.
+                  </p>
+                </div>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                WHY CAN&apos;T EVERY DOCTOR <span className="text-brutal-pink">OFFER A TRIAL?</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="space-y-5 text-lg leading-relaxed">
+                  <p>
+                    Pragmatic trials are legal. Doctors can generally prescribe approved drugs off-label,
+                    but a systematic study adds research duties: an IND unless exempt, IRB review, consent,
+                    privacy approval, safety reporting, contracts, data systems, and an accountable sponsor.
+                    Insurance may cover routine care without paying for the research work.
+                  </p>
+                  <p>
+                    Universal access needs reusable protocols, central review, proportionate rules for
+                    minimal-risk comparisons, reliable funding, interoperable records, and a shared trial
+                    network to handle monitoring, reporting, and liability.
+                  </p>
+                </div>
+              </Card>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-cyan">
+                <h3 className="text-2xl font-black uppercase mb-3">Right to try is narrower</h3>
+                <p className="text-base font-bold leading-relaxed">
+                  Federal Right to Try covers some patients with life-threatening conditions who cannot
+                  join a relevant trial. Montana&apos;s 2025 SB 535 also created licensed experimental-treatment
+                  centers; final rules took effect July 25, 2026. These laws expand treatment access, but
+                  they do not require treatment supply, payment, trial enrollment, randomization, or useful
+                  comparative evidence.
+                </p>
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                WHAT COULD A <span className="text-brutal-pink">GLOBAL MAJORITY</span> CHANGE?
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-pink">
+                <div className="grid gap-6 md:grid-cols-[0.35fr_1fr] md:items-center">
+                  <div className="text-center">
+                    <div className="text-6xl font-black">51%</div>
+                    <div className="text-lg font-black">
+                      <ParameterValue param={surveyMajorityTarget} valueOverride="4.08B" /> people
+                    </div>
+                  </div>
+                  <div className="space-y-4 text-base font-bold leading-relaxed">
+                    <p>
+                      A verified majority could make private preferences common knowledge and create an
+                      election-scale mandate for trial access and funding reform.
+                    </p>
+                    <p className="font-black">
+                      Verified preferences → public mandate → access and funding reform → more physician-embedded
+                      trials → faster evidence → earlier treatment → less disease
+                    </p>
+                    <p>
+                      The survey would not change law by itself. Patients and physicians must participate;
+                      health systems must embed trials; researchers must publish; foundations and insurers
+                      must fund; developers must supply treatments; and politicians and governments must act.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow text-sm font-bold leading-relaxed">
+                A credible majority requires one verified response per person, transparent methods,
+                country results, separate representative and self-selected samples, clear translations,
+                published recruitment sources, respondent privacy, and concrete follow-up paths.
+              </Card>
+
+              <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
+                <span className="text-brutal-pink">SOURCES</span>
+              </h2>
+              <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <ul className="space-y-4 text-base leading-relaxed">
+                  <li>
+                    <a className="font-black underline" href="https://www.ndm.ox.ac.uk/covid-19/covid-research/drug-trials-recovery" target="_blank" rel="noopener noreferrer">Oxford RECOVERY</a>
+                    {" — "}design, enrollment, dates, results, and NHS integration.
+                  </li>
+                  <li>
+                    <a className="font-black underline" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/" target="_blank" rel="noopener noreferrer">Pivotal trial costs</a>
+                    {" and "}
+                    <a className="font-black underline" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/" target="_blank" rel="noopener noreferrer">embedded pragmatic trial costs</a>.
+                  </li>
+                  <li>
+                    <a className="font-black underline" href="https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024" target="_blank" rel="noopener noreferrer">SIPRI military spending</a>
+                    {" — "}the $2.718 trillion 2024 estimate.
+                  </li>
+                  <li>
+                    <a className="font-black underline" href="https://www.fda.gov/drugs/investigational-new-drug-ind-application/ind-application-procedures-exemptions-ind-requirements" target="_blank" rel="noopener noreferrer">FDA IND rules</a>,{" "}
+                    <a className="font-black underline" href="https://www.hhs.gov/ohrp/regulations-and-policy/regulations/45-cfr-46/index.html" target="_blank" rel="noopener noreferrer">Common Rule</a>,{" "}
+                    <a className="font-black underline" href="https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/research/index.html" target="_blank" rel="noopener noreferrer">HIPAA research rules</a>, and{" "}
+                    <a className="font-black underline" href="https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?NCDId=1&NCDver=3" target="_blank" rel="noopener noreferrer">Medicare trial coverage</a>.
+                  </li>
+                  <li>
+                    <a className="font-black underline" href="https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try" target="_blank" rel="noopener noreferrer">Federal Right to Try</a>
+                    {" and "}
+                    <a className="font-black underline" href="https://archive.legmt.gov/content/Sessions/69th/Contractor_index/CH0621.pdf" target="_blank" rel="noopener noreferrer">Montana SB 535</a>.
+                  </li>
+                </ul>
+              </Card>
+            </Container>
+          </SectionContainer>
+
+          {/* CTA */}
+          <CTASection
+            bgColor="yellow"
+            heading={
+              <>
+                TAKE THE
+                <br />
+                <span className="text-foreground">SURVEY</span>
+              </>
+            }
+          >
+            <Button
+              asChild
+              className="h-14 bg-foreground text-background border-4 border-foreground hover:bg-background hover:text-foreground px-8 sm:px-12 text-lg font-black uppercase"
+            >
+              <Link href="/#vote">Take the survey</Link>
+            </Button>
+          </CTASection>
+        </div>
+      </Layout>
+    )
   }
 
   return (
@@ -499,756 +759,6 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
         </SectionContainer>
       </div>
     </Layout>
-  )
-}
-
-function SurveyResearchPage() {
-  const coordinationActors = [
-    ["Patients", "Ask about eligible trials, contribute outcomes, and identify unanswered treatment questions."],
-    ["Physicians", "Offer eligible patients trial participation through routine care."],
-    ["Health systems", "Embed randomization and outcome collection in clinical workflows and records."],
-    ["Researchers", "Publish reusable protocols, interoperable measures, and transparent analyses."],
-    ["Foundations", "Fund shared trial infrastructure and questions that lack commercial incentives."],
-    ["Insurers", "Support routine-care trial participation and evidence generation for covered treatments."],
-    ["Treatment developers", "Supply interventions and support comparative studies, including low-margin uses."],
-    ["Politicians", "Propose access, funding, privacy, and interoperability reforms."],
-    ["Governments", "Fund public trial networks and coordinate standards across borders."],
-  ]
-  const coordinationConditions = [
-    "One verified response per person",
-    "Transparent methodology",
-    "Country-level results",
-    "Representative-sample reporting kept separate from self-selected participation",
-    "Clear translations",
-    "Published recruitment sources",
-    "Protection of respondent privacy",
-    "Concrete follow-up paths for patients, physicians, organizations, funders, and governments",
-  ]
-  const coordinationChain = [
-    "Verified preferences",
-    "Common knowledge and political mandate",
-    "Trial-access and funding reforms",
-    "More physician-embedded pragmatic trials",
-    "Faster evidence",
-    "Earlier adoption of effective treatments",
-    "Reduced disease burden",
-  ]
-
-  return (
-    <Layout>
-      <div className="min-h-screen bg-background">
-        <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mx-auto max-w-5xl text-center text-background">
-              <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-brutal-cyan">
-                Independent research initiative
-              </p>
-              <h1 className="mb-6 text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
-                Evidence behind the
-                <br />
-                <span className="text-brutal-pink">Trial Abundance Survey</span>
-              </h1>
-              <p className="mx-auto max-w-3xl text-lg font-bold sm:text-xl">
-                The three-question survey stays brief. This page separates observed evidence from estimates, model
-                projections, and a coordination hypothesis about what verified public preferences could change.
-              </p>
-            </div>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-4xl">
-              <h2 className="mb-3 text-3xl font-black uppercase md:text-4xl">How to read the claims</h2>
-              <p className="text-lg font-bold">
-                The label on each claim matters. A published observation is not the same thing as an estimated global
-                denominator, a model output, or a forecast about collective action.
-              </p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              <EvidenceTypeCard
-                label="Observed evidence"
-                color="bg-brutal-cyan"
-                description="Dates, trial results, designs, and study findings reported by the cited institutions or papers."
-              />
-              <EvidenceTypeCard
-                label="Estimate"
-                color="bg-brutal-yellow"
-                description="A best current approximation used where no complete global accounting exists."
-              />
-              <EvidenceTypeCard
-                label="Model projection"
-                color="bg-background"
-                description="A calculated scenario that depends on explicit inputs and assumptions."
-              />
-              <EvidenceTypeCard
-                label="Coordination hypothesis"
-                color="bg-brutal-pink text-white"
-                description="A plausible pathway to test, not an observed survey result or an automatic policy effect."
-              />
-            </div>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="yellow" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-4xl">
-              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em]">Observed input + model estimate</p>
-              <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">Government spending context</h2>
-              <p className="text-lg font-bold">
-                The survey&apos;s allocation question compares two categories of government spending. It does not
-                compare military spending with all public and private medical research.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              <ResearchStatCard
-                label="Observed: military spending"
-                value={
-                  <a
-                    href="https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline decoration-4 underline-offset-4"
-                  >
-                    $2.718T
-                  </a>
-                }
-                detail="SIPRI's estimate of world military expenditure in 2024."
-                color="bg-background"
-              />
-              <ResearchStatCard
-                label="Estimate: government trials"
-                value={
-                  <ParameterValue
-                    param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL}
-                    valueOverride="$4.5B"
-                    className="font-black"
-                  />
-                }
-                detail={`Current annual model estimate; uncertainty range ${governmentTrialSpendingRange}.`}
-                color="bg-brutal-cyan"
-              />
-              <ResearchStatCard
-                label="Calculated share"
-                value={`${GOVERNMENT_TRIAL_SHARE_OF_MILITARY_PCT.toFixed(3)}%`}
-                detail="$4.5 billion as a share of SIPRI's $2.718 trillion estimate."
-                color="bg-background"
-              />
-              <ResearchStatCard
-                label="Calculated ratio"
-                value={
-                  <ParameterValue
-                    param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
-                    format={{ precision: 0 }}
-                    className="font-black"
-                  />
-                }
-                detail="About $604 in military spending for every $1 in government clinical-trial spending."
-                color="bg-brutal-pink text-white"
-              />
-            </div>
-
-            <Card className="mt-8 gap-5 border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-              <h3 className="text-2xl font-black uppercase">What the denominator does—and does not—mean</h3>
-              <div className="space-y-4 text-base font-bold leading-relaxed sm:text-lg">
-                <p>
-                  This is explicitly a{" "}
-                  <span className="font-black text-brutal-pink">government-to-government comparison</span>: global
-                  military expenditure versus estimated government spending on interventional clinical trials.
-                </p>
-                <p>
-                  No authoritative organization publishes a complete global accounting of government spending on
-                  interventional trials across every country. The{" "}
-                  <ParameterValue param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL} valueOverride="$4.5B" />{" "}
-                  denominator is therefore an estimate, not an observed world total. The current model uses a{" "}
-                  {governmentTrialSpendingRange} uncertainty range.
-                </p>
-                <p>
-                  Including private pharmaceutical trial spending and other non-government funding produces a
-                  substantially smaller comparison. The current all-trials estimate is{" "}
-                  <ParameterValue param={GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL} />, which yields about{" "}
-                  <ParameterValue param={MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />. That
-                  broader ratio answers a different question from the survey&apos;s public-budget comparison.
-                </p>
-              </div>
-            </Card>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-4xl">
-              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">Observed evidence</p>
-              <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">What RECOVERY demonstrated</h2>
-              <p className="text-lg font-bold">
-                RECOVERY used a simple adaptive design embedded in routine NHS care. Existing clinical workflows and
-                routinely collected data reduced additional burden while preserving randomized comparisons.
-              </p>
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              <ResearchStatCard
-                label="First patient"
-                value="19 MAR 2020"
-                detail="Oxford reports that RECOVERY recruited its first patient nine days after the protocol was drafted."
-                color="bg-brutal-cyan"
-              />
-              <ResearchStatCard
-                label="Dexamethasone result"
-                value="16 JUN 2020"
-                detail="The trial announced the first treatment shown to reduce COVID-19 mortality."
-                color="bg-brutal-yellow"
-              />
-              <ResearchStatCard
-                label="Elapsed time"
-                value={`${RECOVERY_DAYS_TO_DEXAMETHASONE} DAYS`}
-                detail="Calendar days from the first recruited patient to the dexamethasone announcement."
-                color="bg-background"
-              />
-              <ResearchStatCard
-                label="First 100 days"
-                value="3 TREATMENTS"
-                detail="Actionable results for hydroxychloroquine, dexamethasone, and lopinavir-ritonavir."
-                color="bg-brutal-pink text-white"
-              />
-            </div>
-
-            <Card className="mt-8 gap-6 border-4 border-primary bg-brutal-cyan p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-              <div>
-                <p className="mb-2 text-sm font-black uppercase tracking-[0.2em]">Cost evidence</p>
-                <h3 className="text-2xl font-black uppercase sm:text-3xl">
-                  Large potential, not one universal multiplier
-                </h3>
-              </div>
-              <div className="grid gap-4">
-                <ComparisonRow
-                  label="RECOVERY estimate"
-                  value={<ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} className="font-black" />}
-                  detail="Approximate per-participant estimate for one unusually streamlined emergency platform trial."
-                />
-                <ComparisonRow
-                  label="Pivotal approval trials"
-                  value={
-                    <ParameterValue
-                      param={pivotalTrialMedianCostPerParticipant}
-                      valueOverride="$41,413"
-                      className="font-black"
-                    />
-                  }
-                  detail="Peer-reviewed median estimate per participant across 225 pivotal trials supporting drug approvals."
-                />
-                <ComparisonRow
-                  label="Embedded pragmatic trials"
-                  value={
-                    <ParameterValue
-                      param={embeddedPragmaticTrialMedianCostPerParticipant}
-                      valueOverride="$97"
-                      className="font-black"
-                    />
-                  }
-                  detail="Median research cost per randomized participant among 64 trials with available cost data."
-                />
-              </div>
-              <p className="text-base font-bold leading-relaxed sm:text-lg">
-                Dividing the pivotal-trial median by the RECOVERY estimate produces the familiar approximately{" "}
-                <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" /> comparison. It is
-                a RECOVERY-versus-pivotal-trial comparison, not a guaranteed saving for every pragmatic trial. The
-                studies cover heterogeneous interventions, health systems, accounting methods, and trial designs.
-                Together they show major cost potential, not a universal multiplier.
-              </p>
-              <p className="text-sm font-bold">
-                Sources: Oxford&apos;s{" "}
-                <a
-                  href="https://www.ndm.ox.ac.uk/covid-19/covid-research/drug-trials-recovery"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-2 underline-offset-2"
-                >
-                  RECOVERY account
-                </a>
-                , the{" "}
-                <a
-                  href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-2 underline-offset-2"
-                >
-                  pivotal-trial cost study
-                </a>
-                , and the{" "}
-                <a
-                  href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-2 underline-offset-2"
-                >
-                  embedded pragmatic-trial review
-                </a>
-                .
-              </p>
-            </Card>
-          </Container>
-        </SectionContainer>
-
-        <SurveyRegulatorySection />
-
-        <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-4xl">
-              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em]">
-                Model projection—not an observed outcome
-              </p>
-              <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">How the capacity scenario is built</h2>
-              <p className="text-lg font-bold">
-                The model uses a deliberately conservative pragmatic-trial cost input rather than treating
-                RECOVERY&apos;s emergency result as universally reproducible. Its outputs change when the inputs change.
-              </p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              <ResearchStatCard
-                label="Central cost input"
-                value={<ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} className="font-black" />}
-                detail="Per participant, with an uncertainty interval informed by embedded-trial evidence and more complex trials."
-                color="bg-background"
-              />
-              <ResearchStatCard
-                label="Projected capacity"
-                value={
-                  <ParameterValue
-                    param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                    format={{ precision: 1 }}
-                    className="font-black"
-                  />
-                }
-                detail="Scenario output at the model's trial-funding level, not an observed global expansion."
-                color="bg-brutal-yellow"
-              />
-              <ResearchStatCard
-                label="Projected queue"
-                value={
-                  <>
-                    <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />
-                    {" → "}
-                    <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />
-                    {" years"}
-                  </>
-                }
-                detail="Modeled treatment-research queue under current versus expanded capacity assumptions."
-                color="bg-brutal-pink text-white"
-              />
-            </div>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-5xl">
-              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
-                Coordination hypothesis—not an observed survey result
-              </p>
-              <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">What could a global majority change?</h2>
-              <p className="text-lg font-bold">
-                A verified majority would not enact a law by itself. It could create an election-scale public mandate
-                and coordination event that institutions can respond to independently.
-              </p>
-            </div>
-
-            <Card className="mb-8 gap-5 border-4 border-primary bg-brutal-yellow p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-              <div className="grid gap-6 lg:grid-cols-[0.65fr_1.35fr] lg:items-center">
-                <div>
-                  <p className="text-6xl font-black sm:text-7xl">51%</p>
-                  <p className="mt-2 text-3xl font-black">
-                    <ParameterValue param={surveyMajorityTarget} format={{ precision: 2 }} />
-                  </p>
-                  <p className="mt-2 text-sm font-black uppercase">people at the current checked-in population input</p>
-                </div>
-                <div className="space-y-4 text-base font-bold leading-relaxed sm:text-lg">
-                  <p>
-                    The current global-population parameter is <ParameterValue param={GLOBAL_POPULATION_2024} />.
-                    Multiplying it by 51% gives 4.08 billion people—about 4.1 billion. As the population input rises
-                    above 8.2 billion, the same rule is about 4.2 billion; the target is calculated instead of frozen to
-                    a stale headcount.
-                  </p>
-                  <p>
-                    Public verification could reduce pluralistic ignorance: people may privately support a reform while
-                    incorrectly believing that most others do not. Country-level, auditable results could make dispersed
-                    preferences common knowledge and give decision-makers a visible mandate to answer.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <h3 className="mb-5 text-2xl font-black uppercase sm:text-3xl">Plausible independent responses</h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {coordinationActors.map(([actor, response]) => (
-                <Card
-                  key={actor}
-                  className="gap-3 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-                >
-                  <h4 className="text-lg font-black uppercase text-brutal-pink">{actor}</h4>
-                  <p className="text-sm font-bold leading-relaxed">{response}</p>
-                </Card>
-              ))}
-            </div>
-
-            <Card className="mt-8 gap-5 border-4 border-primary bg-foreground p-6 text-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-              <h3 className="text-2xl font-black uppercase sm:text-3xl">The hypothesized causal chain</h3>
-              <ol className="grid gap-3">
-                {coordinationChain.map((step, index) => (
-                  <li key={step} className="grid gap-3 sm:grid-cols-[2.5rem_1fr] sm:items-center">
-                    <span className="flex h-10 w-10 items-center justify-center border-2 border-background bg-brutal-cyan text-lg font-black text-foreground">
-                      {index + 1}
-                    </span>
-                    <span className="text-base font-black uppercase sm:text-lg">
-                      {step}
-                      {index < coordinationChain.length - 1 ? (
-                        <span className="ml-3 text-brutal-cyan" aria-hidden="true">
-                          →
-                        </span>
-                      ) : null}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <p className="border-t-2 border-background/40 pt-5 text-base font-bold">
-                Survey responses do not automatically enact laws, fund trials, establish causation, or eradicate
-                disease. Each arrow requires institutions and people to act, and the effects must be measured.
-              </p>
-            </Card>
-
-            <div className="mt-8 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
-                  Conditions for credibility
-                </p>
-                <h3 className="text-2xl font-black uppercase sm:text-3xl">A majority claim must earn trust</h3>
-              </div>
-              <Card className="border-4 border-primary bg-brutal-cyan p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-                <ul className="grid gap-4 sm:grid-cols-2">
-                  {coordinationConditions.map((condition) => (
-                    <li key={condition} className="flex gap-3 text-sm font-bold leading-relaxed sm:text-base">
-                      <span className="font-black" aria-hidden="true">
-                        ■
-                      </span>
-                      <span>{condition}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </div>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="pink" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="mb-8 max-w-4xl text-white">
-              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em]">Source trail</p>
-              <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">Read the underlying evidence</h2>
-              <p className="text-lg font-bold">
-                Parameter values on this page open their own source and calculation details. These are the primary
-                institutional and peer-reviewed sources for the central observed claims.
-              </p>
-            </div>
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <SourceLink
-                href="https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024"
-                title="SIPRI: World military expenditure, 2024"
-                detail="Observed military-spending input."
-              />
-              <SourceLink
-                href="https://www.ndm.ox.ac.uk/covid-19/covid-research/drug-trials-recovery"
-                title="Oxford: RECOVERY trial"
-                detail="First patient, dexamethasone date, and NHS embedding."
-              />
-              <SourceLink
-                href="https://www.ndph.ox.ac.uk/news/recovery-trial-celebrates-two-year-anniversary-of-life-saving-dexamethasone-result"
-                title="Oxford: Three results within 100 days"
-                detail="Institutional account of the trial's rapid results."
-              />
-              <SourceLink
-                href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7295430/"
-                title="Pivotal trial cost study"
-                detail="Peer-reviewed $41,413 median cost per participant."
-              />
-              <SourceLink
-                href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6508852/"
-                title="Embedded pragmatic trial review"
-                detail="Peer-reviewed review reporting a $97 median among 64 trials."
-              />
-              <SourceLink
-                href={
-                  RECOVERY_TRIAL_COST_PER_PATIENT.sourceUrl ??
-                  "https://manual.warondisease.org/knowledge/appendix/recovery-trial"
-                }
-                title="RECOVERY cost estimate"
-                detail="Source behind the approximate $500 model parameter."
-              />
-              <SourceLink
-                href="https://www.fda.gov/understanding-unapproved-use-approved-drugs-label"
-                title="FDA: Off-label use of approved drugs"
-                detail="What clinicians may prescribe in ordinary medical practice."
-              />
-              <SourceLink
-                href="https://www.fda.gov/drugs/investigational-new-drug-ind-application/ind-application-procedures-exemptions-ind-requirements"
-                title="FDA: IND exemption criteria"
-                detail="Conditions for studies of lawfully marketed drugs."
-              />
-              <SourceLink
-                href="https://www.hhs.gov/ohrp/regulations-and-policy/regulations/45-cfr-46/index.html"
-                title="HHS: Common Rule"
-                detail="IRB and informed-consent protections for covered research."
-              />
-              <SourceLink
-                href="https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/research/index.html"
-                title="HHS: HIPAA and research"
-                detail="Authorization and documented waiver routes for protected health information."
-              />
-              <SourceLink
-                href="https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?NCDId=1&NCDver=3"
-                title="CMS: Routine costs in clinical trials"
-                detail="What Medicare covers in qualifying trials and what it excludes."
-              />
-              <SourceLink
-                href="https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try"
-                title="FDA: Federal Right to Try"
-                detail="Eligibility, manufacturer discretion, and the treatment-access pathway."
-              />
-              <SourceLink
-                href="https://archive.legmt.gov/content/Sessions/69th/Contractor_index/CH0621.pdf"
-                title="Montana SB 535, Chapter 621"
-                detail="The 2025 law establishing experimental-treatment centers."
-              />
-              <SourceLink
-                href="https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters"
-                title="Montana: Experimental-treatment centers"
-                detail="Current licensing applications, statutes, and rules."
-              />
-            </div>
-          </Container>
-        </SectionContainer>
-
-        <CTASection
-          bgColor="yellow"
-          heading={
-            <>
-              TAKE THE
-              <br />
-              <span className="text-foreground">SURVEY</span>
-            </>
-          }
-        >
-          <Button
-            asChild
-            className="h-14 border-4 border-foreground bg-foreground px-8 text-lg font-black uppercase text-background hover:bg-background hover:text-foreground sm:px-12"
-          >
-            <Link href="/#vote">Take the survey</Link>
-          </Button>
-        </CTASection>
-      </div>
-    </Layout>
-  )
-}
-
-function SurveyRegulatorySection() {
-  return (
-    <SectionContainer bgColor="foreground" borderPosition="bottom" padding="lg">
-      <Container size="xl" className="text-background">
-        <div className="mb-8 max-w-5xl">
-          <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-brutal-cyan">
-            Current legal and operational constraints
-          </p>
-          <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">
-            Why doesn&apos;t every doctor offer a pragmatic trial?
-          </h2>
-          <p className="text-lg font-bold">
-            Pragmatic trials are not categorically illegal. The difficulty is that a physician&apos;s treatment decision
-            becomes research—and often regulated research—when a protocol systematically assigns care and collects
-            data to produce generalizable evidence. That change adds duties that an ordinary clinic usually cannot
-            absorb alone.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <EvidenceTypeCard
-            label="Treatment is not a trial"
-            color="bg-brutal-cyan text-foreground"
-            description="FDA says clinicians generally may prescribe an approved drug off-label when medically appropriate. Randomization and systematic evidence generation still require a research protocol and accountable sponsor."
-          />
-          <EvidenceTypeCard
-            label="IND-exempt is not oversight-free"
-            color="bg-brutal-yellow text-foreground"
-            description="A study of a marketed drug can avoid an IND only when every 21 CFR 312.2(b)(1) condition is met. IRB review and informed consent still apply; riskier or unapproved uses need another FDA pathway."
-          />
-          <EvidenceTypeCard
-            label="Consent and data are risk-dependent"
-            color="bg-background text-foreground"
-            description="The Common Rule and HIPAA allow documented waivers in qualifying minimal-risk research. An IRB or Privacy Board must still assess and document the study, privacy safeguards, and practicability."
-          />
-          <EvidenceTypeCard
-            label="Coverage is incomplete"
-            color="bg-brutal-pink text-white"
-            description="Medicare covers routine costs in qualifying trials, but not every investigational intervention or research-only service. Other coverage, site contracts, and unrecovered clinic work remain variable."
-          />
-        </div>
-
-        <p className="mt-6 text-sm font-bold leading-relaxed text-background/90">
-          A review of embedded pragmatic trials identified research governance, processes incompatible with clinical
-          operations, and unrecoverable costs as recurring barriers. Protections for consent, safety, and privacy
-          remain necessary; the policy question is how to make oversight proportionate and reusable.
-        </p>
-
-        <Card className="mt-8 gap-5 border-4 border-background bg-background p-6 text-foreground shadow-[8px_8px_0px_0px_rgba(0,217,255,1)] sm:p-8">
-          <div>
-            <p className="mb-2 text-sm font-black uppercase tracking-[0.2em] text-brutal-pink">
-              Policy design targets—not current rights
-            </p>
-            <h3 className="text-2xl font-black uppercase sm:text-3xl">What universal access would require</h3>
-          </div>
-          <div className="grid gap-4">
-            <PolicyTargetRow
-              label="Patient access"
-              today="No universal right to be screened, enrolled, or supplied an intervention."
-              target="A portable right to be informed and considered for eligible trials—not a right to demand an unsafe or unavailable treatment."
-            />
-            <PolicyTargetRow
-              label="Proportionate review"
-              today="IND, IRB, consent, privacy, and local-site determinations can be repeated or inconsistent."
-              target="Clear pathways for minimal-risk marketed-treatment comparisons, shared protocols, central review, and tiered consent."
-            />
-            <PolicyTargetRow
-              label="Payment"
-              today="Routine care may be covered while research-only work, infrastructure, or the intervention is not."
-              target="Reliable routine-care coverage plus public or shared research funding. Any patient-funded option needs equity and consent safeguards."
-            />
-            <PolicyTargetRow
-              label="Clinic workflow"
-              today="Site contracts, staff training, fragmented records, manual reporting, and unrecovered physician time block participation."
-              target="Reusable agreements, interoperable records, funded clinician time, and automated eligibility, safety, and outcome reporting."
-            />
-            <PolicyTargetRow
-              label="Accountability"
-              today="A clinician cannot safely become sponsor, data center, monitor, and regulator for every study."
-              target="A shared trial network that preserves independent review, privacy, adverse-event monitoring, public registration, results reporting, and clear liability."
-            />
-          </div>
-        </Card>
-
-        <Card className="mt-8 gap-6 border-4 border-background bg-brutal-yellow p-6 text-foreground shadow-[8px_8px_0px_0px_rgba(255,107,157,1)] sm:p-8">
-          <div>
-            <p className="mb-2 text-sm font-black uppercase tracking-[0.2em]">Adjacent legal experiment</p>
-            <h3 className="text-2xl font-black uppercase sm:text-3xl">Right to try is not right to trial</h3>
-          </div>
-          <p className="text-base font-bold leading-relaxed sm:text-lg">
-            Right-to-try and expanded-access laws primarily govern treatment with an investigational product outside a
-            clinical trial. Their purpose is access for an individual patient, not randomization or the production of
-            reliable comparative evidence.
-          </p>
-          <div className="grid gap-5 lg:grid-cols-2">
-            <div className="border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h4 className="mb-3 text-lg font-black uppercase text-brutal-pink">Federal Right to Try, 2018</h4>
-              <p className="text-sm font-bold leading-relaxed">
-                The federal pathway is limited to a patient with a life-threatening condition who exhausted approved
-                options and cannot participate in a relevant trial. It does not require FDA or IRB review of an
-                individual request, and it does not require a manufacturer to provide the drug.
-              </p>
-            </div>
-            <div className="border-4 border-primary bg-brutal-cyan p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h4 className="mb-3 text-lg font-black uppercase">Montana SB 535, 2025</h4>
-              <p className="text-sm font-bold leading-relaxed">
-                Montana created licensed experimental-treatment centers for interventions that completed phase 1 and
-                either remain under FDA-approved investigation or meet a state-defined documented-safety route.
-                Patients must evaluate approved options, receive a provider recommendation, and consent. Final
-                center-licensing rules took effect July 25, 2026.
-              </p>
-            </div>
-          </div>
-          <p className="text-sm font-bold leading-relaxed">
-            Montana permits payment arrangements but does not require a manufacturer, facility, insurer, or government
-            program to provide or pay for treatment. The law is therefore a live experiment in treatment access and
-            financing—not a universal right to join a pragmatic trial, a replacement for federal research rules, or a
-            guarantee that useful comparative evidence will result.
-          </p>
-        </Card>
-      </Container>
-    </SectionContainer>
-  )
-}
-
-function EvidenceTypeCard({ label, description, color }: { label: string; description: string; color: string }) {
-  return (
-    <Card className={`${color} gap-3 border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}>
-      <h3 className="text-xl font-black uppercase">{label}</h3>
-      <p className="text-sm font-bold leading-relaxed">{description}</p>
-    </Card>
-  )
-}
-
-function ResearchStatCard({
-  label,
-  value,
-  detail,
-  color,
-}: {
-  label: string
-  value: ReactNode
-  detail: string
-  color: string
-}) {
-  return (
-    <Card className={`${color} gap-3 border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}>
-      <h3 className="text-xs font-black uppercase tracking-[0.18em]">{label}</h3>
-      <p className="break-words text-3xl font-black sm:text-4xl">{value}</p>
-      <p className="text-sm font-bold leading-relaxed">{detail}</p>
-    </Card>
-  )
-}
-
-function ComparisonRow({ label, value, detail }: { label: string; value: ReactNode; detail: string }) {
-  return (
-    <div className="grid gap-2 border-4 border-primary bg-background p-4 sm:grid-cols-[1fr_0.55fr_1.45fr] sm:items-center">
-      <h4 className="text-sm font-black uppercase">{label}</h4>
-      <p className="text-2xl font-black">{value}</p>
-      <p className="text-sm font-bold leading-relaxed">{detail}</p>
-    </div>
-  )
-}
-
-function PolicyTargetRow({
-  label,
-  today,
-  target,
-}: {
-  label: string
-  today: string
-  target: string
-}) {
-  return (
-    <div className="grid gap-3 border-4 border-primary p-4 md:grid-cols-[0.45fr_1fr_1.35fr] md:items-start">
-      <h4 className="text-sm font-black uppercase text-brutal-pink">{label}</h4>
-      <p className="text-sm font-bold leading-relaxed">
-        <span className="font-black uppercase">Today: </span>
-        {today}
-      </p>
-      <p className="text-sm font-bold leading-relaxed">
-        <span className="font-black uppercase">Possible target: </span>
-        {target}
-      </p>
-    </div>
-  )
-}
-
-function SourceLink({ href, title, detail }: { href: string; title: string; detail: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block border-4 border-primary bg-background p-5 text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]"
-    >
-      <h3 className="mb-2 text-lg font-black uppercase">{title}</h3>
-      <p className="text-sm font-bold leading-relaxed">{detail}</p>
-    </a>
   )
 }
 
