@@ -382,6 +382,7 @@ export default function TrialAbundanceSurveySection({
           height: 32px;
           background: black;
           border: 4px solid black;
+          border-radius: 0;
           cursor: pointer;
           box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
         }
