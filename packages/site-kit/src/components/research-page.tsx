@@ -24,6 +24,7 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_POPULATION_2024,
@@ -73,9 +74,9 @@ const surveyMajorityTarget: Parameter = {
   stdError: undefined,
 }
 const coordinationFlow = [
-  { emoji: "🗳️", label: "Verified preferences", color: "bg-background" },
+  { emoji: "🗳️", label: "Verified public support", color: "bg-background" },
   { emoji: "📣", label: "Public mandate", color: "bg-brutal-cyan" },
-  { emoji: "🏛️", label: "Access + funding reform", color: "bg-brutal-yellow" },
+  { emoji: "🏛️", label: "Trial access laws + public funding", color: "bg-brutal-yellow" },
   { emoji: "🩺", label: "More trials + faster evidence", color: "bg-background" },
   { emoji: "❤️", label: "Earlier treatment + less disease", color: "bg-brutal-cyan" },
 ] as const
@@ -273,8 +274,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <span className="text-brutal-cyan">DATA SOURCES</span>
               </h1>
               <p className="text-lg sm:text-xl font-bold text-center max-w-2xl mx-auto">
-                Peer-reviewed evidence on pragmatic clinical trials and the assumptions behind the survey&apos;s
-                capacity model.
+                Peer-reviewed evidence and the numbers behind the survey&apos;s treatment timeline and funding model.
               </p>
             </Container>
           </SectionContainer>
@@ -297,8 +297,8 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     The landmark{" "}
                     <span className="font-black text-brutal-pink">RECOVERY trial</span> at Oxford
                     University demonstrated this approach at scale. Embedded in routine NHS care, it
-                    enrolled 40,000+ patients across 176 hospitals and produced three actionable
-                    treatment results within 100 days.
+                    enrolled 40,000+ patients across 176 hospitals and produced three treatment findings
+                    within 100 days.
                   </p>
                   <p>
                     It recruited its first patient on March 19, 2020, and announced the dexamethasone
@@ -315,17 +315,39 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               </Card>
 
               <h2 className="text-3xl md:text-4xl font-black uppercase text-center mb-8 pt-8">
-                TIMELINE <span className="text-brutal-pink">COMPRESSION</span>
+                DISEASE ERADICATION <span className="text-brutal-pink">TIMELINE</span>
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
+                <p className="mb-8 text-lg font-bold leading-relaxed">
+                  About{" "}
+                  <ParameterValue
+                    param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+                    valueOverride="6,650"
+                    className="font-black"
+                  />{" "}
+                  rare diseases have no FDA-approved treatment. About{" "}
+                  <ParameterValue
+                    param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR}
+                    valueOverride="15"
+                    className="font-black"
+                  />{" "}
+                  diseases get their first effective treatment each year. At that rate, clearing today&apos;s
+                  treatment backlog takes{" "}
+                  <ParameterValue
+                    param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                    format={{ precision: 0 }}
+                    className="font-black"
+                  />{" "}
+                  years.
+                </p>
                 <div
-                  aria-label={`Modeled timeline falls from ${Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value)} years to ${Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value)} years`}
+                  aria-label={`Disease eradication timeline falls from ${Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value)} years to ${Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value)} years`}
                   className="space-y-6"
                   role="group"
                 >
                   <div>
                     <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
-                      <span>Current pace</span>
+                      <span>Today&apos;s treatment rate</span>
                       <span className="text-3xl">
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
                       </span>
@@ -336,7 +358,10 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   </div>
                   <div>
                     <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
-                      <span>Expanded trial capacity</span>
+                      <span>
+                        With <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> trial
+                        capacity
+                      </span>
                       <span className="text-3xl text-brutal-pink">
                         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years
                       </span>
@@ -349,8 +374,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     </div>
                   </div>
                   <p className="text-base font-bold text-center">
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more trial
-                    capacity at <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year
+                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
+                    patient trial slots.
                   </p>
                 </div>
               </Card>
@@ -371,12 +397,12 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     stat: (
                       <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />
                     ),
-                    label: "CAPACITY INCREASE",
+                    label: "PATIENT TRIAL CAPACITY",
                     detail: (
                       <>
-                        At the model&apos;s{" "}
-                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> annual funding level,
-                        scaling pragmatic trials compresses the disease eradication timeline from{" "}
+                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                        <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
+                        patient trial slots, cutting the disease eradication timeline from{" "}
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
                         years to{" "}
                         <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> years.
@@ -393,9 +419,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   },
                   {
                     stat: "89 DAYS",
-                    label: "FIRST PATIENT TO RESULT",
+                    label: "89 DAYS TO A TREATMENT RESULT",
                     detail:
-                      "March 19 to June 16, 2020; RECOVERY produced three actionable results within 100 days.",
+                      "March 19 to June 16, 2020; RECOVERY produced three treatment findings within 100 days.",
                     color: "bg-brutal-cyan",
                   },
                 ].map((item, i) => (
@@ -415,13 +441,13 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               </h2>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow">
                 <div
-                  aria-label="Annual military spending is $2.718 trillion versus $4.5 billion in government clinical trial spending"
+                  aria-label="Annual weapons and military spending is $2.718 trillion versus $4.5 billion in publicly funded clinical trial spending"
                   className="space-y-6"
                   role="group"
                 >
                   <div>
                     <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
-                      <span>Military spending</span>
+                      <span>Annual weapons and military spending</span>
                       <span className="text-3xl">$2.718T</span>
                     </div>
                     <div className="h-12 border-4 border-primary bg-background">
@@ -430,7 +456,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   </div>
                   <div>
                     <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
-                      <span>Clinical trial spending</span>
+                      <span>Annual publicly funded clinical trial spending</span>
                       <span className="text-3xl text-brutal-pink">
                         <ParameterValue
                           param={GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL}
@@ -449,13 +475,13 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <div className="mt-8 grid gap-4 text-center sm:grid-cols-2">
                   <div className="border-4 border-primary bg-background p-4">
                     <div className="text-3xl font-black">{governmentTrialShareOfMilitarySpending.toFixed(3)}%</div>
-                    <div className="text-sm font-black uppercase">Trial share of military spending</div>
+                    <div className="text-sm font-black uppercase">Trial share of weapons and military spending</div>
                   </div>
                   <div className="border-4 border-primary bg-background p-4">
                     <div className="text-3xl font-black">
                       <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} format={{ precision: 0 }} />
                     </div>
-                    <div className="text-sm font-black uppercase">Military dollars per trial dollar</div>
+                    <div className="text-sm font-black uppercase">Weapons and military dollars per public trial dollar</div>
                   </div>
                 </div>
               </Card>
@@ -467,19 +493,20 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <div className="space-y-5 text-lg leading-relaxed">
                   <p>
                     Pragmatic trials are legal. Doctors can generally prescribe approved drugs off-label,
-                    but a systematic study adds research duties: an IND unless exempt, IRB review, consent,
-                    privacy approval, safety reporting, contracts, data systems, and an accountable sponsor.
-                    Insurance may cover routine care without paying for the research work.
+                    but a systematic study adds research duties: an FDA investigational new drug application
+                    unless exempt, ethics review, consent, privacy approval, safety reporting, contracts, data
+                    systems, and a research sponsor. Insurance may cover routine care without paying for the
+                    research work.
                   </p>
                   <p>
-                    Universal access needs reusable protocols, central review, proportionate rules for
-                    minimal-risk comparisons, reliable funding, interoperable records, and a shared trial
-                    network to handle monitoring, reporting, and liability.
+                    Universal access needs reusable study plans, central ethics review, simpler rules for
+                    low-risk comparisons, reliable funding, connected health records, and a shared trial network
+                    to handle monitoring, reporting, and liability.
                   </p>
                 </div>
               </Card>
               <Card className="p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-cyan">
-                <h3 className="text-2xl font-black uppercase mb-3">Right to try is narrower</h3>
+                <h3 className="text-2xl font-black uppercase mb-3">Right to Try does not create trials</h3>
                 <p className="text-base font-bold leading-relaxed">
                   Federal Right to Try covers some patients with life-threatening conditions who cannot
                   join a relevant trial. Montana&apos;s 2025 SB 535 also created licensed experimental-treatment
@@ -506,8 +533,8 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   </div>
                   <div className="text-base font-bold leading-relaxed">
                     <p>
-                      A verified majority could make private preferences common knowledge and create an
-                      election-scale mandate for trial access and funding reform.
+                      If 51% of people publicly verify their support, governments can see an election-scale
+                      mandate for laws and public funding that let patients join trials through their physicians.
                     </p>
                   </div>
                 </div>
