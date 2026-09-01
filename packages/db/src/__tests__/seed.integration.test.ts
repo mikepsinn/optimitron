@@ -700,7 +700,12 @@ describeIfDatabase("syncManagedData", () => {
     });
     const originalReferendum = await prisma.referendum.findUniqueOrThrow({
       where: { slug: "one-percent-treaty" },
-      select: { title: true, description: true, status: true },
+      select: {
+        title: true,
+        description: true,
+        publishedAt: true,
+        status: true,
+      },
     });
     const originalOrganization = await prisma.organization.findUniqueOrThrow({
       where: { slug: "humanity" },
@@ -719,6 +724,7 @@ describeIfDatabase("syncManagedData", () => {
       data: {
         title: "drifted referendum title",
         description: "drifted referendum description",
+        publishedAt: new Date("2000-01-01T00:00:00.000Z"),
       },
     });
     await prisma.organization.update({
@@ -799,6 +805,8 @@ describeIfDatabase("syncManagedData", () => {
         slug: {
           in: [
             "one-percent-treaty",
+            "patient-access-to-pragmatic-clinical-trials",
+            "patient-funded-access-to-pragmatic-clinical-trials",
             "declaration-of-optimization",
             "court-of-humanity",
             "court-humanity-v-government-verdict",
@@ -819,7 +827,7 @@ describeIfDatabase("syncManagedData", () => {
       },
     });
 
-    expect(referendums).toHaveLength(4);
+    expect(referendums).toHaveLength(6);
     expect(referendums).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -828,6 +836,20 @@ describeIfDatabase("syncManagedData", () => {
           question: expect.stringContaining("redirect 1% of military spending"),
           bodyMarkdown: expect.stringContaining("Article I"),
           lockedAt: null,
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+        expect.objectContaining({
+          slug: "patient-funded-access-to-pragmatic-clinical-trials",
+          kind: ReferendumKind.GENERAL,
+          question: expect.stringContaining("right to pay the costs"),
+          bodyMarkdown: expect.stringContaining("patient-funded access"),
+          contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+        }),
+        expect.objectContaining({
+          slug: "patient-access-to-pragmatic-clinical-trials",
+          kind: ReferendumKind.GENERAL,
+          question: expect.stringContaining("through their physician"),
+          bodyMarkdown: expect.stringContaining("routine medical care"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
         expect.objectContaining({
