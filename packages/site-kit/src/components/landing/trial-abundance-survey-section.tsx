@@ -214,13 +214,17 @@ export default function TrialAbundanceSurveySection({
       className="pb-24"
     >
       <Container>
-        <h1 className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
-          Trial <span className="text-brutal-pink">Abundance</span> Survey
-        </h1>
-        <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
-          Three questions about patient access, who may fund trial
-          participation, and public priorities.
-        </p>
+        {stage === "patient-access" ? (
+          <>
+            <h1 className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
+              Trial <span className="text-brutal-pink">Abundance</span> Survey
+            </h1>
+            <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
+              Three questions about patient access, who may fund trial
+              participation, and public priorities.
+            </p>
+          </>
+        ) : null}
 
         <AnimatePresence mode="wait">
           {stage === "patient-access" ? (
