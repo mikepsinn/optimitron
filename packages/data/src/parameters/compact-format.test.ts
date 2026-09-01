@@ -38,6 +38,11 @@ describe('formatParameter', () => {
       expect(formatParameter(param, { precision: 2 })).toBe('$2.72T')
     })
 
+    it('applies significant figures after compact currency scaling', () => {
+      const param = createParam(2720000000000, 'USD')
+      expect(formatParameter(param, { figures: 3 })).toBe('$2.72T')
+    })
+
     it('handles USD/year unit with includeUnit', () => {
       const param = createParam(27200000000, 'USD/year')
       expect(formatParameter(param, { includeUnit: true })).toBe('$27.2B/year')
@@ -73,6 +78,16 @@ describe('formatParameter', () => {
     it('respects precision for percentages', () => {
       const param = createParam(0.8612, 'percentage')
       expect(formatParameter(param, { precision: 2 })).toBe('86.12%')
+    })
+
+    it('does not add trailing zeros to whole percentages', () => {
+      const param = createParam(0.01, 'rate')
+      expect(formatParameter(param, { figures: 3 })).toBe('1%')
+    })
+
+    it('preserves significant figures below one percent', () => {
+      const param = createParam(0.000123, 'percentage')
+      expect(formatParameter(param, { figures: 3 })).toBe('0.0123%')
     })
   })
 
@@ -124,6 +139,11 @@ describe('formatParameter', () => {
     it('formats decimal years with one decimal place', () => {
       const param = createParam(8.25, 'years')
       expect(formatParameter(param)).toBe('8.3')
+    })
+
+    it('does not add trailing zeros to whole-year values', () => {
+      expect(formatParameter(createParam(15, 'years'), { figures: 3 })).toBe('15')
+      expect(formatParameter(createParam(35.96, 'years'), { figures: 3 })).toBe('36')
     })
   })
 

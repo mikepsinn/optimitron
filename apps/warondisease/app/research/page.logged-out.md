@@ -3,78 +3,91 @@
 ## Metadata
 
 - Page title: Research: 12.3x More Clinical Trial Capacity
-- Meta description: Using the parameters in our economic model: pragmatic trials at $929 per patient turn 1% of military spending into 12.3x more trial capacity, compress the treatment queue from 443.3 years to 36.0, and model 10.7B lives saved.
+- Meta description: See how $27.2B a year funds 23.4M pragmatic-trial participants, increases trial capacity 12.3x, and cuts the disease-treatment timeline from 443 years to 36.
 - Canonical: https://warondisease.org/research
 - Open Graph title: Research: 12.3x More Clinical Trial Capacity
-- Open Graph description: $929 pragmatic trials, 443.3 -> 36.0 backlog compression, 10.7B lives saved.
+- Open Graph description: $929 pragmatic trials turn $27.2B a year into 23.4M participant slots and a 443-to-36-year treatment timeline.
 - Open Graph image: [missing]
 - Twitter title: Research: 12.3x More Clinical Trial Capacity
-- Twitter description: $929 pragmatic trials, 443.3 -> 36.0 backlog compression, 10.7B lives saved.
+- Twitter description: $929 pragmatic trials turn $27.2B a year into 23.4M participant slots and a 443-to-36-year treatment timeline.
 
 ## Visible Page Copy
 
 - [THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE](/)
 - [Go to Dashboard](/dashboard)
 - RESEARCH & EVIDENCE
-## THE RESEARCH PAGE ONLY NEEDS SIX NUMBERS
-- In the current model, pragmatic trials at [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient turn [1.0000%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of global military spending into [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more clinical-trial capacity, raise first treatments from [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year, and compress the modeled queue from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
-- [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Conservative per-patient estimate used in the model
-- [$41K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Median per-patient benchmark used for comparison
-- [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- More patients funded each year from the treaty model
-- [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [36.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Modeled years to get first treatments across the current backlog
-- [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Modeled one-time effect of accelerating treatment timelines
-- [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Expressed as DALYs averted in the model
-### HOW [1.0000%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) BECOMES [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) MORE TRIAL CAPACITY
-- This is the full funding-to-capacity chain.
-- [$27B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- The model starts from [$3T](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) in annual global military spending.
-- [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- That is the annual slice routed into pragmatic clinical trials.
+## HOW [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) FUNDS [12.3X](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) MORE CLINICAL TRIALS
+- The 1% Treaty redirects [$27.2B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year from weapons and military budgets. After incentives and operating costs, [$21.7B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) funds [23.4M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) pragmatic-trial participants a year.
+- GOVERNMENTS SPEND
+### 604X MORE ON WEAPONS AND MILITARY
+- THAN PUBLICLY FUNDED CLINICAL TRIALS
+- $2.72T FOR WEAPONS AND MILITARY
+- $4.5B FOR PUBLICLY FUNDED CLINICAL TRIALS
+### WHERE THE MONEY GOES
+- One percent produces [$27.2B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) in annual treaty funding.
+- [$2.72T](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$27.2B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$21.8B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Pragmatic clinical trials
+- [$2.72B](https://manual.WarOnDisease.org/knowledge/economics/treaty-financial-plan.html)
+- Treaty success rewards
+- [$2.72B](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html)
+- Political incentives for adoption
+#### TRIAL FUNDING TO PARTICIPANTS
+- [$21.7B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [$40M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Annual operating cost is small relative to total trial funding.
-- [23M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
-- [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per patient funds roughly [23M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) annual slots.
-- [2M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- That is why the model lands at [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more capacity.
-- These two per-patient cost assumptions drive the capacity model.
-- Roughly [23M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)/year funded versus [2M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year today.
-- At the current rate of [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments per year, the untreated-disease queue clears in about [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. With [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more capacity, the model raises that rate to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year and cuts the queue to [36.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
-- [15.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [23.4M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
+### WHY PRAGMATIC TRIALS COST LESS
+- Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per participant. The capacity model uses [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- TRADITIONAL PHASE 3
+- [$41K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- PRAGMATIC-TRIAL MODEL
+- PER PARTICIPANT
+- The [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure drives the capacity model. The [$41K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure shows the cost difference.
+### DISEASE ERADICATION TIMELINE
+- About [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have no effective treatment. At [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments a year, the backlog lasts [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
+- [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Modeled increase in diseases receiving a first effective treatment each year.
-- One-time modeled effect of cures arriving earlier across the backlog.
-- This is the model's answer to years of suffering prevented.
-- [1.93 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
-- In the same model, the combined capacity expansion plus efficacy-lag removal shifts treatment timelines by [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years on average and avoids [1.93 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering. That is the plain language version of the [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) DALYs figure.
-### SOURCE TRAIL
-- These are the source links and calculation links behind the main claims on this page.
-#### GLOBAL MILITARY SPENDING (\$2.72T, 2024)
-- Base spending input for the treaty funding calculation.
+- [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Trial participation rises from [1.9M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [23.4M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) people a year. The model scales first treatments from [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year.
+- MODEL ESTIMATE
+### LONG-RUN HEALTH IMPACT
+- The model combines higher trial capacity with earlier access to treatments.
+- [10.7B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Across future generations during the modeled [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)-year acceleration in treatment availability.
+- [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Years of healthy life restored by preventing disability and early death.
+### SOURCES AND CALCULATIONS
+#### GLOBAL WEAPONS AND MILITARY SPENDING
+- SIPRI spending total used to calculate the treaty funding.
 - [VIEW SOURCE](https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-world-military-expenditure-2024)
-#### NIH PRAGMATIC TRIALS: MINIMAL FUNDING DESPITE 30X COST ADVANTAGE
-- Conservative pragmatic-trial cost assumption used in the model.
+#### PUBLIC CLINICAL-TRIAL SPENDING
+- Government-funded clinical-trial spending used in the comparison chart.
+- [VIEW SOURCE](https://www.appliedclinicaltrialsonline.com/view/sizing-clinical-research-market)
+#### RECOVERY TRIAL COST
+- Observed per-patient cost from a large pragmatic clinical trial.
+- [VIEW SOURCE](https://manhattan.institute/article/slow-costly-clinical-trials-drag-down-biomedical-breakthroughs)
+#### PRAGMATIC-TRIAL COST MODEL
+- The $929 per-patient estimate used to calculate trial capacity.
 - [VIEW SOURCE](https://commonfund.nih.gov/hcscollaboratory)
-#### TRIAL COSTS, FDA STUDY
-- Traditional per-patient comparison point used for the cost gap.
+#### TRADITIONAL PHASE 3 TRIAL COST
+- Median per-patient benchmark used only for the cost comparison.
 - [VIEW SOURCE](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6248200/)
-#### DISEASES GETTING FIRST EFFECTIVE TREATMENT EACH YEAR
-- Current first-treatment rate used to derive the backlog.
+#### DISEASES WITHOUT EFFECTIVE TREATMENT
+- The 6,650-disease backlog used in the eradication timeline.
+- [VIEW CALCULATION](https://manual.WarOnDisease.org/calculations.html#sec-diseases_without_effective_treatment)
+#### FIRST TREATMENTS PER YEAR
+- Current rate used to calculate the 443-year timeline.
 - [VIEW SOURCE](https://ojrd.biomedcentral.com/articles/10.1186/s13023-024-03398-1)
-#### GLOBAL TRIAL CAPACITY
-- Current annual trial-participant capacity used in the capacity calculation.
-- [VIEW SOURCE](https://gmdpacademy.org/news/iqvia-report-clinical-trial-subjects-number-drops-due-to-decline-in-covid-19-enrollment/)
-#### THERAPEUTIC SPACE EXPLORATION TIME AT TREATY-SCALE TRIAL CAPACITY
-- Calculated model output showing the compressed queue under expanded capacity.
-- [VIEW SOURCE](https://manual.WarOnDisease.org/calculations.html#sec-dfda_queue_clearance_years)
-### IF THE MATH IS RIGHT, ACT ON IT
-- The case is straightforward: cheap pragmatic trials plus the treaty reallocation move the cure timeline by centuries.
+#### LONG-RUN HEALTH IMPACT MODEL
+- Calculation behind the cumulative deaths and DALYs averted estimates.
+- [VIEW CALCULATION](https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_lives_saved)
+### FUND MORE CLINICAL TRIALS
+- Vote to redirect 1% of weapons and military spending to pragmatic clinical trials.
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
 #### ACT

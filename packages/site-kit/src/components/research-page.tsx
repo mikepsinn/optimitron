@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import type { ReactNode } from "react"
 
 import Layout from "./layout"
-import { ParameterValue } from "./shared/ParameterValue"
+import WarVsCuresChart from "./landing/war-vs-cures-chart"
+import { ParameterValue, type ParameterValueProps } from "./shared/ParameterValue"
 import { VoteOrShareButton } from "./shared/VoteOrShareButton"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { CTASection } from "@optimitron/neobrutalist-ui/ui/cta-section"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
-import { StatCardGrid, type StatCardProps } from "@optimitron/neobrutalist-ui/ui/stat-card"
 import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import {
   CURRENT_TRIAL_SLOTS_AVAILABLE,
@@ -21,13 +22,14 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
-  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
   DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL,
+  DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_POPULATION_2024,
+  IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   RECOVERY_TRIAL_COST_PER_PATIENT,
@@ -36,6 +38,7 @@ import {
   TREATY_ANNUAL_FUNDING,
   TREATY_REDUCTION_PCT,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
+  VICTORY_BOND_ANNUAL_PAYOUT,
   getCitation,
   type Parameter,
 } from "@optimitron/data/parameters"
@@ -45,10 +48,11 @@ import { VARIANTS } from "../lib/site-variant-types"
 export type ResearchPageVariant = "campaign" | "survey"
 
 const pragmaticTrialCost = formatParameter(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)
-const queueStatusQuo = formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS)
-const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS)
-const livesSaved = formatParameter(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED)
+const queueStatusQuo = formatParameter(STATUS_QUO_QUEUE_CLEARANCE_YEARS, { figures: 3 })
+const queueCompressed = formatParameter(DFDA_QUEUE_CLEARANCE_YEARS, { figures: 3 })
 const trialCapacityMultiplier = formatParameter(DFDA_TRIAL_CAPACITY_MULTIPLIER, { precision: 1 })
+const treatyFunding = formatParameter(TREATY_ANNUAL_FUNDING)
+const annualTrialParticipants = formatParameter(DFDA_PATIENTS_FUNDABLE_ANNUALLY)
 const SURVEY_MAJORITY_SHARE = 0.51
 const governmentTrialShareOfMilitarySpending =
   (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value /
@@ -56,6 +60,8 @@ const governmentTrialShareOfMilitarySpending =
   100
 const compressedTimelineShare =
   (DFDA_QUEUE_CLEARANCE_YEARS.value / STATUS_QUO_QUEUE_CLEARANCE_YEARS.value) * 100
+const pragmaticCostShare =
+  (DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value / TRADITIONAL_PHASE3_COST_PER_PATIENT.value) * 100
 const surveyMajorityTarget: Parameter = {
   ...GLOBAL_POPULATION_2024,
   value: GLOBAL_POPULATION_2024.value * SURVEY_MAJORITY_SHARE,
@@ -81,135 +87,15 @@ const coordinationFlow = [
   { emoji: "❤️", label: "Earlier treatment + less disease", color: "bg-brutal-cyan" },
 ] as const
 
-const headlineStats: StatCardProps[] = [
-  {
-    value: <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />,
-    label: "PRAGMATIC TRIAL COST",
-    description: "Conservative per-patient estimate used in the model",
-    color: "yellow",
-    size: "lg",
-  },
-  {
-    value: <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />,
-    label: "TRADITIONAL PHASE 3 COST",
-    description: "Median per-patient benchmark used for comparison",
-    color: "default",
-    size: "lg",
-  },
-  {
-    value: <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />,
-    label: "TRIAL CAPACITY",
-    description: "More patients funded each year from the treaty model",
-    color: "cyan",
-    size: "lg",
-  },
-  {
-    value: (
-      <>
-        <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} />
-        {" -> "}
-        <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} />
-      </>
-    ),
-    label: "QUEUE CLEARANCE",
-    description: "Modeled years to get first treatments across the current backlog",
-    color: "pink",
-    size: "lg",
-  },
-  {
-    value: <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />,
-    label: "LIVES SAVED",
-    description: "Modeled one-time effect of accelerating treatment timelines",
-    color: "default",
-    size: "lg",
-  },
-  {
-    value: <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS} />,
-    label: "YEARS OF SUFFERING PREVENTED",
-    description: "Expressed as DALYs averted in the model",
-    color: "yellow",
-    size: "lg",
-  },
-]
-
-const mathSteps = [
-  {
-    step: "Treaty slice of military spending",
-    value: <ParameterValue param={TREATY_ANNUAL_FUNDING} />,
-    detail: (
-      <>
-        The model starts from <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} /> in annual global
-        military spending.
-      </>
-    ),
-  },
-  {
-    step: "Funding allocated to trials",
-    value: <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} />,
-    detail: "That is the annual slice routed into pragmatic clinical trials.",
-  },
-  {
-    step: "Platform operating cost",
-    value: <ParameterValue param={DFDA_ANNUAL_OPEX} />,
-    detail: "Annual operating cost is small relative to total trial funding.",
-  },
-  {
-    step: "Patients fundable each year",
-    value: (
-      <>
-        <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} />
-        {"/year"}
-      </>
-    ),
-    detail: (
-      <>
-        <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> per patient funds roughly{" "}
-        <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> annual slots.
-      </>
-    ),
-  },
-  {
-    step: "Current global slots today",
-    value: (
-      <>
-        <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} />
-        {"/year"}
-      </>
-    ),
-    detail: (
-      <>
-        That is why the model lands at{" "}
-        <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more capacity.
-      </>
-    ),
-  },
-]
-
 const sourceCards = [
-  makeSourceCard(
-    GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
-    "Base spending input for the treaty funding calculation."
-  ),
-  makeSourceCard(
-    DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
-    "Conservative pragmatic-trial cost assumption used in the model."
-  ),
-  makeSourceCard(
-    TRADITIONAL_PHASE3_COST_PER_PATIENT,
-    "Traditional per-patient comparison point used for the cost gap."
-  ),
-  makeSourceCard(
-    NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-    "Current first-treatment rate used to derive the backlog."
-  ),
-  makeSourceCard(
-    CURRENT_TRIAL_SLOTS_AVAILABLE,
-    "Current annual trial-participant capacity used in the capacity calculation."
-  ),
-  makeSourceCard(
-    DFDA_QUEUE_CLEARANCE_YEARS,
-    "Calculated model output showing the compressed queue under expanded capacity."
-  ),
+  makeSourceCard(GLOBAL_MILITARY_SPENDING_ANNUAL_2024, "Global weapons and military spending", "SIPRI spending total used to calculate the treaty funding."),
+  makeSourceCard(GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL, "Public clinical-trial spending", "Government-funded clinical-trial spending used in the comparison chart."),
+  makeSourceCard(RECOVERY_TRIAL_COST_PER_PATIENT, "RECOVERY trial cost", "Observed per-patient cost from a large pragmatic clinical trial."),
+  makeSourceCard(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, "Pragmatic-trial cost model", "The $929 per-patient estimate used to calculate trial capacity."),
+  makeSourceCard(TRADITIONAL_PHASE3_COST_PER_PATIENT, "Traditional Phase 3 trial cost", "Median per-patient benchmark used only for the cost comparison."),
+  makeSourceCard(DISEASES_WITHOUT_EFFECTIVE_TREATMENT, "Diseases without effective treatment", "The 6,650-disease backlog used in the eradication timeline."),
+  makeSourceCard(NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR, "First treatments per year", "Current rate used to calculate the 443-year timeline."),
+  makeSourceCard(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED, "Long-run health impact model", "Calculation behind the cumulative deaths and DALYs averted estimates.")
 ]
 
 export function generateCampaignResearchMetadata(): Metadata {
@@ -217,19 +103,19 @@ export function generateCampaignResearchMetadata(): Metadata {
 
   return {
     title: `Research: ${trialCapacityMultiplier} More Clinical Trial Capacity`,
-    description: `Using the parameters in our economic model: pragmatic trials at ${pragmaticTrialCost} per patient turn 1% of military spending into ${trialCapacityMultiplier} more trial capacity, compress the treatment queue from ${queueStatusQuo} years to ${queueCompressed}, and model ${livesSaved} lives saved.`,
+    description: `See how ${treatyFunding} a year funds ${annualTrialParticipants} pragmatic-trial participants, increases trial capacity ${trialCapacityMultiplier}, and cuts the disease-treatment timeline from ${queueStatusQuo} years to ${queueCompressed}.`,
     alternates: {
       canonical: `${canonicalBaseUrl}/research`,
     },
     openGraph: {
       title: `Research: ${trialCapacityMultiplier} More Clinical Trial Capacity`,
-      description: `${pragmaticTrialCost} pragmatic trials, ${queueStatusQuo} -> ${queueCompressed} backlog compression, ${livesSaved} lives saved.`,
+      description: `${pragmaticTrialCost} pragmatic trials turn ${treatyFunding} a year into ${annualTrialParticipants} participant slots and a ${queueStatusQuo}-to-${queueCompressed}-year treatment timeline.`,
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: `Research: ${trialCapacityMultiplier} More Clinical Trial Capacity`,
-      description: `${pragmaticTrialCost} pragmatic trials, ${queueStatusQuo} -> ${queueCompressed} backlog compression, ${livesSaved} lives saved.`,
+      description: `${pragmaticTrialCost} pragmatic trials turn ${treatyFunding} a year into ${annualTrialParticipants} participant slots and a ${queueStatusQuo}-to-${queueCompressed}-year treatment timeline.`,
     },
   }
 }
@@ -630,81 +516,187 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
       <div className="min-h-screen bg-background">
         <SectionContainer bgColor="yellow" borderPosition="bottom" padding="lg">
           <Container size="xl">
-            <div className="max-w-5xl">
-              <p className="text-sm font-black uppercase tracking-[0.2em] mb-4">Research & Evidence</p>
+            <div className="mx-auto max-w-5xl text-center">
+              <p className="mb-4 text-sm font-black uppercase tracking-[0.2em]">Research & Evidence</p>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-none mb-6">
-                The research page only needs six numbers
+                How <ResearchValue param={TREATY_REDUCTION_PCT} /> funds{" "}
+                <span className="text-brutal-pink">
+                  <ResearchValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} />
+                </span>{" "}
+                more clinical trials
               </h1>
-              <p className="text-lg sm:text-xl md:text-2xl font-bold max-w-4xl">
-                In the current model, pragmatic trials at <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> per patient turn{" "}
-                <ParameterValue param={TREATY_REDUCTION_PCT} /> of global military spending into{" "}
-                <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more clinical-trial
-                capacity, raise first treatments from{" "}
-                <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} />/year to{" "}
-                <ParameterValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} />/year, and compress the modeled queue from{" "}
-                <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} /> years to{" "}
-                <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} />.
+              <p className="mx-auto max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
+                The 1% Treaty redirects <ResearchValue param={TREATY_ANNUAL_FUNDING} /> a year from weapons and military budgets. After incentives and operating costs, <ResearchValue param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL} /> funds <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> pragmatic-trial participants a year.
               </p>
             </div>
           </Container>
         </SectionContainer>
 
+        <WarVsCuresChart showReasonLabel={false} />
+
+        <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
+          <Container size="xl">
+            <div className="mx-auto mb-10 max-w-4xl text-center">
+              <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Where the money goes</h2>
+              <p className="text-base font-bold sm:text-lg">
+                One percent produces <ResearchValue param={TREATY_ANNUAL_FUNDING} /> in annual treaty funding.
+              </p>
+            </div>
+
+            <Card className="mx-auto max-w-3xl gap-2 border-4 border-primary bg-brutal-yellow p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="text-4xl font-black sm:text-5xl">
+                <ResearchValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} /> × <ResearchValue param={TREATY_REDUCTION_PCT} /> = <ResearchValue param={TREATY_ANNUAL_FUNDING} />
+              </div>
+              <div className="text-sm font-black uppercase">Annual treaty funding</div>
+            </Card>
+
+            <ResearchFlowArrow direction="down" />
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card className="gap-2 border-4 border-primary bg-background p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-sm font-black uppercase">80% to trials</div>
+                <div className="text-4xl font-black">
+                  <ResearchValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} />
+                </div>
+                <p className="font-bold">Pragmatic clinical trials</p>
+              </Card>
+              <Card className="gap-2 border-4 border-primary bg-brutal-yellow p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-sm font-black uppercase">10% to bonds</div>
+                <div className="text-4xl font-black">
+                  <ResearchValue param={VICTORY_BOND_ANNUAL_PAYOUT} />
+                </div>
+                <p className="font-bold">Treaty success rewards</p>
+              </Card>
+              <Card className="gap-2 border-4 border-primary bg-brutal-pink p-6 text-center text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-sm font-black uppercase">10% to incentives</div>
+                <div className="text-4xl font-black">
+                  <ResearchValue param={IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL} />
+                </div>
+                <p className="font-bold">Political incentives for adoption</p>
+              </Card>
+            </div>
+
+            <h3 className="mb-6 mt-14 text-center text-2xl font-black uppercase md:text-3xl">Trial funding to participants</h3>
+            <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr]">
+              <ResearchFlowCard value={<ResearchValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} />} label="Trial funding" />
+              <ResearchFlowArrow />
+              <ResearchFlowCard
+                value={<ResearchValue param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL} />}
+                label={
+                  <>
+                    After <ResearchValue param={DFDA_ANNUAL_OPEX} /> operating cost
+                  </>
+                }
+              />
+              <ResearchFlowArrow />
+              <ResearchFlowCard value={<ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />} label="Per participant" />
+              <ResearchFlowArrow />
+              <ResearchFlowCard value={<ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} />} label="Participants per year" accent />
+            </div>
+          </Container>
+        </SectionContainer>
+
+        <SectionContainer bgColor="yellow" borderPosition="bottom" padding="lg">
+          <Container size="xl">
+            <div className="mx-auto mb-10 max-w-4xl text-center">
+              <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Why pragmatic trials cost less</h2>
+              <p className="text-base font-bold sm:text-lg">
+                Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about <ResearchValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per participant. The capacity model uses <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />.
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-5xl space-y-8">
+              <div>
+                <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                  <span>Traditional Phase 3</span>
+                  <span className="text-2xl sm:text-3xl">
+                    <ResearchValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />
+                  </span>
+                </div>
+                <div className="h-20 border-4 border-primary bg-brutal-pink" />
+              </div>
+              <div>
+                <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
+                  <span>Pragmatic-trial model</span>
+                  <span className="text-2xl sm:text-3xl">
+                    <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-20 min-w-5 border-4 border-primary bg-brutal-cyan" style={{ width: `${pragmaticCostShare}%` }} />
+                  <span className="font-black uppercase">per participant</span>
+                </div>
+              </div>
+            </div>
+            <p className="mx-auto mt-8 max-w-3xl text-center font-bold">
+              The <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> figure drives the capacity model. The <ResearchValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} /> figure shows the cost difference.
+            </p>
+          </Container>
+        </SectionContainer>
+
         <SectionContainer bgColor="pink" borderPosition="bottom" padding="lg">
           <Container size="xl">
-            <StatCardGrid stats={headlineStats} columns={3} />
+            <div className="mx-auto mb-10 max-w-4xl text-center text-white">
+              <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Disease eradication timeline</h2>
+              <p className="text-base font-bold sm:text-lg">
+                About <ResearchValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} format={{ compact: false }} /> diseases have no effective treatment. At <ResearchValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} /> first treatments a year, the backlog lasts <ResearchValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} /> years.
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-5xl space-y-8">
+              <ResearchTimelineBar
+                label="Current rate"
+                years={<ResearchValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} />}
+                detail={
+                  <>
+                    <ResearchValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} format={{ compact: false }} /> ÷ <ResearchValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} /> first treatments/year
+                  </>
+                }
+                width="100%"
+                color="bg-background"
+              />
+              <ResearchTimelineBar
+                label="With treaty-scale trial capacity"
+                years={<ResearchValue param={DFDA_QUEUE_CLEARANCE_YEARS} />}
+                detail={
+                  <>
+                    <ResearchValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} format={{ compact: false }} /> ÷ <ResearchValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} /> first treatments/year
+                  </>
+                }
+                width={`${compressedTimelineShare}%`}
+                color="bg-brutal-yellow"
+              />
+            </div>
+            <p className="mx-auto mt-10 max-w-3xl text-center text-lg font-black text-white">
+              Trial participation rises from <ResearchValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} /> to <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> people a year. The model scales first treatments from <ResearchValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} /> to <ResearchValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} /> a year.
+            </p>
           </Container>
         </SectionContainer>
 
         <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
           <Container size="xl">
-            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-              <Card className="p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-background gap-8">
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-black uppercase mb-3">
-                    How <ParameterValue param={TREATY_REDUCTION_PCT} /> becomes{" "}
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more trial
-                    capacity
-                  </h2>
-                  <p className="text-base sm:text-lg">This is the full funding-to-capacity chain.</p>
+            <div className="mx-auto mb-10 max-w-4xl text-center">
+              <p className="mb-3 text-sm font-black uppercase tracking-[0.2em]">Model estimate</p>
+              <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Long-run health impact</h2>
+              <p className="text-base font-bold sm:text-lg">The model combines higher trial capacity with earlier access to treatments.</p>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2">
+              <Card className="gap-3 border-4 border-primary bg-brutal-yellow p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-5xl font-black">
+                  <ResearchValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {mathSteps.map((item, index) => (
-                    <Card
-                      key={item.step}
-                      className="p-5 border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-brutal-cyan gap-3"
-                    >
-                      <div className="text-xs font-black uppercase tracking-[0.2em]">Step {index + 1}</div>
-                      <div className="text-3xl sm:text-4xl font-black">{item.value}</div>
-                      <div className="text-sm font-black uppercase">{item.step}</div>
-                      <p className="text-sm">{item.detail}</p>
-                    </Card>
-                  ))}
-                </div>
+                <div className="text-xl font-black uppercase">Cumulative deaths prevented</div>
+                <p className="font-bold">
+                  Across future generations during the modeled <ResearchValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} />
+                  -year acceleration in treatment availability.
+                </p>
               </Card>
-
-              <Card className="p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow gap-6">
-                <div>
-                  <div className="text-sm font-black uppercase tracking-[0.2em] mb-2">Cost difference</div>
-                  <div className="text-4xl sm:text-5xl font-black mb-3">
-                    <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />
-                    {" -> "}
-                    <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
-                  </div>
-                  <p className="text-base sm:text-lg">
-                    These two per-patient cost assumptions drive the capacity model.
-                  </p>
+              <Card className="gap-3 border-4 border-primary bg-brutal-cyan p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div className="text-5xl font-black">
+                  <ResearchValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS} />
                 </div>
-                <div className="border-t-4 border-primary pt-6">
-                  <div className="text-sm font-black uppercase tracking-[0.2em] mb-2">Capacity result</div>
-                  <div className="text-4xl sm:text-5xl font-black mb-3">
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />
-                  </div>
-                  <p className="text-base sm:text-lg">
-                    Roughly <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} />
-                    /year funded versus <ParameterValue param={CURRENT_TRIAL_SLOTS_AVAILABLE} />
-                    /year today.
-                  </p>
-                </div>
+                <div className="text-xl font-black uppercase">DALYs averted</div>
+                <p className="font-bold">Years of healthy life restored by preventing disability and early death.</p>
               </Card>
             </div>
           </Container>
@@ -712,105 +704,19 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
 
         <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
           <Container size="xl">
-            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <Card className="p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-background gap-6">
-                <div>
-                  <div className="text-sm font-black uppercase tracking-[0.2em] mb-2">Queue compression</div>
-                  <div className="text-5xl sm:text-6xl font-black mb-3">
-                    <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} />
-                    {" -> "}
-                    <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} />
-                  </div>
-                  <p className="text-base sm:text-lg">
-                    At the current rate of <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} /> first
-                    treatments per year, the untreated-disease queue clears in about{" "}
-                    <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} /> years. With{" "}
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more capacity,
-                    the model raises that rate to <ParameterValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} />
-                    /year and cuts the queue to <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} /> years.
-                  </p>
-                </div>
-              </Card>
-
-              <div className="grid gap-6 md:grid-cols-3">
-                <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-pink text-white gap-3">
-                  <div className="text-4xl sm:text-5xl font-black">
-                    <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} />
-                    {" -> "}
-                    <ParameterValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} />
-                  </div>
-                  <div className="text-sm font-black uppercase">First treatments per year</div>
-                  <p className="text-sm">Modeled increase in diseases receiving a first effective treatment each year.</p>
-                </Card>
-                <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-background gap-3">
-                  <div className="text-4xl sm:text-5xl font-black">
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} />
-                  </div>
-                  <div className="text-sm font-black uppercase">Lives saved</div>
-                  <p className="text-sm">One-time modeled effect of cures arriving earlier across the backlog.</p>
-                </Card>
-                <Card className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-brutal-yellow gap-3">
-                  <div className="text-4xl sm:text-5xl font-black">
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS} />
-                  </div>
-                  <div className="text-sm font-black uppercase">DALYs averted</div>
-                  <p className="text-sm">This is the model&apos;s answer to years of suffering prevented.</p>
-                </Card>
-              </div>
+            <div className="mx-auto mb-8 max-w-4xl text-center">
+              <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Sources and calculations</h2>
             </div>
-
-            <Card className="mt-8 p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-foreground text-background gap-4">
-              <div className="text-sm font-black uppercase tracking-[0.2em]">Human impact</div>
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black">
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
-                  format={{ precision: 2 }}
-                />
-                {" hours"}
-              </div>
-              <p className="text-base sm:text-lg max-w-4xl">
-                In the same model, the combined capacity expansion plus efficacy-lag removal shifts treatment timelines
-                by <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS} /> years on average and avoids{" "}
-                <ParameterValue
-                  param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS}
-                  format={{ precision: 2 }}
-                />{" "}
-                hours of suffering. That is the plain language version of the{" "}
-                <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS} /> DALYs figure.
-              </p>
-            </Card>
-          </Container>
-        </SectionContainer>
-
-        <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-          <Container size="xl">
-            <div className="max-w-4xl mb-8">
-              <h2 className="text-3xl md:text-4xl font-black uppercase mb-3">Source trail</h2>
-              <p className="text-base sm:text-lg">
-                These are the source links and calculation links behind the main claims on this page.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               {sourceCards.map((source) => (
-                <Card
-                  key={`${source.title}-${source.href}`}
-                  className="p-6 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-background gap-4"
-                >
-                  <div className="text-sm font-black uppercase tracking-[0.2em]">{source.kicker}</div>
+                <Card key={source.title} className="gap-4 border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-xs font-black uppercase tracking-[0.2em]">{source.kicker}</div>
                   <h3 className="text-xl font-black uppercase">{source.title}</h3>
                   <p className="text-sm font-bold">{source.note}</p>
-                  {source.href ? (
-                    <a
-                      href={source.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block bg-primary text-primary-foreground px-4 py-3 text-sm font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
-                    >
-                      View source
+                  {source.href && (
+                    <a href={source.href} target="_blank" rel="noopener noreferrer" className="mt-auto inline-block border-4 border-primary bg-primary px-4 py-3 text-center text-sm font-black uppercase text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                      {source.kicker === "Published source" ? "View source" : "View calculation"}
                     </a>
-                  ) : (
-                    <div className="text-sm font-bold">No external URL is attached to this item.</div>
                   )}
                 </Card>
               ))}
@@ -820,16 +726,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
 
         <SectionContainer bgColor="yellow" borderPosition="none" padding="lg">
           <Container size="md" className="text-center">
-            <h2 className="text-3xl md:text-4xl font-black uppercase mb-4">If the math is right, act on it</h2>
-            <p className="text-lg md:text-xl font-bold mb-8">
-              The case is straightforward: cheap pragmatic trials plus the treaty reallocation move the cure timeline by
-              centuries.
-            </p>
-            <VoteOrShareButton
-              variant="default"
-              size="xl"
-              className="px-12 py-6 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px]"
-            />
+            <h2 className="mb-4 text-3xl font-black uppercase md:text-5xl">Fund more clinical trials</h2>
+            <p className="mb-8 text-lg font-bold md:text-xl">Vote to redirect 1% of weapons and military spending to pragmatic clinical trials.</p>
+            <VoteOrShareButton variant="default" size="xl" className="px-12 py-6 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" />
           </Container>
         </SectionContainer>
       </div>
@@ -837,13 +736,57 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
   )
 }
 
-function makeSourceCard(param: Parameter, note: string) {
+function ResearchValue({ format, ...props }: Omit<ParameterValueProps, "showPopover">) {
+  return <ParameterValue {...props} format={{ figures: 3, ...format }} showPopover={false} />
+}
+
+function ResearchFlowCard({ value, label, accent = false }: { value: ReactNode; label: ReactNode; accent?: boolean }) {
+  return (
+    <Card className={`h-full gap-2 border-4 border-primary p-5 text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] ${accent ? "bg-brutal-yellow" : "bg-background"}`}>
+      <div className="text-3xl font-black sm:text-4xl">{value}</div>
+      <div className="text-sm font-black uppercase">{label}</div>
+    </Card>
+  )
+}
+
+function ResearchFlowArrow({ direction }: { direction?: "down" }) {
+  if (direction === "down") {
+    return <div className="py-3 text-center text-4xl font-black" aria-hidden="true">↓</div>
+  }
+
+  return (
+    <div className="flex items-center justify-center text-4xl font-black" aria-hidden="true">
+      <span className="lg:hidden">↓</span>
+      <span className="hidden lg:inline">→</span>
+    </div>
+  )
+}
+
+function ResearchTimelineBar({ label, years, detail, width, color }: { label: string; years: ReactNode; detail: ReactNode; width: string; color: string }) {
+  return (
+    <div>
+      <div className="mb-2 flex items-end justify-between gap-4 text-white">
+        <div>
+          <div className="text-lg font-black uppercase sm:text-xl">{label}</div>
+          <div className="font-bold">{detail}</div>
+        </div>
+        <div className="whitespace-nowrap text-3xl font-black sm:text-4xl">{years} years</div>
+      </div>
+      <div className="h-20 border-4 border-primary bg-white/20">
+        <div className={`h-full min-w-5 border-r-4 border-primary ${color}`} style={{ width }} />
+      </div>
+    </div>
+  )
+}
+
+function makeSourceCard(param: Parameter, title: string, note: string) {
   const citation = getCitation(param)
+  const publishedSource = param.sourceType === "external"
 
   return {
-    kicker: citation ? "Published source" : "Calculation",
-    title: citation?.title || param.displayName || param.parameterName || "Source",
-    href: citation?.URL || param.sourceUrl || param.calculationsUrl || param.manualPageUrl,
-    note,
+    kicker: publishedSource ? "Published source" : "Calculation",
+    title,
+    href: publishedSource ? citation?.URL || param.sourceUrl || param.manualPageUrl : param.calculationsUrl || param.manualPageUrl,
+    note
   }
 }

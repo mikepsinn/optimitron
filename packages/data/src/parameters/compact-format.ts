@@ -17,6 +17,8 @@ import type { Parameter } from "./parameters-calculations-citations"
 export interface FormatParameterOptions {
   /** Number of decimal places (default: auto-detect based on magnitude) */
   precision?: number
+  /** Maximum significant figures, with trailing zeros removed (default: 3) */
+  figures?: number
   /** Include unit suffix (default: false) */
   includeUnit?: boolean
   /** Compact format - use K/M/B/T suffixes (default: true) */
@@ -30,19 +32,8 @@ export interface FormatParameterOptions {
 function toSigFigs(value: number, sigFigs: number = 3): string {
   if (value === 0) return "0"
 
-  const absValue = Math.abs(value)
-
-  // Determine how many decimal places we need
-  let decimals: number
-  if (absValue >= 100) {
-    decimals = Math.max(0, sigFigs - 3)
-  } else if (absValue >= 10) {
-    decimals = Math.max(0, sigFigs - 2)
-  } else if (absValue >= 1) {
-    decimals = Math.max(0, sigFigs - 1)
-  } else {
-    decimals = sigFigs
-  }
+  const magnitude = Math.floor(Math.log10(Math.abs(value)))
+  const decimals = Math.max(0, sigFigs - magnitude - 1)
 
   // Format and strip trailing zeros (but keep at least one digit after decimal if needed for rounding)
   const formatted = value.toFixed(decimals)
@@ -69,6 +60,7 @@ export function formatParameter(
 ): string {
   const {
     precision,
+    figures,
     includeUnit = false,
     compact = true,
   } = options
@@ -77,44 +69,44 @@ export function formatParameter(
 
   // Handle currency (USD)
   if (unit?.includes("USD")) {
-    return formatCurrency(value, { precision, compact, includeUnit, unit })
+    return formatCurrency(value, { precision, figures, compact, includeUnit, unit })
   }
 
   // Handle percentages
   if (unit === "percentage" || unit === "percent" || unit === "rate") {
-    return formatPercentage(value, { precision })
+    return formatPercentage(value, { precision, figures })
   }
 
   // Handle ratios (":1" suffix) vs multipliers ("x" suffix)
   if (unit === "ratio") {
-    return formatRatio(value, { precision, suffix: ":1" })
+    return formatRatio(value, { precision, figures, suffix: ":1" })
   }
   if (unit === "multiplier" || unit === "x") {
-    return formatRatio(value, { precision, suffix: "x" })
+    return formatRatio(value, { precision, figures, suffix: "x" })
   }
 
   // Handle lives/deaths (check before years to handle "lives/year" correctly)
   if (unit?.includes("lives") || unit?.includes("deaths") || unit?.includes("patients")) {
-    return formatCount(value, { precision, compact, includeUnit, unit })
+    return formatCount(value, { precision, figures, compact, includeUnit, unit })
   }
 
   // Handle years (only if it's a pure years unit, not something like "lives/year")
   if (unit === "years" || (unit?.includes("year") && !unit.includes("/"))) {
-    return formatYears(value, { precision, includeUnit })
+    return formatYears(value, { precision, figures, includeUnit })
   }
 
   // Handle DALYs/QALYs
   if (unit?.includes("DALY") || unit?.includes("QALY")) {
-    return formatCount(value, { precision, compact, includeUnit, unit })
+    return formatCount(value, { precision, figures, compact, includeUnit, unit })
   }
 
   // Handle trials
   if (unit?.includes("trial")) {
-    return formatCount(value, { precision, compact, includeUnit, unit })
+    return formatCount(value, { precision, figures, compact, includeUnit, unit })
   }
 
   // Default: format as number
-  return formatNumber(value, { precision, compact })
+  return formatNumber(value, { precision, figures, compact })
 }
 
 /**
@@ -122,9 +114,9 @@ export function formatParameter(
  */
 function formatCurrency(
   value: number,
-  options: { precision?: number; compact?: boolean; includeUnit?: boolean; unit?: string }
+  options: { precision?: number; figures?: number; compact?: boolean; includeUnit?: boolean; unit?: string }
 ): string {
-  const { precision, compact = true, includeUnit, unit } = options
+  const { precision, figures, compact = true, includeUnit, unit } = options
 
   if (!compact) {
     return `$${value.toLocaleString()}`
@@ -135,21 +127,21 @@ function formatCurrency(
 
   if (absValue >= 1e15) {
     const scaled = value / 1e15
-    formatted = precision !== undefined ? `$${scaled.toFixed(precision)} Quadrillion` : `$${toSigFigs(scaled)} Quadrillion`
+    formatted = precision !== undefined ? `$${scaled.toFixed(precision)} Quadrillion` : `$${toSigFigs(scaled, figures)} Quadrillion`
   } else if (absValue >= 1e12) {
     const scaled = value / 1e12
-    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}T` : `$${toSigFigs(scaled)}T`
+    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}T` : `$${toSigFigs(scaled, figures)}T`
   } else if (absValue >= 1e9) {
     const scaled = value / 1e9
-    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}B` : `$${toSigFigs(scaled)}B`
+    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}B` : `$${toSigFigs(scaled, figures)}B`
   } else if (absValue >= 1e6) {
     const scaled = value / 1e6
-    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}M` : `$${toSigFigs(scaled)}M`
+    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}M` : `$${toSigFigs(scaled, figures)}M`
   } else if (absValue >= 1e3) {
     const scaled = value / 1e3
-    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}K` : `$${toSigFigs(scaled)}K`
+    formatted = precision !== undefined ? `$${scaled.toFixed(precision)}K` : `$${toSigFigs(scaled, figures)}K`
   } else {
-    formatted = `$${value.toLocaleString()}`
+    formatted = precision !== undefined ? `$${value.toFixed(precision)}` : `$${toSigFigs(value, figures)}`
   }
 
   if (includeUnit && unit) {
@@ -168,15 +160,20 @@ function formatCurrency(
  */
 function formatPercentage(
   value: number,
-  options: { precision?: number }
+  options: { precision?: number; figures?: number }
 ): string {
-  const { precision } = options
+  const { precision, figures } = options
 
   // If value is already in percentage form (> 1), don't multiply
   const pctValue = value <= 1 ? value * 100 : value
-  const p = precision ?? (pctValue % 1 === 0 ? 0 : 1)
+  const formatted =
+    precision !== undefined
+      ? pctValue.toFixed(precision)
+      : figures !== undefined
+        ? toSigFigs(pctValue, figures)
+        : pctValue.toFixed(pctValue % 1 === 0 ? 0 : 1)
 
-  return `${pctValue.toFixed(p)}%`
+  return `${formatted}%`
 }
 
 /**
@@ -186,19 +183,23 @@ function formatPercentage(
  */
 function formatRatio(
   value: number,
-  options: { precision?: number; suffix?: string }
+  options: { precision?: number; figures?: number; suffix?: string }
 ): string {
-  const { precision, suffix = "" } = options
+  const { precision, figures, suffix = "" } = options
 
   let formatted: string
   if (value >= 1e6) {
     const scaled = value / 1e6
-    formatted = precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled)}M`
+    formatted = precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled, figures)}M`
   } else if (value >= 1e3) {
     formatted = `${Math.round(value).toLocaleString()}`
   } else {
-    const p = precision ?? 0
-    formatted = `${value.toFixed(p)}`
+    formatted =
+      precision !== undefined
+        ? value.toFixed(precision)
+        : figures !== undefined
+          ? toSigFigs(value, figures)
+          : value.toFixed(0)
   }
 
   return `${formatted}${suffix}`
@@ -209,11 +210,15 @@ function formatRatio(
  */
 function formatYears(
   value: number,
-  options: { precision?: number; includeUnit?: boolean }
+  options: { precision?: number; figures?: number; includeUnit?: boolean }
 ): string {
-  const { precision, includeUnit } = options
-  const p = precision ?? (value % 1 === 0 ? 0 : 1)
-  const formatted = value.toFixed(p)
+  const { precision, figures, includeUnit } = options
+  const formatted =
+    precision !== undefined
+      ? value.toFixed(precision)
+      : figures !== undefined
+        ? toSigFigs(value, figures)
+        : value.toFixed(value % 1 === 0 ? 0 : 1)
   return includeUnit ? `${formatted} years` : formatted
 }
 
@@ -222,9 +227,9 @@ function formatYears(
  */
 function formatCount(
   value: number,
-  options: { precision?: number; compact?: boolean; includeUnit?: boolean; unit?: string }
+  options: { precision?: number; figures?: number; compact?: boolean; includeUnit?: boolean; unit?: string }
 ): string {
-  const { precision, compact = true, includeUnit, unit } = options
+  const { precision, figures, compact = true, includeUnit, unit } = options
 
   let formatted: string
   if (!compact) {
@@ -233,21 +238,21 @@ function formatCount(
     const absValue = Math.abs(value)
     if (absValue >= 1e15) {
       const scaled = value / 1e15
-      formatted = precision !== undefined ? `${scaled.toFixed(precision)} Quadrillion` : `${toSigFigs(scaled)} Quadrillion`
+      formatted = precision !== undefined ? `${scaled.toFixed(precision)} Quadrillion` : `${toSigFigs(scaled, figures)} Quadrillion`
     } else if (absValue >= 1e12) {
       const scaled = value / 1e12
-      formatted = precision !== undefined ? `${scaled.toFixed(precision)}T` : `${toSigFigs(scaled)}T`
+      formatted = precision !== undefined ? `${scaled.toFixed(precision)}T` : `${toSigFigs(scaled, figures)}T`
     } else if (absValue >= 1e9) {
       const scaled = value / 1e9
-      formatted = precision !== undefined ? `${scaled.toFixed(precision)}B` : `${toSigFigs(scaled)}B`
+      formatted = precision !== undefined ? `${scaled.toFixed(precision)}B` : `${toSigFigs(scaled, figures)}B`
     } else if (absValue >= 1e6) {
       const scaled = value / 1e6
-      formatted = precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled)}M`
+      formatted = precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled, figures)}M`
     } else if (absValue >= 1e3) {
       const scaled = value / 1e3
-      formatted = precision !== undefined ? `${scaled.toFixed(precision)}K` : `${toSigFigs(scaled)}K`
+      formatted = precision !== undefined ? `${scaled.toFixed(precision)}K` : `${toSigFigs(scaled, figures)}K`
     } else {
-      formatted = value.toLocaleString()
+      formatted = precision !== undefined ? value.toFixed(precision) : toSigFigs(value, figures)
     }
   }
 
@@ -263,9 +268,9 @@ function formatCount(
  */
 function formatNumber(
   value: number,
-  options: { precision?: number; compact?: boolean }
+  options: { precision?: number; figures?: number; compact?: boolean }
 ): string {
-  const { precision, compact = true } = options
+  const { precision, figures, compact = true } = options
 
   if (!compact) {
     return precision !== undefined ? value.toFixed(precision) : value.toLocaleString()
@@ -274,22 +279,22 @@ function formatNumber(
   const absValue = Math.abs(value)
   if (absValue >= 1e15) {
     const scaled = value / 1e15
-    return precision !== undefined ? `${scaled.toFixed(precision)} Quadrillion` : `${toSigFigs(scaled)} Quadrillion`
+    return precision !== undefined ? `${scaled.toFixed(precision)} Quadrillion` : `${toSigFigs(scaled, figures)} Quadrillion`
   } else if (absValue >= 1e12) {
     const scaled = value / 1e12
-    return precision !== undefined ? `${scaled.toFixed(precision)}T` : `${toSigFigs(scaled)}T`
+    return precision !== undefined ? `${scaled.toFixed(precision)}T` : `${toSigFigs(scaled, figures)}T`
   } else if (absValue >= 1e9) {
     const scaled = value / 1e9
-    return precision !== undefined ? `${scaled.toFixed(precision)}B` : `${toSigFigs(scaled)}B`
+    return precision !== undefined ? `${scaled.toFixed(precision)}B` : `${toSigFigs(scaled, figures)}B`
   } else if (absValue >= 1e6) {
     const scaled = value / 1e6
-    return precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled)}M`
+    return precision !== undefined ? `${scaled.toFixed(precision)}M` : `${toSigFigs(scaled, figures)}M`
   } else if (absValue >= 1e3) {
     const scaled = value / 1e3
-    return precision !== undefined ? `${scaled.toFixed(precision)}K` : `${toSigFigs(scaled)}K`
+    return precision !== undefined ? `${scaled.toFixed(precision)}K` : `${toSigFigs(scaled, figures)}K`
   } else {
     if (precision !== undefined) return value.toFixed(precision)
-    return value % 1 === 0 ? String(value) : toSigFigs(value)
+    return toSigFigs(value, figures)
   }
 }
 
