@@ -90,13 +90,58 @@ function toPledgeEventJson(
   };
 }
 
-function isSerializationConflict(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === "P2034"
+// Pledges that cross a funding threshold read the committed total and then write,
+// so concurrent pledgers on the same target conflict under SERIALIZABLE and Postgres
+// cancels all but one as a pivot. Retrying immediately makes every loser re-collide in
+// lockstep, so the randomized delay - not the attempt count - is what actually breaks
+// the tie. Full jitter over an exponential ceiling, capped so a pledge never stalls.
+const SERIALIZABLE_MAX_ATTEMPTS = 6;
+const SERIALIZABLE_RETRY_BASE_DELAY_MS = 15;
+const SERIALIZABLE_RETRY_MAX_DELAY_MS = 250;
+
+function serializableRetryDelayMs(attempt: number): number {
+  const ceiling = Math.min(
+    SERIALIZABLE_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1),
+    SERIALIZABLE_RETRY_MAX_DELAY_MS,
   );
+  return Math.random() * ceiling;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+// A serialization failure reaches us in two different shapes depending on where
+// Postgres aborts the transaction. A conflict raised by a statement comes back as a
+// PrismaClientKnownRequestError with code P2034, but one raised while committing
+// escapes as a raw DriverAdapterError whose `code` is undefined and whose SQLSTATE
+// only appears as `cause.originalCode`. Both are retryable, so match on either.
+const RETRYABLE_SQL_STATES = new Set(["40001", "40P01"]);
+
+function isSerializationConflict(error: unknown): boolean {
+  let current: unknown = error;
+  for (let depth = 0; depth < 5 && typeof current === "object" && current !== null; depth += 1) {
+    const candidate = current as { code?: unknown; originalCode?: unknown; cause?: unknown };
+    if (candidate.code === "P2034") {
+      return true;
+    }
+    if (
+      typeof candidate.code === "string" &&
+      RETRYABLE_SQL_STATES.has(candidate.code)
+    ) {
+      return true;
+    }
+    if (
+      typeof candidate.originalCode === "string" &&
+      RETRYABLE_SQL_STATES.has(candidate.originalCode)
+    ) {
+      return true;
+    }
+    current = candidate.cause;
+  }
+  return false;
 }
 
 function isUniqueConstraintConflict(error: unknown): boolean {
@@ -369,14 +414,15 @@ async function runWithSerializableRetry<T>(
   operation: (tx: Prisma.TransactionClient) => Promise<T>,
 ): Promise<T> {
   let lastError: unknown;
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
+  for (let attempt = 1; attempt <= SERIALIZABLE_MAX_ATTEMPTS; attempt += 1) {
     try {
       return await db.$transaction(operation, {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
       });
     } catch (error) {
-      if (isSerializationConflict(error) && attempt < 3) {
+      if (isSerializationConflict(error) && attempt < SERIALIZABLE_MAX_ATTEMPTS) {
         lastError = error;
+        await sleep(serializableRetryDelayMs(attempt));
         continue;
       }
       throw error;
