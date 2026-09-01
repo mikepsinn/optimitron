@@ -11,7 +11,11 @@ import {
 } from "@optimitron/data/parameters"
 import { formatParameter, getParameterValue } from "@optimitron/data/parameters/compact-format"
 
-export default function WarVsCuresChart() {
+interface WarVsCuresChartProps {
+  showReasonLabel?: boolean
+}
+
+export default function WarVsCuresChart({ showReasonLabel = true }: WarVsCuresChartProps) {
   const config = getSiteConfig()
   const showPoliticalContent = config.showPoliticalContent
 
@@ -24,7 +28,7 @@ export default function WarVsCuresChart() {
   return (
     <SectionContainer bgColor="background" borderPosition="bottom" padding="lg" className="overflow-hidden">
       <Container className="overflow-hidden">
-        {showPoliticalContent && (
+        {showPoliticalContent && showReasonLabel && (
           <motion.h2
             initial={{ scale: 20, rotate: -25 }}
             whileInView={{ scale: 1, rotate: 0 }}
@@ -51,7 +55,7 @@ export default function WarVsCuresChart() {
           transition={{ duration: 0.5, ease: [0.87, 0, 0.13, 1], delay: 0.3 }}
           className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black uppercase text-center mb-0"
         >
-          {ratio}X MORE ON <span className="text-brutal-pink">WAR</span>
+          {ratio}X MORE ON <span className="text-brutal-pink">WEAPONS AND MILITARY</span>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 30 }}
@@ -60,7 +64,7 @@ export default function WarVsCuresChart() {
           transition={{ duration: 0.4, delay: 0.5 }}
           className="text-base lg:text-2xl font-bold uppercase text-center mb-6 leading-7 sm:text-2xl"
         >
-          THAN CLINICAL TRIALS TO DISCOVER NEW TREATMENTS FOR DISEASES
+          THAN PUBLICLY FUNDED CLINICAL TRIALS
         </motion.p>
 
         <div className="max-w-4xl mx-auto">
@@ -74,7 +78,7 @@ export default function WarVsCuresChart() {
                 transition={{ duration: 0.4, delay: 0.6 }}
                 className="flex items-center justify-between mb-2"
               >
-                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">MILITARY</div>
+                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">WEAPONS AND MILITARY</div>
                 <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-pink">{militarySpending}</div>
               </motion.div>
               <motion.div
@@ -89,7 +93,7 @@ export default function WarVsCuresChart() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink-foreground uppercase">
                     {militarySpending} FOR <br />
-                    {showPoliticalContent ? "MASS MURDER CAPACITY" : "MILITARY SYSTEMS"}
+                    WEAPONS AND MILITARY
                   </span>
                 </div>
               </motion.div>
@@ -104,7 +108,7 @@ export default function WarVsCuresChart() {
                 transition={{ duration: 0.4, delay: 0.9 }}
                 className="flex items-center justify-between mb-2"
               >
-                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">CLINICAL TRIALS</div>
+                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">PUBLICLY FUNDED CLINICAL TRIALS</div>
                 <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-cyan">{clinicalTrials}</div>
               </motion.div>
               <div className="flex items-center gap-4">
@@ -125,7 +129,7 @@ export default function WarVsCuresChart() {
                   className="text-base font-black uppercase whitespace-nowrap text-foreground sm:text-xl"
                 >
                   {clinicalTrials} FOR <br />
-                  CLINICAL TRIALS
+                  PUBLICLY FUNDED CLINICAL TRIALS
                 </motion.span>
               </div>
             </div>

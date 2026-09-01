@@ -324,7 +324,7 @@ function resolveFormatOptions(
     resolved.includeUnit = true
   }
 
-  if (resolved.precision === undefined && Number.isFinite(figures)) {
+  if (resolved.precision === undefined && resolved.figures === undefined && Number.isFinite(figures)) {
     resolved.precision = precisionFromFigures(param.value, figures)
   }
 
