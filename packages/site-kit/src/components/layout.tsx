@@ -18,10 +18,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@optimitron/neobrutalist-ui/ui/accordion";
-import { Menu, User, ExternalLink } from "lucide-react";
+import { ExternalLink, LogOut, Menu, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   getTopLevelNavItems,
   getSidebarSections,
@@ -45,7 +45,8 @@ type SessionUser = {
 
 export function Layout({ children }: LayoutProps) {
   const [open, setOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
   // Cast: apps and site-kit can resolve different next-auth copies, so module
   // augmentation on Session.user is not reliable across the monorepo boundary.
   const isAdmin = (session?.user as SessionUser | undefined)?.isAdmin || false;
@@ -261,6 +262,20 @@ export function Layout({ children }: LayoutProps) {
                     >
                       ⚙️ ADMIN
                     </Link>
+                  )}
+
+                  {isAuthenticated && (
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 border-b-4 border-primary pb-2 text-left text-2xl font-black uppercase transition-colors hover:text-brutal-pink"
+                      onClick={() => {
+                        setOpen(false);
+                        void signOut({ callbackUrl: "/" });
+                      }}
+                    >
+                      <LogOut className="h-6 w-6 stroke-[3px]" />
+                      Log Out
+                    </button>
                   )}
 
                   {siteConfig.sidebarVoteCtaPlacement !== "top"

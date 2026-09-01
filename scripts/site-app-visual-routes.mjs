@@ -90,6 +90,20 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     {
       authenticated: true,
       authRole: "user",
+      captureSelector: '[role="dialog"]',
+      covers: [
+        "apps/warondisease/app/dashboard/page.tsx",
+        "packages/site-kit/src/components/layout.tsx",
+      ],
+      label: "Navigation menu — signed-in user",
+      openMenu: true,
+      routeName: "navigation-menu-authenticated",
+      routePath: "/dashboard",
+      sourcePage: "apps/warondisease/app/dashboard/page.tsx",
+    },
+    {
+      authenticated: true,
+      authRole: "user",
       covers: [
         "apps/warondisease/app/dashboard/settings/page.tsx",
         "apps/warondisease/app/dashboard/settings/settings-client.tsx",
