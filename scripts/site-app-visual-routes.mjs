@@ -245,6 +245,20 @@ export const authenticatedSiteAppRoutes = Object.freeze({
         "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
     },
   ],
+  acceleratedmedicine: [
+    {
+      authenticated: true,
+      authRole: "user",
+      covers: [
+        "apps/acceleratedmedicine/app/dashboard/page.tsx",
+        "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+      ],
+      label: "Survey dashboard — signed-in user",
+      routeName: "dashboard-authenticated",
+      routePath: "/dashboard?visual=1",
+      sourcePage: "apps/acceleratedmedicine/app/dashboard/page.tsx",
+    },
+  ],
   courtofhumanity: [
     getAuthenticatedMenuRoute("courtofhumanity"),
     {
