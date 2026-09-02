@@ -63,7 +63,7 @@ describe("pending Trial Abundance response recovery", () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole("link", { name: "Take the survey" }),
-    ).toHaveAttribute("href", "/#vote")
+    ).toHaveAttribute("href", "/")
   })
 
   it("keeps a failed response recoverable with a retry action", async () => {

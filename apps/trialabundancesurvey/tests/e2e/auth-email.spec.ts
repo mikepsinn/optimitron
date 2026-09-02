@@ -20,7 +20,7 @@ async function verificationLink(email: string) {
 async function requestLink(page: Page, email: string) {
   await page.getByRole("button", { name: "Continue with Email", exact: true }).click()
   await page.getByLabel("Email", { exact: true }).fill(email)
-  await page.getByLabel("Subscribe for updates on our progress").uncheck()
+  await expect(page.getByLabel("Subscribe for updates on our progress")).toHaveCount(0)
   await page.getByRole("button", { name: "Send magic link", exact: true }).click()
   await expect(page.getByText("Check your email!", { exact: true })).toBeVisible()
   return verificationLink(email)
@@ -58,7 +58,12 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   await expect(page.getByText("Question 2 of 3", { exact: true })).toBeVisible()
   await page.getByRole("button", { name: "Not sure", exact: true }).click()
   await page.getByRole("slider").press("ArrowRight")
-  await page.getByRole("button", { name: "Submit response", exact: true }).click()
+  await page.getByRole("button", { name: "Continue", exact: true }).click()
+  await page.getByRole("combobox", { name: "Country", exact: true }).selectOption("US")
+  await page.getByLabel("State", { exact: true }).fill("Missouri")
+  await page.getByRole("combobox", { name: "Your role", exact: true }).selectOption("patient-or-caregiver")
+  await expect(page.getByRole("checkbox")).not.toBeChecked()
+  await page.getByRole("button", { name: "Continue to verification", exact: true }).click()
   await expect(page.getByRole("heading", { name: "Save your response" })).toBeVisible()
   if (process.env.AUTH_CAPTURE_REVIEW) {
     await expect(page.getByText("Question 3 of 3", { exact: true })).toHaveCount(0)

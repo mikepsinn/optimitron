@@ -1497,8 +1497,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       SITE_FEATURES.DONATE,
     ],
     showPoliticalContent: false,
-    authEnabled: false,
-    dashboardEnabled: false,
+    authEnabled: true,
+    dashboardEnabled: true,
     icons: {
       icon: [
         { url: "/assets/acceleratedmedicine/favicon.ico", sizes: "any" },

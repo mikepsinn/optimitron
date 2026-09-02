@@ -1,4 +1,5 @@
 import { STORAGE_KEYS, type StorageKey } from "./constants"
+import type { SurveyParticipant } from "./survey-participant"
 
 export type PendingOrganizationEndorsementDraft = {
   clientDraftId: string
@@ -128,6 +129,8 @@ export type TrialAbundanceAnswer = "YES" | "NO" | "ABSTAIN"
  * The referendum answer and allocation sync together, so neither is lost.
  */
 export interface PendingTrialAbundanceResponse {
+  submissionKey?: string
+  participant?: SurveyParticipant
   inviteToken?: string | null
   militaryAllocationPercent: number
   organizationId?: string | null

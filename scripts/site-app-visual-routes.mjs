@@ -864,12 +864,12 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     });
   }
 
-  if (siteVariant === VARIANTS.SURVEY) {
+  if ([VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
     const surveyComponent =
       "packages/site-kit/src/components/landing/trial-abundance-survey-section.tsx";
     const landingRoute = routes.find(({ routePath }) => routePath === "/");
     if (landingRoute) {
-      landingRoute.covers = [surveyComponent];
+      landingRoute.covers = [...(landingRoute.covers ?? []), surveyComponent];
     }
     routes.push(
       {
@@ -891,6 +891,18 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         covers: [surveyComponent],
       },
       {
+        label: "Participant details and consent",
+        routeName: "home-details",
+        routePath: "/?visual=details",
+        covers: [surveyComponent, "packages/site-kit/src/components/landing/survey-participant-fields.tsx"],
+      },
+      {
+        label: "Response save retry",
+        routeName: "home-save-error",
+        routePath: "/?visual=save-error",
+        covers: [surveyComponent],
+      },
+      {
         label: "Completed response and verification",
         routeName: "home-complete",
         routePath: "/?visual=complete",
@@ -901,11 +913,12 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         routeName: "auth-complete-signup",
         routePath: "/auth/complete-signup?visual=1",
         covers: [
-          "apps/trialabundancesurvey/app/auth/complete-signup/page.tsx",
+          `apps/${appName}/app/auth/complete-signup/page.tsx`,
+          "packages/site-kit/src/components/auth/SurveyCompleteSignupPage.tsx",
         ],
       },
     );
-    routes.push({
+    if (siteVariant === VARIANTS.SURVEY) routes.push({
       label: "Partner embed",
       routeName: "embed",
       routePath: "/embed?embed=1&visual=question",
@@ -914,6 +927,23 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         surveyComponent,
       ],
     });
+    for (const [routeName, routePath, component] of [
+      ["auth-signin", "/auth/signin", "auth/SurveySignInPage.tsx"],
+      ["auth-error", "/auth/error?error=Verification", "auth/SurveyAuthErrorPage.tsx"],
+      ["auth-verify-request", "/auth/verify-request", "auth/SurveyVerifyRequestPage.tsx"],
+      ["dashboard-saved-preview", "/dashboard?visual=1", "survey/SurveyDashboardPage.tsx"],
+      ["dashboard-retry-preview", "/dashboard?visual=1&recovery=error", "survey/pending-response-recovery.tsx"],
+    ]) {
+      routes.push({
+        label: routeName.replaceAll("-", " "), routeName, routePath,
+        ...(routeName.startsWith("dashboard") ? { authenticated: true, authRole: "user" } : {}),
+        covers: [
+          `packages/site-kit/src/components/${component}`,
+          ...(routeName === "auth-error" ? ["packages/site-kit/src/components/auth/SurveyAuthErrorContent.tsx"] : []),
+          ...(routeName === "auth-signin" ? ["packages/site-kit/src/components/auth/AuthForm.tsx"] : []),
+        ],
+      });
+    }
   }
 
   const publicRoutes = getPublicSiteAppRoutes(appName);
@@ -922,7 +952,10 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     // Hand-authored public captures can carry fixtures, query parameters, and
     // component coverage. Prefer them over a generic nav-derived capture.
     ...routes.filter(({ routeName }) => !publicRouteNames.has(routeName)),
-    ...publicRoutes,
+    ...publicRoutes.map((route) => ({
+      ...route,
+      covers: [...(route.covers ?? []), ...(routes.find((candidate) => candidate.routeName === route.routeName)?.covers ?? [])],
+    })),
     ...getAuthenticatedSiteAppRoutes(appName),
   ].map((route) => {
     const sourcePage =
