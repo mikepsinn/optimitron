@@ -6,6 +6,17 @@ This project uses **Vitest** for unit/integration tests and **Playwright** for E
 
 ## Running Tests
 
+### Survey Database Regression
+
+Set `DATABASE_URL` to a local PostgreSQL test database, such as `acceleratedmedicine_test`.
+Apply the repository migrations with `pnpm db:deploy` from the repository root.
+Run `pnpm --filter @apps/acceleratedmedicine test:integration` from the repository root.
+
+This suite calls the real submission endpoint and checks the saved answers.
+It also checks duplicate retries and concurrent rate limits.
+It disables email delivery and removes only its own response fixtures.
+The site-app CI job runs this suite after database migrations.
+
 ### Unit Tests (Vitest)
 ```bash
 # Run all unit tests
