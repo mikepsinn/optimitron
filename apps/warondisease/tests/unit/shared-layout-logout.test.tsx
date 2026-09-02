@@ -46,5 +46,8 @@ describe("shared authenticated navigation", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Log Out" }))
 
     expect(mocks.signOut).toHaveBeenCalledWith({ callbackUrl: ROUTES.home })
+    expect(
+      screen.queryByRole("dialog", { name: "Navigation Menu" }),
+    ).not.toBeInTheDocument()
   })
 })
