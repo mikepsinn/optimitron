@@ -1130,8 +1130,9 @@ function getMarkdownSnapshot(routeName) {
 }
 
 function isAuthenticatedMarkdownRoute(routeName) {
+  const authenticated = routeSpecs.get(routeName)?.authenticated;
+  if (typeof authenticated === "boolean") return authenticated;
   return (
-    routeSpecs.get(routeName)?.authenticated === true ||
     /-auth(\b|$)/.test(routeName) ||
     routeName.endsWith("-auth")
   );

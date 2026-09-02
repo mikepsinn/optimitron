@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { AlertCircle, Lightbulb } from "lucide-react"
 import { ROUTES } from '@/lib/routes'
 import { AlertCard } from "@/components/ui/alert-card"
+import { getSurveyPostAuthPath } from "@/lib/auth-redirect"
 
 const errorMessages: Record<string, string> = {
   Configuration: "There is a problem with the server configuration.",
@@ -26,6 +27,11 @@ const errorMessages: Record<string, string> = {
 export default function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams?.get("error") || "Default"
+  const isVerificationError = error === "Verification"
+  const callbackUrl = getSurveyPostAuthPath(
+    searchParams?.get("callbackUrl"),
+    typeof window === "undefined" ? "https://trialabundancesurvey.org" : window.location.origin,
+  )
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] p-4">
@@ -34,7 +40,9 @@ export default function AuthErrorContent() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 border-4 border-black">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
-          <h1 className="text-4xl font-black mb-2">Authentication Error</h1>
+          <h1 className="text-4xl font-black mb-2">
+            {isVerificationError ? "Sign in again" : "Authentication Error"}
+          </h1>
           <div className="mx-auto my-6 h-1 w-20 bg-black"></div>
         </div>
 
@@ -53,9 +61,9 @@ export default function AuthErrorContent() {
           )}
 
           <div className="flex flex-col gap-3">
-            <Link href={ROUTES.signIn}>
+            <Link href={`${ROUTES.signIn}?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
               <Button className="w-full h-12 text-lg font-black bg-brutal-pink border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                Try Again
+                {isVerificationError ? "Get a new sign-in link" : "Try Again"}
               </Button>
             </Link>
 
