@@ -33,6 +33,10 @@ const apps = [
 ];
 
 const ROUTE_CAPTURE_TIMEOUT_MS = 120_000;
+const MAX_LANE_RECYCLES = 3;
+
+/** Raised when a capture exceeds its budget, so a lane knows it can retry. */
+class CaptureBudgetExceededError extends Error {}
 
 const screenshotProjects = [
   ["default", { viewport: { width: 1440, height: 900 } }],
@@ -71,7 +75,7 @@ async function withCaptureBudget(captureLabel, capture) {
         timer = setTimeout(
           () =>
             reject(
-              new Error(
+              new CaptureBudgetExceededError(
                 `Timed out after ${ROUTE_CAPTURE_TIMEOUT_MS}ms capturing ${captureLabel}. ` +
                   `The page stopped responding partway through capture.`,
               ),
@@ -207,43 +211,47 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
       2,
     )}\n`,
   );
-  // Each viewport project gets its own browser. Something in a browser
-  // accumulates across captures until a `page.evaluate` stops returning, and
-  // `evaluate` has no timeout, so the lane hangs rather than failing. Pages in
-  // one browser share whatever runs out: with both projects in a single
-  // browser one lane would wedge partway through while the other finished all
-  // of its routes, either lane able to be the victim. A browser apiece halves
-  // what each one has to survive and stops one lane's work from exhausting the
-  // other's.
+  // A browser wears out. Something in it accumulates as pages are captured
+  // until a `page.evaluate` stops returning, and `evaluate` has no timeout, so
+  // the lane hangs instead of failing. Captured pixels, not captures, seem to
+  // be what is spent: the narrow viewport renders pages several times taller
+  // and exhausts a browser after a dozen or so routes, while the wide one gets
+  // through all of them. Freezing `Date` without Playwright's clock bought
+  // roughly nine times more headroom but did not remove the ceiling.
+  //
+  // So give each project its own browser and let a lane rebuild itself. When a
+  // capture exceeds its budget the lane discards the browser, starts a fresh
+  // one, and retries that route; a wedged browser is unusable afterwards, and
+  // a new one starts with a full allowance. Recycles are capped so a genuinely
+  // broken page still fails the run rather than looping.
   await Promise.all(
     screenshotProjects.map(async ([projectName, contextOptions]) => {
-      const browser = await chromium.launch({
-        channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
-        headless: true,
-      });
+      const outputDirectory = path.resolve(screenshotRoot, projectName);
+      await mkdir(outputDirectory, { recursive: true });
+      const needsAuthentication = screenshotRoutes.some(
+        ({ authenticated }) => authenticated,
+      );
 
-      try {
-        const outputDirectory = path.resolve(screenshotRoot, projectName);
-        await mkdir(outputDirectory, { recursive: true });
-        const loggedOutContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
+      async function openLane() {
+        const browser = await chromium.launch({
+          channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
+          headless: true,
         });
-        const authenticatedContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
-        });
-        const loggedOutPage = await loggedOutContext.newPage();
-        const authenticatedPage = await authenticatedContext.newPage();
-        await Promise.all([
-          freezeClock(loggedOutPage),
-          freezeClock(authenticatedPage),
-        ]);
-
         try {
-          const needsAuthentication = screenshotRoutes.some(
-            ({ authenticated }) => authenticated,
-          );
+          const loggedOutContext = await browser.newContext({
+            ...contextOptions,
+            baseURL: baseUrl,
+          });
+          const authenticatedContext = await browser.newContext({
+            ...contextOptions,
+            baseURL: baseUrl,
+          });
+          const loggedOutPage = await loggedOutContext.newPage();
+          const authenticatedPage = await authenticatedContext.newPage();
+          await Promise.all([
+            freezeClock(loggedOutPage),
+            freezeClock(authenticatedPage),
+          ]);
           if (
             needsAuthentication &&
             !(await signInViaApi(authenticatedContext.request))
@@ -252,20 +260,34 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
             );
           }
+          return { authenticatedPage, browser, loggedOutPage };
+        } catch (error) {
+          await browser.close();
+          throw error;
+        }
+      }
 
-          for (const {
+      let lane = await openLane();
+      let recycles = 0;
+
+      try {
+        for (let index = 0; index < screenshotRoutes.length; index += 1) {
+          const {
             authenticated,
             expectNotFound,
             routeName,
             routePath,
             captureSelector,
-          } of screenshotRoutes) {
-            const page = authenticated ? authenticatedPage : loggedOutPage;
-            const pageUrl = new URL(routePath, baseUrl);
-            if (appName === "acceleratedmedicine" && routeName === "home") {
-              pageUrl.searchParams.set("visual", "1");
-            }
-            const captureLabel = `${projectName}/${routeName}`;
+          } = screenshotRoutes[index];
+          const page = authenticated
+            ? lane.authenticatedPage
+            : lane.loggedOutPage;
+          const pageUrl = new URL(routePath, baseUrl);
+          if (appName === "acceleratedmedicine" && routeName === "home") {
+            pageUrl.searchParams.set("visual", "1");
+          }
+          const captureLabel = `${projectName}/${routeName}`;
+          try {
             await withCaptureBudget(captureLabel, async () => {
               const url = pageUrl.toString();
               console.log(`@apps/${appName}: capturing ${captureLabel}`);
@@ -326,15 +348,26 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               }
               console.log(`@apps/${appName}: captured ${captureLabel}`);
             });
+          } catch (error) {
+            if (
+              !(error instanceof CaptureBudgetExceededError) ||
+              recycles >= MAX_LANE_RECYCLES
+            ) {
+              throw error;
+            }
+            recycles += 1;
+            console.warn(
+              `@apps/${appName}: ${captureLabel} stopped responding; ` +
+                `restarting the browser and retrying it ` +
+                `(recycle ${recycles} of ${MAX_LANE_RECYCLES})`,
+            );
+            await lane.browser.close().catch(() => {});
+            lane = await openLane();
+            index -= 1;
           }
-        } finally {
-          await Promise.all([
-            loggedOutContext.close(),
-            authenticatedContext.close(),
-          ]);
         }
       } finally {
-        await browser.close();
+        await lane.browser.close().catch(() => {});
       }
     }),
   );
