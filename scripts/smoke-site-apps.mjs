@@ -213,120 +213,126 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
   });
 
   try {
-    await Promise.all(
-      screenshotProjects.map(async ([projectName, contextOptions]) => {
-        const outputDirectory = path.resolve(screenshotRoot, projectName);
-        await mkdir(outputDirectory, { recursive: true });
-        const loggedOutContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
-        });
-        const authenticatedContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
-        });
-        const loggedOutPage = await loggedOutContext.newPage();
-        const authenticatedPage = await authenticatedContext.newPage();
-        await Promise.all([
-          freezeClock(loggedOutPage),
-          freezeClock(authenticatedPage),
-        ]);
+    // The viewport projects run one after another rather than concurrently.
+    // Two lanes sharing a browser reliably wedge: in every failure observed,
+    // one lane captured all of its routes while the other stopped responding
+    // partway through a `page.evaluate` and never resumed, with either lane
+    // able to be the victim. That stalled evaluation is a protocol call that
+    // never returns, so no timeout inside the page can rescue it. Capturing
+    // sequentially removes the contention every failure depended on, and
+    // costs wall-clock time this job has to spare.
+    for (const [projectName, contextOptions] of screenshotProjects) {
+      const outputDirectory = path.resolve(screenshotRoot, projectName);
+      await mkdir(outputDirectory, { recursive: true });
+      const loggedOutContext = await browser.newContext({
+        ...contextOptions,
+        baseURL: baseUrl,
+      });
+      const authenticatedContext = await browser.newContext({
+        ...contextOptions,
+        baseURL: baseUrl,
+      });
+      const loggedOutPage = await loggedOutContext.newPage();
+      const authenticatedPage = await authenticatedContext.newPage();
+      await Promise.all([
+        freezeClock(loggedOutPage),
+        freezeClock(authenticatedPage),
+      ]);
 
-        try {
-          const needsAuthentication = screenshotRoutes.some(
-            ({ authenticated }) => authenticated,
+      try {
+        const needsAuthentication = screenshotRoutes.some(
+          ({ authenticated }) => authenticated,
+        );
+        if (
+          needsAuthentication &&
+          !(await signInViaApi(authenticatedContext.request))
+        ) {
+          throw new Error(
+            `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
           );
-          if (
-            needsAuthentication &&
-            !(await signInViaApi(authenticatedContext.request))
-          ) {
-            throw new Error(
-              `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
-            );
-          }
-
-          for (const {
-            authenticated,
-            expectNotFound,
-            routeName,
-            routePath,
-            captureSelector,
-          } of screenshotRoutes) {
-            const page = authenticated ? authenticatedPage : loggedOutPage;
-            const pageUrl = new URL(routePath, baseUrl);
-            if (appName === "acceleratedmedicine" && routeName === "home") {
-              pageUrl.searchParams.set("visual", "1");
-            }
-            const captureLabel = `${projectName}/${routeName}`;
-            await withCaptureBudget(captureLabel, async () => {
-              const url = pageUrl.toString();
-              console.log(`@apps/${appName}: capturing ${captureLabel}`);
-              const response = await page.goto(url, {
-                timeout: 30_000,
-                waitUntil: "load",
-              });
-              const status = response?.status() ?? 0;
-              const statusIsExpected = expectNotFound
-                ? status === 404
-                : status >= 200 && status < 400;
-              if (!response || !statusIsExpected) {
-                throw new Error(
-                  `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
-                );
-              }
-              if (authenticated) {
-                const expectedPath = pageUrl.pathname;
-                const actualPath = new URL(page.url()).pathname;
-                if (actualPath !== expectedPath) {
-                  throw new Error(
-                    `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
-                  );
-                }
-              }
-              await page
-                .waitForLoadState("networkidle", { timeout: 15_000 })
-                .catch(() => {});
-              await page.waitForSelector(".animate-pulse.bg-muted", {
-                state: "detached",
-                timeout: 15_000,
-              });
-              if (!(await waitForFonts(page))) {
-                console.warn(
-                  `@apps/${appName}: font readiness timed out for ${captureLabel}`,
-                );
-              }
-              await forceAnimationsComplete(page);
-              await prepareFullPageVisualCapture(page);
-              await forceAnimationsComplete(page);
-              const screenshotPath = path.join(
-                outputDirectory,
-                `site-app-${appName}-${routeName}.png`,
-              );
-              if (captureSelector) {
-                const target = page.locator(captureSelector).first();
-                await target.scrollIntoViewIfNeeded();
-                await target.screenshot({
-                  animations: "disabled",
-                  path: screenshotPath,
-                });
-              } else {
-                await page.screenshot({
-                  animations: "disabled",
-                  fullPage: true,
-                  path: screenshotPath,
-                });
-              }
-              console.log(`@apps/${appName}: captured ${captureLabel}`);
-            });
-          }
-        } finally {
-          await Promise.all([
-            loggedOutContext.close(),
-            authenticatedContext.close(),
-          ]);
         }
-      }),
-    );
+
+        for (const {
+          authenticated,
+          expectNotFound,
+          routeName,
+          routePath,
+          captureSelector,
+        } of screenshotRoutes) {
+          const page = authenticated ? authenticatedPage : loggedOutPage;
+          const pageUrl = new URL(routePath, baseUrl);
+          if (appName === "acceleratedmedicine" && routeName === "home") {
+            pageUrl.searchParams.set("visual", "1");
+          }
+          const captureLabel = `${projectName}/${routeName}`;
+          await withCaptureBudget(captureLabel, async () => {
+            const url = pageUrl.toString();
+            console.log(`@apps/${appName}: capturing ${captureLabel}`);
+            const response = await page.goto(url, {
+              timeout: 30_000,
+              waitUntil: "load",
+            });
+            const status = response?.status() ?? 0;
+            const statusIsExpected = expectNotFound
+              ? status === 404
+              : status >= 200 && status < 400;
+            if (!response || !statusIsExpected) {
+              throw new Error(
+                `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
+              );
+            }
+            if (authenticated) {
+              const expectedPath = pageUrl.pathname;
+              const actualPath = new URL(page.url()).pathname;
+              if (actualPath !== expectedPath) {
+                throw new Error(
+                  `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                );
+              }
+            }
+            await page
+              .waitForLoadState("networkidle", { timeout: 15_000 })
+              .catch(() => {});
+            await page.waitForSelector(".animate-pulse.bg-muted", {
+              state: "detached",
+              timeout: 15_000,
+            });
+            if (!(await waitForFonts(page))) {
+              console.warn(
+                `@apps/${appName}: font readiness timed out for ${captureLabel}`,
+              );
+            }
+            await forceAnimationsComplete(page);
+            await prepareFullPageVisualCapture(page);
+            await forceAnimationsComplete(page);
+            const screenshotPath = path.join(
+              outputDirectory,
+              `site-app-${appName}-${routeName}.png`,
+            );
+            if (captureSelector) {
+              const target = page.locator(captureSelector).first();
+              await target.scrollIntoViewIfNeeded();
+              await target.screenshot({
+                animations: "disabled",
+                path: screenshotPath,
+              });
+            } else {
+              await page.screenshot({
+                animations: "disabled",
+                fullPage: true,
+                path: screenshotPath,
+              });
+            }
+            console.log(`@apps/${appName}: captured ${captureLabel}`);
+          });
+        }
+      } finally {
+        await Promise.all([
+          loggedOutContext.close(),
+          authenticatedContext.close(),
+        ]);
+      }
+    }
   } finally {
     await browser.close();
   }
