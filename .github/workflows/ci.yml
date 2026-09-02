@@ -438,8 +438,8 @@ jobs:
           - app: acceleratedmedicine
             variant: acceleratedmedicine.org
             port: 4016
-            postgres_image: ""
-            requires_database: false
+            postgres_image: postgres:16
+            requires_database: true
           - app: courtofhumanity
             variant: courtofhumanity.org
             port: 4017
