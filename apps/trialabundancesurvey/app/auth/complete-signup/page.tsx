@@ -7,6 +7,7 @@ import { Layout } from "@/components/layout"
 import { storage } from "@/lib/storage"
 import { syncPendingTrialAbundanceResponse } from "@/lib/trial-abundance-survey"
 import { createLogger } from "@/lib/logger"
+import { getSurveyPostAuthPath } from "@/lib/auth-redirect"
 
 const log = createLogger("complete-signup-page")
 
@@ -24,8 +25,12 @@ export default function CompleteSignupPage() {
 
       // Wait for session to be available
       if (status === "loading") return
+      const callbackUrl = getSurveyPostAuthPath(
+        searchParams?.get("callbackUrl"),
+        window.location.origin,
+      )
       if (status === "unauthenticated") {
-        router.push("/auth/signin")
+        router.replace(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`)
         return
       }
 
@@ -63,8 +68,7 @@ export default function CompleteSignupPage() {
         await syncPendingTrialAbundanceResponse(session)
 
         // Redirect to callback URL or dashboard
-        const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
-        router.push(callbackUrl)
+        router.replace(callbackUrl)
       } catch (error) {
         log.error("Complete vote verification error", { error })
         setError("An error occurred. Redirecting to dashboard...")

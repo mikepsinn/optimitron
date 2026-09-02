@@ -364,7 +364,7 @@ export default function TrialAbundanceSurveySection({
                   link for referrals.
                 </p>
                 <AuthForm
-                  callbackUrl="/#vote"
+                  callbackUrl="/dashboard"
                   referralCode={referralCode}
                   inviteToken={inviteToken}
                   defaultEmailOpen

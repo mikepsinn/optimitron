@@ -278,6 +278,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             routeName,
             routePath,
             captureSelector,
+            openMenu,
           } = screenshotRoutes[index];
           const page = authenticated
             ? lane.authenticatedPage
@@ -328,6 +329,20 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               await forceAnimationsComplete(page);
               await prepareFullPageVisualCapture(page);
               await forceAnimationsComplete(page);
+              if (openMenu) {
+                const menuTrigger = page.getByRole("button", {
+                  name: "Toggle menu",
+                });
+                await menuTrigger.click();
+                const menuDialog = page.getByRole("dialog", {
+                  name: "Navigation Menu",
+                });
+                await menuDialog.waitFor({ state: "visible" });
+                await menuDialog
+                  .getByRole("button", { name: "Log Out" })
+                  .waitFor({ state: "visible" });
+                await forceAnimationsComplete(page);
+              }
               const screenshotPath = path.join(
                 outputDirectory,
                 `site-app-${appName}-${routeName}.png`,

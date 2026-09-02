@@ -72,6 +72,22 @@ const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/StickyShareFooter.tsx",
 ];
 
+function getAuthenticatedMenuRoute(appName) {
+  const sourcePage = `apps/${appName}/app/dashboard/page.tsx`;
+
+  return {
+    authenticated: true,
+    authRole: "user",
+    captureSelector: '[role="dialog"]',
+    covers: [sourcePage, "packages/site-kit/src/components/layout.tsx"],
+    label: "Navigation menu — signed-in user",
+    openMenu: true,
+    routeName: "navigation-menu-authenticated",
+    routePath: "/dashboard",
+    sourcePage,
+  };
+}
+
 export const authenticatedSiteAppRoutes = Object.freeze({
   warondisease: [
     {
@@ -87,6 +103,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard",
       sourcePage: "apps/warondisease/app/dashboard/page.tsx",
     },
+    getAuthenticatedMenuRoute("warondisease"),
     {
       authenticated: true,
       authRole: "user",
@@ -186,6 +203,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   wishocracy: [
+    getAuthenticatedMenuRoute("wishocracy"),
     {
       authenticated: true,
       authRole: "user",
@@ -200,6 +218,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   trialabundancesurvey: [
+    getAuthenticatedMenuRoute("trialabundancesurvey"),
     {
       authenticated: true,
       authRole: "user",
@@ -227,6 +246,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     },
   ],
   courtofhumanity: [
+    getAuthenticatedMenuRoute("courtofhumanity"),
     {
       authenticated: true,
       authRole: "user",
@@ -553,6 +573,16 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/trialabundancesurvey/app/auth/signin/page.tsx",
     },
     {
+      covers: [
+        "apps/trialabundancesurvey/app/auth/error/page.tsx",
+        "apps/trialabundancesurvey/app/auth/error/error-content.tsx",
+      ],
+      label: "Expired sign-in link recovery",
+      routeName: "auth-error",
+      routePath: "/auth/error?error=Verification",
+      sourcePage: "apps/trialabundancesurvey/app/auth/error/page.tsx",
+    },
+    {
       covers: ["apps/trialabundancesurvey/app/not-found.tsx"],
       expectNotFound: true,
       label: "Page not found",
@@ -645,11 +675,6 @@ export const publicSiteAppRouteExemptions = Object.freeze([
     reason:
       "Shared auth scaffolding; this app captures /auth/signin and warondisease captures the full auth set.",
     sourcePage: "apps/wishocracy/app/auth/complete-signup/page.tsx",
-  },
-  {
-    reason:
-      "Shared auth scaffolding; this app captures /auth/signin and warondisease captures the full auth set.",
-    sourcePage: "apps/trialabundancesurvey/app/auth/error/page.tsx",
   },
   {
     reason:

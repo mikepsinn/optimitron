@@ -3,10 +3,14 @@
 import { useSearchParams } from "next/navigation"
 import { Layout } from "@/components/layout"
 import { AuthForm } from "@/components/auth/AuthForm"
+import { getSurveyPostAuthPath } from "@/lib/auth-redirect"
 
 export default function SignInPage() {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
+  const callbackUrl = getSurveyPostAuthPath(
+    searchParams?.get("callbackUrl"),
+    typeof window === "undefined" ? "https://trialabundancesurvey.org" : window.location.origin,
+  )
 
   return (
     <Layout>
