@@ -207,14 +207,22 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
       2,
     )}\n`,
   );
-  const browser = await chromium.launch({
-    channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
-    headless: true,
-  });
+  // Each viewport project gets its own browser. Something in a browser
+  // accumulates across captures until a `page.evaluate` stops returning, and
+  // `evaluate` has no timeout, so the lane hangs rather than failing. Pages in
+  // one browser share whatever runs out: with both projects in a single
+  // browser one lane would wedge partway through while the other finished all
+  // of its routes, either lane able to be the victim. A browser apiece halves
+  // what each one has to survive and stops one lane's work from exhausting the
+  // other's.
+  await Promise.all(
+    screenshotProjects.map(async ([projectName, contextOptions]) => {
+      const browser = await chromium.launch({
+        channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
+        headless: true,
+      });
 
-  try {
-    await Promise.all(
-      screenshotProjects.map(async ([projectName, contextOptions]) => {
+      try {
         const outputDirectory = path.resolve(screenshotRoot, projectName);
         await mkdir(outputDirectory, { recursive: true });
         const loggedOutContext = await browser.newContext({
@@ -325,11 +333,11 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             authenticatedContext.close(),
           ]);
         }
-      }),
-    );
-  } finally {
-    await browser.close();
-  }
+      } finally {
+        await browser.close();
+      }
+    }),
+  );
 
   console.log(
     `@apps/${appName}: captured ${screenshotRoutes.length * screenshotProjects.length} screenshots`,
