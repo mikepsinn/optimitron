@@ -92,7 +92,11 @@ async function fetchRoute(url, options = {}) {
       headers: bypassSecret
         ? {
             "x-vercel-protection-bypass": bypassSecret,
-            "x-vercel-set-bypass-cookie": "true",
+            // Vercel answers cookie setup with a redirect. POST checks must
+            // exercise the handler directly with the bypass header alone.
+            ...(options.method === "POST"
+              ? {}
+              : { "x-vercel-set-bypass-cookie": "true" }),
           }
         : undefined,
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
