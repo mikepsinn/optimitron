@@ -75,17 +75,29 @@ export async function forceAnimationsComplete(page) {
   await waitForPaint(page);
 }
 
+const MAX_VIEWPORT_VISITS = 120;
+
 /**
  * Prepare a full page by visiting every viewport. This triggers Intersection
  * Observer and Framer Motion whileInView states before capture. Native lazy
  * content is promoted to eager loading, and custom scroll-driven components
  * receive an explicit request to render their deterministic completed state.
  *
+ * The pauses between viewports are driven from here rather than from a
+ * `setTimeout` inside the page. Captured pages install a fake clock to freeze
+ * `Date`, which also replaces the page's timers, and a faked timer that never
+ * fires leaves the surrounding `page.evaluate` pending forever — `evaluate`
+ * has no timeout of its own. That is what wedged this sweep roughly one run in
+ * ten locally and about every other run in CI: the scroll loop is bounded by
+ * its own counters and cannot spin, yet the evaluation never returned.
+ * `page.waitForTimeout` waits in the driver, on the real clock, so the sweep
+ * no longer depends on the page's timers running at all.
+ *
  * @param {import("@playwright/test").Page} page
  */
 export async function prepareFullPageVisualCapture(page) {
   await retryAfterNavigation(page, async () => {
-    await page.evaluate(async () => {
+    const viewportStep = await page.evaluate(() => {
       document.documentElement.style.scrollBehavior = "auto";
       window.scrollTo(0, 0);
       for (const element of document.querySelectorAll(
@@ -93,25 +105,36 @@ export async function prepareFullPageVisualCapture(page) {
       )) {
         element.setAttribute("loading", "eager");
       }
-
-      const viewportStep = Math.max(400, Math.floor(window.innerHeight * 0.8));
-      let nextY = 0;
-      let visitedViewports = 0;
-      for (let pass = 0; pass < 3 && visitedViewports < 120; pass++) {
-        const passHeight = document.documentElement.scrollHeight;
-        while (nextY < passHeight && visitedViewports < 120) {
-          window.scrollTo(0, nextY);
-          await new Promise((resolve) => setTimeout(resolve, 40));
-          nextY += viewportStep;
-          visitedViewports++;
-        }
-        window.scrollTo(0, passHeight);
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        if (document.documentElement.scrollHeight <= passHeight) break;
-      }
-      window.scrollTo(0, document.documentElement.scrollHeight);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      return Math.max(400, Math.floor(window.innerHeight * 0.8));
     });
+
+    let nextY = 0;
+    let visitedViewports = 0;
+    for (
+      let pass = 0;
+      pass < 3 && visitedViewports < MAX_VIEWPORT_VISITS;
+      pass++
+    ) {
+      const passHeight = await page.evaluate(
+        () => document.documentElement.scrollHeight,
+      );
+      while (nextY < passHeight && visitedViewports < MAX_VIEWPORT_VISITS) {
+        await page.evaluate((top) => window.scrollTo(0, top), nextY);
+        await page.waitForTimeout(40);
+        nextY += viewportStep;
+        visitedViewports++;
+      }
+      await page.evaluate((top) => window.scrollTo(0, top), passHeight);
+      await page.waitForTimeout(100);
+      const grownHeight = await page.evaluate(
+        () => document.documentElement.scrollHeight,
+      );
+      if (grownHeight <= passHeight) break;
+    }
+    await page.evaluate(() =>
+      window.scrollTo(0, document.documentElement.scrollHeight),
+    );
+    await page.waitForTimeout(100);
   });
 
   await page
