@@ -37,6 +37,15 @@ async function main() {
   for (const routePath of app.smokePaths) {
     routes.push(await smokeRoute(targetUrl, routePath));
   }
+  if (appName === "warondisease") {
+    // An unsigned POST must reach the shared handler, not a 404 or login page.
+    routes.push(await smokeRoute(targetUrl, "/api/webhooks/resend", {
+      method: "POST",
+      body: "{}",
+      expectedStatus: 401,
+      expectedJson: { ok: false, reason: "invalid_signature" },
+    }));
+  }
   const failures = routes.filter(({ ok }) => !ok);
   const result = {
     success: failures.length === 0,
@@ -58,11 +67,11 @@ async function main() {
   if (failures.length > 0) process.exitCode = 1;
 }
 
-async function smokeRoute(baseUrl, routePath) {
+async function smokeRoute(baseUrl, routePath, options) {
   const url = new URL(routePath, baseUrl).toString();
   const attempts = [];
   for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
-    const current = await fetchRoute(url);
+    const current = await fetchRoute(url, options);
     attempts.push(current);
     if (current.ok) {
       return { ...current, path: routePath, url, attempts };
@@ -72,12 +81,14 @@ async function smokeRoute(baseUrl, routePath) {
   return { ...attempts.at(-1), path: routePath, url, attempts };
 }
 
-async function fetchRoute(url) {
+async function fetchRoute(url, options = {}) {
   const startedAt = Date.now();
   const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET?.trim();
   try {
     const response = await fetch(url, {
-      redirect: "follow",
+      redirect: options.method === "POST" ? "manual" : "follow",
+      method: options.method,
+      body: options.body,
       headers: bypassSecret
         ? {
             "x-vercel-protection-bypass": bypassSecret,
@@ -90,7 +101,22 @@ async function fetchRoute(url) {
     const matchedErrorMarker = ERROR_MARKERS.find((marker) =>
       body.includes(marker),
     );
-    const ok = response.ok && !matchedErrorMarker;
+    let matchesExpectedJson = true;
+    if (options.expectedJson) {
+      try {
+        const parsed = JSON.parse(body);
+        matchesExpectedJson = Object.entries(options.expectedJson).every(
+          ([key, value]) => parsed?.[key] === value,
+        );
+      } catch {
+        matchesExpectedJson = false;
+      }
+    }
+    const expectedStatus = options.expectedStatus ?? 200;
+    const statusOk = options.expectedStatus
+      ? response.status === expectedStatus
+      : response.ok;
+    const ok = statusOk && matchesExpectedJson && !matchedErrorMarker;
     return {
       ok,
       status: response.status,
@@ -99,7 +125,9 @@ async function fetchRoute(url) {
         ? undefined
         : matchedErrorMarker
           ? `Response contained ${matchedErrorMarker}`
-          : `Received HTTP ${response.status}`,
+          : !matchesExpectedJson
+            ? "Response did not contain the expected webhook rejection"
+            : `Received HTTP ${response.status}; expected ${expectedStatus}`,
       matchedErrorMarker,
     };
   } catch (error) {
