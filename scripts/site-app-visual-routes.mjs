@@ -573,6 +573,16 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/trialabundancesurvey/app/auth/signin/page.tsx",
     },
     {
+      covers: [
+        "apps/trialabundancesurvey/app/auth/error/page.tsx",
+        "apps/trialabundancesurvey/app/auth/error/error-content.tsx",
+      ],
+      label: "Expired sign-in link recovery",
+      routeName: "auth-error",
+      routePath: "/auth/error?error=Verification",
+      sourcePage: "apps/trialabundancesurvey/app/auth/error/page.tsx",
+    },
+    {
       covers: ["apps/trialabundancesurvey/app/not-found.tsx"],
       expectNotFound: true,
       label: "Page not found",
@@ -665,11 +675,6 @@ export const publicSiteAppRouteExemptions = Object.freeze([
     reason:
       "Shared auth scaffolding; this app captures /auth/signin and warondisease captures the full auth set.",
     sourcePage: "apps/wishocracy/app/auth/complete-signup/page.tsx",
-  },
-  {
-    reason:
-      "Shared auth scaffolding; this app captures /auth/signin and warondisease captures the full auth set.",
-    sourcePage: "apps/trialabundancesurvey/app/auth/error/page.tsx",
   },
   {
     reason:

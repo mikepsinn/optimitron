@@ -317,6 +317,11 @@ export const authOptions: NextAuthOptions = {
       // Check if the URL is one of our allowed domains
       try {
         const urlObj = new URL(url)
+        // NextAuth resolves relative callbacks before calling this again.
+        // Keep same-origin callbacks on local servers and preview deployments too.
+        if (urlObj.origin === new URL(baseUrl).origin) {
+          return url
+        }
         if (allowedDomains.some(domain => urlObj.hostname === domain || urlObj.hostname.endsWith(`.${domain}`))) {
           return url
         }

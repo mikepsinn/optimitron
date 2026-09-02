@@ -523,6 +523,12 @@ jobs:
           PLAYWRIGHT_BROWSER_CHANNEL: chrome
           SITE_APP_SCREENSHOT_ROOT: apps/optimitron/output/playwright/site-app-screenshots
 
+      - name: Verify survey email authentication against the production build
+        if: ${{ matrix.app == 'trialabundancesurvey' }}
+        run: pnpm --filter @apps/trialabundancesurvey test:e2e:auth
+        env:
+          PLAYWRIGHT_BROWSER_CHANNEL: chrome
+
       - name: Upload @apps/${{ matrix.app }} visual screenshots
         uses: actions/upload-artifact@v6
         with:
