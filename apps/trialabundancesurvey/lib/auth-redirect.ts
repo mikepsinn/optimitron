@@ -5,10 +5,11 @@ export function getSurveyPostAuthPath(
 ): string {
   try {
     const url = new URL(callbackUrl || "/dashboard", origin)
+    const pathname = decodeURIComponent(url.pathname)
     if (
       url.origin !== new URL(origin).origin ||
-      url.pathname === "/" ||
-      /^\/(auth|api)(\/|$)/u.test(url.pathname)
+      pathname === "/" ||
+      /^\/(auth|api)(\/|$)/u.test(pathname)
     ) {
       return "/dashboard"
     }

@@ -15,6 +15,7 @@ This project uses **Vitest** for unit/integration tests and **Playwright** for E
 - Submit the survey, verify the email, and reach the dashboard with saved answers.
 - Open an old homepage callback in a fresh browser session.
 - Reopen a used link before and after logout.
+- Keep another person's pending draft intact when a failed link leaves the old account signed in.
 - Expire a token, request a replacement, and sign in again.
 
 Set `DATABASE_URL` to a dedicated local database whose name contains `test` or `auth_e2e`.

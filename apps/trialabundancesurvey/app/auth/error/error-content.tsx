@@ -1,8 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, Lightbulb } from "lucide-react"
@@ -28,25 +26,12 @@ const errorMessages: Record<string, string> = {
 
 export default function AuthErrorContent() {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const { status } = useSession()
   const error = searchParams?.get("error") || "Default"
   const isVerificationError = error === "Verification"
   const callbackUrl = getSurveyPostAuthPath(
     searchParams?.get("callbackUrl"),
     typeof window === "undefined" ? "https://trialabundancesurvey.org" : window.location.origin,
   )
-
-  useEffect(() => {
-    if (isVerificationError && status === "authenticated") {
-      // Complete any pending survey save before the dashboard loads.
-      router.replace(`/auth/complete-signup?callbackUrl=${encodeURIComponent(callbackUrl)}`)
-    }
-  }, [callbackUrl, isVerificationError, router, status])
-
-  if (isVerificationError && status !== "unauthenticated") {
-    return <p className="p-8 text-center font-bold">Checking your sign-in...</p>
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] p-4">

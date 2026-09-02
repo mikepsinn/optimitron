@@ -20,6 +20,9 @@ describe("survey post-auth destination", () => {
     "javascript:alert(1)",
     "/auth/complete-signup",
     "/api/auth/signout",
+    "/%61uth/complete-signup",
+    "/%61pi/auth/signout",
+    "/auth%2Fcomplete-signup",
   ])("rejects external destinations and auth loops (%s)", (callback) => {
     expect(getSurveyPostAuthPath(callback, origin)).toBe("/dashboard")
   })

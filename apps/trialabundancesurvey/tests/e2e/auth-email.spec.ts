@@ -39,6 +39,7 @@ async function capture(page: Page, name: string) {
   await mkdir(directory, { recursive: true })
   await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }))
+  await page.mouse.move(0, 0)
   await page.screenshot({
     path: path.join(directory, `${name}-${test.info().project.name}-after.png`),
     fullPage: true,
@@ -81,9 +82,6 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   await expect(page.getByText("Patient access: YES", { exact: true })).toBeVisible()
   await capture(page, "survey-auth-dashboard")
 
-  // A consumed link must not strand someone whose first click already signed them in.
-  await page.goto(link.href)
-  await expectDashboard(page)
   await page.getByRole("button", { name: "Toggle menu" }).click()
   await page.getByRole("button", { name: "Log Out", exact: true }).click()
   await expect(page).toHaveURL(/\/$/u)
@@ -149,4 +147,58 @@ test("an expired link offers a fresh login without creating a session", async ({
   const replacement = await requestLink(page, email)
   await page.goto(replacement.href)
   await expectDashboard(page)
+})
+
+test("a failed link cannot save another person's draft to the active account", async ({ page }) => {
+  const activeEmail = emailFor("active-account")
+  const pendingEmail = emailFor("pending-account")
+  await page.goto("/auth/signin")
+  const activeLink = await requestLink(page, activeEmail)
+  await page.goto(activeLink.href)
+  await expectDashboard(page)
+  const activeSession = await (await page.request.get("/api/auth/session")).json()
+  const accountState = async () => Promise.all([
+    pool.query(`SELECT u."newsletterSubscribed", p."displayName" FROM "User" u
+      LEFT JOIN "Person" p ON p.id = u."personId" WHERE u.id = $1`, [activeSession.user.id]),
+    pool.query('SELECT id, answer FROM "ReferendumVote" WHERE "userId" = $1 ORDER BY id', [activeSession.user.id]),
+  ]).then((results) => results.map(({ rows }) => rows))
+  const before = await accountState()
+
+  await page.goto("/auth/signin")
+  const failedLink = await requestLink(page, pendingEmail)
+  await pool.query('UPDATE "VerificationToken" SET expires = $1 WHERE identifier = $2', [
+    new Date("2000-01-01T00:00:00Z"), pendingEmail,
+  ])
+  // Model a second person's unsaved draft in a shared browser.
+  const pending = {
+    patientAccessAnswer: "NO", selfFundedAccessAnswer: "YES",
+    militaryAllocationPercent: 37, referredBy: null, timestamp: "2026-01-15T00:00:00Z",
+  }
+  await page.evaluate((draft) => {
+    localStorage.setItem("pendingTrialAbundanceResponse", JSON.stringify(draft))
+    localStorage.setItem("signup_name", "Pending respondent")
+    localStorage.setItem("signup_subscribe", "true")
+  }, pending)
+
+  await page.goto(failedLink.href)
+  await expect(page.getByRole("heading", { name: "Sign in again" })).toBeVisible()
+  await capture(page, "survey-auth-wrong-account")
+  expect((await (await page.request.get("/api/auth/session")).json()).user.id).toBe(activeSession.user.id)
+  expect(await accountState()).toEqual(before)
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("pendingTrialAbundanceResponse")!))).toEqual(pending)
+
+  await page.getByRole("link", { name: "Get a new sign-in link" }).click()
+  const replacement = await requestLink(page, pendingEmail)
+  await page.goto(replacement.href)
+  await expectDashboard(page)
+  const verifiedSession = await (await page.request.get("/api/auth/session")).json()
+  expect(verifiedSession.user.email).toBe(pendingEmail)
+  expect(verifiedSession.user.id).not.toBe(activeSession.user.id)
+  await expect(page.getByText("Patient access: NO", { exact: true })).toBeVisible()
+  await expect(page.getByText("Patient-funded access: YES", { exact: true })).toBeVisible()
+  expect(await page.evaluate(() => localStorage.getItem("pendingTrialAbundanceResponse"))).toBeNull()
+
+  // Even a same-account consumed link must offer recovery, not infer identity.
+  await page.goto(replacement.href)
+  await expect(page.getByRole("heading", { name: "Sign in again" })).toBeVisible()
 })
