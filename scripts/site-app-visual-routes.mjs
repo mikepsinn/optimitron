@@ -213,6 +213,18 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard",
       sourcePage: "apps/trialabundancesurvey/app/dashboard/page.tsx",
     },
+    {
+      authenticated: true,
+      authRole: "user",
+      covers: [
+        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
+      ],
+      label: "Survey dashboard — pending response recovery",
+      routeName: "dashboard-pending-response",
+      routePath: "/dashboard?visual=1&recovery=error",
+      sourcePage:
+        "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
+    },
   ],
   courtofhumanity: [
     {
