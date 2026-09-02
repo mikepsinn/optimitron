@@ -20,17 +20,25 @@ export const FROZEN_NOW_MS = 1768435200000; // 2026-01-15T00:00:00.000Z
 export function freezeClock(page, time = FROZEN_NOW_MS) {
   return page.addInitScript((frozen) => {
     const RealDate = Date;
-    class FrozenDate extends RealDate {
-      constructor(...args) {
-        super(...(args.length === 0 ? [frozen] : args));
-      }
-      static now() {
-        return frozen;
-      }
-    }
-    FrozenDate.parse = RealDate.parse;
-    FrozenDate.UTC = RealDate.UTC;
-    Object.defineProperty(FrozenDate, "name", { value: "Date" });
-    globalThis.Date = FrozenDate;
+    // A proxy rather than a subclass: `Date` is callable as well as
+    // constructable, and `Date()` without `new` is a plain function call that
+    // returns a string. A `class` cannot be called that way, so replacing
+    // `Date` with one makes any page that calls `Date()` throw mid-capture.
+    // Proxying also keeps `Date.parse`, `Date.UTC`, `Date.prototype`,
+    // `instanceof` and the constructor's name intact for free.
+    globalThis.Date = new Proxy(RealDate, {
+      apply() {
+        // `Date()` ignores its arguments and reports the current time.
+        return new RealDate(frozen).toString();
+      },
+      construct(target, args) {
+        return args.length === 0 ? new RealDate(frozen) : new RealDate(...args);
+      },
+      get(target, property, receiver) {
+        return property === "now"
+          ? () => frozen
+          : Reflect.get(target, property, receiver);
+      },
+    });
   }, time);
 }

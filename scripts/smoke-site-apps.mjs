@@ -15,6 +15,7 @@ import {
 import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.mjs";
 import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
 import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../apps/optimitron/scripts/visual-capture-contract.mjs";
+import { runCaptureLane } from "./capture-lane.mjs";
 import { getSiteAppScreenshotRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
@@ -260,26 +261,43 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
             );
           }
-          return { authenticatedPage, browser, loggedOutPage };
+          return {
+            authenticatedPage,
+            close: () => browser.close().catch(() => {}),
+            loggedOutPage,
+          };
         } catch (error) {
-          await browser.close();
+          // Swallow the close failure so the error that caused the cleanup is
+          // the one that surfaces; a browser that failed to open may well fail
+          // to close too.
+          await browser.close().catch(() => {});
           throw error;
         }
       }
 
-      let lane = await openLane();
-      let recycles = 0;
-
-      try {
-        for (let index = 0; index < screenshotRoutes.length; index += 1) {
-          const {
+      await runCaptureLane({
+        routes: screenshotRoutes,
+        openLane,
+        isRecoverable: (error) => error instanceof CaptureBudgetExceededError,
+        maxRecycles: MAX_LANE_RECYCLES,
+        onRecycle: ({ routeName }, recycles) => {
+          console.warn(
+            `@apps/${appName}: ${projectName}/${routeName} stopped responding; ` +
+              `restarting the browser and retrying it ` +
+              `(recycle ${recycles} of ${MAX_LANE_RECYCLES})`,
+          );
+        },
+        captureRoute: async (
+          {
             authenticated,
             expectNotFound,
             routeName,
             routePath,
             captureSelector,
             openMenu,
-          } = screenshotRoutes[index];
+          },
+          lane,
+        ) => {
           const page = authenticated
             ? lane.authenticatedPage
             : lane.loggedOutPage;
@@ -288,102 +306,82 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             pageUrl.searchParams.set("visual", "1");
           }
           const captureLabel = `${projectName}/${routeName}`;
-          try {
-            await withCaptureBudget(captureLabel, async () => {
-              const url = pageUrl.toString();
-              console.log(`@apps/${appName}: capturing ${captureLabel}`);
-              const response = await page.goto(url, {
-                timeout: 30_000,
-                waitUntil: "load",
-              });
-              const status = response?.status() ?? 0;
-              const statusIsExpected = expectNotFound
-                ? status === 404
-                : status >= 200 && status < 400;
-              if (!response || !statusIsExpected) {
-                throw new Error(
-                  `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
-                );
-              }
-              if (authenticated) {
-                const expectedPath = pageUrl.pathname;
-                const actualPath = new URL(page.url()).pathname;
-                if (actualPath !== expectedPath) {
-                  throw new Error(
-                    `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
-                  );
-                }
-              }
-              await page
-                .waitForLoadState("networkidle", { timeout: 15_000 })
-                .catch(() => {});
-              await page.waitForSelector(".animate-pulse.bg-muted", {
-                state: "detached",
-                timeout: 15_000,
-              });
-              if (!(await waitForFonts(page))) {
-                console.warn(
-                  `@apps/${appName}: font readiness timed out for ${captureLabel}`,
-                );
-              }
-              await forceAnimationsComplete(page);
-              await prepareFullPageVisualCapture(page);
-              await forceAnimationsComplete(page);
-              if (openMenu) {
-                const menuTrigger = page.getByRole("button", {
-                  name: "Toggle menu",
-                });
-                await menuTrigger.click();
-                const menuDialog = page.getByRole("dialog", {
-                  name: "Navigation Menu",
-                });
-                await menuDialog.waitFor({ state: "visible" });
-                await menuDialog
-                  .getByRole("button", { name: "Log Out" })
-                  .waitFor({ state: "visible" });
-                await forceAnimationsComplete(page);
-              }
-              const screenshotPath = path.join(
-                outputDirectory,
-                `site-app-${appName}-${routeName}.png`,
-              );
-              if (captureSelector) {
-                const target = page.locator(captureSelector).first();
-                await target.scrollIntoViewIfNeeded();
-                await target.screenshot({
-                  animations: "disabled",
-                  path: screenshotPath,
-                });
-              } else {
-                await page.screenshot({
-                  animations: "disabled",
-                  fullPage: true,
-                  path: screenshotPath,
-                });
-              }
-              console.log(`@apps/${appName}: captured ${captureLabel}`);
+          await withCaptureBudget(captureLabel, async () => {
+            const url = pageUrl.toString();
+            console.log(`@apps/${appName}: capturing ${captureLabel}`);
+            const response = await page.goto(url, {
+              timeout: 30_000,
+              waitUntil: "load",
             });
-          } catch (error) {
-            if (
-              !(error instanceof CaptureBudgetExceededError) ||
-              recycles >= MAX_LANE_RECYCLES
-            ) {
-              throw error;
+            const status = response?.status() ?? 0;
+            const statusIsExpected = expectNotFound
+              ? status === 404
+              : status >= 200 && status < 400;
+            if (!response || !statusIsExpected) {
+              throw new Error(
+                `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
+              );
             }
-            recycles += 1;
-            console.warn(
-              `@apps/${appName}: ${captureLabel} stopped responding; ` +
-                `restarting the browser and retrying it ` +
-                `(recycle ${recycles} of ${MAX_LANE_RECYCLES})`,
+            if (authenticated) {
+              const expectedPath = pageUrl.pathname;
+              const actualPath = new URL(page.url()).pathname;
+              if (actualPath !== expectedPath) {
+                throw new Error(
+                  `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                );
+              }
+            }
+            await page
+              .waitForLoadState("networkidle", { timeout: 15_000 })
+              .catch(() => {});
+            await page.waitForSelector(".animate-pulse.bg-muted", {
+              state: "detached",
+              timeout: 15_000,
+            });
+            if (!(await waitForFonts(page))) {
+              console.warn(
+                `@apps/${appName}: font readiness timed out for ${captureLabel}`,
+              );
+            }
+            await forceAnimationsComplete(page);
+            await prepareFullPageVisualCapture(page);
+            await forceAnimationsComplete(page);
+            if (openMenu) {
+              const menuTrigger = page.getByRole("button", {
+                name: "Toggle menu",
+              });
+              await menuTrigger.click();
+              const menuDialog = page.getByRole("dialog", {
+                name: "Navigation Menu",
+              });
+              await menuDialog.waitFor({ state: "visible" });
+              await menuDialog
+                .getByRole("button", { name: "Log Out" })
+                .waitFor({ state: "visible" });
+              await forceAnimationsComplete(page);
+            }
+            const screenshotPath = path.join(
+              outputDirectory,
+              `site-app-${appName}-${routeName}.png`,
             );
-            await lane.browser.close().catch(() => {});
-            lane = await openLane();
-            index -= 1;
-          }
-        }
-      } finally {
-        await lane.browser.close().catch(() => {});
-      }
+            if (captureSelector) {
+              const target = page.locator(captureSelector).first();
+              await target.scrollIntoViewIfNeeded();
+              await target.screenshot({
+                animations: "disabled",
+                path: screenshotPath,
+              });
+            } else {
+              await page.screenshot({
+                animations: "disabled",
+                fullPage: true,
+                path: screenshotPath,
+              });
+            }
+            console.log(`@apps/${appName}: captured ${captureLabel}`);
+          });
+        },
+      });
     }),
   );
 
