@@ -32,6 +32,8 @@ const apps = [
   ["courtofhumanity", 4017, VARIANTS.COURT_OF_HUMANITY],
 ];
 
+const ROUTE_CAPTURE_TIMEOUT_MS = 120_000;
+
 const screenshotProjects = [
   ["default", { viewport: { width: 1440, height: 900 } }],
   [
@@ -43,6 +45,45 @@ const screenshotProjects = [
     },
   ],
 ];
+
+/**
+ * A single route capture is a handful of bounded waits, but `page.evaluate`
+ * has no timeout, so one wedged renderer stalls the lane forever. Without a
+ * budget the job runs until the runner cancels it half an hour later, and the
+ * log ends on "capturing <route>" with no error and no indication that the
+ * route is the thing that stalled. Bound the whole capture so the failure
+ * names the route it happened on.
+ *
+ * The budget is deliberately far above a healthy capture — the slowest routes
+ * settle in a few seconds — so it only ever fires on a genuine stall.
+ *
+ * @template T
+ * @param {string} captureLabel
+ * @param {() => Promise<T>} capture
+ * @returns {Promise<T>}
+ */
+async function withCaptureBudget(captureLabel, capture) {
+  let timer;
+  try {
+    return await Promise.race([
+      capture(),
+      new Promise((_, reject) => {
+        timer = setTimeout(
+          () =>
+            reject(
+              new Error(
+                `Timed out after ${ROUTE_CAPTURE_TIMEOUT_MS}ms capturing ${captureLabel}. ` +
+                  `The page stopped responding partway through capture.`,
+              ),
+            ),
+          ROUTE_CAPTURE_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 const screenshotRootInput = process.env.SITE_APP_SCREENSHOT_ROOT?.trim();
 const screenshotRoot = screenshotRootInput
@@ -217,79 +258,81 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             if (appName === "acceleratedmedicine" && routeName === "home") {
               pageUrl.searchParams.set("visual", "1");
             }
-            const url = pageUrl.toString();
             const captureLabel = `${projectName}/${routeName}`;
-            console.log(`@apps/${appName}: capturing ${captureLabel}`);
-            const response = await page.goto(url, {
-              timeout: 30_000,
-              waitUntil: "load",
-            });
-            const status = response?.status() ?? 0;
-            const statusIsExpected = expectNotFound
-              ? status === 404
-              : status >= 200 && status < 400;
-            if (!response || !statusIsExpected) {
-              throw new Error(
-                `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
-              );
-            }
-            if (authenticated) {
-              const expectedPath = pageUrl.pathname;
-              const actualPath = new URL(page.url()).pathname;
-              if (actualPath !== expectedPath) {
+            await withCaptureBudget(captureLabel, async () => {
+              const url = pageUrl.toString();
+              console.log(`@apps/${appName}: capturing ${captureLabel}`);
+              const response = await page.goto(url, {
+                timeout: 30_000,
+                waitUntil: "load",
+              });
+              const status = response?.status() ?? 0;
+              const statusIsExpected = expectNotFound
+                ? status === 404
+                : status >= 200 && status < 400;
+              if (!response || !statusIsExpected) {
                 throw new Error(
-                  `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                  `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
                 );
               }
-            }
-            await page
-              .waitForLoadState("networkidle", { timeout: 15_000 })
-              .catch(() => {});
-            await page.waitForSelector(".animate-pulse.bg-muted", {
-              state: "detached",
-              timeout: 15_000,
-            });
-            if (!(await waitForFonts(page))) {
-              console.warn(
-                `@apps/${appName}: font readiness timed out for ${captureLabel}`,
-              );
-            }
-            await forceAnimationsComplete(page);
-            await prepareFullPageVisualCapture(page);
-            await forceAnimationsComplete(page);
-            if (openMenu) {
-              const menuTrigger = page.getByRole("button", {
-                name: "Toggle menu",
+              if (authenticated) {
+                const expectedPath = pageUrl.pathname;
+                const actualPath = new URL(page.url()).pathname;
+                if (actualPath !== expectedPath) {
+                  throw new Error(
+                    `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                  );
+                }
+              }
+              await page
+                .waitForLoadState("networkidle", { timeout: 15_000 })
+                .catch(() => {});
+              await page.waitForSelector(".animate-pulse.bg-muted", {
+                state: "detached",
+                timeout: 15_000,
               });
-              await menuTrigger.click();
-              const menuDialog = page.getByRole("dialog", {
-                name: "Navigation Menu",
-              });
-              await menuDialog.waitFor({ state: "visible" });
-              await menuDialog
-                .getByRole("button", { name: "Log Out" })
-                .waitFor({ state: "visible" });
+              if (!(await waitForFonts(page))) {
+                console.warn(
+                  `@apps/${appName}: font readiness timed out for ${captureLabel}`,
+                );
+              }
               await forceAnimationsComplete(page);
-            }
-            const screenshotPath = path.join(
-              outputDirectory,
-              `site-app-${appName}-${routeName}.png`,
-            );
-            if (captureSelector) {
-              const target = page.locator(captureSelector).first();
-              await target.scrollIntoViewIfNeeded();
-              await target.screenshot({
-                animations: "disabled",
-                path: screenshotPath,
-              });
-            } else {
-              await page.screenshot({
-                animations: "disabled",
-                fullPage: true,
-                path: screenshotPath,
-              });
-            }
-            console.log(`@apps/${appName}: captured ${captureLabel}`);
+              await prepareFullPageVisualCapture(page);
+              await forceAnimationsComplete(page);
+              if (openMenu) {
+                const menuTrigger = page.getByRole("button", {
+                  name: "Toggle menu",
+                });
+                await menuTrigger.click();
+                const menuDialog = page.getByRole("dialog", {
+                  name: "Navigation Menu",
+                });
+                await menuDialog.waitFor({ state: "visible" });
+                await menuDialog
+                  .getByRole("button", { name: "Log Out" })
+                  .waitFor({ state: "visible" });
+                await forceAnimationsComplete(page);
+              }
+              const screenshotPath = path.join(
+                outputDirectory,
+                `site-app-${appName}-${routeName}.png`,
+              );
+              if (captureSelector) {
+                const target = page.locator(captureSelector).first();
+                await target.scrollIntoViewIfNeeded();
+                await target.screenshot({
+                  animations: "disabled",
+                  path: screenshotPath,
+                });
+              } else {
+                await page.screenshot({
+                  animations: "disabled",
+                  fullPage: true,
+                  path: screenshotPath,
+                });
+              }
+              console.log(`@apps/${appName}: captured ${captureLabel}`);
+            });
           }
         } finally {
           await Promise.all([
@@ -324,7 +367,11 @@ async function smokeApp(appName, port, siteVariant) {
     [nextCli, "start", "--hostname", "127.0.0.1", "--port", String(port)],
     {
       cwd: appDirectory,
-      env: { ...process.env, PORT: String(port) },
+      env: {
+        ...process.env,
+        PORT: String(port),
+        ...(screenshotRoot ? { SITE_APP_VISUAL_FIXTURES: "1" } : {}),
+      },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );

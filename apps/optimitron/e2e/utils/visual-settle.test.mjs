@@ -160,6 +160,35 @@ test("waits for images inside child frames", async () => {
   assert.equal(page.waits, 1);
 });
 
+test("fails loudly when a decode never settles", async () => {
+  // `page.evaluate` has no timeout, so a decode that never settles used to
+  // hang the whole capture until CI cancelled the job half an hour later with
+  // no error and no indication of which route stalled.
+  let decodeCalls = 0;
+  const page = {
+    calls: 0,
+    waits: 0,
+    async evaluate() {
+      page.calls++;
+      // The readiness poll reports no in-flight images, so the run reaches the
+      // decode pass; that pass then never resolves.
+      if (page.calls === 1) return [];
+      decodeCalls++;
+      return new Promise(() => {});
+    },
+    async waitForTimeout() {
+      page.waits++;
+    },
+    async waitForLoadState() {},
+  };
+
+  await assert.rejects(
+    () => waitForImagesSettled(page, 10),
+    /images to decode/,
+  );
+  assert.equal(decodeCalls, 1);
+});
+
 test("fails loudly when an image never arrives", async () => {
   // Proceeding here would capture exactly the missing artwork this helper
   // exists to prevent, and would do it without any signal.
