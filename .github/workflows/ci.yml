@@ -396,6 +396,10 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
         run: pnpm test:apps:unit
 
+      - name: Accelerated Medicine survey database regression tests
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm --filter @apps/acceleratedmedicine test:integration
+
   site-apps-build:
     name: site-apps-build (${{ matrix.app }})
     if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}

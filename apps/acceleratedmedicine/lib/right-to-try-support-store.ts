@@ -194,8 +194,9 @@ export async function storeRightToTrySupport(
   const requestHash = hashJson(values);
 
   return prisma.$transaction(async (tx) => {
-    await tx.$queryRaw<Array<{ locked: boolean }>>`
-      SELECT pg_advisory_xact_lock(hashtextextended(${clientKey}, 0)) AS locked
+    // The lock returns PostgreSQL void, which Prisma cannot deserialize as a row.
+    await tx.$executeRaw`
+      SELECT pg_advisory_xact_lock(hashtextextended(${clientKey}, 0))
     `;
     const existing = await tx.formSubmission.findUnique({
       where: {
