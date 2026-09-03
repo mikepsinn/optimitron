@@ -47,7 +47,7 @@ claude mcp add --transport http optimitron https://optimitron.com/api/mcp
 - Use this when your ChatGPT plan and workspace settings allow custom MCP apps.
 - 1 ENABLE DEVELOPER MODE Workspace admins enable Developer mode / Create custom MCP connectors under workspace permissions.
 - 2 ADD AN MCP APP Open Apps & Connectors, create a custom connector/app, choose OAuth, and paste the MCP Server URL.
-- 3 AUTHORIZE Sign in to Optimitron. Use regular chat or agent mode; some deep research surfaces only show search/fetch tools.
+- 3 AUTHORIZE Sign in to Optimitron. Use regular chat; agent mode does not reach custom MCP apps, and some deep research surfaces only show search/fetch tools.
 - OTHER MCP CLIENTS
 ### PASTE THE JSON IF YOUR CLIENT WANTS CONFIG.
 - Cursor, Windsurf, Cline, Zed, and similar clients usually want a small MCP server block.

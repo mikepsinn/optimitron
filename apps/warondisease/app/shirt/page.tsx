@@ -404,8 +404,15 @@ export default async function ShirtPage() {
         }
 
         @media print {
+          /*
+           * The shared Layout nests <nav> inside a sticky <header> and puts
+           * <footer> inside a wrapper div, so "nav, body > footer" left the
+           * campaign header and the whole site footer printing around the
+           * artwork sheets. Same fix the poster and door-to-door pages carry.
+           */
+          header,
           nav,
-          body > footer,
+          footer,
           [data-print-hidden="true"] {
             display: none !important;
           }
@@ -575,16 +582,12 @@ export default async function ShirtPage() {
             data-print-hidden="true"
           >
             Want to coordinate with another human? Go on an{" "}
-            {/* /missions has not been ported yet. Make this a relative Link
-                once the campaign app serves it. */}
-            <a
+            <Link
               className="underline decoration-dotted underline-offset-4"
-              href={optimitronUrl(ROUTES.missions)}
-              rel="noreferrer"
-              target="_blank"
+              href={ROUTES.missions}
             >
               Earth Optimization Mission
-            </a>
+            </Link>
             .
           </p>
         </div>

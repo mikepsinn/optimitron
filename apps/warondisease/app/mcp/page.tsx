@@ -260,7 +260,7 @@ export default function McpPage() {
                 },
                 {
                   title: "Authorize",
-                  body: "Sign in to Optimitron. Use regular chat or agent mode; some deep research surfaces only show search/fetch tools.",
+                  body: "Sign in to Optimitron. Use regular chat; agent mode does not reach custom MCP apps, and some deep research surfaces only show search/fetch tools.",
                 },
               ]}
             />

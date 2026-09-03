@@ -1,3 +1,4 @@
+import { TaskFundingTargetStatus } from "@optimitron/db";
 import {
   formatRelativeTime,
   getTaskFundingBackerWall,
@@ -76,7 +77,8 @@ export async function TaskFundingProgress({
     getTaskFundingBackerWall(taskId),
   ]);
   const now = new Date();
-  const thresholdMet = fundingStatus.status === "THRESHOLD_MET";
+  const thresholdMet =
+    fundingStatus.status === TaskFundingTargetStatus.THRESHOLD_MET;
 
   return (
     <section className="space-y-5 border-2 border-foreground bg-background p-5 font-bold text-foreground sm:p-6">

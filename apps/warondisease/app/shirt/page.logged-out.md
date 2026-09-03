@@ -52,4 +52,4 @@
 - Back: Trade one apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.
 - FRONT
 - BACK WITH QR
-- Want to coordinate with another human? Go on an [Earth Optimization Mission](https://optimitron.com/missions).
+- Want to coordinate with another human? Go on an [Earth Optimization Mission](/missions).
