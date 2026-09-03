@@ -174,7 +174,11 @@ test("repairs only deployment settings that drift", () => {
     getProjectPatch(
       {
         enableAffectedProjectsDeployments: false,
+        buildCommand: "cd ../.. && pnpm --filter @apps/warondisease run build",
+        commandForIgnoringBuildStep:
+          "node ../../.github/scripts/vercel-ignore-build.mjs warondisease",
         framework: "nextjs",
+        installCommand: "cd ../.. && pnpm install --frozen-lockfile",
         nodeVersion: "20.x",
         productionDeploymentsFastLane: false,
         resourceConfig: {
@@ -188,7 +192,10 @@ test("repairs only deployment settings that drift", () => {
       desired,
     ),
     {
+      buildCommand: null,
+      commandForIgnoringBuildStep: null,
       enableAffectedProjectsDeployments: true,
+      installCommand: null,
       nodeVersion: "24.x",
       productionDeploymentsFastLane: true,
       resourceConfig: {
@@ -220,6 +227,41 @@ test("repairs only deployment settings that drift", () => {
       desired,
     ),
     {},
+  );
+});
+
+test("clears only command overrides replaced by the app config", () => {
+  const desired = VERCEL_APP_PROJECTS[0];
+  assert.deepEqual(desired.projectCommandOverrides, [
+    "buildCommand",
+    "commandForIgnoringBuildStep",
+  ]);
+  assert.deepEqual(
+    getProjectPatch(
+      {
+        buildCommand: "pnpm run build:vercel",
+        commandForIgnoringBuildStep: "git diff HEAD^ HEAD --quiet",
+        installCommand: "pnpm install --frozen-lockfile",
+        settings: {
+          enableAffectedProjectsDeployments: true,
+          framework: "nextjs",
+          nodeVersion: "24.x",
+          productionDeploymentsFastLane: true,
+          resourceConfig: {
+            buildMachineSelection: "fixed",
+            buildMachineType: "standard",
+            elasticConcurrencyEnabled: false,
+          },
+          rootDirectory: desired.rootDirectory,
+          sourceFilesOutsideRootDirectory: true,
+        },
+      },
+      desired,
+    ),
+    {
+      buildCommand: null,
+      commandForIgnoringBuildStep: null,
+    },
   );
 });
 
