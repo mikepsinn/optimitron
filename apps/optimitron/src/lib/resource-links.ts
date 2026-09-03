@@ -11,7 +11,7 @@
 
 export const MANUAL_URLS = {
   readOnline: 'https://manual.warondisease.org',
-  kindle: 'https://www.amazon.com/dp/B0GPBH77XN',
+  kindle: 'https://warondisease.org/amazon/ebook',
   allRetailers: 'https://books2read.com/u/baegEq',
   goodreads: 'https://www.goodreads.com/book/show/248248875-how-to-end-war-and-disease',
 } as const

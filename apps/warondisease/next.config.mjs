@@ -6,6 +6,25 @@ import { pinAppNextAuthInstance } from "../shared-next-config.mjs";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
 
+const AMAZON_PAPERBACK_URL = "https://www.amazon.com/dp/B0HHKY4SBM";
+const AMAZON_EBOOK_URL = "https://www.amazon.com/dp/B0HHLR55CN";
+
+const AMAZON_BOOK_REDIRECTS = [
+  { source: "/amazon", destination: AMAZON_PAPERBACK_URL, permanent: false },
+  {
+    source: "/amazon/book",
+    destination: AMAZON_PAPERBACK_URL,
+    permanent: false,
+  },
+  {
+    source: "/amazon/paperback",
+    destination: AMAZON_PAPERBACK_URL,
+    permanent: false,
+  },
+  { source: "/amazon/ebook", destination: AMAZON_EBOOK_URL, permanent: false },
+  { source: "/amazon/kindle", destination: AMAZON_EBOOK_URL, permanent: false },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
@@ -52,6 +71,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      ...AMAZON_BOOK_REDIRECTS,
       { source: "/campaigns", destination: "/", permanent: false },
       { source: "/campaigns/:path*", destination: "/", permanent: false },
       { source: "/auth/signup", destination: "/auth/signin", permanent: false },
