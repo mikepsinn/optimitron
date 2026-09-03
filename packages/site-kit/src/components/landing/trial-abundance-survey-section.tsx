@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { CheckSquare, Square } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { trackVoteSubmitted } from "../../lib/analytics"
 import type { TrialAbundanceAnswer } from "../../lib/storage"
@@ -23,23 +23,29 @@ import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
 import { AuthForm } from "../auth/AuthForm"
 import { ReferralLinkCard } from "../shared/ReferralLinkCard"
 import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
+import { SurveyParticipantFields } from "./survey-participant-fields"
+import type { ParticipantDraft } from "./survey-participant-fields"
+import { surveyParticipantSchema } from "../../lib/survey-participant"
+import { AlertCard } from "@optimitron/neobrutalist-ui/ui/alert-card"
 
 type SurveyStage =
   | "patient-access"
   | "self-funded-access"
   | "allocation"
+  | "details"
   | "complete"
-export type TrialAbundanceVisualState =
-  | "question"
-  | "self-funded"
-  | "allocation"
-  | "complete"
+export type { TrialAbundanceVisualState } from "../../lib/trial-abundance-visual"
+import type { TrialAbundanceVisualState } from "../../lib/trial-abundance-visual"
 
 interface TrialAbundanceSurveySectionProps {
   disableIntroAnimation?: boolean
   organizationId?: string
   sectionId?: string
   visualState?: TrialAbundanceVisualState
+  initialParticipant?: Partial<ParticipantDraft>
+  headingAs?: "h1" | "h2"
+  title?: string
+  description?: string
 }
 
 const answerOptions: Array<{
@@ -56,6 +62,8 @@ function getInitialStage(
 ): SurveyStage {
   if (visualState === "self-funded") return "self-funded-access"
   if (visualState === "allocation") return "allocation"
+  if (visualState === "details") return "details"
+  if (visualState === "save-error") return "complete"
   if (visualState === "complete") return "complete"
   return "patient-access"
 }
@@ -79,6 +87,10 @@ export default function TrialAbundanceSurveySection({
   organizationId,
   sectionId = "vote",
   visualState,
+  initialParticipant,
+  headingAs: Heading = "h1",
+  title = "Trial Abundance Survey",
+  description = "Three questions about patient access, who may fund trial participation, and public priorities.",
 }: TrialAbundanceSurveySectionProps) {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
@@ -100,6 +112,46 @@ export default function TrialAbundanceSurveySection({
   )
   const completionRef = useRef<HTMLDivElement>(null)
   const hasRetriedSync = useRef(false)
+  const [participant, setParticipant] = useState<ParticipantDraft>({
+    countryCode: "", regionCode: "", role: "", story: "", updates: false,
+    ...initialParticipant,
+  })
+  const participantEdited = useRef(false)
+  const saveInFlight = useRef(false)
+  const [participantError, setParticipantError] = useState<string | null>(null)
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">(
+    visualState === "save-error" ? "error" : "idle",
+  )
+
+  const saveResponse = useCallback(async () => {
+    if (saveInFlight.current) return
+    saveInFlight.current = true
+    setSaveStatus("saving")
+    const pending = storage.getPendingTrialAbundanceResponse()
+    const saved = await syncPendingTrialAbundanceResponse()
+    saveInFlight.current = false
+    setSaveStatus(saved ? "saved" : "error")
+    if (saved && pending) {
+      trackVoteSubmitted({ answer: pending.patientAccessAnswer, authenticated: true, voteType: "trial_abundance_survey" })
+      celebrateResponse()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isVisualCapture || status !== "authenticated") return
+    const controller = new AbortController()
+    void fetch("/api/survey/profile", { signal: controller.signal })
+      .then(async (response) => response.ok ? response.json() : null)
+      .then((profile: Partial<ParticipantDraft> | null) => {
+        if (!profile || participantEdited.current) return
+        setParticipant((current) => ({ ...current,
+          countryCode: profile.countryCode || current.countryCode,
+          regionCode: profile.regionCode || current.regionCode,
+          role: profile.role || current.role,
+        }))
+      }).catch(() => { /* The user can enter details if profile loading fails. */ })
+    return () => controller.abort()
+  }, [isVisualCapture, status])
 
   useEffect(() => {
     if (isVisualCapture) return
@@ -115,6 +167,10 @@ export default function TrialAbundanceSurveySection({
     setMilitaryAllocation(pending.militaryAllocationPercent)
     setPatientAccessAnswer(pending.patientAccessAnswer)
     setSelfFundedAccessAnswer(pending.selfFundedAccessAnswer)
+    if (pending.participant) {
+      participantEdited.current = true
+      setParticipant(pending.participant)
+    }
     setStage("complete")
     setUserHasDragged(true)
   }, [isVisualCapture])
@@ -131,8 +187,8 @@ export default function TrialAbundanceSurveySection({
     }
 
     hasRetriedSync.current = true
-    void syncPendingTrialAbundanceResponse(session)
-  }, [isVisualCapture, session, status])
+    void saveResponse()
+  }, [isVisualCapture, session, status, saveResponse])
 
   const clinicalTrialsAllocation = 100 - militaryAllocation
   const shareUrl = session?.user
@@ -171,16 +227,18 @@ export default function TrialAbundanceSurveySection({
 
   const handleComplete = async () => {
     if (!patientAccessAnswer || !selfFundedAccessAnswer) return
+    const parsed = surveyParticipantSchema.safeParse(participant)
+    if (!parsed.success) {
+      setParticipantError(parsed.error.issues[0]?.message ?? "Please check your details.")
+      return
+    }
+    setParticipantError(null)
 
     setStage("complete")
-    trackVoteSubmitted({
-      answer: patientAccessAnswer,
-      authenticated: status === "authenticated",
-      voteType: "trial_abundance_survey",
-    })
-    celebrateResponse()
 
     const response = {
+      submissionKey: crypto.randomUUID(),
+      participant: parsed.data,
       inviteToken,
       militaryAllocationPercent: militaryAllocation,
       organizationId: organizationId ?? null,
@@ -201,7 +259,7 @@ export default function TrialAbundanceSurveySection({
     }, 350)
 
     if (status === "authenticated" && session) {
-      await syncPendingTrialAbundanceResponse(session)
+      await saveResponse()
     }
   }
 
@@ -216,12 +274,11 @@ export default function TrialAbundanceSurveySection({
       <Container>
         {stage === "patient-access" ? (
           <>
-            <h1 className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
-              Trial <span className="text-brutal-pink">Abundance</span> Survey
-            </h1>
+            <Heading className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
+              {title}
+            </Heading>
             <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
-              Three questions about patient access, who may fund trial
-              participation, and public priorities.
+              {description}
             </p>
           </>
         ) : null}
@@ -329,10 +386,10 @@ export default function TrialAbundanceSurveySection({
 
                 {userHasDragged ? (
                   <Button
-                    onClick={() => void handleComplete()}
+                    onClick={() => setStage("details")}
                     className="h-16 w-full border-4 border-primary bg-brutal-cyan text-xl font-black uppercase text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    Submit response
+                    Continue
                   </Button>
                 ) : null}
                 <BackButton onClick={() => setStage("self-funded-access")}>
@@ -343,9 +400,26 @@ export default function TrialAbundanceSurveySection({
           ) : null}
         </AnimatePresence>
 
+        {stage === "details" ? (
+          <SurveyCard>
+            <h2 className="text-2xl font-black uppercase">About you</h2>
+            <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void handleComplete() }}>
+              <SurveyParticipantFields value={participant} onChange={(value) => {
+                participantEdited.current = true
+                setParticipant(value)
+              }} />
+              {participantError ? <AlertCard type="error" message={participantError} /> : null}
+              <Button type="submit" className="h-14 text-lg font-black uppercase">
+                {status === "authenticated" ? "Save my response" : "Continue to verification"}
+              </Button>
+            </form>
+            <BackButton onClick={() => setStage("allocation")}>Back to allocation</BackButton>
+          </SurveyCard>
+        ) : null}
+
         {stage === "complete" ? (
           <div ref={completionRef} className="space-y-8">
-            {status === "authenticated" && session?.user ? (
+            {saveStatus === "saved" && session?.user ? (
               <ReferralLinkCard
                 referralLink={shareUrl}
                 shareTemplates={shareTemplates}
@@ -354,6 +428,13 @@ export default function TrialAbundanceSurveySection({
                 copyLinkLabel="COPY SURVEY LINK"
                 linkContentType="trial_abundance_referral"
               />
+            ) : status === "authenticated" || visualState === "save-error" ? (
+              <SurveyCard>
+                {saveStatus === "error" ? <>
+                  <AlertCard type="error" message="We could not save your response. Your answers are still in this browser." />
+                  <Button onClick={() => void saveResponse()}>Retry save</Button>
+                </> : <p role="status" className="font-bold">Saving your response…</p>}
+              </SurveyCard>
             ) : (
               <Card className="mx-auto max-w-3xl border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
                 <h2 className="mb-2 text-2xl font-black uppercase">

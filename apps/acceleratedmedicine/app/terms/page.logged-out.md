@@ -14,12 +14,14 @@
 ## Visible Page Copy
 
 - [RIGHT TO TRIAL INITIATIVE](/)
+- [Go to Dashboard](/dashboard)
 ## TERMS OF SERVICE
 - Last updated: August 2026
 ### 1. ACCEPTANCE OF TERMS
 - By using AcceleratedMedicine.org, you agree to these terms. If you do not agree, do not use the website. Institute for Accelerated Medicine may update these terms by publishing a revised version here.
 ### 2. THE SERVICE
 - Right to Trial Initiative provides the information and interactive features described on this website. Features may change as the service develops.
+- Answer surveys and review aggregate results.
 - Make voluntary donations through a payment processor.
 ### 3. ACCEPTABLE USE
 - Do not use the website to:

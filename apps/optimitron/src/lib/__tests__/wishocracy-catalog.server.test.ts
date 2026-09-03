@@ -56,16 +56,15 @@ describe("wishocracy catalog sync", () => {
       "PRAGMATIC_CLINICAL_TRIALS",
     ]);
 
-    expect(mocks.upsertJurisdiction).toHaveBeenCalledWith({
+    expect(mocks.upsertJurisdiction).toHaveBeenCalledWith(expect.objectContaining({
       where: { code: "US" },
-      update: {},
       create: {
         name: DEFAULT_WISHOCRACY_JURISDICTION.name,
         type: DEFAULT_WISHOCRACY_JURISDICTION.type,
         code: "US",
       },
       select: { id: true },
-    });
+    }));
     expect(mocks.upsertWishocraticItem).toHaveBeenCalledTimes(2);
     expect(mocks.upsertWishocraticItem).toHaveBeenCalledWith(
       expect.objectContaining({

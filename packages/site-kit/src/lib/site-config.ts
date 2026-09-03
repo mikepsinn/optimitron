@@ -1492,13 +1492,14 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     defaultRoute: "/",
     // Educational nonprofit site: patient access, pragmatic trials, evidence, and donations.
     enabledFeatures: [
+      SITE_FEATURES.SURVEY,
       SITE_FEATURES.RESEARCH,
       SITE_FEATURES.EDUCATION,
       SITE_FEATURES.DONATE,
     ],
     showPoliticalContent: false,
-    authEnabled: false,
-    dashboardEnabled: false,
+    authEnabled: true,
+    dashboardEnabled: true,
     icons: {
       icon: [
         { url: "/assets/acceleratedmedicine/favicon.ico", sizes: "any" },

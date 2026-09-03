@@ -77,17 +77,18 @@ export async function upsertWishoniaUser(
     return { person, user };
   }
 
+  // Scalar writes let Prisma use an atomic database upsert during concurrent initialization.
   const user = await client.user.upsert({
     where: { email: WISHONIA_EMAIL },
     update: {
       isSystem: true,
-      person: { connect: { id: person.id } },
+      personId: person.id,
     },
     create: {
       email: WISHONIA_EMAIL,
       isSystem: true,
       emailVerified: now,
-      person: { connect: { id: person.id } },
+      personId: person.id,
     },
   });
 

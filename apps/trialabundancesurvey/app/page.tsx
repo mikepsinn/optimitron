@@ -1,7 +1,6 @@
 import Layout from "../components/layout"
-import TrialAbundanceSurveySection, {
-  type TrialAbundanceVisualState,
-} from "@/components/landing/trial-abundance-survey-section"
+import TrialAbundanceSurveySection from "@/components/landing/trial-abundance-survey-section"
+import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual"
 
 interface HomePageProps {
   searchParams?: Promise<{ visual?: string }>
@@ -13,13 +12,7 @@ interface HomePageProps {
  */
 export default async function HomePage({ searchParams }: HomePageProps) {
   const visual = (await searchParams)?.visual
-  const visualState: TrialAbundanceVisualState | undefined =
-    visual === "question" ||
-    visual === "self-funded" ||
-    visual === "allocation" ||
-    visual === "complete"
-      ? visual
-      : undefined
+  const visualState = parseTrialAbundanceVisualState(visual)
 
   return (
     <Layout>

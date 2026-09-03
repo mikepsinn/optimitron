@@ -12,11 +12,7 @@ import {
 } from "@optimitron/neobrutalist-ui/ui/dialog"
 import {
   DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  DFDA_TRIAL_CAPACITY_MULTIPLIER,
-  NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
 } from "@optimitron/data/parameters"
 
@@ -56,7 +52,7 @@ export function PragmaticTrialsDialog({
           </div>
 
           <div className="mx-auto max-w-6xl space-y-6 p-5 pb-8 sm:p-8">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-3">
               <div className="border-4 border-primary bg-brutal-yellow p-4">
                 <div className="text-xs font-black uppercase">Pragmatic Cost</div>
                 <div className="mt-2 text-2xl font-black">
@@ -77,13 +73,6 @@ export function PragmaticTrialsDialog({
                   <ParameterInline param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />
                 </div>
                 <div className="mt-1 text-sm font-bold">cheaper in the RECOVERY model</div>
-              </div>
-              <div className="border-4 border-primary bg-background p-4">
-                <div className="text-xs font-black uppercase">Capacity Gain</div>
-                <div className="mt-2 text-2xl font-black text-brutal-cyan">
-                  <ParameterInline param={DFDA_TRIAL_CAPACITY_MULTIPLIER} />
-                </div>
-                <div className="mt-1 text-sm font-bold">more trial capacity from 1% reallocation</div>
               </div>
             </div>
 
@@ -112,21 +101,6 @@ export function PragmaticTrialsDialog({
                 Patients should always have access to the most effective treatment the evidence supports. When the
                 best answer is still uncertain after safety testing, they should be able to enter pragmatic trials so
                 treatment access and evidence generation happen at the same time instead of years apart.
-              </p>
-            </div>
-
-            <div className="border-4 border-primary bg-muted p-5">
-              <h3 className="text-lg font-black uppercase">Why The Budget Question Matters</h3>
-              <p className="mt-3 font-bold leading-relaxed text-muted-foreground">
-                The current system only gets first treatments to about{" "}
-                <ParameterInline param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} /> diseases per year, leaving an
-                estimated queue of <ParameterInline param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} />. In the current
-                model, funding pragmatic trials at scale lifts capacity by{" "}
-                <ParameterInline param={DFDA_TRIAL_CAPACITY_MULTIPLIER} /> and compresses that queue to{" "}
-                <ParameterInline param={DFDA_QUEUE_CLEARANCE_YEARS} />.
-              </p>
-              <p className="mt-3 text-sm font-bold uppercase text-muted-foreground">
-                More evidence. Better rankings. Faster access.
               </p>
             </div>
 

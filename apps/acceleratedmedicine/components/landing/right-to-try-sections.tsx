@@ -23,7 +23,8 @@ import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 
-import { RightToTrySupportForm } from "@/components/right-to-try-support-form";
+import TrialAbundanceSurveySection from "@optimitron/site-kit/components/landing/trial-abundance-survey-section";
+import type { TrialAbundanceVisualState } from "@optimitron/site-kit/components/landing/trial-abundance-survey-section";
 import {
   RIGHT_TO_TRY_SOURCES,
   STATE_CAMPAIGNS,
@@ -437,38 +438,31 @@ export function RightToTrialImpactPreviewSection() {
 export function StateSupportSection({
   initialRole,
   initialState,
-  heading = "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
-  body = "Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.",
-  headingAs: Heading = "h2",
+  heading = "Trial Abundance Survey",
+  body = "Three questions about patient access, who may fund trial participation, and public priorities.",
+  headingAs = "h2",
+  visualState,
 }: {
   initialRole?: SupporterRole;
   initialState?: string;
   heading?: string;
   body?: string;
   headingAs?: "h1" | "h2";
+  visualState?: TrialAbundanceVisualState;
 }) {
   return (
-    <SectionContainer
-      id="state-support"
-      bgColor="cyan"
-      borderPosition="bottom"
-      className="scroll-mt-24"
-    >
-      <Container size="lg">
-        <div className="mx-auto mb-10 max-w-4xl text-center">
-          <Heading className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            {heading}
-          </Heading>
-          <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            {body}
-          </p>
-        </div>
-        <RightToTrySupportForm
-          initialRole={initialRole}
-          initialState={initialState}
-        />
-      </Container>
-    </SectionContainer>
+    <TrialAbundanceSurveySection
+      sectionId="state-support"
+      headingAs={headingAs}
+      title={heading}
+      description={body}
+      visualState={visualState}
+      disableIntroAnimation={Boolean(visualState)}
+      initialParticipant={{
+        ...(initialState ? { countryCode: "US", regionCode: initialState } : {}),
+        role: initialRole ?? "",
+      }}
+    />
   );
 }
 

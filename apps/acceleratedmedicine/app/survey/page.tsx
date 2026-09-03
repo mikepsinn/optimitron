@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { StateSupportSection } from "@/components/landing/right-to-try-sections";
 import Layout from "@/components/layout";
+import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual";
 import {
   stateSlug,
   SUPPORTER_ROLES,
@@ -13,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: "Right to Trial Survey",
   description:
-    "Should every patient in your state have the right to join a clinical trial? Record your answer in 30 seconds and put your state on the map.",
+    "Answer three questions about patient access, trial funding, and public priorities. Verify your email to save your response.",
   alternates: {
     canonical: "https://acceleratedmedicine.org/survey",
   },
@@ -36,13 +37,15 @@ function matchRole(value: string | undefined): SupporterRole | undefined {
 export default async function SurveyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ state?: string; role?: string }>;
+  searchParams: Promise<{ state?: string; role?: string; visual?: string }>;
 }) {
-  const { state, role } = await searchParams;
+  const { state, role, visual } = await searchParams;
 
   return (
     <Layout>
       <StateSupportSection
+        headingAs="h1"
+        visualState={parseTrialAbundanceVisualState(visual)}
         initialRole={matchRole(role)}
         initialState={matchState(state)}
       />

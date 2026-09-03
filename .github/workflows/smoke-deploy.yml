@@ -13,8 +13,9 @@ permissions:
 
 # Operator setup for protected Vercel deployments:
 # 1. Open GitHub Settings -> Environments -> Preview -> Environment secrets.
-# 2. Add VERCEL_AUTOMATION_BYPASS_SECRET with the Vercel project secret from
-#    Deployment Protection -> Protection Bypass for Automation.
+# 2. Add VERCEL_AUTOMATION_BYPASS_SECRET_<APPNAME> for each split app from
+#    Deployment Protection -> Protection Bypass for Automation. Optimitron uses
+#    the existing VERCEL_AUTOMATION_BYPASS_SECRET name.
 # 3. Add the same secret to Production if you want production smoke to hit the
 #    exact protected *.vercel.app deployment URL. Without it, production smoke
 #    uses the public production aliases so host-specific outages stay visible.
@@ -507,7 +508,8 @@ jobs:
           PROD_URLS: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.urls || '' }}
           SITE_APP_URL: ${{ steps.target.outputs.url }}
           VERCEL_APP: ${{ steps.target.outputs.app }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          # Protection credentials belong to one Vercel project.
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets[format('VERCEL_AUTOMATION_BYPASS_SECRET_{0}', steps.target.outputs.app)] || (steps.target.outputs.app == 'optimitron' && secrets.VERCEL_AUTOMATION_BYPASS_SECRET) || '' }}
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
         run: |
           set +e
