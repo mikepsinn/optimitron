@@ -41,6 +41,15 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        // Preserve the old webhook URL; Optimitron owns signature checks and dispatch.
+        source: "/api/webhooks/resend",
+        destination: "https://optimitron.com/api/webhooks/resend",
+      },
+    ];
+  },
   async redirects() {
     return [
       { source: "/campaigns", destination: "/", permanent: false },
