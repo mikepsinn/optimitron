@@ -149,17 +149,19 @@ async function assertWarOnDiseaseHome(page) {
 
   const donateLink = page.locator('footer a[href="/donate"]');
   if ((await donateLink.count()) !== 1) {
-    throw new Error("War on Disease ACT footer must contain one Donate link");
+    throw new Error(
+      "War on Disease DO SOMETHING footer must contain one Donate link",
+    );
   }
   if ((await donateLink.getAttribute("href")) !== "/donate") {
     throw new Error(
-      "War on Disease ACT footer Donate link must point to /donate",
+      "War on Disease DO SOMETHING footer Donate link must point to /donate",
     );
   }
-  const donateActSection = donateLink.locator(
+  const donateFooterSection = donateLink.locator(
     "xpath=ancestor::div[h3[normalize-space()='DO SOMETHING']]",
   );
-  if ((await donateActSection.count()) !== 1) {
+  if ((await donateFooterSection.count()) !== 1) {
     throw new Error("War on Disease Donate link must appear under DO SOMETHING");
   }
   if (await page.locator('script[src*="promotion-bar.js"]').count()) {
