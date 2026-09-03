@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto"
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { getServerSession } from "next-auth"
 import {
   TRIAL_ABUNDANCE_REFERENDUM_SLUG,
@@ -20,7 +20,7 @@ vi.hoisted(() => {
 })
 
 let userId: string
-const email = `shared-survey-test-${randomUUID()}@example.invalid`
+let email: string
 const input = {
   submissionKey: randomUUID(),
   patientAccessAnswer: "YES", selfFundedAccessAnswer: "ABSTAIN",
@@ -41,8 +41,6 @@ function submit(body = input, handler = POST) {
 }
 
 beforeAll(async () => {
-  const user = await createAuthAdapter().createUser!({ email, emailVerified: new Date(), name: "Survey test" })
-  userId = user.id
   for (const slug of [TRIAL_ABUNDANCE_REFERENDUM_SLUG, TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG]) {
     if (!await prisma.referendum.findUnique({ where: { slug } })) {
       const referendum = await prisma.referendum.create({ data: { slug, title: slug, question: "Test question" } })
@@ -51,11 +49,14 @@ beforeAll(async () => {
   }
 })
 
-beforeEach(() => {
+beforeEach(async () => {
+  email = `shared-survey-test-${randomUUID()}@example.invalid`
+  const user = await createAuthAdapter().createUser!({ email, emailVerified: new Date("2026-09-02T12:00:00Z"), name: "Survey test" })
+  userId = user.id
   vi.mocked(getServerSession).mockResolvedValue({ user: { id: userId, email }, expires: "2099-01-01" })
 })
 
-afterAll(async () => {
+afterEach(async () => {
   const user = await prisma.user.findUnique({ where: { id: userId } })
   await prisma.formResponse.deleteMany({ where: { submission: { respondentUserId: userId } } })
   await prisma.formSubmission.deleteMany({ where: { respondentUserId: userId } })
@@ -65,12 +66,26 @@ afterAll(async () => {
   if (user?.personId) await prisma.subject.deleteMany({ where: { personId: user.personId } })
   await prisma.user.delete({ where: { id: userId } })
   if (user?.personId) await prisma.person.delete({ where: { id: user.personId } })
+})
+
+afterAll(async () => {
   await prisma.referendum.deleteMany({ where: { id: { in: createdReferendums } } })
   await prisma.$disconnect()
   vi.unstubAllEnvs()
 })
 
 describe("both survey routes with PostgreSQL", () => {
+  it("records one first-response activity when both apps submit different drafts concurrently", async () => {
+    const results = await Promise.all([
+      submit(input, POST),
+      submit({ ...input, submissionKey: randomUUID() }, postTrialAbundance),
+    ])
+    expect(results.map((result) => result.status)).toEqual([200, 200])
+    expect(await prisma.formSubmission.count({ where: { respondentUserId: userId } })).toBe(2)
+    expect(await prisma.referendumVote.count({ where: { userId } })).toBe(2)
+    expect(await prisma.activity.count({ where: { userId, type: "VOTED_REFERENDUM" } })).toBe(1)
+  })
+
   it("rejects anonymous submissions on both sites without any database response", async () => {
     vi.mocked(getServerSession).mockResolvedValue(null)
     for (const handler of [POST, postTrialAbundance]) {

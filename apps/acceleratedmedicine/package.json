@@ -12,6 +12,7 @@
     "test": "vitest run --exclude 'tests/integration/**'",
     "test:unit": "cross-env SKIP_DB_TEST_SETUP=1 vitest run --exclude 'tests/integration/**'",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e:auth": "playwright test --config playwright.auth.config.ts",
     "smoke:db": "tsx scripts/smoke-treaty-db.ts"
   },
   "dependencies": {

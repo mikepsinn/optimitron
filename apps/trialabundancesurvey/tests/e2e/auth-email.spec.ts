@@ -3,9 +3,11 @@ import type { Page } from "@playwright/test"
 import { readFile, rm, mkdir } from "node:fs/promises"
 import path from "node:path"
 import { Pool } from "pg"
+import { randomUUID } from "node:crypto"
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-const emailFor = (name: string) => `auth-e2e-${test.info().project.name}-${name}@example.invalid`
+const runId = randomUUID()
+const emailFor = (name: string) => `auth-e2e-${process.env.AUTH_E2E_APP}-${test.info().project.name}-${name}-${runId}@example.invalid`
 
 async function verificationLink(email: string) {
   const messages = (await readFile(process.env.AUTH_E2E_OUTBOX!, "utf8"))
@@ -41,7 +43,7 @@ async function capture(page: Page, name: string) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }))
   await page.mouse.move(0, 0)
   await page.screenshot({
-    path: path.join(directory, `${name}-${test.info().project.name}-after.png`),
+    path: path.join(directory, `${process.env.AUTH_E2E_APP}-${name}-${test.info().project.name}-after.png`),
     fullPage: true,
     animations: "disabled",
   })
@@ -52,17 +54,34 @@ test.afterAll(async () => {
   await rm(process.env.AUTH_E2E_OUTBOX!, { force: true })
 })
 
-test("survey email link saves the answers and lands on the dashboard", async ({ page }) => {
+async function answerSurvey(page: Page) {
   await page.goto("/")
-  await page.getByRole("button", { name: "Yes", exact: true }).click()
-  await expect(page.getByText("Question 2 of 3", { exact: true })).toBeVisible()
-  await page.getByRole("button", { name: "Not sure", exact: true }).click()
-  await page.getByRole("slider").press("ArrowRight")
-  await page.getByRole("button", { name: "Continue", exact: true }).click()
-  await page.getByRole("combobox", { name: "Country", exact: true }).selectOption("US")
-  await page.getByLabel("State", { exact: true }).fill("Missouri")
-  await page.getByRole("combobox", { name: "Your role", exact: true }).selectOption("patient-or-caregiver")
-  await expect(page.getByRole("checkbox")).not.toBeChecked()
+  const survey = page.locator(process.env.AUTH_E2E_APP === "acceleratedmedicine" ? "#state-support" : "#vote")
+  await survey.getByRole("button", { name: "Yes", exact: true }).click()
+  await expect(survey.getByText("Question 2 of 3", { exact: true })).toBeVisible()
+  await survey.getByRole("button", { name: "Not sure", exact: true }).click()
+  await survey.getByRole("slider").press("ArrowRight")
+  await survey.getByRole("button", { name: "Continue", exact: true }).click()
+  await survey.getByRole("combobox", { name: "Country", exact: true }).selectOption("US")
+  await survey.getByLabel("State", { exact: true }).fill("Missouri")
+  await survey.getByRole("combobox", { name: "Your role", exact: true }).selectOption("patient-or-caregiver")
+  await survey.getByRole("textbox", { name: "Why does this matter to you?", exact: false }).fill("I want more treatment options.")
+  await expect(survey.getByRole("checkbox")).not.toBeChecked()
+}
+
+async function savedSubmissions(email: string) {
+  return (await pool.query(`SELECT s.id, subject."personId", u."personId" AS "userPersonId",
+    u."countryCode", u."regionCode", u."newsletterSubscribed", u."emailVerified",
+    jsonb_object_agg(f.key, r."valueJson") AS answers
+    FROM "FormSubmission" s JOIN "User" u ON u.id = s."respondentUserId"
+    JOIN "Subject" subject ON subject.id = s."subjectId"
+    JOIN "FormResponse" r ON r."submissionId" = s.id
+    JOIN "FormField" f ON f.id = r."fieldId"
+    WHERE u.email = $1 GROUP BY s.id, subject.id, u.id`, [email])).rows
+}
+
+test("survey email link saves the answers and lands on the dashboard", async ({ page }) => {
+  await answerSurvey(page)
   await page.getByRole("button", { name: "Continue to verification", exact: true }).click()
   await expect(page.getByRole("heading", { name: "Save your response" })).toBeVisible()
   if (process.env.AUTH_CAPTURE_REVIEW) {
@@ -85,6 +104,16 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   await expect(page.getByText("Allocation: 49% military and weapons, 51% pragmatic clinical trials", { exact: true })).toBeVisible()
   await page.reload()
   await expect(page.getByText("Patient access: YES", { exact: true })).toBeVisible()
+  const [submission] = await savedSubmissions(email)
+  expect(await savedSubmissions(email)).toHaveLength(1)
+  expect(submission.personId).toBe(submission.userPersonId)
+  expect(submission.emailVerified).toBeTruthy()
+  expect(submission).toMatchObject({ countryCode: "US", regionCode: "Missouri", newsletterSubscribed: false })
+  expect(submission.answers).toMatchObject({
+    countryCode: "US", regionCode: "Missouri", role: "patient-or-caregiver",
+    story: "I want more treatment options.", updates: false, email,
+    patientAccessAnswer: "YES", selfFundedAccessAnswer: "ABSTAIN", militaryAllocationPercent: 49,
+  })
   await capture(page, "survey-auth-dashboard")
 
   await page.getByRole("button", { name: "Toggle menu" }).click()
@@ -100,6 +129,49 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   const replacement = await requestLink(page, email)
   await page.goto(replacement.href)
   await expectDashboard(page)
+})
+
+test("an authenticated response stays in the browser after a failed save and retries once", async ({ page }) => {
+  const email = emailFor("save-retry")
+  await page.goto("/auth/signin")
+  await page.goto((await requestLink(page, email)).href)
+  await expectDashboard(page)
+  await answerSurvey(page)
+  await page.route("**/api/votes/sync", (route) => route.fulfill({
+    status: 503, contentType: "application/json", body: JSON.stringify({ error: "Temporary save failure" }),
+  }), { times: 1 })
+  await page.getByRole("button", { name: "Save my response", exact: true }).click()
+  await expect(page.getByText("We could not save your response. Your answers are still in this browser.")).toBeVisible()
+  expect(await savedSubmissions(email)).toHaveLength(0)
+  await expect(page.getByRole("button", { name: "COPY SURVEY LINK", exact: true })).toHaveCount(0)
+  await capture(page, "survey-save-retry")
+  await page.getByRole("button", { name: "Retry save", exact: true }).click()
+  await expect(page.getByRole("button", { name: "COPY SURVEY LINK", exact: true })).toBeVisible()
+  expect(await savedSubmissions(email)).toHaveLength(1)
+  await page.reload()
+  expect(await savedSubmissions(email)).toHaveLength(1)
+})
+
+test("signup completion failure offers a retry before saving the survey", async ({ page }) => {
+  const email = emailFor("verification-retry")
+  await answerSurvey(page)
+  await page.getByRole("button", { name: "Continue to verification", exact: true }).click()
+  await page.getByLabel("Name", { exact: true }).fill("Survey participant")
+  await page.getByLabel("Email", { exact: true }).fill(email)
+  await page.getByRole("button", { name: "Email me a verification link" }).click()
+  await expect(page.getByText("Check your email!", { exact: true })).toBeVisible()
+  await page.route("**/api/auth/complete-signup", (route) => route.fulfill({
+    status: 503, contentType: "application/json", body: JSON.stringify({ error: "Temporary signup failure" }),
+  }), { times: 1 })
+  await page.goto((await verificationLink(email)).href)
+  await expect(page.getByRole("alert").filter({ hasText: "We could not finish verification." }))
+    .toHaveText("We could not finish verification. Your answers are still saved in this browser. Please try again.")
+  await expect(page).toHaveURL(/\/auth\/complete-signup\?/u)
+  expect(await savedSubmissions(email)).toHaveLength(0)
+  await capture(page, "survey-verification-retry")
+  await page.getByRole("button", { name: "Retry verification", exact: true }).click()
+  await expectDashboard(page)
+  expect(await savedSubmissions(email)).toHaveLength(1)
 })
 
 test("an already-issued homepage callback finishes on the dashboard in a new browser", async ({ page, browser }) => {

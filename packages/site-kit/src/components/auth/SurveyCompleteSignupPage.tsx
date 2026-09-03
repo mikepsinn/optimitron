@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Layout } from "../layout"
@@ -8,6 +8,7 @@ import { storage } from "../../lib/storage"
 import { syncPendingTrialAbundanceResponse } from "../../lib/trial-abundance-survey"
 import { createLogger } from "../../lib/logger"
 import { getSurveyPostAuthPath } from "../../lib/auth-redirect"
+import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 const log = createLogger("complete-signup-page")
 
@@ -16,8 +17,12 @@ export default function CompleteSignupPage() {
   const searchParams = useSearchParams()
   const { data: session, status } = useSession()
   const visualPreview = searchParams?.get("visual") === "1"
-  const [isProcessing, setIsProcessing] = useState(true)
-  const [error, setError] = useState("")
+  const previewError = visualPreview && searchParams?.get("recovery") === "error"
+  const failureMessage = "We could not finish verification. Your answers are still saved in this browser. Please try again."
+  const [isProcessing, setIsProcessing] = useState(!previewError)
+  const [error, setError] = useState(previewError ? failureMessage : "")
+  const [attempt, setAttempt] = useState(0)
+  const inFlight = useRef(false)
 
   useEffect(() => {
     const processVerification = async () => {
@@ -34,7 +39,8 @@ export default function CompleteSignupPage() {
         return
       }
 
-      if (!session?.user?.id) return
+      if (!session?.user?.id || inFlight.current) return
+      inFlight.current = true
 
       try {
         // Get stored verification data from localStorage
@@ -57,8 +63,8 @@ export default function CompleteSignupPage() {
           })
 
           if (!response.ok) {
-            const data = await response.json()
-            setError(data.error || "Failed to verify your response")
+            setError(failureMessage)
+            return
           } else {
             // Clear localStorage
             storage.clearSignupData()
@@ -71,17 +77,15 @@ export default function CompleteSignupPage() {
         router.replace(callbackUrl)
       } catch (error) {
         log.error("Complete vote verification error", { error })
-        setError("An error occurred. Redirecting to dashboard...")
-        setTimeout(() => {
-          router.push("/dashboard")
-        }, 2000)
+        setError(failureMessage)
       } finally {
+        inFlight.current = false
         setIsProcessing(false)
       }
     }
 
     processVerification()
-  }, [session, status, router, searchParams, visualPreview])
+  }, [session, status, router, searchParams, visualPreview, attempt])
 
   if (isProcessing || status === "loading") {
     return (
@@ -105,9 +109,13 @@ export default function CompleteSignupPage() {
           <div className="w-full max-w-md">
             <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <div className="bg-red-100 border-4 border-red-500 p-4 mb-6">
-                <p className="font-bold text-red-700">{error}</p>
+                <p role="alert" className="font-bold text-red-700">{error}</p>
               </div>
-              <p className="text-sm">Redirecting you now...</p>
+              <Button onClick={() => {
+                setError("")
+                setIsProcessing(true)
+                setAttempt((current) => current + 1)
+              }}>Retry verification</Button>
             </div>
           </div>
         </div>

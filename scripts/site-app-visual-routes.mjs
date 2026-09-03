@@ -931,6 +931,12 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
           "packages/site-kit/src/components/auth/SurveyCompleteSignupPage.tsx",
         ],
       },
+      {
+        label: "Response verification retry",
+        routeName: "auth-complete-signup-retry",
+        routePath: "/auth/complete-signup?visual=1&recovery=error",
+        covers: ["packages/site-kit/src/components/auth/SurveyCompleteSignupPage.tsx"],
+      },
     );
     if (siteVariant === VARIANTS.SURVEY) routes.push({
       label: "Partner embed",
@@ -953,7 +959,13 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         ...(routeName.startsWith("dashboard") ? { authenticated: true, authRole: "user" } : {}),
         covers: [
           `packages/site-kit/src/components/${component}`,
-          ...(routeName === "auth-error" ? ["packages/site-kit/src/components/auth/SurveyAuthErrorContent.tsx"] : []),
+          ...(routeName === "auth-error" ? [
+            "packages/site-kit/src/components/auth/SurveyAuthErrorContent.tsx",
+            `apps/${appName}/app/auth/error/error-content.tsx`,
+          ] : []),
+          ...(routeName === "dashboard-retry-preview" ? [
+            `apps/${appName}/app/dashboard/pending-response-recovery.tsx`,
+          ] : []),
           ...(routeName === "auth-signin" ? ["packages/site-kit/src/components/auth/AuthForm.tsx"] : []),
         ],
       });

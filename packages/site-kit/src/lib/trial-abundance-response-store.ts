@@ -74,20 +74,6 @@ export async function saveTrialAbundanceResponse(
   ])
 
   const person = await ensurePersonForUser(userId)
-  const existingVotes = await prisma.referendumVote.findMany({
-    where: {
-      personId: person.id,
-      referendumId: {
-        in: [patientAccessReferendum.id, selfFundedAccessReferendum.id],
-      },
-    },
-  })
-  const existingPatientAccessVote = existingVotes.find(
-    ({ referendumId }) => referendumId === patientAccessReferendum.id,
-  )
-  const existingSelfFundedAccessVote = existingVotes.find(
-    ({ referendumId }) => referendumId === selfFundedAccessReferendum.id,
-  )
   const invitation = input.inviteToken
     ? await prisma.referralInvitation.findUnique({
         where: { inviteToken: input.inviteToken },
@@ -133,6 +119,18 @@ export async function saveTrialAbundanceResponse(
       if (existingSubmission.requestHash !== identity.requestHash) throw new Error("Submission key already used")
       return { submissionId: existingSubmission.id }
     }
+    const existingVotes = await transaction.referendumVote.findMany({
+      where: {
+        personId: person.id,
+        referendumId: { in: [patientAccessReferendum.id, selfFundedAccessReferendum.id] },
+      },
+    })
+    const existingPatientAccessVote = existingVotes.find(
+      ({ referendumId }) => referendumId === patientAccessReferendum.id,
+    )
+    const existingSelfFundedAccessVote = existingVotes.find(
+      ({ referendumId }) => referendumId === selfFundedAccessReferendum.id,
+    )
     const claimedInvitation =
       usableInvitation &&
       usableInvitation.status !== ReferralInvitationStatus.CONVERTED &&
