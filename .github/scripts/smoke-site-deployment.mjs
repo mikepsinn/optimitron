@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { appendFile, writeFile } from "node:fs/promises";
+import { pathToFileURL } from "node:url";
 import {
   getVercelAppByUrl,
   VERCEL_APP_PROJECTS,
@@ -81,7 +82,7 @@ async function smokeRoute(baseUrl, routePath, options) {
   return { ...attempts.at(-1), path: routePath, url, attempts };
 }
 
-async function fetchRoute(url, options = {}) {
+export async function fetchRoute(url, options = {}) {
   const startedAt = Date.now();
   const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET?.trim();
   try {
@@ -96,6 +97,8 @@ async function fetchRoute(url, options = {}) {
         : undefined,
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
+    const finalUrl = new URL(response.url);
+    const redirectedToLogin = finalUrl.hostname === "vercel.com" && finalUrl.pathname === "/login";
     const body = await response.text();
     const matchedErrorMarker = ERROR_MARKERS.find((marker) =>
       body.includes(marker),
@@ -115,14 +118,16 @@ async function fetchRoute(url, options = {}) {
     const statusOk = options.expectedStatus
       ? response.status === expectedStatus
       : response.ok;
-    const ok = statusOk && matchesExpectedJson && !matchedErrorMarker;
+    const ok = statusOk && matchesExpectedJson && !matchedErrorMarker && !redirectedToLogin;
     return {
       ok,
       status: response.status,
       durationMs: Date.now() - startedAt,
       error: ok
         ? undefined
-        : matchedErrorMarker
+        : redirectedToLogin
+          ? "Deployment protection redirected the request to Vercel login"
+          : matchedErrorMarker
           ? `Response contained ${matchedErrorMarker}`
           : !matchesExpectedJson
             ? "Response did not contain the expected webhook rejection"
@@ -174,7 +179,9 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
