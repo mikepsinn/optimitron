@@ -157,10 +157,10 @@ async function assertWarOnDiseaseHome(page) {
     );
   }
   const donateActSection = donateLink.locator(
-    "xpath=ancestor::div[h3[normalize-space()='ACT']]",
+    "xpath=ancestor::div[h3[normalize-space()='DO SOMETHING']]",
   );
   if ((await donateActSection.count()) !== 1) {
-    throw new Error("War on Disease Donate link must appear under ACT");
+    throw new Error("War on Disease Donate link must appear under DO SOMETHING");
   }
   if (await page.locator('script[src*="promotion-bar.js"]').count()) {
     throw new Error("War on Disease still loads the floating promotion bar");

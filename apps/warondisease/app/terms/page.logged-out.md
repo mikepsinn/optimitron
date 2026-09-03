@@ -52,17 +52,36 @@
 - Email: hello@warondisease.org
 - Website: WarOnDisease.org
 - MAKING SUFFERING OPTIONAL
-#### ACT
+#### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [THE PLAN](/the-plan)
+- [FEEDBACK](https://optimitron.com/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](https://optimitron.com/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
+- [TREATY SIGNATORIES](/signatories)
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](https://optimitron.com/mcp)
+- [DEVELOPERS](https://optimitron.com/developers)
+- [THE PLAN](/the-plan)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 - [hello@warondisease.org](mailto:hello@warondisease.org)
 - [PRIVACY POLICY](/privacy)

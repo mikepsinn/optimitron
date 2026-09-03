@@ -699,53 +699,73 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
 
     // Navigation: keep the vote button primary, then expose the next useful
     // campaign actions without turning the sidebar into a route inventory.
-    topLevelNavItems: [],
-    sidebarVoteCtaPlacement: "top",
-    sidebarSections: [
-      {
-        id: "take-action",
-        label: "Take Action",
-        items: ["treaty", "send", "join", "employees"],
-      },
-      {
-        id: "see-progress",
-        label: "See Progress",
-        items: ["signatories", "search"],
-      },
-      {
-        id: "understand",
-        label: "Understand",
-        items: ["thePlan", "manual", "faq"],
-      },
+    // Mirrors the original apps/optimitron War on Disease variant menu: one
+    // flat list in the same order, no accordion sections. The vote CTA stays
+    // at the top of the sheet.
+    topLevelNavItems: [
+      "treaty",
+      "manageHumanity",
+      "plaintiffs",
+      "employees",
+      "shirt",
+      "poster",
+      "doorToDoor",
+      "joke",
+      "missions",
+      "tasks",
     ],
+    sidebarVoteCtaPlacement: "top",
+    sidebarSections: [],
     footerBranding: {
       title: "THE WAR ON DISEASE",
       tagline: "MAKING SUFFERING OPTIONAL",
     },
+    // The four original footer columns. Campaign-app pages that had no place in
+    // the original footer are appended to the closest column so they stay
+    // reachable.
     footerSections: [
       {
-        id: "act",
-        label: "ACT",
-        items: ["vote", "treaty", "send", "join", "employees", "donate"],
+        id: "do-something",
+        label: "DO SOMETHING",
+        items: ["vote", "plaintiffs", "donate", "feedback"],
       },
       {
-        id: "progress",
-        label: "PROGRESS",
-        items: ["signatories", "search", "thePlan"],
-      },
-      {
-        id: "learn-share",
-        label: "LEARN & SHARE",
+        id: "tell-someone-else",
+        label: "TELL SOMEONE ELSE",
         items: [
+          "send",
+          "manageHumanity",
+          "shirt",
+          "joke",
+          "employees",
+          "people",
+          "tasks",
+          "signatories",
+        ],
+      },
+      {
+        id: "learn-something",
+        label: "LEARN SOMETHING",
+        items: [
+          "treaty",
+          "humanityVGovernmentCase",
+          "treatyImpact",
           "manual",
+          "listenPodcast",
+          "courtOfHumanity",
+          "optimitronMcp",
+          "developers",
+          "thePlan",
           "faq",
           "about",
-          "listenPodcast",
-          "poster",
-          "doorToDoor",
           "institutes",
-          "volunteer",
+          "search",
         ],
+      },
+      {
+        id: "your-organization",
+        label: "YOUR ORGANIZATION",
+        items: ["join", "volunteer"],
       },
     ],
     contactInfo: {

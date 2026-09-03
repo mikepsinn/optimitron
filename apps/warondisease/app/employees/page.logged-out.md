@@ -42,7 +42,7 @@
 - This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [2 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
 - 💀 DEAD ALREADY FROM THE DELAY
 - [treaty-deaths-from-delay]
-- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 607 DAYS
+- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 611 DAYS
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [treaty-money-wasted]
 - RATE: [$10T/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
@@ -69,17 +69,36 @@
 - PAGE 1 / 19
 - Next →
 - MAKING SUFFERING OPTIONAL
-#### ACT
+#### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [THE PLAN](/the-plan)
+- [FEEDBACK](https://optimitron.com/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](https://optimitron.com/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
+- [TREATY SIGNATORIES](/signatories)
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](https://optimitron.com/mcp)
+- [DEVELOPERS](https://optimitron.com/developers)
+- [THE PLAN](/the-plan)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)

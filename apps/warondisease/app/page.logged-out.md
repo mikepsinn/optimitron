@@ -69,9 +69,9 @@
 ### OXFORD RECOVERY TRIAL PROVED RESEARCH CAN BE DONE FOR
 ### WHY THE BOTTLENECK IS CLINICAL TRIALS, NOT BASIC SCIENCE
 #### THE VAST UNEXPLORED THERAPEUTIC FRONTIER
-- 10K
-- 10M
-- 33K
+- [10K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [10M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [33K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - Exploration Ratio=32.5K tested 9.5M possible=0.34%Exploration Ratio=9.5M possible 32.5K tested​=0.34%
 - TESTED (0.34%)
 - UNEXPLORED (99.7%)
@@ -79,8 +79,8 @@
 - You cannot have "diminishing returns" when you haven't even started.
 - Wait, it gets worse: The FULL therapeutic frontier
 - The 9.5M figure above only counts single drugs against diseases. Modern medicine increasingly uses combination therapies (standard in oncology, HIV, cardiology).
-- 45B
-- 42M
+- [45B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [42M](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - 45.1B
 - Note: We use the conservative 9.5M figure in our main calculations because single-drug trials are more straightforward. But the combination therapy space shows the true scale of unexplored medicine.
 #### YEARS TO UNIVERSAL TREATMENT COVERAGE
@@ -297,27 +297,27 @@
 ### 💰 THE MATH
 #### THE RETURNS ON NOT DYING
 - When you stop making people fill out paperwork and start letting them not die, something magical happens:
-- 637:1
+- [637:1](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - $637 returned for every $1 invested
 - Not a typo. Not a fever dream. Actual math.
 - This beats humanity's previous greatest hits in the "not dying" genre:
 - WHERE THE VALUE COMES FROM:
-- $59B
-- 86K
+- [$59B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [86K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Value comes from faster drug approvals (14 years → 2 years), better treatment matching through real-world data, and addressing neglected diseases that companies ignore.
 #### ♾️ THE MATH THAT BROKE EXCEL
 - A 84.8M:1 Return on Investment
 - A $1B campaign yields $84.8 Quadrillion in health value.
 - ROI=Health Value Created Campaign Cost=$84.8 Q u a d r i l l i o n$1 B=84.8 M: 1 ROI​=Campaign Cost Health Value Created​=$1 B$84.8 Q u a d r i l l i o n​=84.8 M: 1​
-- $1B
-- $85 Quadrillion
-- 11B
+- [$1B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Math says this is the best possible use of a billion dollars.
 - Math is rarely wrong about money. People are frequently wrong about money.
 - [SEE THE FULL MATH →](/research)
 - Charts, breakdowns, and all the nerdy details
 ### YOUR VOTE'S IMPACT
-- $27B/year scales trial capacity 12X, achieving 247 years of progress in 20
+- [$27B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year scales trial capacity 12X, achieving 247 years of progress in 20
 - Through a 212-year average timeline shift: 12× trial capacity + eliminating 8.2-year regulatory delays
 - HIGHEST ROI ACTION IN HISTORY
 - In 30 seconds, you can save more lives than most people save in a lifetime.
@@ -328,16 +328,34 @@
 ### 💀 DEATH CLOCK
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
-#### ACT
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [THE PLAN](/the-plan)
+- [FEEDBACK](https://optimitron.com/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](https://optimitron.com/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
+- [TREATY SIGNATORIES](/signatories)
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](https://optimitron.com/mcp)
+- [DEVELOPERS](https://optimitron.com/developers)
+- [THE PLAN](/the-plan)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)

@@ -90,24 +90,35 @@
 - Vote to redirect 1% of weapons and military spending to pragmatic clinical trials.
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
-#### ACT
-- [READ & SIGN THE TREATY](/treaty)
-- [TELL TWO PEOPLE](/send)
-- [ENDORSE AS AN ORGANIZATION](/join)
-- [REMIND PRESIDENTS](/employees)
+#### DO SOMETHING
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### PROGRESS
+- [FEEDBACK](https://optimitron.com/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](https://optimitron.com/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
 - [TREATY SIGNATORIES](/signatories)
-- [SEARCH](/search)
-- [THE PLAN](/the-plan)
-#### LEARN & SHARE
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [PODCAST](https://manual.warondisease.org/listen)
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](https://optimitron.com/mcp)
+- [DEVELOPERS](https://optimitron.com/developers)
+- [THE PLAN](/the-plan)
 - [FAQ](/faq)
 - [ABOUT](/about)
-- [PODCAST](https://manual.warondisease.org/listen)
-- [HANG UP FLYERS](/poster)
-- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)

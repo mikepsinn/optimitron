@@ -31,9 +31,9 @@
 - "Would you support international cooperation to increase clinical trial funding?"
 - YOUR DASHBOARD: COMMUNITY RESPONSES + PREFERRED RESOURCE ALLOCATION DATA
 ### THE BRUTAL TRUTH
-- $2.72T
-- $5B
-- 604:1
+- [$2.72T](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$5B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 ### WHAT 1% CHANGES
 - REDIRECTING 1% OF MILITARY BUDGETS = $27.2B/YEAR
 - Ready to demonstrate your community's support for clinical trial abundance?
@@ -46,7 +46,7 @@
 - "Our 10,000 verified respondents support redirecting 1% of military budgets to trials"
 - → Strengthen advocacy with hard numbers, not anecdotes
 #### DONOR REPORTS
-- "Show supporters: 'Your voice joined 4B humans demanding trial abundance'"
+- "Show supporters: 'Your voice joined [4B](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans demanding trial abundance'"
 - → Prove the gap between "I care about this" and "I did something about it" is 2 minutes
 - YOUR DASHBOARD: EXPORTABLE CHARTS, SEGMENTED BY COUNTRY + DEMOGRAPHICS
 ### ADD THE SURVEY TO YOUR SITE
@@ -155,17 +155,36 @@
 - Continue with Google
 - Continue with Email
 - MAKING SUFFERING OPTIONAL
-#### ACT
+#### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [THE PLAN](/the-plan)
+- [FEEDBACK](https://optimitron.com/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](https://optimitron.com/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
+- [TREATY SIGNATORIES](/signatories)
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](https://optimitron.com/mcp)
+- [DEVELOPERS](https://optimitron.com/developers)
+- [THE PLAN](/the-plan)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)
