@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Check, Copy } from "lucide-react"
 import { cn } from "@optimitron/neobrutalist-ui/cn"
 import { copyTextToClipboard } from "../../lib/clipboard"
@@ -21,12 +21,21 @@ interface CopyableCodeProps {
  */
 export function CopyableCode({ className, code }: CopyableCodeProps) {
   const [copied, setCopied] = useState(false)
+  const resetTimer = useRef<number>()
+
+  // Clearing the pending timer before starting a new one keeps the
+  // confirmation visible for a full two seconds after the *latest* copy.
+  // Without it, copying twice in quick succession lets the first timer clear
+  // the badge while the second copy still looks unacknowledged. The unmount
+  // cleanup stops the same timer from setting state on a gone component.
+  useEffect(() => () => window.clearTimeout(resetTimer.current), [])
 
   async function handleCopy() {
     try {
       await copyTextToClipboard(code)
       setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
+      window.clearTimeout(resetTimer.current)
+      resetTimer.current = window.setTimeout(() => setCopied(false), 2000)
     } catch {
       // Clipboard unavailable; the text is still selectable.
     }
