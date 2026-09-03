@@ -60,12 +60,14 @@ When a task has multiple `TaskCommunicationEndpoint` rows, the engine selects th
 
 ## Inbound email guardrails
 
-Optimitron has a guarded inbound reply path at `/api/webhooks/resend-inbound`. It decodes `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`, authenticates the sender against the task creator, assignee, organization contact, or task contact endpoint, strips quoted text, and writes a `TaskComment(kind=INBOUND_MESSAGE)` plus `TaskCommunication(status=RECEIVED)`.
+Optimitron receives Resend events at `https://optimitron.com/api/webhooks/resend`. The War on Disease path `/api/webhooks/resend` forwards to this handler for compatibility. Keep one Resend webhook registration, pointed at the canonical Optimitron URL, to avoid duplicate deliveries.
+
+The handler records delivery events and handles bounces and complaints. For `email.received`, it decodes `reply+{taskId}@{REPLY_EMAIL_DOMAIN}`, authenticates the sender against the task creator, assignee, organization contact, or task contact endpoint, strips quoted text, and writes a `TaskComment(kind=INBOUND_MESSAGE)` plus `TaskCommunication(status=RECEIVED)`.
 
 Do not surface "reply by email" unless both of these are true:
 
-- `RESEND_INBOUND_WEBHOOK_SECRET` and `REPLY_EMAIL_DOMAIN` are configured for the deployment.
-- The inbound provider routes that domain to `/api/webhooks/resend-inbound` with the matching signature secret.
+- `RESEND_WEBHOOK_SECRET` and `REPLY_EMAIL_DOMAIN` are configured for the Optimitron deployment.
+- Resend receives mail for that domain and sends `email.received` to the enabled webhook with the matching signature secret.
 
 Still-required production guardrails before broad rollout:
 
