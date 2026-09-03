@@ -404,6 +404,19 @@ export const publicSiteAppRoutes = Object.freeze({
     },
     {
       covers: [
+        "apps/warondisease/app/shirt/page.tsx",
+        "apps/warondisease/app/shirt/shirt-client.tsx",
+        "apps/warondisease/components/shirt/TshirtSilhouette.tsx",
+        "packages/site-kit/src/components/task-funding/TaskFundingProgress.tsx",
+        "packages/site-kit/src/lib/task-funding/status.server.ts",
+      ],
+      label: "Get the shirt",
+      routeName: "shirt",
+      routePath: "/shirt",
+      sourcePage: "apps/warondisease/app/shirt/page.tsx",
+    },
+    {
+      covers: [
         "apps/warondisease/app/fix-ai/page.tsx",
         "apps/warondisease/app/fix-ai/content.ts",
         "apps/warondisease/app/fix-ai/corpus.server.ts",

@@ -151,6 +151,15 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
   },
   {
     description:
+      "Wear your campaign QR code. Print the artwork or upgrade the shirts you already own.",
+    emoji: "👕",
+    href: ROUTES.shirt,
+    keywords: ["shirt", "t-shirt", "tshirt", "qr code", "print", "wear"],
+    section: "Recruit",
+    title: "Get the Shirt",
+  },
+  {
+    description:
       "Spend an hour a day with one person ending war and disease.",
     emoji: "💘",
     href: ROUTES.love,
