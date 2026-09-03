@@ -76,12 +76,11 @@ afterAll(async () => {
 
 describe("both survey routes with PostgreSQL", () => {
   it("records one first-response activity when both apps submit different drafts concurrently", async () => {
-    const results = await Promise.all([
-      submit(input, POST),
-      submit({ ...input, submissionKey: randomUUID() }, postTrialAbundance),
-    ])
-    expect(results.map((result) => result.status)).toEqual([200, 200])
-    expect(await prisma.formSubmission.count({ where: { respondentUserId: userId } })).toBe(2)
+    const results = await Promise.all(Array.from({ length: 8 }, (_, index) =>
+      submit({ ...input, submissionKey: randomUUID() }, index % 2 === 0 ? POST : postTrialAbundance),
+    ))
+    expect(results.map((result) => result.status)).toEqual(Array(8).fill(200))
+    expect(await prisma.formSubmission.count({ where: { respondentUserId: userId } })).toBe(8)
     expect(await prisma.referendumVote.count({ where: { userId } })).toBe(2)
     expect(await prisma.activity.count({ where: { userId, type: "VOTED_REFERENDUM" } })).toBe(1)
   })
