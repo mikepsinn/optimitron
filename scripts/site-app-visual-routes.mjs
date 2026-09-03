@@ -427,6 +427,40 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/warondisease/app/employees/page.tsx",
     },
     {
+      covers: [
+        "apps/warondisease/app/mcp/page.tsx",
+        "packages/site-kit/src/components/shared/CopyableCode.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+        "packages/site-kit/src/lib/mcp/catalog.generated.json",
+      ],
+      label: "MCP setup",
+      routeName: "mcp",
+      routePath: "/mcp",
+      sourcePage: "apps/warondisease/app/mcp/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/developers/page.tsx",
+        "packages/site-kit/src/components/shared/CopyableCode.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+      ],
+      label: "Earth Optimization API",
+      routeName: "developers",
+      routePath: "/developers",
+      sourcePage: "apps/warondisease/app/developers/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/developers/tools/page.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+        "packages/site-kit/src/lib/mcp/catalog.generated.json",
+      ],
+      label: "MCP tool reference",
+      routeName: "developers-tools",
+      routePath: "/developers/tools",
+      sourcePage: "apps/warondisease/app/developers/tools/page.tsx",
+    },
+    {
       covers: ["apps/warondisease/app/survey/demo/page.tsx"],
       label: "Survey embed demo",
       routeName: "survey-demo",
