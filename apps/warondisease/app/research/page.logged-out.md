@@ -95,7 +95,6 @@
 - [TELL TWO PEOPLE](/send)
 - [ENDORSE AS AN ORGANIZATION](/join)
 - [REMIND PRESIDENTS](/employees)
-- [DONATE](/donate)
 #### PROGRESS
 - [TREATY SIGNATORIES](/signatories)
 - [SEARCH](/search)

@@ -42,7 +42,7 @@
 - This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [2 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
 - 💀 DEAD ALREADY FROM THE DELAY
 - [treaty-deaths-from-delay]
-- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 607 DAYS
+- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 611 DAYS
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [treaty-money-wasted]
 - RATE: [$10T/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
@@ -71,14 +71,21 @@
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

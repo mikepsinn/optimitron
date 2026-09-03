@@ -26,10 +26,10 @@
 - Compare notes on which arguments work on which people.
 - Discuss the 1% Treaty over coffee. Coffee is not a non-Earth-optimization activity if you are discussing the 1% Treaty.
 ### The situation
-- It requires only 100 nuclear explosions to cause a nuclear winter, which would collapse the food chain and end civilization. Humanity currently has 12,000 nuclear bombs, which is sufficient for 122 apocalypses.
-- Given that you can only destroy civilization once, it seems like humanity would be willing to settle for 121 apocalypses in exchange for potentially preventing themselves and everyone they love from suffering and dying of horrible diseases.
-- If humanity redirected 1% of military spending to clinical trials, disease eradication becomes plausible in 36 years instead of 443 years at the current rate.
-- We built a website where everyone can vote on this. We need a majority of humanity, over 4 billion people, to vote. That's a distribution problem.
+- It requires only [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear explosions to cause a nuclear winter, which would collapse the food chain and end civilization. Humanity currently has [12,000](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear bombs, which is sufficient for [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses.
+- Given that you can only destroy civilization once, it seems like humanity would be willing to settle for [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses in exchange for potentially preventing themselves and everyone they love from suffering and dying of horrible diseases.
+- If humanity redirected [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of military spending to clinical trials, disease eradication becomes plausible in [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years instead of [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years at the current rate.
+- We built a website where everyone can vote on this. We need a majority of humanity, over [4 billion people](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html), to vote. That's a distribution problem.
 - Dating apps have hundreds of millions of active users. Each profile is seen by hundreds or thousands of people. If even 10,000 supporters put warondisease.org in their bios, that's tens of millions of impressions from a channel that costs nothing.
 ### Why this works on dating apps specifically
 - Having a mission is attractive. This is well documented in social psychology. A person who is focused on something bigger than themselves is more compelling than a person whose bio says "looking for my partner in crime."
@@ -38,7 +38,7 @@
 - active users on dating apps globally
 - $0
 - cost per impression from an Earth Optimization Date bio
-- 30s
+- [30s](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html)
 - to vote at warondisease.org
 - Every person who sees your profile and doesn't match with you can still vote. Every left swipe is a potential vote. Your rejections are saving lives.
 ### The math
@@ -53,7 +53,7 @@
 - and you were going to be on the app anyway.
 ### How to do it
 #### Vote yourself
-- Go to warondisease.org and take 30 seconds to vote. You can't ask others to do something you haven't done.
+- Go to warondisease.org and take [30 seconds](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) to vote. You can't ask others to do something you haven't done.
 #### Add it to your Earth Optimization Date bio
 - Use a template below, or write your own. Make it sound like you, mention warondisease.org, keep it natural.
 #### When someone messages you, ask them to vote

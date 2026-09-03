@@ -3,7 +3,12 @@ import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 import Link from "next/link"
 
-import { getSiteConfig, getSiteVariant, type SiteVariant } from "../lib/site-config"
+import {
+  getSiteConfig,
+  getSiteVariant,
+  SHOW_DONATE_LINKS,
+  type SiteVariant,
+} from "../lib/site-config"
 import { Layout } from "./layout"
 
 const ABOUT_CONTENT: Partial<Record<SiteVariant, {
@@ -39,8 +44,8 @@ const ABOUT_CONTENT: Partial<Record<SiteVariant, {
   },
   "acceleratedmedicine.org": {
     outcome: "Support pragmatic clinical trials that test treatments during normal care and deliver reliable answers faster and at lower cost.",
-    action: "Fund the work",
-    href: "/donate",
+    action: SHOW_DONATE_LINKS ? "Fund the work" : "See the impact",
+    href: SHOW_DONATE_LINKS ? "/donate" : "/impact",
   },
 }
 

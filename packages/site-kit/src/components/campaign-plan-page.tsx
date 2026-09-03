@@ -37,6 +37,7 @@ import Layout from "./layout";
 import { ParameterValue } from "./shared/ParameterValue";
 import { MANUAL_URLS, withUtm } from "../lib/manual-links";
 import { ROUTES } from "../lib/routes";
+import { SHOW_DONATE_LINKS } from "../lib/site-config";
 import { getVoteSectionUrl } from "../lib/voting";
 
 type ChapterBg = "background" | "yellow" | "cyan" | "pink";
@@ -843,14 +844,16 @@ export default function CampaignPlanPage() {
                 VOTE NOW
               </Button>
             </Link>
-            <Link href={ROUTES.donate} className="block w-full sm:w-auto">
-              <Button
-                className={`inline-flex items-center gap-2 bg-brutal-pink text-brutal-pink-foreground hover:bg-background hover:text-foreground ${ctaButtonClassName}`}
-              >
-                <DollarSign className="h-6 w-6 stroke-[3px]" />
-                DONATE
-              </Button>
-            </Link>
+            {SHOW_DONATE_LINKS ? (
+              <Link href={ROUTES.donate} className="block w-full sm:w-auto">
+                <Button
+                  className={`inline-flex items-center gap-2 bg-brutal-pink text-brutal-pink-foreground hover:bg-background hover:text-foreground ${ctaButtonClassName}`}
+                >
+                  <DollarSign className="h-6 w-6 stroke-[3px]" />
+                  DONATE
+                </Button>
+              </Link>
+            ) : null}
           </div>
           <a
             href={withUtm(MANUAL_URLS.readOnline, "the_plan_footer")}

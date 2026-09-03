@@ -2,7 +2,11 @@ import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 
-import { getResolvedNavItem, getSiteConfig } from "../lib/site-config";
+import {
+  getResolvedNavItem,
+  getSiteConfig,
+  SHOW_DONATE_LINKS,
+} from "../lib/site-config";
 import { ROUTES } from "../lib/routes";
 import { Layout } from "./layout";
 
@@ -67,7 +71,12 @@ export function FaqPage() {
                 {faq.ctaSection.subtitle}
               </p>
               <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                {faq.ctaSection.buttons.map((button) => (
+                {faq.ctaSection.buttons
+                  .filter(
+                    (button) =>
+                      SHOW_DONATE_LINKS || button.href !== ROUTES.donate,
+                  )
+                  .map((button) => (
                   <a
                     key={`${button.href}:${button.label}`}
                     href={

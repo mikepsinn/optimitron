@@ -20,7 +20,7 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { FOUNDATION_CONTRACTOR_TARGETS } from "@/lib/foundations/contractor-targets";
 import { getRouteMetadata } from "@/lib/metadata";
 import { NONPROFIT } from "@/lib/nonprofit-identity";
-import { foundationsLink, ROUTES } from "@/lib/routes";
+import { foundationsLink, ROUTES, SHOW_DONATE_LINKS } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(foundationsLink);
 
@@ -142,8 +142,13 @@ export default function FoundationsPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={ROUTES.donate}>Fund one share</ButtonLink>
-            <ButtonLink href={grantEmailHref} variant="secondary">
+            {SHOW_DONATE_LINKS ? (
+              <ButtonLink href={ROUTES.donate}>Fund one share</ButtonLink>
+            ) : null}
+            <ButtonLink
+              href={grantEmailHref}
+              variant={SHOW_DONATE_LINKS ? "secondary" : "primary"}
+            >
               Open email draft
             </ButtonLink>
           </div>
@@ -352,18 +357,20 @@ export default function FoundationsPage() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t border-foreground pt-8">
-          <SectionHeading>Donate to the campaign</SectionHeading>
-          <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
-            <p>
-              The receiving charity is {NONPROFIT.legalName}, EIN{" "}
-              {NONPROFIT.ein}, operating the International Campaign to End War
-              and Disease. Donations buy outreach, shares, board letters, lawyer
-              review, and follow-up.
-            </p>
-            <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
-          </div>
-        </section>
+        {SHOW_DONATE_LINKS ? (
+          <section className="space-y-6 border-t border-foreground pt-8">
+            <SectionHeading>Donate to the campaign</SectionHeading>
+            <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
+              <p>
+                The receiving charity is {NONPROFIT.legalName}, EIN{" "}
+                {NONPROFIT.ein}, operating the International Campaign to End War
+                and Disease. Donations buy outreach, shares, board letters,
+                lawyer review, and follow-up.
+              </p>
+              <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
+            </div>
+          </section>
+        ) : null}
 
         <section className="space-y-6 border-t border-foreground pt-8">
           <SectionHeading>Please check the math</SectionHeading>

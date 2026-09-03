@@ -18,7 +18,6 @@
 - For about $300-$400, we can buy one share of a military contractor and donate it to a nonprofit, patient group, peace group, church, student group, or other organization that wants less war and more medicine.
 - That makes them a shareholder. Then we help them send a polite love letter to the board.
 - The letter does not ask the company to become kind. It asks the board to do the thing boards are supposed to do: look after shareholders.
-- [FUND ONE SHARE](/donate)
 - [OPEN EMAIL DRAFT](mailto:hello@warondisease.org?subject=Foundation%20grant%20for%20the%201%25%20Treaty%20campaign)
 - RECEIVING CHARITY
 - Accelerated Medicine Foundation Inc
@@ -69,13 +68,13 @@
 - 49.1% of this target list selected
 - One share gives an organization standing to write the board. It does not control the company. The point is to make the board analyze the shareholder case on the record, then repeat that pressure from enough independent organizations that ignoring it becomes more annoying than reading the math.
 - DALYS AT STAKE
-- 565B
+- [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - LIVES AT STAKE
-- 11B
+- [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - TREATY FUNDING
-- $27B
+- [$27B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - MILITARY LOBBYING
-- $198M
+- [$198M](https://manual.WarOnDisease.org/knowledge/appendix/faq.html)
 ### WHAT MONEY DOES
 - We will take whatever a foundation wants to give us. The unit of work is not mysterious. More money buys more of this loop.
 #### FIND AN ORGANIZATION
@@ -89,17 +88,14 @@
 - A small grant can buy a few shares and letters. A larger grant lets someone spend the next two years doing the boring part: finding organizations, buying shares, getting lawyers to check the letters, sending them, following up, and making sure this does not become another clever PDF nobody used.
 ### COST-EFFECTIVENESS, WITH THE SKEPTIC'S DISCOUNTS ALREADY APPLIED
 - CONDITIONAL ON SUCCESS
-- $0.002 per DALY, roughly 50,300x better than bed nets.
+- [$0.00177](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per DALY, roughly [50,300x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) better than bed nets.
 - RISK-ADJUSTED
-- $0.177 per DALY, still 503x better than bed nets.
+- [$0.177](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per DALY, still [503x](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html) better than bed nets.
 - IF THE TREATY NEVER PASSES
-- $0.842 per DALY for direct philanthropic funding of pragmatic trials alone.
+- [$0.842](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) per DALY for direct philanthropic funding of pragmatic trials alone.
 - The calculator above prices the full treaty success case: the disease timeline shift in the cited model, discounted by organizations reached, contractor coverage, and whatever pivotal probability you assign.
-- If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts $22B into trials at $929/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
-- The break-even against bed nets at $89 sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
-### DONATE TO THE CAMPAIGN
-- The receiving charity is Accelerated Medicine Foundation Inc, EIN 41-2555651, operating the International Campaign to End War and Disease. Donations buy outreach, shares, board letters, lawyer review, and follow-up.
-- [DONATE](/donate)
+- If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
+- The break-even against bed nets at [$89.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
 ### PLEASE CHECK THE MATH
 - Our model says this is the best use of our time for reducing suffering on Earth that we have found. We know how that sounds. The numbers are public because we would rather be corrected before anyone funds us.
 - Please check the math. If there is a better use of our time, or a cheaper way to avert a DALY, email us. We will do the better thing instead.

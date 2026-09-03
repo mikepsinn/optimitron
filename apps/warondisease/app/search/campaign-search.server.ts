@@ -1,6 +1,7 @@
 import { ContentVisibility, OrgStatus } from "@optimitron/db"
 import { prisma } from "@/lib/prisma"
 import { ROUTES } from "@/lib/routes"
+import { SHOW_DONATE_LINKS } from "@/lib/site-config"
 import {
   getSearchTerms,
   scoreSearchRecord,
@@ -46,6 +47,16 @@ interface CampaignPageDocument {
   keywords: string[]
   section: string
   title: string
+}
+
+// Kept out of the index while donate links are hidden on every variant.
+const DONATE_PAGE: CampaignPageDocument = {
+  description: "Fund the campaign.",
+  emoji: "💵",
+  href: ROUTES.donate,
+  keywords: ["donate", "donation", "give", "fund", "money"],
+  section: "Fund and pressure",
+  title: "Donate",
 }
 
 /**
@@ -201,14 +212,7 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     section: "Fund and pressure",
     title: "Foundations",
   },
-  {
-    description: "Fund the campaign.",
-    emoji: "💵",
-    href: ROUTES.donate,
-    keywords: ["donate", "donation", "give", "fund", "money"],
-    section: "Fund and pressure",
-    title: "Donate",
-  },
+  ...(SHOW_DONATE_LINKS ? [DONATE_PAGE] : []),
   {
     description:
       "Institutes for Accelerated Medicine and the Global Survey behind them.",

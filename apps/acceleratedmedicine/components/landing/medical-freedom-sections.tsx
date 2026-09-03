@@ -41,6 +41,7 @@ import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { SHOW_DONATE_LINKS } from "@/lib/site-config";
 
 const brutalShadow =
   "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all";
@@ -535,14 +536,18 @@ export function EducationCallToAction() {
       color: "bg-brutal-yellow",
       icon: BarChart3,
     },
-    {
-      href: "/donate",
-      eyebrow: "Option 3: Support",
-      title: "Fund the research",
-      text: "Support a 501(c)(3) working to make treatment evidence faster, cheaper, and public.",
-      color: "bg-brutal-pink",
-      icon: HeartPulse,
-    },
+    ...(SHOW_DONATE_LINKS
+      ? [
+          {
+            href: "/donate",
+            eyebrow: "Option 3: Support",
+            title: "Fund the research",
+            text: "Support a 501(c)(3) working to make treatment evidence faster, cheaper, and public.",
+            color: "bg-brutal-pink",
+            icon: HeartPulse,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -551,7 +556,9 @@ export function EducationCallToAction() {
         <h2 className="mb-12 text-center text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl">
           Do something
         </h2>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div
+          className={`grid gap-6 ${actions.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
+        >
           {actions.map(({ href, eyebrow, title, text, color, icon: Icon }) => (
             <Link
               key={title}
@@ -620,15 +627,17 @@ export function MedicalFreedomFinalCTA() {
               Read the evidence <BookOpen className="h-5 w-5" />
             </a>
           </Button>
-          <Button
-            asChild
-            size="lg"
-            className={`border-4 border-primary bg-brutal-pink px-8 py-6 text-lg font-black uppercase text-brutal-pink-foreground ${brutalShadow}`}
-          >
-            <Link href="/donate">
-              Support the research <ArrowRight className="h-5 w-5" />
-            </Link>
-          </Button>
+          {SHOW_DONATE_LINKS ? (
+            <Button
+              asChild
+              size="lg"
+              className={`border-4 border-primary bg-brutal-pink px-8 py-6 text-lg font-black uppercase text-brutal-pink-foreground ${brutalShadow}`}
+            >
+              <Link href="/donate">
+                Support the research <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          ) : null}
         </div>
 
         <div className="mt-8 text-lg font-black uppercase sm:text-xl md:text-2xl">

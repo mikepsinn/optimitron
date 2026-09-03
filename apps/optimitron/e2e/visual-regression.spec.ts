@@ -201,10 +201,14 @@ test.describe("route visual regression", () => {
         return;
       }
 
-      expect(
-        status,
-        `${route.path} should load before screenshot`,
-      ).toBeLessThan(400);
+      if ("expectNotFound" in route && route.expectNotFound) {
+        expect(status, `${route.path} should render the 404 page`).toBe(404);
+      } else {
+        expect(
+          status,
+          `${route.path} should load before screenshot`,
+        ).toBeLessThan(400);
+      }
 
       await normalizeVisualPage(page);
       if ("authenticated" in route && route.authenticated) {

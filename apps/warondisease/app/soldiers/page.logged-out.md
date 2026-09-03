@@ -29,20 +29,29 @@
 - MS
 - [Mike Sinn](/u/mike)
 - "Fighting to eradicate preventable disease."
+- DU
+- [Demo User](/u/demo)
 ### BECOME A WARRIOR
 - Your turn. Answer the question, share your link, and start saving lives. Every referral is a victory.
 - [ANSWER THE QUESTION](/#vote)
 - [VIEW YOUR STATS](/dashboard)
 - MAKING SUFFERING OPTIONAL
 #### ACT
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

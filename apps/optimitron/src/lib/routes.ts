@@ -1048,6 +1048,11 @@ export const donateLink: NavItem = {
   cta: "Open the calculator",
 };
 
+// Donate entry points are hidden on every variant for now. The /donate route,
+// its review coverage, and the link object stay alive so restoring the links
+// is one flag flip.
+export const SHOW_DONATE_LINKS = false;
+
 export const privacyLink: NavItem = {
   href: ROUTES.privacy,
   label: "Privacy",

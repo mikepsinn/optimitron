@@ -2,16 +2,12 @@ import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 import Link from "next/link";
-import {
-  getResolvedNavItem,
-  isFeatureEnabled,
-  SITE_FEATURES,
-} from "../../lib/site-config";
+import { getResolvedNavItem, isDonateLinkVisible } from "../../lib/site-config";
 import { getVoteSectionUrl } from "../../lib/voting";
 // TODO: Consider using VoteOrShareButton for the vote card
 
 export default function CallToAction() {
-  const donateEnabled = isFeatureEnabled(SITE_FEATURES.DONATE);
+  const donateEnabled = isDonateLinkVisible();
   const researchHref = getResolvedNavItem("research").path;
   const voteHref = getVoteSectionUrl();
 
