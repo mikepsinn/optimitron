@@ -15,6 +15,7 @@ import {
 import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.mjs";
 import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
 import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../apps/optimitron/scripts/visual-capture-contract.mjs";
+import { runCaptureLane } from "./capture-lane.mjs";
 import { getSiteAppScreenshotRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
@@ -33,6 +34,10 @@ const apps = [
 ];
 
 const ROUTE_CAPTURE_TIMEOUT_MS = 120_000;
+const MAX_LANE_RECYCLES = 3;
+
+/** Raised when a capture exceeds its budget, so a lane knows it can retry. */
+class CaptureBudgetExceededError extends Error {}
 
 const screenshotProjects = [
   ["default", { viewport: { width: 1440, height: 900 } }],
@@ -71,7 +76,7 @@ async function withCaptureBudget(captureLabel, capture) {
         timer = setTimeout(
           () =>
             reject(
-              new Error(
+              new CaptureBudgetExceededError(
                 `Timed out after ${ROUTE_CAPTURE_TIMEOUT_MS}ms capturing ${captureLabel}. ` +
                   `The page stopped responding partway through capture.`,
               ),
@@ -207,35 +212,47 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
       2,
     )}\n`,
   );
-  const browser = await chromium.launch({
-    channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
-    headless: true,
-  });
+  // A browser wears out. Something in it accumulates as pages are captured
+  // until a `page.evaluate` stops returning, and `evaluate` has no timeout, so
+  // the lane hangs instead of failing. Captured pixels, not captures, seem to
+  // be what is spent: the narrow viewport renders pages several times taller
+  // and exhausts a browser after a dozen or so routes, while the wide one gets
+  // through all of them. Freezing `Date` without Playwright's clock bought
+  // roughly nine times more headroom but did not remove the ceiling.
+  //
+  // So give each project its own browser and let a lane rebuild itself. When a
+  // capture exceeds its budget the lane discards the browser, starts a fresh
+  // one, and retries that route; a wedged browser is unusable afterwards, and
+  // a new one starts with a full allowance. Recycles are capped so a genuinely
+  // broken page still fails the run rather than looping.
+  await Promise.all(
+    screenshotProjects.map(async ([projectName, contextOptions]) => {
+      const outputDirectory = path.resolve(screenshotRoot, projectName);
+      await mkdir(outputDirectory, { recursive: true });
+      const needsAuthentication = screenshotRoutes.some(
+        ({ authenticated }) => authenticated,
+      );
 
-  try {
-    await Promise.all(
-      screenshotProjects.map(async ([projectName, contextOptions]) => {
-        const outputDirectory = path.resolve(screenshotRoot, projectName);
-        await mkdir(outputDirectory, { recursive: true });
-        const loggedOutContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
+      async function openLane() {
+        const browser = await chromium.launch({
+          channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
+          headless: true,
         });
-        const authenticatedContext = await browser.newContext({
-          ...contextOptions,
-          baseURL: baseUrl,
-        });
-        const loggedOutPage = await loggedOutContext.newPage();
-        const authenticatedPage = await authenticatedContext.newPage();
-        await Promise.all([
-          freezeClock(loggedOutPage),
-          freezeClock(authenticatedPage),
-        ]);
-
         try {
-          const needsAuthentication = screenshotRoutes.some(
-            ({ authenticated }) => authenticated,
-          );
+          const loggedOutContext = await browser.newContext({
+            ...contextOptions,
+            baseURL: baseUrl,
+          });
+          const authenticatedContext = await browser.newContext({
+            ...contextOptions,
+            baseURL: baseUrl,
+          });
+          const loggedOutPage = await loggedOutContext.newPage();
+          const authenticatedPage = await authenticatedContext.newPage();
+          await Promise.all([
+            freezeClock(loggedOutPage),
+            freezeClock(authenticatedPage),
+          ]);
           if (
             needsAuthentication &&
             !(await signInViaApi(authenticatedContext.request))
@@ -244,107 +261,129 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
             );
           }
+          return {
+            authenticatedPage,
+            close: () => browser.close().catch(() => {}),
+            loggedOutPage,
+          };
+        } catch (error) {
+          // Swallow the close failure so the error that caused the cleanup is
+          // the one that surfaces; a browser that failed to open may well fail
+          // to close too.
+          await browser.close().catch(() => {});
+          throw error;
+        }
+      }
 
-          for (const {
+      await runCaptureLane({
+        routes: screenshotRoutes,
+        openLane,
+        isRecoverable: (error) => error instanceof CaptureBudgetExceededError,
+        maxRecycles: MAX_LANE_RECYCLES,
+        onRecycle: ({ routeName }, recycles) => {
+          console.warn(
+            `@apps/${appName}: ${projectName}/${routeName} stopped responding; ` +
+              `restarting the browser and retrying it ` +
+              `(recycle ${recycles} of ${MAX_LANE_RECYCLES})`,
+          );
+        },
+        captureRoute: async (
+          {
             authenticated,
             expectNotFound,
             routeName,
             routePath,
             captureSelector,
             openMenu,
-          } of screenshotRoutes) {
-            const page = authenticated ? authenticatedPage : loggedOutPage;
-            const pageUrl = new URL(routePath, baseUrl);
-            if (appName === "acceleratedmedicine" && routeName === "home") {
-              pageUrl.searchParams.set("visual", "1");
-            }
-            const captureLabel = `${projectName}/${routeName}`;
-            await withCaptureBudget(captureLabel, async () => {
-              const url = pageUrl.toString();
-              console.log(`@apps/${appName}: capturing ${captureLabel}`);
-              const response = await page.goto(url, {
-                timeout: 30_000,
-                waitUntil: "load",
-              });
-              const status = response?.status() ?? 0;
-              const statusIsExpected = expectNotFound
-                ? status === 404
-                : status >= 200 && status < 400;
-              if (!response || !statusIsExpected) {
-                throw new Error(
-                  `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
-                );
-              }
-              if (authenticated) {
-                const expectedPath = pageUrl.pathname;
-                const actualPath = new URL(page.url()).pathname;
-                if (actualPath !== expectedPath) {
-                  throw new Error(
-                    `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
-                  );
-                }
-              }
-              await page
-                .waitForLoadState("networkidle", { timeout: 15_000 })
-                .catch(() => {});
-              await page.waitForSelector(".animate-pulse.bg-muted", {
-                state: "detached",
-                timeout: 15_000,
-              });
-              if (!(await waitForFonts(page))) {
-                console.warn(
-                  `@apps/${appName}: font readiness timed out for ${captureLabel}`,
-                );
-              }
-              await forceAnimationsComplete(page);
-              await prepareFullPageVisualCapture(page);
-              await forceAnimationsComplete(page);
-              if (openMenu) {
-                const menuTrigger = page.getByRole("button", {
-                  name: "Toggle menu",
-                });
-                await menuTrigger.click();
-                const menuDialog = page.getByRole("dialog", {
-                  name: "Navigation Menu",
-                });
-                await menuDialog.waitFor({ state: "visible" });
-                await menuDialog
-                  .getByRole("button", { name: "Log Out" })
-                  .waitFor({ state: "visible" });
-                await forceAnimationsComplete(page);
-              }
-              const screenshotPath = path.join(
-                outputDirectory,
-                `site-app-${appName}-${routeName}.png`,
-              );
-              if (captureSelector) {
-                const target = page.locator(captureSelector).first();
-                await target.scrollIntoViewIfNeeded();
-                await target.screenshot({
-                  animations: "disabled",
-                  path: screenshotPath,
-                });
-              } else {
-                await page.screenshot({
-                  animations: "disabled",
-                  fullPage: true,
-                  path: screenshotPath,
-                });
-              }
-              console.log(`@apps/${appName}: captured ${captureLabel}`);
-            });
+          },
+          lane,
+        ) => {
+          const page = authenticated
+            ? lane.authenticatedPage
+            : lane.loggedOutPage;
+          const pageUrl = new URL(routePath, baseUrl);
+          if (appName === "acceleratedmedicine" && routeName === "home") {
+            pageUrl.searchParams.set("visual", "1");
           }
-        } finally {
-          await Promise.all([
-            loggedOutContext.close(),
-            authenticatedContext.close(),
-          ]);
-        }
-      }),
-    );
-  } finally {
-    await browser.close();
-  }
+          const captureLabel = `${projectName}/${routeName}`;
+          await withCaptureBudget(captureLabel, async () => {
+            const url = pageUrl.toString();
+            console.log(`@apps/${appName}: capturing ${captureLabel}`);
+            const response = await page.goto(url, {
+              timeout: 30_000,
+              waitUntil: "load",
+            });
+            const status = response?.status() ?? 0;
+            const statusIsExpected = expectNotFound
+              ? status === 404
+              : status >= 200 && status < 400;
+            if (!response || !statusIsExpected) {
+              throw new Error(
+                `${url} returned HTTP ${response?.status() ?? "unknown"}${expectNotFound ? " (expected 404)" : ""}`,
+              );
+            }
+            if (authenticated) {
+              const expectedPath = pageUrl.pathname;
+              const actualPath = new URL(page.url()).pathname;
+              if (actualPath !== expectedPath) {
+                throw new Error(
+                  `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                );
+              }
+            }
+            await page
+              .waitForLoadState("networkidle", { timeout: 15_000 })
+              .catch(() => {});
+            await page.waitForSelector(".animate-pulse.bg-muted", {
+              state: "detached",
+              timeout: 15_000,
+            });
+            if (!(await waitForFonts(page))) {
+              console.warn(
+                `@apps/${appName}: font readiness timed out for ${captureLabel}`,
+              );
+            }
+            await forceAnimationsComplete(page);
+            await prepareFullPageVisualCapture(page);
+            await forceAnimationsComplete(page);
+            if (openMenu) {
+              const menuTrigger = page.getByRole("button", {
+                name: "Toggle menu",
+              });
+              await menuTrigger.click();
+              const menuDialog = page.getByRole("dialog", {
+                name: "Navigation Menu",
+              });
+              await menuDialog.waitFor({ state: "visible" });
+              await menuDialog
+                .getByRole("button", { name: "Log Out" })
+                .waitFor({ state: "visible" });
+              await forceAnimationsComplete(page);
+            }
+            const screenshotPath = path.join(
+              outputDirectory,
+              `site-app-${appName}-${routeName}.png`,
+            );
+            if (captureSelector) {
+              const target = page.locator(captureSelector).first();
+              await target.scrollIntoViewIfNeeded();
+              await target.screenshot({
+                animations: "disabled",
+                path: screenshotPath,
+              });
+            } else {
+              await page.screenshot({
+                animations: "disabled",
+                fullPage: true,
+                path: screenshotPath,
+              });
+            }
+            console.log(`@apps/${appName}: captured ${captureLabel}`);
+          });
+        },
+      });
+    }),
+  );
 
   console.log(
     `@apps/${appName}: captured ${screenshotRoutes.length * screenshotProjects.length} screenshots`,
