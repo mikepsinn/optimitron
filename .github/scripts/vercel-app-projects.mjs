@@ -103,6 +103,18 @@ export function getProjectPatch(current, desired) {
       return currentValue !== value;
     }),
   );
+  // Keep commands in each app's vercel.json. Project-level copies run from
+  // the repository root and break the app-relative ../../ paths.
+  for (const key of [
+    "buildCommand",
+    "commandForIgnoringBuildStep",
+    "installCommand",
+  ]) {
+    const currentValue = Object.hasOwn(current ?? {}, key)
+      ? current[key]
+      : current?.settings?.[key];
+    if (currentValue != null) patch[key] = null;
+  }
   const currentResourceConfig =
     current?.resourceConfig ?? current?.settings?.resourceConfig ?? {};
   const expectedResourceConfig = {

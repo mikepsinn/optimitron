@@ -174,7 +174,11 @@ test("repairs only deployment settings that drift", () => {
     getProjectPatch(
       {
         enableAffectedProjectsDeployments: false,
+        buildCommand: "cd ../.. && pnpm --filter @apps/warondisease run build",
+        commandForIgnoringBuildStep:
+          "node ../../.github/scripts/vercel-ignore-build.mjs warondisease",
         framework: "nextjs",
+        installCommand: "cd ../.. && pnpm install --frozen-lockfile",
         nodeVersion: "20.x",
         productionDeploymentsFastLane: false,
         resourceConfig: {
@@ -188,7 +192,10 @@ test("repairs only deployment settings that drift", () => {
       desired,
     ),
     {
+      buildCommand: null,
+      commandForIgnoringBuildStep: null,
       enableAffectedProjectsDeployments: true,
+      installCommand: null,
       nodeVersion: "24.x",
       productionDeploymentsFastLane: true,
       resourceConfig: {
