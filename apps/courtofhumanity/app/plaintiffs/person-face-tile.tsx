@@ -34,6 +34,8 @@ export function PersonFaceTile({ person }: PersonFaceTileProps) {
         <img
           alt={person.displayName}
           className="h-full w-full object-cover"
+          decoding="async"
+          loading="lazy"
           src={person.image}
         />
       ) : (

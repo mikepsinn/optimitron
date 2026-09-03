@@ -10,6 +10,7 @@ import {
 } from "@optimitron/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
+import { matchEfficacyLagForMemorial } from "@/lib/efficacy-lag-matcher.server";
 import { findCanonicalConditionGlobalVariable } from "@/lib/global-variable-lookup.server";
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server";
 import { ensurePersonForUser } from "@/lib/person.server";
@@ -908,6 +909,20 @@ export async function PATCH(
         await tx.personMemorialEvidence.updateMany({
           where: { deletedAt: null, memorialId, submittedByUserId: userId },
           data: { isPublic: finalIsPublic },
+        });
+      }
+
+      // Fast registration posts lifeStatus UNKNOWN with no memorial, so the
+      // matcher in the creation route never runs for those plaintiffs — the
+      // death date and condition it needs only arrive here. Re-run it after
+      // every memorial edit for the same reason. Best-effort, exactly as in
+      // the creation path: a matcher failure must not fail the edit.
+      try {
+        await matchEfficacyLagForMemorial(tx, memorialId);
+      } catch (matchError) {
+        console.error("Efficacy-lag matcher failed", {
+          memorialId,
+          matchError,
         });
       }
 
