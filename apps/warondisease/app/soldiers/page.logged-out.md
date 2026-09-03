@@ -29,21 +29,42 @@
 - MS
 - [Mike Sinn](/u/mike)
 - "Fighting to eradicate preventable disease."
+- DU
+- [Demo User](/u/demo)
 ### BECOME A WARRIOR
 - Your turn. Answer the question, share your link, and start saving lives. Every referral is a victory.
 - [ANSWER THE QUESTION](/#vote)
 - [VIEW YOUR STATS](/dashboard)
 - MAKING SUFFERING OPTIONAL
-#### ACT
+#### DO SOMETHING
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
 - [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [THE PLAN](/the-plan)
+- [FEEDBACK](/feedback)
+#### TELL SOMEONE ELSE
+- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](/shirt)
+- [THE JOKE](/joke)
+- [REMIND PRESIDENTS](/employees)
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
+- [TREATY SIGNATORIES](/signatories)
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](/mcp)
+- [DEVELOPERS](/developers)
+- [THE PLAN](/the-plan)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)
