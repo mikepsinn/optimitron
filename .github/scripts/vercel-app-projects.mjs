@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const API_ORIGIN = "https://api.vercel.com";
 const GITHUB_REPOSITORY = "mikepsinn/optimitron";
+const VERCEL_COMMAND_KEYS = Object.freeze([
+  ["buildCommand", "buildCommand"],
+  ["ignoreCommand", "commandForIgnoringBuildStep"],
+  ["installCommand", "installCommand"],
+]);
 
 export const VERCEL_APP_PROJECTS = Object.freeze([
   project("optimitron", "optimitron-web", "optimitron.com", [
@@ -53,11 +59,23 @@ function project(
   smokePaths = ["/"],
   { previewPending = false } = {},
 ) {
+  const rootDirectory = `apps/${appName}`;
+  const vercelConfig = JSON.parse(
+    readFileSync(
+      new URL(`../../${rootDirectory}/vercel.json`, import.meta.url),
+      "utf8",
+    ),
+  );
   return Object.freeze({
     appName,
     projectName,
     productionDomain,
-    rootDirectory: `apps/${appName}`,
+    rootDirectory,
+    projectCommandOverrides: Object.freeze(
+      VERCEL_COMMAND_KEYS.filter(
+        ([configKey]) => vercelConfig[configKey] != null,
+      ).map(([, projectKey]) => projectKey),
+    ),
     deploymentPrefixes: Object.freeze(deploymentPrefixes),
     smokePaths: Object.freeze(smokePaths),
     previewPending,
@@ -105,11 +123,7 @@ export function getProjectPatch(current, desired) {
   );
   // Keep commands in each app's vercel.json. Project-level copies run from
   // the repository root and break the app-relative ../../ paths.
-  for (const key of [
-    "buildCommand",
-    "commandForIgnoringBuildStep",
-    "installCommand",
-  ]) {
+  for (const key of desired.projectCommandOverrides) {
     const currentValue = Object.hasOwn(current ?? {}, key)
       ? current[key]
       : current?.settings?.[key];
