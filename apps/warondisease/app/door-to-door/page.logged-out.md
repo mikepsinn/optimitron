@@ -28,7 +28,7 @@
 - READ THIS ALOUD. IT TAKES TWENTY SECONDS.
 - SCAN OR TYPE
 - WARONDISEASE.ORG
-- “Governments spend 604 times more on weapons than on the clinical trials that find out which medicines actually work. The 1% Treaty redirects 1% of every military budget — $27.2 billion a year — to curing diseases. Nobody’s military gets weaker, because every country cuts the same 1%. The wait for first treatments drops from 443 years to 36. Scan the code to vote YES in 30 seconds — or sign here and confirm later.”
+- “Governments spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more on weapons than on the clinical trials that find out which medicines actually work. The 1% Treaty redirects [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of every military budget — [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year — to curing diseases. Nobody’s military gets weaker, because every country cuts the same [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The wait for first treatments drops from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Scan the code to vote YES in 30 seconds — or sign here and confirm later.”
 - Signing below casts a YES vote on the 1% Treaty on the public treaty register at warondisease.org. The campaign contacts you only to verify your vote. One vote per human. Full treaty text: 1percenttreaty.org.
 
 | # | PRINTED NAME | EMAIL OR MOBILE | SIGNATURE |
@@ -88,14 +88,21 @@
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

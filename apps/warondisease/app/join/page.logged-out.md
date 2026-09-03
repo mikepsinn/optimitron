@@ -1,9 +1,9 @@
-# /treaty
+# /join
 
 ## Metadata
 
-- Page title: Sign the Treaty
-- Meta description: The 1% Treaty redirects 1% of military spending to clinical trials, cutting the disease-eradication timeline from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
+- Page title: Join as an Organization
+- Meta description: Your members probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with your audience.
 - Canonical: https://warondisease.org
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
@@ -15,8 +15,49 @@
 
 - [THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE](/)
 - [Go to Dashboard](/dashboard)
-## The 1% Treaty
-- PLEASE QUICKLY SKIM AND SIGN TO END WAR AND DISEASE.
+## JOIN THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE
+- Don't have an organization? [Vote here →](/vote)
+- ORGANIZATION NAME *
+- WEBSITE
+- DONATION URL
+- Optional. Adds a small Donate to your organization link on your public page.
+- JOIN AS AN ORGANIZATION
+### THE DEAL
+- It takes about [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear weapons to cause a nuclear winter and end civilization. We have [12K](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) of them. That is enough for [122x](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses. We only have one civilization to apocalypse, so you cannot even take advantage of the remaining [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html).
+- We are trying to get a global survey of at least 4 billion people where a majority of humans say: yes, we can have one fewer apocalypse of mass-murder capacity in exchange for eradicating disease [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) faster. Your organization helps us ask.
+### THE TREATMENT QUEUE
+- There are [7K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases without effective treatment. At the current rate of [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) new first treatments per year, clearing the queue takes [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years. Redirecting 1% of military spending to clinical trials multiplies trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and clears the queue in [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
+- Meanwhile, there are [10K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) compounds already proven safe in humans — FDA-approved drugs, GRAS substances — that have never been tested against most diseases. That is [10M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) possible drug-disease combinations sitting untested. At current trial capacity, testing them all takes [2879](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) years. At treaty-scale capacity, it takes [234 years](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html).
+- Every day that shift happens sooner prevents [150K](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) deaths.
+### COST-EFFECTIVENESS
+- The best thing anyone has found to do with money in global health is buy insecticide-treated bed nets. [$89](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per disability-adjusted life-year averted. That is the GiveWell gold standard. The 1% Treaty costs [$0.0018](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per DALY averted — [50,307x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more cost-effective than bed nets. Find something better and do that instead.
+### THIS HAS WORKED BEFORE
+- The [landmine ban](https://en.wikipedia.org/wiki/International_Campaign_to_Ban_Landmines): 6 NGOs → 1,400 organizations → treaty signed by 122 countries → Nobel Peace Prize. [ICAN](https://en.wikipedia.org/wiki/International_Campaign_to_Abolish_Nuclear_Weapons): 5 staff in a Geneva office → 600+ partner organizations → Nobel Peace Prize. Both campaigns did exactly what this form asks: endorse a treaty, tell your members. That is it. That is the whole trick.
+### WHAT YOUR ORGANIZATION DOES
+- Endorse the treaty using the form above, then tell everyone in your organization to do the following:
+- [Vote on the Global Survey.](/vote) 30 seconds. Then get two more humans to do it. That is the entire growth model.
+- [Play the funniest joke in the universe](/joke) on everyone you love on Earth Optimization Day. Write “THIS T-SHIRT ENDED WAR AND DISEASE” on every shirt in a loved one's closet. On the back: “Trade one apocalypse for disease eradication at warondisease.org.” Tuck in a card with the math and a QR code. They will be furious. They will also not be dead of a curable disease. You are welcome.
+- [Remind your presidents](/employees) that you pay them [$37T](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare and you would like to receive this service at some point. Signing the 1% Treaty is a 30-second task. Every day they do not complete it, [150K](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) people die of diseases that would have been cured faster if they had done their job.
+- [Register your dead.](https://courtofhumanity.org/plaintiffs) Your government spent your money on missiles instead of testing which medicines work. People you loved died of diseases that would have been cured if that money had gone to clinical trials. That is negligent homicide at civilizational scale. Humanity v. Government is the class action. The dead should be named.
+- Buy one share of a military contractor — $200 — and [send the board a love letter](https://manual.warondisease.org/knowledge/appendix/love-letter.html). The law calls it a shareholder demand letter. The board is legally required to read it and respond on the record. It tells them to sell 1% of their bomb-making infrastructure, invest the proceeds in biotech, and instruct their lobbyists to stop asking Congress for infinity nuclear weapons and instead reallocate one apocalypse worth of spending to pragmatic clinical trials. This would make them and their shareholders both richer and significantly less dead. They just have to read the math.
+- [Get the shirt.](/shirt) Front says THIS T-SHIRT ENDED WAR AND DISEASE. Back says Trade one apocalypse for disease eradication. People will read it because it is on your chest and they cannot help themselves.
+- Governments spend [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) more on the military than on clinical trials. The 1% Treaty corrects that ratio. Your endorsement is how it passes. [Full coalition strategy →](https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy)
+- LEGAL NOTES FOR ORGANIZATIONS
+#### SUMMARY
+- Joining means your organization publicly supports the 1% Treaty: every nation should simultaneously redirect 1% of military spending to high-efficiency pragmatic clinical trials.
+- It is not a donation, candidate endorsement, party activity, ballot measure position, or support for a pending bill.
+#### ORGANIZATIONS ALREADY DO THIS
+- Civil-society coalitions helped turn landmines and nuclear weapons from "politically impossible" into treaty text. The International Campaign to Ban Landmines helped bring about the Mine Ban Treaty. ICAN helped drive the Treaty on the Prohibition of Nuclear Weapons. The 1% Treaty asks organizations to do the same normal thing: publicly support a humanitarian treaty, not a candidate or party.
+- [LANDMINE TREATY PRECEDENT](https://icblcmc.org/about-icbl)
+- [NUCLEAR TREATY PRECEDENT](https://www.nobelprize.org/prizes/peace/2017/ican/facts/)
+#### WHAT JOINING DOES
+- Public display of your organization's name with other public supporters.
+- Access to your organization's member link, website button, iframe, and outreach starter.
+- No ongoing obligations. No financial contributions. No signatures on unrelated documents.
+#### READ BEFORE JOINING
+- The 1% Treaty asks every nation to redirect 1% of military spending to high-efficiency pragmatic clinical trials. Read it before adding your organization.
+- READ THE TREATY
+- Please end war and disease by quickly skimming and signing the 1% Treaty.
 - WHEREAS, humanity pays governments approximately [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) per year for the service of promoting the general welfare, defined as the median health and wealth of the citizenry;
 - WHEREAS, the citizenry would like to actually receive this service at some point;
 - WHEREAS, these public servants instead used [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) of their salary to murder approximately [310 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) humans over the last century of their employment;
@@ -53,10 +94,8 @@
 - Article VIII: This treaty supersedes all conflicting domestic law. Including the subsection your legislature added at 2 a.m. last session specifically to make sure this couldn't happen.
 - Article IX: This Treaty enters into force upon signature by two states. War has killed humans for as long as there have been humans to kill. Disease has been killing them longer. Its founding signatories will be responsible for the largest reduction in human suffering and the largest increase in human prosperity in the history of planet Earth.
 - IN WITNESS WHEREOF, the undersigned, being of sound mind (debatable) and tired of watching their loved ones die of preventable diseases, have executed this Treaty.
-- Signed this day, [signature date], in the year of our ongoing confusion.
-- SIGN
-- Add your first, middle, and last name (optional)
-- Display my name publicly on the signer list and leaderboards (recommended). This makes your profile public across the site.
+- [BACK TO ORGANIZATION FORM](#organization-endorsement-form)
+- Already joined? See the [organizational supporters](/signatories).
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)

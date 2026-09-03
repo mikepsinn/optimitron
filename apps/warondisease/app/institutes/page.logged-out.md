@@ -31,9 +31,9 @@
 - "Would you support international cooperation to increase clinical trial funding?"
 - YOUR DASHBOARD: COMMUNITY RESPONSES + PREFERRED RESOURCE ALLOCATION DATA
 ### THE BRUTAL TRUTH
-- $2.72T
-- $5B
-- 604:1
+- [$2.72T](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$5B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 ### WHAT 1% CHANGES
 - REDIRECTING 1% OF MILITARY BUDGETS = $27.2B/YEAR
 - Ready to demonstrate your community's support for clinical trial abundance?
@@ -46,7 +46,7 @@
 - "Our 10,000 verified respondents support redirecting 1% of military budgets to trials"
 - → Strengthen advocacy with hard numbers, not anecdotes
 #### DONOR REPORTS
-- "Show supporters: 'Your voice joined 4B humans demanding trial abundance'"
+- "Show supporters: 'Your voice joined [4B](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans demanding trial abundance'"
 - → Prove the gap between "I care about this" and "I did something about it" is 2 minutes
 - YOUR DASHBOARD: EXPORTABLE CHARTS, SEGMENTED BY COUNTRY + DEMOGRAPHICS
 ### ADD THE SURVEY TO YOUR SITE
@@ -157,14 +157,21 @@
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

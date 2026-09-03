@@ -23,14 +23,14 @@
 #### START WITH THE PEOPLE WHO KNOW WHAT WAITING 443.3 YEARS COSTS
 #### HELP MEMBERS TELL TWO FRIENDS
 #### REACH THE NUMBER WHERE “I'LL LOOK INTO IT” STOPS WORKING
-- 280M
+- [280M](https://manual.WarOnDisease.org/knowledge/economics/campaign-budget.html)
 #### TRADE 1% OF MILITARY SPENDING FOR TRIALS
 #### RUN 12X MORE TRIALS
 #### COLLECT CURES THAT WERE OTHERWISE 443.3 YEARS AWAY
 ### WHAT 3.5% MEANS
 - A USEFUL BENCHMARK IS NOT A MAGIC SPELL
-- POLITICAL SCIENTIST ERICA CHENOWETH FOUND THAT THE NONVIOLENT NATIONAL CAMPAIGNS IN THE STUDY WHICH REACHED SUSTAINED ACTIVE PARTICIPATION OF 3.5% DID NOT FAIL. CHENOWETH LATER STRESSED THAT THIS IS A TENDENCY FROM A SPECIFIC CLASS OF CAMPAIGNS, NOT A LAW.
-- Applied to today's world population, that is about 280M people. But an online global treaty vote is not sustained national participation. We use 280 million as the public campaign target because it is large enough to test whether support can become political power—not because a percentage automatically changes policy.
+- POLITICAL SCIENTIST ERICA CHENOWETH FOUND THAT THE NONVIOLENT NATIONAL CAMPAIGNS IN THE STUDY WHICH REACHED SUSTAINED ACTIVE PARTICIPATION OF [3.5%](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) DID NOT FAIL. CHENOWETH LATER STRESSED THAT THIS IS A TENDENCY FROM A SPECIFIC CLASS OF CAMPAIGNS, NOT A LAW.
+- Applied to today's world population, that is about [280M](https://manual.WarOnDisease.org/knowledge/economics/campaign-budget.html) people. But an online global treaty vote is not sustained national participation. We use 280 million as the public campaign target because it is large enough to test whether support can become political power—not because a percentage automatically changes policy.
 - [Read Chenoweth's cautionary update](https://www.hks.harvard.edu/sites/default/files/2024-05/Erica%20Chenoweth_2020-005.pdf)
 #### REPRODUCTION RATE
 - Average new verified voters produced by each voter. Above one, the chain grows.
@@ -83,6 +83,7 @@
 - TIME FOR A SHARING ROUND
 - 2 friends
 - SIMPLE ACTION AFTER VOTING
+- 280M
 - VERIFIED-VOTE BENCHMARK
 ### THE EXECUTION SEQUENCE
 - MILESTONES, NOT DATE PROMISES
@@ -115,19 +116,19 @@
 ### THE ECONOMICS
 - A CAMPAIGN COST BUYS A RECURRING MEDICAL-RESEARCH FLOW
 - VIRAL REFERENDUM
-- $250M
+- [$250M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Platform, verification, sharing, and launch
 - FULL CAMPAIGN
-- $1B
+- [$1B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Referendum, political work, and reserve
 - TREATY FUNDING
-- $27B/year
+- [$27B/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Recurring annual funding from the first one percent
 - REFERENDUM
 - POLITICAL CAMPAIGN
-- $650M
+- [$650M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - RESERVE
-- $100M
+- [$100M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - These are planning estimates with uncertainty ranges. Click any underlined number to inspect its definition, range, formula, and source.
 ### START HERE
 - THE THREE CHAPTERS THAT EXPLAIN THE CORE MECHANISM
@@ -152,18 +153,25 @@
 ### YOUR NEXT MOVE
 - Vote, then help two friends vote. That is enough to move the treaty forward.
 - [VOTE NOW](/#vote)
-- [DONATE](/donate)
 - [BROWSE THE FIELD MANUAL](https://manual.warondisease.org?utm_source=the_plan_footer&utm_medium=web&utm_campaign=cross_site)
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

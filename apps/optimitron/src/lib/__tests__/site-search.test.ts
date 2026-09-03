@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ROUTES } from "../routes";
+import { ROUTES, SHOW_DONATE_LINKS } from "../routes";
 import { getSiteConfig } from "../site";
 import {
   scoreSearchRecord,
@@ -60,15 +60,15 @@ describe("site search helpers", () => {
   });
 
   it.each(["optimitron", "warOnDisease"] as const)(
-    "hides the donate destination from %s search while donate links are hidden",
+    "lists the donate destination in %s search only while donate links are shown",
     (siteKey) => {
       const results = searchStaticSiteDocuments("donate", {
         site: getSiteConfig(siteKey),
       });
 
-      expect(results.map((result) => result.href)).not.toContain(
-        ROUTES.donate,
-      );
+      expect(
+        results.map((result) => result.href).includes(ROUTES.donate),
+      ).toBe(SHOW_DONATE_LINKS);
     },
   );
 

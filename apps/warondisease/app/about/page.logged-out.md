@@ -17,33 +17,40 @@
 - [Go to Dashboard](/dashboard)
 ## ABOUT IC2EWD
 - THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE IS A GLOBAL CAMPAIGN TO MAKE SUFFERING OPTIONAL BY ACCELERATING CURES THROUGH UBIQUITOUS PRAGMATIC CLINICAL TRIALS.
-- 82x
+- [82x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 ### THE MISSION IN NUMBERS
 - THE MODEL PROJECTS WHAT THE TREATY COULD ACHIEVE. TODAY'S DISEASE BURDEN SHOWS WHY THE MISSION IS URGENT.
-- 10.7B
-- 150K
-- 2.4B
+- [10.7B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [150K](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
+- [2.4B](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
 ### OUR MISSION
 #### R&D SAVINGS
-- THE RECOVERY TRIAL DEMONSTRATED 82x LOWER COST PER PATIENT. AT SCALE, THE MODEL PROJECTS $58.6B IN ANNUAL MEDICAL R&D SAVINGS.
+- THE RECOVERY TRIAL DEMONSTRATED [82x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) LOWER COST PER PATIENT. AT SCALE, THE MODEL PROJECTS [$58.6B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) IN ANNUAL MEDICAL R&D SAVINGS.
 #### TIMELINE SHIFT
-- THE MODEL PROJECTS THAT 12.3x MORE TRIAL CAPACITY COULD REDUCE THE TIME TO FIND FIRST TREATMENTS FOR ALL CURRENTLY UNTREATED DISEASES FROM 443 YEARS TO 36 YEARS.
+- THE MODEL PROJECTS THAT [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) MORE TRIAL CAPACITY COULD REDUCE THE TIME TO FIND FIRST TREATMENTS FOR ALL CURRENTLY UNTREATED DISEASES FROM [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS TO [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS.
 #### PEACE DIVIDEND
-- THE MODEL PROJECTS THAT A 1% REDUCTION IN GLOBAL WAR COSTS COULD PRODUCE $114B IN ANNUAL DIRECT AND INDIRECT SAVINGS.
+- THE MODEL PROJECTS THAT A [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) REDUCTION IN GLOBAL WAR COSTS COULD PRODUCE [$114B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) IN ANNUAL DIRECT AND INDIRECT SAVINGS.
 #### SECURITY REBALANCE
-- THE TREATY WOULD REDIRECT 1% OF MILITARY SPENDING TOWARD ENDING WAR AND DISEASE.
+- THE TREATY WOULD REDIRECT [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) OF MILITARY SPENDING TOWARD ENDING WAR AND DISEASE.
 ### READY TO ERADICATE DISEASE?
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
 #### ACT
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT

@@ -556,7 +556,9 @@ export function EducationCallToAction() {
         <h2 className="mb-12 text-center text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl">
           Do something
         </h2>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div
+          className={`grid gap-6 ${actions.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}
+        >
           {actions.map(({ href, eyebrow, title, text, color, icon: Icon }) => (
             <Link
               key={title}

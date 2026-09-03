@@ -35,14 +35,21 @@
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-- [DONATE](/donate)
-#### LEARN
-- [ABOUT](/about)
-- [FAQ](/faq)
+- [READ & SIGN THE TREATY](/treaty)
+- [TELL TWO PEOPLE](/send)
+- [ENDORSE AS AN ORGANIZATION](/join)
+- [REMIND PRESIDENTS](/employees)
+#### PROGRESS
+- [TREATY SIGNATORIES](/signatories)
+- [SEARCH](/search)
 - [THE PLAN](/the-plan)
+#### LEARN & SHARE
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [FAQ](/faq)
+- [ABOUT](/about)
 - [PODCAST](https://manual.warondisease.org/listen)
-#### CONNECT
+- [HANG UP FLYERS](/poster)
+- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
 - [VOLUNTEER](/contact)
 #### CONTACT
