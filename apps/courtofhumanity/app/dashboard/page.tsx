@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { redirect } from "next/navigation"
 import { VotePosition } from "@optimitron/db"
 import Layout from "../../components/layout"
@@ -5,6 +6,7 @@ import { requireAuth } from "@/lib/auth-utils"
 import { Card } from "@/components/ui/card"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
+import { ROUTES } from "@/lib/routes"
 import { getUserTreatyVote } from "@/lib/treaty-votes.server"
 
 export const dynamic = "force-dynamic"
@@ -63,12 +65,12 @@ export default async function CourtDashboardPage() {
               verdict on the case.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <a
-                href="https://warondisease.org/plaintiffs"
+              <Link
+                href={ROUTES.plaintiffs}
                 className="inline-block border-4 border-primary bg-brutal-pink px-4 py-2 font-black uppercase text-brutal-pink-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 Register a plaintiff
-              </a>
+              </Link>
               <a
                 href="/humanity-v-government#verdict"
                 className="inline-block border-4 border-primary bg-brutal-cyan px-4 py-2 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"

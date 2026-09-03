@@ -19,6 +19,37 @@ export type PendingOrganizationEndorsementsSyncLock = {
 }
 
 /**
+ * A plaintiff name staged in localStorage until the registrant verifies.
+ * Field names and the storage key match Optimitron's so a draft started on
+ * either domain survives the hop to the other.
+ */
+export type PendingRepresentedPersonDraft = {
+  authorityConfirmed?: boolean
+  clientDraftId: string
+  conditionName?: string
+  displayName: string
+  healthDisclosureConfirmed?: boolean
+  isPublic: boolean
+  firstName?: string
+  middleName?: string
+  lastName?: string
+  lifeStatus?: "DECEASED" | "LIVING" | "UNKNOWN"
+  originUrl?: string
+  publicComment?: string
+  publicDisplayAcknowledged?: boolean
+  referendumSlug: string
+  relationshipType?: string
+  showConditionPublicly?: boolean
+  timestamp: string
+  version: 1
+}
+
+export type PendingRepresentedPeopleSyncLock = {
+  expiresAt: number
+  ownerId: string
+}
+
+/**
  * Type-safe localStorage utilities
  * ALWAYS use these instead of calling localStorage directly
  */
@@ -188,6 +219,47 @@ export const storage = {
     setStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK, lock),
   clearPendingOrganizationEndorsementsSyncLock: () =>
     removeStorageItem(STORAGE_KEYS.PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK),
+
+  getPendingRepresentedPeople: () =>
+    getStorageItem<PendingRepresentedPersonDraft[]>(
+      STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE,
+    ) ?? [],
+  setPendingRepresentedPeople: (data: PendingRepresentedPersonDraft[]) =>
+    setStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE, data),
+  addPendingRepresentedPerson: (draft: PendingRepresentedPersonDraft) => {
+    const drafts =
+      getStorageItem<PendingRepresentedPersonDraft[]>(
+        STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE,
+      ) ?? [];
+    setStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE, [
+      ...drafts.filter((item) => item.clientDraftId !== draft.clientDraftId),
+      draft,
+    ]);
+  },
+  removePendingRepresentedPeople: (clientDraftIds: string[]) => {
+    const ids = new Set(clientDraftIds);
+    const drafts =
+      getStorageItem<PendingRepresentedPersonDraft[]>(
+        STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE,
+      ) ?? [];
+    const remaining = drafts.filter((draft) => !ids.has(draft.clientDraftId));
+    if (remaining.length > 0) {
+      setStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE, remaining);
+    } else {
+      removeStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE);
+    }
+  },
+  clearPendingRepresentedPeople: () =>
+    removeStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE),
+  getPendingRepresentedPeopleSyncLock: () =>
+    getStorageItem<PendingRepresentedPeopleSyncLock>(
+      STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE_SYNC_LOCK,
+    ),
+  setPendingRepresentedPeopleSyncLock: (
+    lock: PendingRepresentedPeopleSyncLock,
+  ) => setStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE_SYNC_LOCK, lock),
+  clearPendingRepresentedPeopleSyncLock: () =>
+    removeStorageItem(STORAGE_KEYS.PENDING_REPRESENTED_PEOPLE_SYNC_LOCK),
 
   getSignupName: () => getStorageItem<string>(STORAGE_KEYS.SIGNUP_NAME),
   setSignupName: (name: string) => setStorageItem(STORAGE_KEYS.SIGNUP_NAME, name),

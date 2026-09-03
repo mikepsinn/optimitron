@@ -769,6 +769,17 @@ export const NAV_ITEMS_MAP = {
     ],
     useSiteDefaultOg: true,
   },
+  courtPlaintiffs: {
+    id: "courtPlaintiffs",
+    label: "Register a Plaintiff",
+    path: ROUTES.plaintiffs,
+    description:
+      "Put your name on the record in Humanity v. Government.",
+    emoji: "⚖️",
+    canonicalVariant: VARIANTS.COURT_OF_HUMANITY,
+    allowedVariants: [VARIANTS.COURT_OF_HUMANITY],
+    keywords: ["plaintiff", "court", "register"],
+  },
   joinCourt: {
     id: "joinCourt",
     label: "Join the Court",

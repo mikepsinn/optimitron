@@ -1,0 +1,174 @@
+"use client";
+
+import { storage, type PendingRepresentedPersonDraft } from "./storage";
+import {
+  buildDisplayNameFromParts,
+  splitDisplayNameIntoNameParts,
+} from "./person-name";
+
+const LOCK_TTL_MS = 15_000;
+
+export interface RepresentedPersonSyncResult {
+  failedDrafts: PendingRepresentedPersonDraft[];
+  skippedBecauseLocked: boolean;
+  syncedDrafts: PendingRepresentedPersonDraft[];
+  syncedPeople: SyncedRepresentedPerson[];
+}
+
+export interface SyncedRepresentedPerson {
+  displayName: string;
+  draft: PendingRepresentedPersonDraft;
+  personId: string;
+}
+
+function createOwnerId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `represented-sync-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function acquireLock(ownerId: string): boolean {
+  const now = Date.now();
+  const existing = storage.getPendingRepresentedPeopleSyncLock();
+  if (existing && existing.expiresAt > now && existing.ownerId !== ownerId) {
+    return false;
+  }
+  storage.setPendingRepresentedPeopleSyncLock({
+    ownerId,
+    expiresAt: now + LOCK_TTL_MS,
+  });
+  const confirmed = storage.getPendingRepresentedPeopleSyncLock();
+  return confirmed?.ownerId === ownerId;
+}
+
+function releaseLock(ownerId: string): void {
+  const existing = storage.getPendingRepresentedPeopleSyncLock();
+  if (!existing || existing.ownerId === ownerId) {
+    storage.clearPendingRepresentedPeopleSyncLock();
+  }
+}
+
+function draftPayload(draft: PendingRepresentedPersonDraft) {
+  const fallbackName = splitDisplayNameIntoNameParts(draft.displayName);
+  const firstName =
+    draft.firstName?.trim() || fallbackName.firstName;
+  const middleName =
+    draft.middleName?.trim() || fallbackName.middleName;
+  const lastName =
+    draft.lastName?.trim() || fallbackName.lastName;
+  const displayName =
+    buildDisplayNameFromParts({
+      firstName,
+      middleName,
+      lastName,
+    }) || draft.displayName;
+
+  return {
+    authorityConfirmed: draft.authorityConfirmed === true,
+    clientDraftId: draft.clientDraftId,
+    conditionName: draft.conditionName ?? "",
+    displayName,
+    healthDisclosureConfirmed: draft.healthDisclosureConfirmed === true,
+    isPublic: draft.isPublic === true,
+    firstName,
+    middleName,
+    lastName,
+    lifeStatus: draft.lifeStatus ?? "UNKNOWN",
+    originUrl: draft.originUrl,
+    publicComment: draft.publicComment ?? "",
+    publicDisplayAcknowledged: draft.publicDisplayAcknowledged === true,
+    relationshipType: draft.relationshipType ?? "",
+    showConditionPublicly: draft.showConditionPublicly === true,
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseRepresentedPersonPostResponse(value: unknown): {
+  displayName?: string;
+  personId: string;
+} | null {
+  if (!isRecord(value) || !isRecord(value.person)) return null;
+
+  const { displayName, id } = value.person;
+  if (typeof id !== "string" || id.trim() === "") return null;
+
+  return {
+    displayName: typeof displayName === "string" ? displayName : undefined,
+    personId: id,
+  };
+}
+
+export async function postRepresentedPersonDraft(
+  draft: PendingRepresentedPersonDraft,
+): Promise<SyncedRepresentedPerson | null> {
+  const response = await fetch(
+    `/api/referendums/${draft.referendumSlug}/represented-people`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(draftPayload(draft)),
+    },
+  );
+  if (!response.ok) return null;
+  const payload = parseRepresentedPersonPostResponse(
+    await response.json().catch(() => null),
+  );
+  if (!payload) return null;
+  return {
+    displayName: payload.displayName ?? draft.displayName,
+    draft,
+    personId: payload.personId,
+  };
+}
+
+export async function syncPendingRepresentedPeople(): Promise<RepresentedPersonSyncResult> {
+  const ownerId = createOwnerId();
+  if (!acquireLock(ownerId)) {
+    return {
+      failedDrafts: [],
+      skippedBecauseLocked: true,
+      syncedDrafts: [],
+      syncedPeople: [],
+    };
+  }
+
+  const syncedDrafts: PendingRepresentedPersonDraft[] = [];
+  const syncedPeople: SyncedRepresentedPerson[] = [];
+  const failedDrafts: PendingRepresentedPersonDraft[] = [];
+
+  try {
+    const drafts = storage.getPendingRepresentedPeople();
+    for (const draft of drafts) {
+      try {
+        const person = await postRepresentedPersonDraft(draft);
+        if (person) {
+          syncedDrafts.push(draft);
+          syncedPeople.push(person);
+        } else {
+          failedDrafts.push(draft);
+        }
+      } catch {
+        failedDrafts.push(draft);
+      }
+    }
+
+    if (syncedDrafts.length > 0) {
+      storage.removePendingRepresentedPeople(
+        syncedDrafts.map((draft) => draft.clientDraftId),
+      );
+    }
+
+    return {
+      failedDrafts,
+      skippedBecauseLocked: false,
+      syncedDrafts,
+      syncedPeople,
+    };
+  } finally {
+    releaseLock(ownerId);
+  }
+}

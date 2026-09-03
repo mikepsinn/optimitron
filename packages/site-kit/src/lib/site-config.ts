@@ -1445,7 +1445,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "case",
         label: "THE CASE",
-        items: ["humanityVGovernment", "joinCourt"],
+        items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
       },
       {
         id: "learn",
@@ -1468,7 +1468,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "case",
         label: "THE CASE",
-        items: ["humanityVGovernment", "joinCourt"],
+        items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
       },
       {
         id: "learn",
