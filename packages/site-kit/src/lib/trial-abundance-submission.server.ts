@@ -33,7 +33,8 @@ export async function getTrialAbundanceFormRevision() {
   const contentHash = hash(fields)
   const form = await prisma.form.upsert({
     where: { sourceKey: TRIAL_ABUNDANCE_FORM_KEY },
-    update: {},
+    // An empty update makes Prisma emulate upsert, which can race on the first responses.
+    update: { sourceKey: TRIAL_ABUNDANCE_FORM_KEY },
     create: {
       sourceKey: TRIAL_ABUNDANCE_FORM_KEY, title: "Trial Abundance Survey",
       createdByUserId: user.id, purpose: FormPurpose.SURVEY,
