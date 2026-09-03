@@ -160,6 +160,15 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
   },
   {
     description:
+      "Find someone you would not mind ending war and disease with, and spend one useful hour on it together.",
+    emoji: "❤️",
+    href: ROUTES.missions,
+    keywords: ["missions", "date", "dating", "match", "hour", "together"],
+    section: "Recruit",
+    title: "Earth Optimization Missions",
+  },
+  {
+    description:
       "Send one more 1% Treaty invitation to someone who has not voted.",
     emoji: "📨",
     href: ROUTES.send,
@@ -250,6 +259,15 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     keywords: ["contact", "email", "reach", "support"],
     section: "About",
     title: "Contact",
+  },
+  {
+    description:
+      "Tell us what is confusing, irritating, broken, or missing on this site.",
+    emoji: "❗",
+    href: ROUTES.feedback,
+    keywords: ["feedback", "complaint", "bug", "broken", "confusing", "suggest"],
+    section: "About",
+    title: "Feedback",
   },
   {
     description: "What we collect and what we do not.",
