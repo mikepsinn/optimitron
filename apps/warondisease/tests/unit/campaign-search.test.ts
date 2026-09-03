@@ -121,8 +121,9 @@ describe("searchCampaign", () => {
 
 describe("campaign page index", () => {
   // Routes that exist but are deliberately absent from search: an authenticated
-  // surface, and the search page itself.
-  const EXCLUDED = new Set(["/dashboard", "/search"])
+  // surface, the search page itself, and the donate page while donate links are
+  // hidden (SHOW_DONATE_LINKS in site-kit).
+  const EXCLUDED = new Set(["/dashboard", "/search", "/donate"])
 
   it("indexes every public page in the app", () => {
     const appDir = path.resolve(__dirname, "../../app")

@@ -1,6 +1,7 @@
 import {
   fullManualPaperLink,
   ROUTES,
+  SHOW_DONATE_LINKS,
   navSections,
   routeReviewNavItems,
   type NavItem,
@@ -98,9 +99,9 @@ export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
         buildDocumentFromNavItem(section.label, item),
       ),
     ),
-    ...routeReviewNavItems.map((item) =>
-      buildDocumentFromNavItem("Pages", item),
-    ),
+    ...routeReviewNavItems
+      .filter((item) => SHOW_DONATE_LINKS || item.href !== ROUTES.donate)
+      .map((item) => buildDocumentFromNavItem("Pages", item)),
   ]);
 
 function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {

@@ -43,24 +43,34 @@ describe("site search helpers", () => {
     expect(results.map((result) => result.href)).toContain(ROUTES.tasks);
   });
 
-  it.each(["vote", "donate"] as const)(
-    "keeps the obvious %s destination searchable on Optimitron",
-    (query) => {
-      const results = searchStaticSiteDocuments(query, {
-        site: getSiteConfig("optimitron"),
-      });
+  it("keeps the obvious vote destination searchable on Optimitron", () => {
+    const results = searchStaticSiteDocuments("vote", {
+      site: getSiteConfig("optimitron"),
+    });
 
-      expect(results[0]?.href).toBe(ROUTES[query]);
-    },
-  );
+    expect(results[0]?.href).toBe(ROUTES.vote);
+  });
 
   it("includes campaign footer destinations in variant search", () => {
-    const results = searchStaticSiteDocuments("donate", {
+    const results = searchStaticSiteDocuments("feedback", {
       site: getSiteConfig("warOnDisease"),
     });
 
-    expect(results[0]?.href).toBe(ROUTES.donate);
+    expect(results[0]?.href).toBe(ROUTES.feedback);
   });
+
+  it.each(["optimitron", "warOnDisease"] as const)(
+    "hides the donate destination from %s search while donate links are hidden",
+    (siteKey) => {
+      const results = searchStaticSiteDocuments("donate", {
+        site: getSiteConfig(siteKey),
+      });
+
+      expect(results.map((result) => result.href)).not.toContain(
+        ROUTES.donate,
+      );
+    },
+  );
 
   it("finds the Earth Repair Manual by its new name", () => {
     const results = searchStaticSiteDocuments("earth repair manual", {

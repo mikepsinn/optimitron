@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES, SHOW_DONATE_LINKS } from "@/lib/routes";
 
 const recoveryLinks = [
   { href: ROUTES.search, label: "Search" },
   { href: ROUTES.vote, label: "Vote" },
-  { href: ROUTES.donate, label: "Donate" },
+  ...(SHOW_DONATE_LINKS ? [{ href: ROUTES.donate, label: "Donate" }] : []),
   { href: ROUTES.join, label: "Organizations" },
-] as const;
+];
 
 export default function NotFound() {
   return (

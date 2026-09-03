@@ -413,9 +413,9 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     name: "search-typeahead",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[data-search-suggestions] a[href="/donate"]',
+    requiredSelector: '[data-search-suggestions] a[href="/vote"]',
     siteVariant: "optimitron",
-    typeSearchQuery: "donate",
+    typeSearchQuery: "vote",
   },
   {
     covers: [SEARCH_DISCOVERY_FILE],
