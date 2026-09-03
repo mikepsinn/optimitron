@@ -753,7 +753,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           "manual",
           "listenPodcast",
           "courtOfHumanity",
-          "optimitronMcp",
+          "campaignMcp",
           "developers",
           "thePlan",
           "faq",

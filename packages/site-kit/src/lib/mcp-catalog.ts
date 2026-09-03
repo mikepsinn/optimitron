@@ -11,6 +11,7 @@
  * may not import an app. The same data is served live at
  * `https://optimitron.com/api/mcp/tools`.
  */
+import "server-only"
 
 import catalog from "./mcp/catalog.generated.json"
 
