@@ -428,6 +428,28 @@ export const publicSiteAppRoutes = Object.freeze({
     },
     {
       covers: [
+        "apps/warondisease/app/missions/page.tsx",
+        "apps/warondisease/app/missions/mission-safety.ts",
+        "apps/warondisease/app/missions/mission-safety-notice.tsx",
+        "apps/warondisease/app/missions/missions.server.ts",
+      ],
+      label: "Earth Optimization Missions",
+      routeName: "missions",
+      routePath: "/missions",
+      sourcePage: "apps/warondisease/app/missions/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/feedback/page.tsx",
+        "packages/site-kit/src/lib/feedback.server.ts",
+      ],
+      label: "Feedback form",
+      routeName: "feedback",
+      routePath: "/feedback",
+      sourcePage: "apps/warondisease/app/feedback/page.tsx",
+    },
+    {
+      covers: [
         "apps/warondisease/app/mcp/page.tsx",
         "packages/site-kit/src/components/shared/CopyableCode.tsx",
         "packages/site-kit/src/lib/mcp-catalog.ts",
