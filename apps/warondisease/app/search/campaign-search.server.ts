@@ -252,6 +252,33 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     title: "Contact",
   },
   {
+    description:
+      "Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph.",
+    emoji: "🔌",
+    href: ROUTES.mcp,
+    keywords: ["mcp", "claude", "chatgpt", "agent", "connector", "ai"],
+    section: "Build on it",
+    title: "Optimitron MCP",
+  },
+  {
+    description:
+      "OAuth, tasks, referrals, votes, people, and organizations for your own app.",
+    emoji: "🛠️",
+    href: ROUTES.developers,
+    keywords: ["developers", "api", "oauth", "openapi", "rest", "integration"],
+    section: "Build on it",
+    title: "Earth Optimization API",
+  },
+  {
+    description:
+      "Every MCP tool the server exposes, with its scope, admin gate, and parameters.",
+    emoji: "📖",
+    href: ROUTES.developersTools,
+    keywords: ["mcp tools", "tool reference", "scopes", "parameters", "api"],
+    section: "Build on it",
+    title: "MCP Tool Reference",
+  },
+  {
     description: "What we collect and what we do not.",
     emoji: "🔒",
     href: ROUTES.privacy,

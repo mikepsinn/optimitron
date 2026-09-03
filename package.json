@@ -54,6 +54,7 @@
     "build:app-dependencies": "pnpm --filter @optimitron/optimizer run build && pnpm --filter @optimitron/db run build",
     "smoke:apps": "pnpm --dir apps/optimitron exec tsx ../../scripts/smoke-site-apps.mjs",
     "copy": "pnpm --dir apps/optimitron exec tsx ../../scripts/copy-snapshot-sites.ts",
+    "mcp:catalog": "pnpm --dir apps/optimitron exec tsx ../../scripts/generate-mcp-catalog.ts",
     "test:site-app-navigation": "pnpm --dir apps/optimitron exec tsx --test ../../scripts/site-app-navigation.test.ts ../../scripts/lib/copy-preview-dom.test.ts",
     "test:apps:unit": "pnpm --filter \"@apps/*\" run test:unit",
     "test:warondisease:unit": "pnpm --filter @apps/warondisease run test:unit",
