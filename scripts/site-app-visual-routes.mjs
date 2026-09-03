@@ -352,6 +352,13 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/warondisease/app/signatories/page.tsx",
     },
     {
+      covers: ["apps/warondisease/app/donate/page.tsx"],
+      label: "Donate",
+      routeName: "donate",
+      routePath: "/donate",
+      sourcePage: "apps/warondisease/app/donate/page.tsx",
+    },
+    {
       covers: [
         "apps/warondisease/app/foundations/page.tsx",
         "packages/site-kit/src/components/foundations/CopyGrantEmailButton.tsx",
@@ -685,6 +692,13 @@ export const publicSiteAppRoutes = Object.freeze({
     },
   ],
   acceleratedmedicine: [
+    {
+      covers: ["apps/acceleratedmedicine/app/donate/page.tsx"],
+      label: "Donate",
+      routeName: "donate",
+      routePath: "/donate",
+      sourcePage: "apps/acceleratedmedicine/app/donate/page.tsx",
+    },
     {
       covers: [
         "apps/acceleratedmedicine/app/donate/success/page.tsx",

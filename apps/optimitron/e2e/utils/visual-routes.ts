@@ -22,6 +22,8 @@ export type VisualRoute = {
   covers?: string[];
   createTaskMode?: "person";
   expectSettings?: boolean;
+  /** The route is expected to render the app's 404 page. */
+  expectNotFound?: boolean;
   name: string;
   openCreateTask?: boolean;
   openContentShare?: boolean;
@@ -223,6 +225,8 @@ const PERSONAL_QUEUE_SECTION_FILE =
 const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
 const SEARCH_DISCOVERY_FILE =
   "apps/optimitron/src/app/search/search-discovery.tsx";
+const FOUNDATIONS_PAGE_FILE = "apps/optimitron/src/app/foundations/page.tsx";
+const NOT_FOUND_PAGE_FILE = "apps/optimitron/src/app/not-found.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
 const DEMO_PLAYER_FILE =
   "apps/optimitron/src/components/demo/DemoPlayer.tsx";
@@ -400,6 +404,25 @@ const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
 
 const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
   {
+    covers: [FOUNDATIONS_PAGE_FILE],
+    name: "foundations-links",
+    path: ROUTES.foundations,
+    required: true,
+    requiredSelector: 'section:has(h1) a:has-text("Open email draft")',
+    requiredText: /Give an organization one share and a letter/i,
+    siteVariant: "warOnDisease",
+  },
+  {
+    covers: [NOT_FOUND_PAGE_FILE],
+    expectNotFound: true,
+    name: "not-found",
+    path: "/this-page-does-not-exist",
+    required: true,
+    requiredSelector: 'nav[aria-label="Page recovery"] a[href="/search"]',
+    requiredText: /Page Not Found/i,
+    siteVariant: "warOnDisease",
+  },
+  {
     covers: [SEARCH_PAGE_FILE, SEARCH_DISCOVERY_FILE],
     name: "search-empty",
     path: ROUTES.search,
@@ -413,9 +436,9 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     name: "search-typeahead",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[data-search-suggestions] a[href="/donate"]',
+    requiredSelector: '[data-search-suggestions] a[href="/vote"]',
     siteVariant: "optimitron",
-    typeSearchQuery: "donate",
+    typeSearchQuery: "vote",
   },
   {
     covers: [SEARCH_DISCOVERY_FILE],

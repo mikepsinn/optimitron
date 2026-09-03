@@ -153,7 +153,6 @@
 ### YOUR NEXT MOVE
 - Vote, then help two friends vote. That is enough to move the treaty forward.
 - [VOTE NOW](/#vote)
-- [DONATE](/donate)
 - [BROWSE THE FIELD MANUAL](https://manual.warondisease.org?utm_source=the_plan_footer&utm_medium=web&utm_campaign=cross_site)
 - MAKING SUFFERING OPTIONAL
 #### DO SOMETHING

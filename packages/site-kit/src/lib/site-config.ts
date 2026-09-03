@@ -190,6 +190,19 @@ export const ALL_PUBLIC_SITE_FEATURES = Object.freeze(
   ALL_SITE_FEATURES.filter((feature) => !NON_PUBLIC_SITE_FEATURES.has(feature)),
 );
 
+// Donate entry points are hidden on every variant for now. The /donate pages,
+// routes, and nav items stay alive so restoring the links is one flag flip.
+export const SHOW_DONATE_LINKS = false;
+
+const HIDDEN_NAV_ITEM_IDS: ReadonlySet<NavItemId> = new Set<NavItemId>(
+  SHOW_DONATE_LINKS ? [] : ["donate"],
+);
+
+/** True only when the variant offers donations and donate links are not hidden. */
+export function isDonateLinkVisible(): boolean {
+  return SHOW_DONATE_LINKS && isFeatureEnabled(SITE_FEATURES.DONATE);
+}
+
 export type SitemapDynamicRouteGroup =
   | "conditions"
   | "treatments"
@@ -1765,7 +1778,8 @@ function resolveNavItemsForVariant(
   ids: NavItemId[],
   currentVariant: SiteVariant,
 ): NavItem[] {
-  return getNavItems(ids).map((item) => {
+  const visibleIds = ids.filter((id) => !HIDDEN_NAV_ITEM_IDS.has(id));
+  return getNavItems(visibleIds).map((item) => {
     if (
       item.canonicalVariant &&
       item.allowedVariants &&

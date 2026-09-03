@@ -324,12 +324,10 @@
 ### DO SOMETHING
 - [OPTION 1: LEARN DOWNLOAD THE MATH 43 studies. 82X proven. Peer-reviewed.](/research)
 - [OPTION 2: ANSWER THE MOST IMPORTANT QUESTION 30 seconds. Anonymous. Historical.](/#vote)
-- [OPTION 3: FUND DONATE (TAX-DEDUCTIBLE) 501(c)(3). Every dollar to creating a world without disease.](/donate)
 ### 💀 DEATH CLOCK
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
 - [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
-- [DONATE](/donate)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
 - [TELL TWO PEOPLE](/send)

@@ -8,14 +8,14 @@ import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { VoteOrShareButton } from "../shared/VoteOrShareButton"
 import { ROUTES } from '../../lib/routes'
-import { isFeatureEnabled, SITE_FEATURES } from "../../lib/site-config"
+import { isDonateLinkVisible } from "../../lib/site-config"
 
 interface FinalCTAProps {
   showDonateButton?: boolean
 }
 
 export default function FinalCTA({ showDonateButton = true }: FinalCTAProps) {
-  const donateEnabled = showDonateButton && isFeatureEnabled(SITE_FEATURES.DONATE)
+  const donateEnabled = showDonateButton && isDonateLinkVisible()
 
   const statements = [
     { text: "SUFFERING: OPTIONAL", color: "" },

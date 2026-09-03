@@ -14,6 +14,7 @@ import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
+  SHOW_DONATE_LINKS,
   conditionsLink,
   communityLinks,
   courtLink,
@@ -369,6 +370,7 @@ const WAR_ON_DISEASE_ASSETS = copiedSiteAssets({
 const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
 const organizationalSignatoryLinks: NavItem[] =
   SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [signatoriesLink] : [];
+const donateLinks: NavItem[] = SHOW_DONATE_LINKS ? [donateLink] : [];
 
 const warOnDiseaseNavSections: NavSection[] = [
   {
@@ -516,7 +518,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     columns: [
       {
         title: "Do Something",
-        items: [voteLink, plaintiffsLink, donateLink, feedbackLink],
+        items: [voteLink, plaintiffsLink, ...donateLinks, feedbackLink],
       },
       {
         title: "Tell Someone Else",

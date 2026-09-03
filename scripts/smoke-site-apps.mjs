@@ -147,20 +147,9 @@ async function assertWarOnDiseaseHome(page) {
     throw new Error("War on Disease navigation still links to Soldiers");
   }
 
-  const donateLink = page.locator('footer a[href="/donate"]');
-  if ((await donateLink.count()) !== 1) {
-    throw new Error("War on Disease ACT footer must contain one Donate link");
-  }
-  if ((await donateLink.getAttribute("href")) !== "/donate") {
-    throw new Error(
-      "War on Disease ACT footer Donate link must point to /donate",
-    );
-  }
-  const donateActSection = donateLink.locator(
-    "xpath=ancestor::div[h3[normalize-space()='DO SOMETHING']]",
-  );
-  if ((await donateActSection.count()) !== 1) {
-    throw new Error("War on Disease Donate link must appear under DO SOMETHING");
+  // The footer /donate link is hidden for now (SHOW_DONATE_LINKS in site-kit).
+  if (await page.locator('footer a[href="/donate"]').count()) {
+    throw new Error("War on Disease footer still links to /donate");
   }
   if (await page.locator('script[src*="promotion-bar.js"]').count()) {
     throw new Error("War on Disease still loads the floating promotion bar");

@@ -37,7 +37,6 @@
 - MAKING SUFFERING OPTIONAL
 #### DO SOMETHING
 - [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
-- [DONATE](/donate)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
 - [TELL TWO PEOPLE](/send)

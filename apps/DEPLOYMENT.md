@@ -85,8 +85,9 @@ are truly shared. Link each shared variable to the projects that need it.
 Good shared candidates:
 
 - `DATABASE_URL` for War on Disease, dFDA, Wishocracy, Trial Abundance Survey,
-  and Court of Humanity. Court of Humanity authenticates against the same shared
-  database, so it needs this variable before its first production deploy.
+  Accelerated Medicine, and Court of Humanity. Accelerated Medicine and Court of
+  Humanity authenticate against the same shared database, so each needs this
+  variable before its first production deploy.
 - `NEXTAUTH_SECRET` for the optimitron web project and dFDA only. optimitron.com
   signs MCP Bearer tokens with it and dfda.earth/api/mcp verifies them, so those
   two projects must share one value (decided 2026-08-14: one secret, no separate
@@ -124,9 +125,10 @@ production schema because votes, people, and referrals are shared records.
 
 Each app's `.env.example` lists only the variables its shipped capabilities
 need. Vercel remains the value store. The example files are the reviewable
-contract and contain no real secrets. Accelerated Medicine and CureDAO do not
-receive database or authentication secrets because they do not ship those
-capabilities.
+contract and contain no real secrets. Accelerated Medicine ships the shared
+survey and sign-in, so it receives `DATABASE_URL`, its own `NEXTAUTH_SECRET`,
+and a production `NEXTAUTH_URL`. CureDAO does not receive database or
+authentication secrets because it does not ship those capabilities.
 
 Vercel sets `NODE_ENV`, `VERCEL_URL`, and related platform variables. Do not add
 them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
