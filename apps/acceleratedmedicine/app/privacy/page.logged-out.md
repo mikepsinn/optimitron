@@ -14,12 +14,14 @@
 ## Visible Page Copy
 
 - [RIGHT TO TRIAL INITIATIVE](/)
+- [Go to Dashboard](/dashboard)
 ## PRIVACY POLICY
 - Last updated: August 2026
 ### 1. INTRODUCTION
 - Institute for Accelerated Medicine operates AcceleratedMedicine.org. This policy explains what information the website collects, why it uses that information, and the choices available to you.
 ### 2. INFORMATION WE COLLECT
 - Account details you provide, such as your name and email address.
+- Your survey responses and optional profile details.
 - Messages, forms, and other content you choose to submit.
 - Basic technical data, such as browser type, device information, IP address, and request logs.
 - Usage and analytics events when analytics are enabled.

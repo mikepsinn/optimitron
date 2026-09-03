@@ -1,4 +1,5 @@
 import Layout from "../components/layout";
+import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual";
 import ProblemStatement from "@/components/landing/problem-statement";
 import DeathClock from "@/components/landing/death-clock";
 import DecentralizedFDASection from "@/components/landing/decentralized-fda-section";
@@ -28,10 +29,13 @@ import {
  * Right to Trial Initiative — patient access, shared evidence, and
  * pragmatic clinical-trial education.
  */
-export default function HomePage() {
+export default async function HomePage({ searchParams }: {
+  searchParams?: Promise<{ visual?: string }>
+}) {
+  const visualState = parseTrialAbundanceVisualState((await searchParams)?.visual);
   return (
     <Layout>
-      <StateSupportSection headingAs="h1" />
+      <StateSupportSection headingAs="h1" visualState={visualState} />
       <UniversalRightToTryHero />
       <MontanaProofSection />
       <RightToTryEvolutionSection />

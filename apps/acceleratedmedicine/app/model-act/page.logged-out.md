@@ -14,6 +14,7 @@
 ## Visible Page Copy
 
 - [RIGHT TO TRIAL INITIATIVE](/)
+- [Go to Dashboard](/dashboard)
 ## A RIGHT TO TRIAL FRAMEWORK FOR EVERY STATE.
 - Start with Montana's enacted licensing framework. Add pragmatic trials, provider payment, and published outcomes. Give every patient the right and practical ability to participate in a clinical trial for the most promising treatments.
 - 01
@@ -38,18 +39,14 @@
 - The framework above is an educational outline. Montana's enrolled bill and final rules provide the official enacted language, definitions, licensing structure, and implementation detail.
 - [OPEN SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - [READ THE MONTANA GUIDE](/montana)
-### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
-- Montana's SB 535 lets patients access treatments that have passed Phase 1 safety testing — about 8 years sooner than waiting for full FDA approval. Right to Trial adds shared outcome data revealing which treatments work best and their real benefits and side effects.
-- YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
-- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
+### TRIAL ABUNDANCE SURVEY
+- Three questions about patient access, who may fund trial participation, and public priorities.
+- QUESTION 1 OF 3
+### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
+- Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
 - YES
-- SHOW ME MORE
+- NOT SURE
 - NO
-- WHY DOES THIS MATTER TO YOU? (optional)
-- EMAIL (optional)
-- Send me occasional updates about Right to Trial in my state.
-- RECORD MY STATE RESPONSE
-- If you provide an email, we will send a confirmation. We will not sell or rent it.
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)

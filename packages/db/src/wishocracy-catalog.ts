@@ -25,7 +25,8 @@ export async function ensureWishocraticItemsExist(
 
   const jurisdiction = await prisma.jurisdiction.upsert({
     where: { code: DEFAULT_WISHOCRATIC_ITEMS_JURISDICTION_CODE },
-    update: {},
+    // Keep initialization atomic when concurrent first responses need the catalogue.
+    update: { code: DEFAULT_WISHOCRATIC_ITEMS_JURISDICTION_CODE },
     create: {
       name: DEFAULT_WISHOCRATIC_JURISDICTION.name,
       type: JurisdictionType.COUNTRY,
