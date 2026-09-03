@@ -35,6 +35,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
+      { find: "next", replacement: path.resolve(appRoot, "node_modules/next") },
+      { find: "next-auth", replacement: path.resolve(appRoot, "node_modules/next-auth") },
       {
         find: /^@\/lib\/(.*)$/,
         replacement: "$1",

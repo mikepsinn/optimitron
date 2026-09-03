@@ -87,7 +87,8 @@ export function AuthForm({
       if (inviteToken) {
         storage.setSignupInviteToken(inviteToken)
       }
-      storage.setSignupSubscribe(subscribe)
+      if (showSubscribe) storage.setSignupSubscribe(subscribe)
+      else storage.removeSignupSubscribe()
 
       // Redirect to completion page after email verification
       const completionUrl = `/auth/complete-signup?callbackUrl=${encodeURIComponent(callbackUrl)}`
@@ -121,7 +122,8 @@ export function AuthForm({
 
   const handleSocialSignIn = async (provider: string) => {
     setIsLoading(true)
-    storage.setSignupSubscribe(subscribe)
+    if (showSubscribe) storage.setSignupSubscribe(subscribe)
+    else storage.removeSignupSubscribe()
     // Track signup/login via social provider
     trackSignUp({ method: provider })
     const url = new URL(callbackUrl, window.location.origin)

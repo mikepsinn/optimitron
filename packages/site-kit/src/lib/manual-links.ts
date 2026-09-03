@@ -14,7 +14,7 @@ export const MANUAL_URLS = {
   readOnline: 'https://manual.warondisease.org',
 
   /** Amazon Kindle */
-  kindle: 'https://www.amazon.com/dp/B0GPBH77XN',
+  kindle: 'https://warondisease.org/amazon/ebook',
 
   /** Universal book link (Apple Books, Kobo, B&N, etc.) */
   allRetailers: 'https://books2read.com/u/baegEq',
