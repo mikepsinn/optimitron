@@ -8,7 +8,6 @@
 import type { FaqConfig } from './site-config'
 import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import {
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   GLOBAL_REGISTERED_VOTERS,
@@ -203,40 +202,54 @@ export const WAR_ON_DISEASE_FAQ: FaqConfig = {
  * Court of Humanity FAQ (Judicial variant)
  */
 export const COURT_OF_HUMANITY_FAQ: FaqConfig = {
-  title: 'FREQUENTLY ASKED QUESTIONS',
-  subtitle: 'What the Court of Humanity is, and how to join the case',
+  title: 'COURT QUESTIONS',
+  subtitle: 'How cases, plaintiffs, membership, and verdicts work',
   sections: [
     {
       category: 'THE COURT',
       questions: [
         {
           q: 'What is the Court of Humanity?',
-          a: `A public court where humanity brings claims against the institutions that injure it. First on the docket: Humanity v. Government. Your governments spend $${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} on weapons for every $1 testing which medicines work, while two billion humans live with untreated disease. The Court counts the plaintiffs, files the evidence, and records humanity's verdict.`,
+          a: 'A public court where humanity brings cases against institutions that harm people. The Court publishes each claim, its cited evidence, a plaintiff register, and verified member verdicts.',
         },
         {
-          q: 'Is this a real court?',
-          a: 'It is a court of public record, not a government tribunal. No sheriff enforces its verdicts. Its power is the register: named plaintiffs, documented harms, and a verdict rendered by the humans every government is paid to serve. Chemical weapons, landmines, and nuclear tests were banned by treaties that started with less.',
+          q: 'What kind of court is this?',
+          a: 'The Court operates independently of governments. Its verdicts form a public record; they are not orders issued by a government court.',
         },
         {
-          q: 'How do I become a plaintiff?',
-          a: 'Sign the 1% Treaty — every YES vote registers you as a plaintiff on Humanity v. Government. You can also register someone you love who can no longer sign for themselves.',
-        },
-        {
-          q: 'Who operates the Court?',
-          a: 'The Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Every case file, piece of evidence, and vote tally is public, so you can check the record instead of trusting the operator.',
+          q: 'What can members do?',
+          a: 'Members can inspect case records and cast one verified verdict per case. Joining the Court is separate from registering a plaintiff or supporting another campaign.',
         },
       ],
     },
-    FAQ_SECTIONS.treaty,
+    {
+      category: 'THE CASE RECORD',
+      questions: [
+        {
+          q: 'What is Humanity v. Government?',
+          a: 'It is the first case on the docket. It alleges that governments caused preventable deaths and economic harm after accepting a duty to promote the general welfare. The case page presents the claim, evidence, damages model, and verdict.',
+        },
+        {
+          q: 'How do I register a plaintiff?',
+          a: 'Use Register a Plaintiff to add yourself or another affected person to the public case record. Plaintiff registration is separate from Court membership and verdict voting.',
+        },
+        {
+          q: 'What does a verdict do?',
+          a: 'A verdict records the verified opinion of participating members. It does not file a lawsuit, create legal liability, or guarantee compensation.',
+        },
+        {
+          q: 'Who operates the Court?',
+          a: 'The Institute for Accelerated Medicine, a 501(c)(3) nonprofit, operates the site. Case records, cited evidence, and vote totals are published for public inspection.',
+        },
+      ],
+    },
   ],
   ctaSection: {
-    title: 'READY TO JOIN THE CASE?',
-    subtitle: 'Read the filing, then put your name on the record',
+    title: 'REVIEW THE FIRST CASE',
+    subtitle: 'Read the claim and cited evidence before voting',
     buttons: [
-      // These point at the case surfaces on warondisease.org until the court
-      // routes land in this app (issue #254), then they become local paths.
       { label: 'READ THE CASE', href: '/humanity-v-government', variant: 'primary' },
-      { label: 'CONTACT US', href: '/contact', variant: 'secondary' },
+      { label: 'REGISTER A PLAINTIFF', href: 'https://warondisease.org/plaintiffs', variant: 'secondary' },
     ],
   },
 }

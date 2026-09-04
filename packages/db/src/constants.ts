@@ -9,7 +9,7 @@ export const TREATY_REFERENDUM_SLUG = "one-percent-treaty";
 export const TRIAL_ABUNDANCE_REFERENDUM_SLUG =
   "patient-access-to-pragmatic-clinical-trials";
 export const TRIAL_ABUNDANCE_REFERENDUM_QUESTION =
-  "Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?";
+  "Should patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?";
 export const TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG =
   "patient-funded-access-to-pragmatic-clinical-trials";
 export const TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION =

@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import {
-  COURT_OF_HUMANITY_QUESTION,
-  COURT_OF_HUMANITY_TEXT,
-} from "@optimitron/data/referendums";
+import { COURT_OF_HUMANITY_TEXT } from "@optimitron/data/referendums";
 import Layout from "@/components/layout";
 import { JsonLdScript } from "@/components/site/JsonLdScript";
 import { buildCourtStructuredData } from "@/lib/campaign-structured-data";
@@ -13,9 +10,9 @@ import { CourtJoinSignatureBox } from "./CourtJoinSignatureBox";
 
 export const dynamic = "force-dynamic";
 
-const COURT_PAGE_TITLE = "Court of Humanity";
+const COURT_PAGE_TITLE = "Join the Court of Humanity";
 const COURT_PAGE_DESCRIPTION =
-  "Should humans be able to sue a government that kills, injures, or ruins their family?";
+  "Join the Court of Humanity to inspect cases and evidence and cast verified human verdicts.";
 
 const siteOg = getSiteConfig().ogMetadata;
 
@@ -50,10 +47,7 @@ interface CourtPageProps {
 }
 
 /**
- * `/court` — the read-and-join surface for the Court of Humanity
- * referendum: the membership question, the full case body, and one
- * signature box. Ported from the monolith's stepper page in the same
- * skim-and-sign shape the peer apps use for `/treaty`.
+ * `/court` — the Court of Humanity membership declaration and join form.
  */
 export default async function CourtPage({ searchParams }: CourtPageProps) {
   const params = await searchParams;
@@ -65,10 +59,10 @@ export default async function CourtPage({ searchParams }: CourtPageProps) {
         <JsonLdScript data={buildCourtStructuredData()} />
         <main className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-            Court of Humanity - Membership referendum
+            Public membership
           </p>
           <h1 className="mt-3 text-3xl font-black leading-[1.15] text-foreground sm:text-4xl">
-            {COURT_OF_HUMANITY_QUESTION}
+            Join the Court of Humanity
           </h1>
 
           <article className="mt-8 border-2 border-foreground bg-background p-5 sm:p-8">

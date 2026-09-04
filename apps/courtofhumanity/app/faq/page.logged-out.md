@@ -3,37 +3,35 @@
 ## Metadata
 
 - Page title: The Court of Humanity
-- Meta description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Meta description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Canonical: https://courtofhumanity.org
 - Open Graph title: The Court of Humanity
-- Open Graph description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Open Graph description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Open Graph image: https://courtofhumanity.org/assets/courtofhumanity/courtofhumanity-og-1200x630.png
 - Twitter title: The Court of Humanity
-- Twitter description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Twitter description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 
 ## Visible Page Copy
 
-## FREQUENTLY ASKED QUESTIONS
-- What the Court of Humanity is, and how to join the case
+## COURT QUESTIONS
+- How cases, plaintiffs, membership, and verdicts work
 ### THE COURT
 #### WHAT IS THE COURT OF HUMANITY?
-- A public court where humanity brings claims against the institutions that injure it. First on the docket: Humanity v. Government. Your governments spend $604 on weapons for every $1 testing which medicines work, while two billion humans live with untreated disease. The Court counts the plaintiffs, files the evidence, and records humanity's verdict.
-#### IS THIS A REAL COURT?
-- It is a court of public record, not a government tribunal. No sheriff enforces its verdicts. Its power is the register: named plaintiffs, documented harms, and a verdict rendered by the humans every government is paid to serve. Chemical weapons, landmines, and nuclear tests were banned by treaties that started with less.
-#### HOW DO I BECOME A PLAINTIFF?
-- Sign the 1% Treaty — every YES vote registers you as a plaintiff on Humanity v. Government. You can also register someone you love who can no longer sign for themselves.
+- A public court where humanity brings cases against institutions that harm people. The Court publishes each claim, its cited evidence, a plaintiff register, and verified member verdicts.
+#### WHAT KIND OF COURT IS THIS?
+- The Court operates independently of governments. Its verdicts form a public record; they are not orders issued by a government court.
+#### WHAT CAN MEMBERS DO?
+- Members can inspect case records and cast one verified verdict per case. Joining the Court is separate from registering a plaintiff or supporting another campaign.
+### THE CASE RECORD
+#### WHAT IS HUMANITY V. GOVERNMENT?
+- It is the first case on the docket. It alleges that governments caused preventable deaths and economic harm after accepting a duty to promote the general welfare. The case page presents the claim, evidence, damages model, and verdict.
+#### HOW DO I REGISTER A PLAINTIFF?
+- Use Register a Plaintiff to add yourself or another affected person to the public case record. Plaintiff registration is separate from Court membership and verdict voting.
+#### WHAT DOES A VERDICT DO?
+- A verdict records the verified opinion of participating members. It does not file a lawsuit, create legal liability, or guarantee compensation.
 #### WHO OPERATES THE COURT?
-- The Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Every case file, piece of evidence, and vote tally is public, so you can check the record instead of trusting the operator.
-### THE 1% TREATY
-#### WHAT IS THE 1% TREATY?
-- The 1% Treaty is a global agreement where nations redirect just 1% of their military spending to fund pragmatic clinical trials integrated into standard healthcare. This gives everyone 1% more security (fewer nuclear weapons pointed at them) while accelerating access to life-saving treatments by years.
-#### WHY 1%? WHY NOT MORE OR LESS?
-- 1% is strategically chosen because it's small enough to be feasible (doesn't compromise national defense) but large enough to be transformative ($27.2B annually). It's also psychologically powerful: everyone gets 1% more security while gaining years of life through faster medical progress.
-#### WHAT HAPPENS TO MILITARY CAPABILITIES WITH 1% LESS FUNDING?
-- Virtually nothing. Modern militaries have massive redundancy and waste. A 1% reduction is easily absorbed through efficiency improvements, reduced procurement waste, or delayed upgrades. No country loses meaningful defensive capability, but everyone gains health security.
-#### WHICH COUNTRIES WOULD PARTICIPATE?
-- The treaty is designed for universal participation, but the top 15 military spenders (US, China, Russia, India, Saudi Arabia, UK, Germany, France, Japan, South Korea, Italy, Australia, Canada, Israel, Spain) account for 81% of global military spending. Their participation alone would fund the entire system.
-### READY TO JOIN THE CASE?
-- Read the filing, then put your name on the record
+- The Institute for Accelerated Medicine, a 501(c)(3) nonprofit, operates the site. Case records, cited evidence, and vote totals are published for public inspection.
+### REVIEW THE FIRST CASE
+- Read the claim and cited evidence before voting
 - [READ THE CASE](/humanity-v-government)
-- [CONTACT US](/contact)
+- [REGISTER A PLAINTIFF](https://warondisease.org/plaintiffs)

@@ -45,12 +45,11 @@ export default async function CourtDashboardPage() {
               <p className="text-lg font-bold">
                 You are not on the plaintiff register yet.{" "}
                 <a
-                  href="https://warondisease.org/humanity-v-government"
+                  href="https://warondisease.org/plaintiffs"
                   className="underline"
                 >
-                  Read the case
-                </a>{" "}
-                and sign the 1% Treaty to join it.
+                  Register a plaintiff
+                </a>.
               </p>
             )}
           </Card>
@@ -71,7 +70,7 @@ export default async function CourtDashboardPage() {
                 Register a plaintiff
               </a>
               <a
-                href="https://warondisease.org/court"
+                href="/humanity-v-government#verdict"
                 className="inline-block border-4 border-primary bg-brutal-cyan px-4 py-2 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 Render your verdict

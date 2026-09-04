@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 
 const SIGNED_TITLE = "You are a member of the Court of Humanity.";
 const SIGNED_BODY =
-  "For each human you bring into the Court with your link, the jury grows by one and sovereign immunity weakens by an amount your governments' lawyers will quietly notice.";
+  "Share your link with anyone who should be able to inspect the cases and cast a verified verdict.";
 
 async function postCourtVote(input: {
   displayName?: string;
@@ -254,9 +254,8 @@ export function CourtJoinSignatureBox({
   return (
     <div className="mx-auto w-full max-w-md">
       <p className="mb-6 text-center text-xl font-bold text-foreground">
-        Joined this day,{" "}
-        <span data-volatile="signature date">{today ?? ""}</span>, in the year
-        of our ongoing confusion.
+        Add your name to the membership record. Today is{" "}
+        <span data-volatile="signature date">{today ?? ""}</span>.
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
@@ -282,7 +281,7 @@ export function CourtJoinSignatureBox({
             "px-8 text-lg disabled:opacity-40",
           )}
         >
-          {submitting ? "..." : "Sign"}
+          {submitting ? "..." : "Join the Court"}
         </button>
       </div>
       <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm font-bold text-foreground">
@@ -293,8 +292,7 @@ export function CourtJoinSignatureBox({
           className="mt-1 h-4 w-4 cursor-pointer accent-foreground"
         />
         <span>
-          Display my name publicly on the signer list and leaderboards{" "}
-          <span className="opacity-70">(recommended)</span>.
+          Display my name publicly on the Court membership list.
         </span>
       </label>
       {error ? (

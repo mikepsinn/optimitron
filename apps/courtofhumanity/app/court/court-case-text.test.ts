@@ -15,11 +15,14 @@ describe("Court of Humanity case body", () => {
     );
   });
 
-  it("keeps the joinable Articles and the membership question intact", () => {
+  it("keeps the membership declaration and its safeguards intact", () => {
     expect(COURT_OF_HUMANITY_TEXT.markdown).toContain("**Article I**");
-    expect(COURT_OF_HUMANITY_TEXT.markdown).toContain("**Article VI**");
+    expect(COURT_OF_HUMANITY_TEXT.markdown).toContain("**Article IV**");
     expect(COURT_OF_HUMANITY_TEXT.markdown).toContain(
-      "hereby join the Court of Humanity",
+      "I join the Court of Humanity",
+    );
+    expect(COURT_OF_HUMANITY_TEXT.markdown).toContain(
+      "operates independently of governments",
     );
   });
 });

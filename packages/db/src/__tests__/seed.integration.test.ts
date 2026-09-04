@@ -863,7 +863,7 @@ describeIfDatabase("syncManagedData", () => {
           slug: "court-of-humanity",
           kind: ReferendumKind.MEMBERSHIP,
           question: expect.stringContaining("same right to sue"),
-          bodyMarkdown: expect.stringContaining("sovereign immunity"),
+          bodyMarkdown: expect.stringContaining("I join the Court of Humanity"),
           contentHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         }),
         expect.objectContaining({

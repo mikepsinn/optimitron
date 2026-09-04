@@ -1404,7 +1404,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     name: "Court of Humanity",
     title: "The Court of Humanity",
     description:
-      "The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.",
+      "The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.",
     domains: ["courtofhumanity.org", "www.courtofhumanity.org"],
     baseUrl: "https://courtofhumanity.org",
     domain: "courtofhumanity.org",

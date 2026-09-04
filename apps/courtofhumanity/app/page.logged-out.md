@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The Court of Humanity
-- Meta description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Meta description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Canonical: https://courtofhumanity.org
 - Open Graph title: The Court of Humanity
-- Open Graph description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Open Graph description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Open Graph image: https://courtofhumanity.org/assets/courtofhumanity/courtofhumanity-og-1200x630.png
 - Twitter title: The Court of Humanity
-- Twitter description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Twitter description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 
 ## Visible Page Copy
 
@@ -19,10 +19,10 @@
 - Where humanity brings its case against the institutions it pays to protect it. Court is in session.
 - NOW ON THE DOCKET
 ### HUMANITY V. GOVERNMENT
-- The defendants collect $[604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) for weapons for every $1 they spend testing which medicines work, while [150K](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) humans die of disease every day. The plaintiffs are the humans who pay them to promote the general welfare. The remedy sought: redirect 1% of military spending to pragmatic clinical trials.
+- The case alleges that governments breached their duty to promote the general welfare, causing preventable deaths and economic harm. Read the claim and cited evidence, add affected people to the public plaintiff register, then render a verdict.
 - [READ THE CASE](/humanity-v-government)
 - [REGISTER A PLAINTIFF](https://warondisease.org/plaintiffs)
-- [RENDER YOUR VERDICT](/court)
+- [RENDER YOUR VERDICT](/humanity-v-government#verdict)
 #### THE CASE
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
 - [JOIN THE COURT](/court)
