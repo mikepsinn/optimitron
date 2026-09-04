@@ -746,7 +746,8 @@ const CLIENT_JS = `
     "wishocracy",
     "trialabundancesurvey",
     "curedao",
-    "acceleratedmedicine"
+    "acceleratedmedicine",
+    "courtofhumanity"
   ];
   var COMPATIBILITY_DISPLAY_ORDER = ["warondisease", "dfda", "dih"];
   function routeNeedsReview(r) {

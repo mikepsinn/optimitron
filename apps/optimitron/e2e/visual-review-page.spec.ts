@@ -320,7 +320,7 @@ test("legacy variant routes remain available while filtering", async ({
   );
 });
 
-test("seven peer apps are separated into collapsible groups", async ({
+test("eight peer apps are separated into collapsible groups", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "default");
@@ -328,7 +328,7 @@ test("seven peer apps are separated into collapsible groups", async ({
   await page.goto(pathToFileURL(SITE_APPS_SMOKE_HTML).toString());
 
   const siteApps = page.locator('.rail-group[data-key="apps"]');
-  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (7)");
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (8)");
 
   const warOnDisease = siteApps.locator(
     'details[data-owner-key="warondisease"]',
@@ -337,6 +337,9 @@ test("seven peer apps are separated into collapsible groups", async ({
     'details[data-owner-key="optimitron"]',
   );
   const dfda = siteApps.locator('details[data-owner-key="dfda"]');
+  const courtOfHumanity = siteApps.locator(
+    'details[data-owner-key="courtofhumanity"]',
+  );
   await expect(siteApps.locator(":scope > details.rail-app").nth(0)).toHaveAttribute(
     "data-owner-key",
     "warondisease",
@@ -349,6 +352,9 @@ test("seven peer apps are separated into collapsible groups", async ({
     '[data-route="site-app-warondisease-home"]',
   );
   const dfdaHome = dfda.locator('[data-route="site-app-dfda-home"]');
+  const courtOfHumanityHome = courtOfHumanity.locator(
+    '[data-route="site-app-courtofhumanity-home"]',
+  );
 
   await expect(warOnDisease).toHaveAttribute("open", "");
   await expect(warOnDiseaseHome).toBeVisible();
@@ -356,6 +362,12 @@ test("seven peer apps are separated into collapsible groups", async ({
   await expect(optimitron).not.toHaveAttribute("open", "");
   await expect(dfda).not.toHaveAttribute("open", "");
   await expect(dfdaHome).toBeHidden();
+  await expect(courtOfHumanity).toBeVisible();
+  await expect(courtOfHumanity).not.toHaveAttribute("open", "");
+  await expect(courtOfHumanityHome).toBeHidden();
+  await expect(
+    optimitron.locator('[data-route="site-app-courtofhumanity-home"]'),
+  ).toHaveCount(0);
 
   await dfda.locator("summary").click();
   await expect(dfda).toHaveAttribute("open", "");
@@ -367,7 +379,7 @@ test("seven peer apps are separated into collapsible groups", async ({
 
   const routeFilter = page.getByRole("searchbox", { name: "Filter routes" });
   await routeFilter.fill("warondisease");
-  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (1/7)");
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (1/8)");
   await expect(warOnDisease).toHaveAttribute("open", "");
   await expect(warOnDiseaseHome).toBeVisible();
   await expect(dfda).toBeHidden();
