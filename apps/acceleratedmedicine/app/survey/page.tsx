@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { StateSupportSection } from "@/components/landing/right-to-try-sections";
 import Layout from "@/components/layout";
 import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual";
+import { normalizeUsRegionCode } from "@optimitron/site-kit/lib/us-states";
 import {
-  stateSlug,
   SUPPORTER_ROLES,
   US_STATES,
   type StateAbbreviation,
@@ -20,16 +20,16 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * `?state=` accepts every form the survey itself accepts ("MO", "US-MO",
+ * "Missouri") plus the campaign-page slug ("new-york"), narrowed to the 50
+ * states that have campaign pages.
+ */
 function matchState(value: string | undefined): StateAbbreviation | undefined {
-  if (!value) return undefined;
-  const normalized = value.trim().toLowerCase();
-  const match = US_STATES.find(
-    ([name, abbreviation]) =>
-      name.toLowerCase() === normalized ||
-      stateSlug(name) === normalized ||
-      abbreviation.toLowerCase() === normalized,
-  );
-  return match?.[1];
+  const code =
+    normalizeUsRegionCode(value) ??
+    normalizeUsRegionCode(value?.replaceAll("-", " "));
+  return US_STATES.find(([, abbreviation]) => abbreviation === code)?.[1];
 }
 
 function matchRole(value: string | undefined): SupporterRole | undefined {
