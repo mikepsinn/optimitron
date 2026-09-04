@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm run build:vercel",
+  "buildCommand": "node ../../.github/scripts/vercel-app-env.mjs optimitron && pnpm run build:vercel",
   "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs optimitron",
   "git": {
     "deploymentEnabled": {

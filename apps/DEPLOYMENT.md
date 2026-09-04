@@ -111,6 +111,17 @@ Provider credentials can be shared only when the provider configuration includes
 every required callback URL. Separate credentials are safer when an app does not
 need the provider.
 
+Each app's Vercel build command runs `.github/scripts/vercel-app-env.mjs`
+before compilation. The preflight fails the deployment and lists every missing
+required variable. It never prints variable values. Authentication apps require
+their database and session secret in every deployment. Production also requires
+the app's canonical `NEXTAUTH_URL`, Resend key, and Google OAuth credentials
+because its sign-in page offers both email and Google. Apps with active scheduled
+jobs require `CRON_SECRET` in production. Accelerated Medicine also requires
+`RIGHT_TO_TRY_RATE_LIMIT_SECRET` for its public support form. dFDA requires
+`GOOGLE_GENERATIVE_AI_API_KEY` for its shipped evidence tools. Provider and
+feature credentials stay production-only unless a preview explicitly needs them.
+
 The current donation page uses checked-in Stripe Payment Links, so it does not
 need Stripe API secrets. The legacy checkout, session, and webhook routes were
 removed; nothing reacts to a completed donation server-side. Payment Links are
@@ -123,11 +134,10 @@ production schema because votes, people, and referrals are shared records.
 
 ## Source of truth
 
-Each app's `.env.example` lists only the variables its shipped capabilities
-need. Vercel remains the value store. The example files are the reviewable
-contract and contain no real secrets. Accelerated Medicine ships the shared
-survey and sign-in, so it receives `DATABASE_URL`, its own `NEXTAUTH_SECRET`,
-and a production `NEXTAUTH_URL`. CureDAO does not receive database or
+Each app's `.env.example` lists the variables its shipped capabilities need.
+Vercel remains the value store. The preflight manifest is the executable
+required-variable contract. The example files document required and optional
+variables without real secrets. CureDAO does not receive database or
 authentication secrets because it does not ship those capabilities.
 
 Vercel sets `NODE_ENV`, `VERCEL_URL`, and related platform variables. Do not add

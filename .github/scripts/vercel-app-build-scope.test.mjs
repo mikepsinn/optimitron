@@ -103,7 +103,12 @@ test("ignores global review and documentation changes", () => {
 });
 
 test("rebuilds every app for root dependency inputs", () => {
-  const files = ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"];
+  const files = [
+    ".github/scripts/vercel-app-env.mjs",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+  ];
 
   for (const app of apps) {
     assert.deepEqual(getVercelAppBuildMatches(app, files), files);

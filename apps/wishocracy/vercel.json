@@ -11,5 +11,5 @@
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @optimitron/db run prisma:generate && pnpm build:app-dependencies && pnpm --filter @apps/wishocracy run build"
+  "buildCommand": "node ../../.github/scripts/vercel-app-env.mjs wishocracy && cd ../.. && pnpm --filter @optimitron/db run prisma:generate && pnpm build:app-dependencies && pnpm --filter @apps/wishocracy run build"
 }

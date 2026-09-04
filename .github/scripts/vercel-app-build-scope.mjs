@@ -14,6 +14,7 @@ const dependencyFields = [
   "peerDependencies",
 ];
 const globalBuildFiles = new Set([
+  ".github/scripts/vercel-app-env.mjs",
   ".npmrc",
   "package.json",
   "pnpm-lock.yaml",
