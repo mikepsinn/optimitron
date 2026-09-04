@@ -158,9 +158,11 @@ export function Layout({ children }: LayoutProps) {
             href="/"
             className="text-xl md:text-2xl font-black uppercase tracking-tight hover:underline decoration-4"
           >
-            <span className="md:hidden">{siteConfig.name.toUpperCase()}</span>
+            <span className="md:hidden">
+              {(siteConfig.headerBrandLabel ?? siteConfig.name).toUpperCase()}
+            </span>
             <span className="hidden md:inline">
-              {siteConfig.title.toUpperCase()}
+              {(siteConfig.headerBrandLabel ?? siteConfig.title).toUpperCase()}
             </span>
           </Link>
 

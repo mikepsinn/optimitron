@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
 - [Go to Dashboard](/dashboard)
 ## PRIVACY POLICY
 - Last updated: August 2026
@@ -67,7 +67,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT

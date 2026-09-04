@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
 - [Go to Dashboard](/dashboard)
 ## A RIGHT TO TRIAL FRAMEWORK FOR EVERY STATE.
 - Start with Montana's enacted licensing framework. Add pragmatic trials, provider payment, and published outcomes. Give every patient the right and practical ability to participate in a clinical trial for the most promising treatments.

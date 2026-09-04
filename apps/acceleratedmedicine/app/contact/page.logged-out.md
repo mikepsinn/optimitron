@@ -13,7 +13,8 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
+- [Go to Dashboard](/dashboard)
 - VOLUNTEER
 ## HELP EVERY PATIENT GET THE RIGHT TO TRIAL.
 - Every patient should be able to join a pragmatic clinical trial for the most promising treatments. Every result should help the next patient. You can help make that normal.
@@ -51,7 +52,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT

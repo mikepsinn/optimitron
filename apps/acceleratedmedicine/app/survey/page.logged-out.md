@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
 - [Go to Dashboard](/dashboard)
 - QUESTION 1 OF 3
 ## Should patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?

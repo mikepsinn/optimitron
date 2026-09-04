@@ -13,12 +13,13 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
+- [Go to Dashboard](/dashboard)
 ## FUND MEDICAL FREEDOM THAT LEARNS
 - Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
-- 0.06%
-- 82.0x
-- 150K
+- [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
+- [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [150K](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
 ### COMPLETE YOUR DONATION
 - ONE-TIME
 - MONTHLY
@@ -57,7 +58,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
