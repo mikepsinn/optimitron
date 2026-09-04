@@ -1,0 +1,305 @@
+import type { Metadata } from "next"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import { CourtCasePartyRole, PersonConditionStatus } from "@optimitron/db"
+import { PersonDeathCauseCategory } from "@optimitron/db/enums"
+import Layout from "@/components/layout"
+import { defaultButtonClassName } from "@optimitron/site-kit/components/ui/default-button"
+import { getSessionUserId } from "@/lib/auth-utils"
+import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server"
+import { splitDisplayNameIntoNameParts } from "@/lib/person-name"
+import { prisma } from "@/lib/prisma"
+import { getSignInPath, ROUTES } from "@/lib/routes"
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty"
+import { ManagePlaintiffsClient } from "./manage-plaintiffs-client"
+
+const MANAGE_PAGE_SIZE = 5
+
+const HUMANITY_V_GOVERNMENT_LABEL = "Humanity v. Government"
+
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "Your Plaintiffs",
+  description: `Edit the plaintiffs you registered for ${HUMANITY_V_GOVERNMENT_LABEL}.`,
+  robots: { index: false, follow: false },
+}
+
+function dateInputValue(value: Date | null): string {
+  return value ? value.toISOString().slice(0, 10) : ""
+}
+
+function parsePage(value: string | string[] | undefined) {
+  const raw = Number.parseInt(
+    Array.isArray(value) ? (value[0] ?? "1") : (value ?? "1"),
+    10,
+  )
+  return Number.isFinite(raw) && raw > 0 ? raw : 1
+}
+
+function pageUrl(page: number) {
+  return page > 1
+    ? `${ROUTES.plaintiffsManage}?page=${page}`
+    : ROUTES.plaintiffsManage
+}
+
+function ManagePagination({
+  currentPage,
+  totalCount,
+  totalPages,
+}: {
+  currentPage: number
+  totalCount: number
+  totalPages: number
+}) {
+  if (totalPages <= 1) return null
+
+  const first = (currentPage - 1) * MANAGE_PAGE_SIZE + 1
+  const last = Math.min(currentPage * MANAGE_PAGE_SIZE, totalCount)
+
+  return (
+    <nav
+      aria-label="Your plaintiffs pages"
+      className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-foreground px-1 py-4 text-foreground"
+    >
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+        {first}-{last} of {totalCount}
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {currentPage > 1 ? (
+          <Link
+            className={`${defaultButtonClassName} min-h-10 px-4 text-xs`}
+            href={pageUrl(currentPage - 1)}
+          >
+            Previous
+          </Link>
+        ) : (
+          <span className="inline-flex min-h-10 items-center border-2 border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground opacity-50">
+            Previous
+          </span>
+        )}
+        <span className="px-2 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </span>
+        {currentPage < totalPages ? (
+          <Link
+            className={`${defaultButtonClassName} min-h-10 px-4 text-xs`}
+            href={pageUrl(currentPage + 1)}
+          >
+            Next
+          </Link>
+        ) : (
+          <span className="inline-flex min-h-10 items-center border-2 border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground opacity-50">
+            Next
+          </span>
+        )}
+      </div>
+    </nav>
+  )
+}
+
+export default async function ManagePlaintiffsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) {
+  // visual-auth-state: required
+  // getSessionUserId keeps the next-auth call inside site-kit; importing
+  // authOptions here pulls in a second next-auth instance whose adapter types
+  // do not match (see the note on getSessionUser in lib/auth-utils.ts). It
+  // redirects rather than throwing, which requireUser cannot do, hence the
+  // marker above for scripts/site-app-navigation.test.ts.
+  const userId = await getSessionUserId()
+  if (!userId) {
+    redirect(getSignInPath(ROUTES.plaintiffsManage))
+  }
+
+  const referendumSlug = TREATY_REFERENDUM_SLUG
+  const params = (await searchParams) ?? {}
+  const requestedPage = parsePage(params.page)
+  const editParam = Array.isArray(params.edit) ? params.edit[0] : params.edit
+  const initialEditingId =
+    typeof editParam === "string" && editParam.trim() ? editParam.trim() : null
+  const representedPeopleWhere = {
+    deletedAt: null,
+    subject: {
+      courtCaseParties: {
+        some: {
+          case: {
+            deletedAt: null,
+            slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
+          },
+          createdByUserId: userId,
+          deletedAt: null,
+          role: CourtCasePartyRole.NAMED_PLAINTIFF,
+        },
+      },
+    },
+  }
+  const totalCount = await prisma.person.count({
+    where: representedPeopleWhere,
+  })
+  const totalPages = Math.max(1, Math.ceil(totalCount / MANAGE_PAGE_SIZE))
+  const currentPage = Math.min(requestedPage, totalPages)
+  const people = await prisma.person.findMany({
+    skip: (currentPage - 1) * MANAGE_PAGE_SIZE,
+    take: MANAGE_PAGE_SIZE,
+    where: representedPeopleWhere,
+    orderBy: { createdAt: "desc" },
+    select: {
+      birthDate: true,
+      conditions: {
+        where: { deletedAt: null },
+        orderBy: [{ status: "desc" as const }, { createdAt: "asc" as const }],
+        select: { conditionName: true, isPublic: true, status: true },
+        take: 3,
+      },
+      deathDate: true,
+      displayName: true,
+      bio: true,
+      id: true,
+      image: true,
+      isPublic: true,
+      firstName: true,
+      middleName: true,
+      lastName: true,
+      lifeStatus: true,
+      memorial: {
+        select: {
+          causeCategory: true,
+          deathCountryCode: true,
+          evidence: {
+            where: { deletedAt: null, submittedByUserId: userId },
+            orderBy: { createdAt: "desc" },
+            select: {
+              description: true,
+              evidenceKind: true,
+              id: true,
+              sourceUrl: true,
+              title: true,
+            },
+            take: 8,
+          },
+          submissions: {
+            where: { deletedAt: null, submittedByUserId: userId },
+            orderBy: { createdAt: "desc" },
+            select: {
+              consentCourtEvidence: true,
+              memorialMessage: true,
+            },
+            take: 1,
+          },
+        },
+      },
+      relationshipsAsObject: {
+        where: { createdByUserId: userId, deletedAt: null },
+        orderBy: { createdAt: "desc" },
+        select: { relationshipType: true },
+        take: 1,
+      },
+    },
+  })
+
+  const editablePeople = people.map((person) => {
+    const fallbackName = splitDisplayNameIntoNameParts(person.displayName)
+    const primaryCondition =
+      person.conditions.find(
+        (condition) =>
+          condition.status === PersonConditionStatus.CAUSE_OF_DEATH,
+      ) ??
+      person.conditions[0] ??
+      null
+    const submission = person.memorial?.submissions[0] ?? null
+    return {
+      authorityConfirmed: false,
+      birthDate: dateInputValue(person.birthDate),
+      causeCategory:
+        person.memorial?.causeCategory ?? PersonDeathCauseCategory.UNKNOWN,
+      conditionIsPublic: primaryCondition?.isPublic ?? false,
+      conditionName: primaryCondition?.conditionName ?? "",
+      dateOfDeath: dateInputValue(person.deathDate),
+      deathCountryCode: person.memorial?.deathCountryCode ?? "",
+      displayName: person.displayName,
+      evidence:
+        person.memorial?.evidence.map((evidence) => ({
+          description: evidence.description ?? "",
+          evidenceKind: evidence.evidenceKind,
+          id: evidence.id,
+          sourceUrl: evidence.sourceUrl ?? "",
+          title: evidence.title ?? "",
+        })) ?? [],
+      id: person.id,
+      healthDisclosureConfirmed: false,
+      imageUrl: person.image ?? "",
+      isPublic: person.isPublic,
+      firstName: person.firstName ?? fallbackName.firstName,
+      middleName: person.middleName ?? fallbackName.middleName,
+      lastName: person.lastName ?? fallbackName.lastName,
+      lifeStatus: person.lifeStatus,
+      memorialMessage: submission?.memorialMessage ?? "",
+      publicComment: person.bio ?? "",
+      publicDisplayAcknowledged: false,
+      relationshipType: person.relationshipsAsObject[0]?.relationshipType ?? "",
+      consentCourtEvidence: submission?.consentCourtEvidence ?? false,
+    }
+  })
+
+  return (
+    <Layout>
+      <section className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:py-14">
+        <header className="space-y-5">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                <Link
+                  className="underline underline-offset-4"
+                  href={ROUTES.humanityVGovernment}
+                >
+                  {HUMANITY_V_GOVERNMENT_LABEL}
+                </Link>
+              </p>
+              <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">
+                Your Plaintiffs
+              </h1>
+            </div>
+            <Link
+              className="inline-flex min-h-11 items-center border-2 border-foreground bg-background px-4 text-xs font-black uppercase tracking-[0.14em] text-foreground"
+              href={ROUTES.plaintiffs}
+            >
+              Register another plaintiff
+            </Link>
+          </div>
+          <div className="space-y-4 border-2 border-foreground bg-background p-5 text-lg font-bold leading-8 text-foreground">
+            <p>
+              These are the plaintiffs you registered for{" "}
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.humanityVGovernment}
+              >
+                {HUMANITY_V_GOVERNMENT_LABEL}
+              </Link>
+              , the Court of Humanity class action.
+            </p>
+            <p>
+              Open any plaintiff. Add the photo, disease or cause, relationship,
+              public note, or evidence.
+            </p>
+          </div>
+        </header>
+
+        <ManagePlaintiffsClient
+          currentPage={currentPage}
+          initialEditingId={initialEditingId}
+          people={editablePeople}
+          referendumSlug={referendumSlug}
+        />
+
+        <ManagePagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          totalPages={totalPages}
+        />
+      </section>
+    </Layout>
+  )
+}

@@ -25,11 +25,8 @@
 - [RENDER YOUR VERDICT](/humanity-v-government#verdict)
 #### THE CASE
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
+- [REGISTER A PLAINTIFF](/plaintiffs)
 - [JOIN THE COURT](/court)
-#### LEARN MORE
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [CONTACT](/contact)
 #### CONTACT
 - [hello@courtofhumanity.org](mailto:hello@courtofhumanity.org)
 - [PRIVACY POLICY](/privacy)

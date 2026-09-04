@@ -78,6 +78,8 @@ export const ROUTES = {
   // Court of Humanity (courtofhumanity.org)
   court: '/court',
   humanityVGovernment: '/humanity-v-government',
+  plaintiffs: '/plaintiffs',
+  plaintiffsManage: '/plaintiffs/manage',
 
   // Media / Manual
   manual: '/manual',
@@ -271,6 +273,15 @@ export const HASH_LINKS = {
 
 export const NONPROFIT_COALITION_STRATEGY_URL =
   'https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy'
+
+/**
+ * Sign-in URL that returns the visitor to `callbackUrl` afterwards. Used by
+ * server components that have to bounce an anonymous visitor, such as the
+ * plaintiff-management page.
+ */
+export function getSignInPath(callbackUrl: string = ROUTES.dashboard): string {
+  return `${ROUTES.signIn}?${new URLSearchParams({ callbackUrl }).toString()}`
+}
 
 /** `/organizations/{slug}` — an organization's public page. */
 export function getOrganizationPath(identifier: string): string {

@@ -270,6 +270,19 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard",
       sourcePage: "apps/courtofhumanity/app/dashboard/page.tsx",
     },
+    {
+      authenticated: true,
+      authRole: "user",
+      covers: [
+        "apps/courtofhumanity/app/plaintiffs/manage/page.tsx",
+        "apps/courtofhumanity/app/plaintiffs/manage/manage-plaintiffs-client.tsx",
+        "apps/courtofhumanity/app/plaintiffs/manage/square-photo-cropper.tsx",
+      ],
+      label: "Your plaintiffs — signed-in user",
+      routeName: "plaintiffs-manage-authenticated",
+      routePath: "/plaintiffs/manage",
+      sourcePage: "apps/courtofhumanity/app/plaintiffs/manage/page.tsx",
+    },
   ],
 });
 
@@ -569,6 +582,21 @@ export const publicSiteAppRoutes = Object.freeze({
       routeName: "survey-not-found",
       routePath: "/survey/this-org-does-not-exist",
       sourcePage: "apps/warondisease/app/survey/[slug]/not-found.tsx",
+    },
+  ],
+  courtofhumanity: [
+    {
+      covers: [
+        "apps/courtofhumanity/app/plaintiffs/page.tsx",
+        "apps/courtofhumanity/app/plaintiffs/people-filter-bar.tsx",
+        "apps/courtofhumanity/app/plaintiffs/person-face-tile.tsx",
+        "apps/courtofhumanity/app/plaintiffs/register-plaintiff-form.tsx",
+        "packages/site-kit/src/lib/represented-people.server.ts",
+      ],
+      label: "Register a plaintiff",
+      routeName: "plaintiffs",
+      routePath: "/plaintiffs",
+      sourcePage: "apps/courtofhumanity/app/plaintiffs/page.tsx",
     },
   ],
   dfda: [

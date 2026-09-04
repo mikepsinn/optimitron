@@ -11,11 +11,11 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PHARMA_LIVES_SAVED_ANNUAL,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-  TREATY_REDUCTION_PCT,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters";
+import Link from "next/link";
 import Layout from "@/components/layout";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { JsonLdScript } from "@/components/site/JsonLdScript";
@@ -27,6 +27,7 @@ import {
   getHumanityVGovernmentPlaintiffCount,
   getHumanityVGovernmentVerdictStats,
 } from "@/lib/humanity-v-government-case.server";
+import { ROUTES } from "@/lib/routes";
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/lib/welfare-claim";
 import { DamagesSensitivityCalculator } from "./DamagesSensitivityCalculator";
 import { HumanityVGovernmentVerdictVote } from "./HumanityVGovernmentVerdictVote";
@@ -38,9 +39,6 @@ export const metadata = HUMANITY_V_GOVERNMENT_METADATA;
 
 const HUMANITY_V_GOVERNMENT_MANUAL_URL =
   "https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html";
-
-/** Plaintiff registration still lives on warondisease.org (not migrated). */
-const PLAINTIFFS_URL = "https://warondisease.org/plaintiffs";
 
 const CASE_CAPTION = {
   plaintiff: "Humanity",
@@ -237,14 +235,7 @@ export default async function HumanityVGovernmentPage() {
                   param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
                   valueOverride="604"
                 />{" "}
-                times more on weapons than on testing which medicines work. The
-                1% Treaty asks them to redirect{" "}
-                <ParameterValue
-                  figures={2}
-                  param={TREATY_REDUCTION_PCT}
-                  valueOverride="1%"
-                />{" "}
-                of military spending to pragmatic clinical trials.
+                times more on weapons than on testing which medicines work.
               </p>
             </div>
             <div className="border-2 border-foreground bg-background p-4">
@@ -259,7 +250,8 @@ export default async function HumanityVGovernmentPage() {
                   param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
                   valueOverride="443 years"
                 />
-                . The treaty model compresses that queue to{" "}
+                . The cited model estimates that an adequately funded pragmatic
+                trial program could compress that queue to{" "}
                 <ParameterValue
                   figures={2}
                   param={DFDA_QUEUE_CLEARANCE_YEARS}
@@ -475,12 +467,12 @@ export default async function HumanityVGovernmentPage() {
             delay, or preventable disease, add them. A civilization should at
             least be able to count its dead. On my planet, we counted every one.
           </p>
-          <a
+          <Link
             className={`${defaultButtonClassName} mt-5 tracking-[0.08em]`}
-            href={PLAINTIFFS_URL}
+            href={ROUTES.plaintiffs}
           >
             Add a plaintiff
-          </a>
+          </Link>
         </section>
       </main>
     </Layout>

@@ -21,6 +21,8 @@ export const STORAGE_KEYS = {
   PENDING_ORGANIZATION_ENDORSEMENTS: "pending_organization_endorsements",
   PENDING_ORGANIZATION_ENDORSEMENTS_SYNC_LOCK:
     "pending_organization_endorsements_sync_lock",
+  PENDING_REPRESENTED_PEOPLE: "pending_represented_people",
+  PENDING_REPRESENTED_PEOPLE_SYNC_LOCK: "pending_represented_people_sync_lock",
 } as const
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
