@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Choose and complete the highest-value work available to you.",
   "author": {
-    "name": "Accelerated Medicine Foundation",
+    "name": "Accelerated Medicine Foundation Inc",
     "email": "m@warondisease.org",
     "url": "https://optimitron.com"
   },
@@ -15,7 +15,7 @@
     "displayName": "Optimitron",
     "shortDescription": "Do the highest-value work available to you.",
     "longDescription": "Choose work, inspect its expected value and blockers, coordinate execution, and leave an auditable record of what happened.",
-    "developerName": "Accelerated Medicine Foundation",
+    "developerName": "Accelerated Medicine Foundation Inc",
     "category": "Productivity",
     "capabilities": ["Read", "Write"],
     "websiteURL": "https://optimitron.com",

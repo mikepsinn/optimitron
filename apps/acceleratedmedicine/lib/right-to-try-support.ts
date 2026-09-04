@@ -148,7 +148,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
       `Open your state page: ${stateUrl}`,
       "",
       "Institute for Accelerated Medicine",
-      "A DBA of the Accelerated Medicine Foundation",
+      "A DBA of the Accelerated Medicine Foundation Inc",
     ].join("\n");
     const html = `
       <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
@@ -157,7 +157,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
         <p><a href="https://acceleratedmedicine.org/montana">See the Montana precedent</a></p>
         <p><a href="https://acceleratedmedicine.org/model-act">Review the model framework</a></p>
         <p><a href="${stateUrl}">Open your state page</a></p>
-        <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation</p>
+        <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation Inc</p>
       </main>
     `.trim();
 
@@ -175,7 +175,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
     "Review the model framework: https://acceleratedmedicine.org/model-act",
     "",
     "Institute for Accelerated Medicine",
-    "A DBA of the Accelerated Medicine Foundation",
+    "A DBA of the Accelerated Medicine Foundation Inc",
   ].join("\n");
   const html = `
     <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
@@ -183,7 +183,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
       <p>Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute bring Right to Trial education to every state.</p>
       <p><a href="https://acceleratedmedicine.org/montana">See the Montana precedent</a></p>
       <p><a href="https://acceleratedmedicine.org/model-act">Review the model framework</a></p>
-      <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation</p>
+      <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation Inc</p>
     </main>
   `.trim();
 

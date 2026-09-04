@@ -423,7 +423,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Status:** planned
 - **Summary:** Bounded paid organization workflows fund EOS operations through measured verified-work gross margin without selling truth, public priority, or nonprofit campaign influence.
 - **Evidence:** target contract in PRD §9.8; existing task listings, compensation, applications, artifacts, and verification foundations; no qualifying paid pilot or operating-margin proof ships
-- **Acceptance:** A named customer pays for a bounded workflow whose costs, receipts, verified deliverable, and gross margin are recorded, with commercial funds kept separate from Accelerated Medicine Foundation campaign donations.
+- **Acceptance:** A named customer pays for a bounded workflow whose costs, receipts, verified deliverable, and gross margin are recorded, with commercial funds kept separate from Accelerated Medicine Foundation Inc campaign donations.
 - **Roadmap:** later — one design-partner workflow, then a small paid pilot
 
 ### OPT-INTG-02 — Google Calendar import

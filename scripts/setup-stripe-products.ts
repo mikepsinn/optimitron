@@ -42,7 +42,7 @@ const MANAGED_BY = "setup-stripe-products";
  */
 const EXPECTED_ACCOUNT_ID = "acct_1TPCJFD5epyB9qRx";
 const PRODUCT_DESCRIPTION =
-  "Accelerated Medicine Foundation (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.";
+  "Accelerated Medicine Foundation Inc (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.";
 const SUCCESS_REDIRECT_URL =
   "https://acceleratedmedicine.org/donate/success?session_id={CHECKOUT_SESSION_ID}";
 const PRODUCT_NAMES: Record<DonationTypeKey, string> = {

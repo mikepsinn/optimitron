@@ -26,7 +26,7 @@
   5. Remind country leaders and treaty signers — they are paid by the citizenry to promote welfare and are late on a 30-second task.
   6. Improve discoverability and trust in people, organization, task, and evidence pages.
   7. Preserve Optimitron's broader governance OS as the proof layer, not as a competing homepage.
-- Legal nonprofit: Accelerated Medicine Foundation. Registered DBAs include Institute for Accelerated Medicine and International Campaign to End War and Disease.
+- Legal nonprofit: Accelerated Medicine Foundation Inc. Registered DBAs include Institute for Accelerated Medicine and International Campaign to End War and Disease.
 - The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, remind a leader, complete a companion-loop stage, or trust the quantified case enough to act?
 - Treat `optimitron.com` as the operating system and proof engine: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let generic platform breadth compete with the Now tracks for attention.
 - Optimitron owns durable tasks, EV, provenance, permissions, approval, verification, and audit. Codex/Claude own chat, coding, connectors, and browser control; the extension owns explicit local capture and approval.
