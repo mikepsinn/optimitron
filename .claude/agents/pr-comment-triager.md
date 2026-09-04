@@ -125,8 +125,6 @@ Examples:
 
 > Won't fix — `PersonalIncomeChart.tsx` was untouched on this branch; the hardcoded `bg-white` is a pre-existing pattern across the landing-light component family that needs to migrate together, not a one-off patch.
 
-> False positive — `safety-gate.mjs:44` already covers newline AND single-`&`: `(?:&&|\|\||;|\n|\|(?!\|)|&(?!&))`.
-
 ## Step 5: Report back to the parent agent
 
 Return a short markdown summary:
