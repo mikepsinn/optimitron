@@ -89,9 +89,10 @@ export default function TrialAbundanceSurveySection({
   visualState,
   initialParticipant,
   headingAs: Heading = "h1",
-  title = "Trial Abundance Survey",
-  description = "Three questions about patient access, who may fund trial participation, and public priorities.",
+  title,
+  description,
 }: TrialAbundanceSurveySectionProps) {
+  const PatientAccessHeading = title ? "h2" : Heading
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const referralCode = searchParams?.get("ref") ?? null
@@ -272,15 +273,19 @@ export default function TrialAbundanceSurveySection({
       className="pb-24"
     >
       <Container>
-        {stage === "patient-access" ? (
-          <>
-            <Heading className="mb-3 text-center text-3xl font-black uppercase sm:text-4xl md:text-6xl">
-              {title}
-            </Heading>
-            <p className="mx-auto mb-10 max-w-2xl text-center text-base font-bold sm:text-lg">
-              {description}
-            </p>
-          </>
+        {stage === "patient-access" && (title || description) ? (
+          <div className="mb-10 text-center">
+            {title ? (
+              <Heading className="mb-3 text-3xl font-black uppercase sm:text-4xl md:text-6xl">
+                {title}
+              </Heading>
+            ) : null}
+            {description ? (
+              <p className="mx-auto max-w-2xl text-base font-bold sm:text-lg">
+                {description}
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         <AnimatePresence mode="wait">
@@ -295,9 +300,9 @@ export default function TrialAbundanceSurveySection({
                 <p className="text-sm font-black uppercase text-brutal-pink">
                   Question 1 of 3
                 </p>
-                <h2 className="text-xl font-black leading-snug sm:text-3xl">
+                <PatientAccessHeading className="text-xl font-black leading-snug sm:text-3xl">
                   {TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
-                </h2>
+                </PatientAccessHeading>
                 <p className="font-bold text-muted-foreground">
                   Pragmatic trials compare treatments during routine care.
                   Participation remains voluntary and requires informed consent

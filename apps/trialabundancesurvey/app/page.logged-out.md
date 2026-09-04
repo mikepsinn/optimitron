@@ -15,10 +15,8 @@
 
 - [GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY](/)
 - [Go to Dashboard](/dashboard)
-## TRIAL ABUNDANCE SURVEY
-- Three questions about patient access, who may fund trial participation, and public priorities.
 - QUESTION 1 OF 3
-### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
+## Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
 - Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
 - YES
 - NOT SURE

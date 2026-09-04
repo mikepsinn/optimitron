@@ -438,8 +438,8 @@ export function RightToTrialImpactPreviewSection() {
 export function StateSupportSection({
   initialRole,
   initialState,
-  heading = "Trial Abundance Survey",
-  body = "Three questions about patient access, who may fund trial participation, and public priorities.",
+  heading,
+  body,
   headingAs = "h2",
   visualState,
 }: {

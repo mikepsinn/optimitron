@@ -39,8 +39,6 @@
 - The framework above is an educational outline. Montana's enrolled bill and final rules provide the official enacted language, definitions, licensing structure, and implementation detail.
 - [OPEN SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - [READ THE MONTANA GUIDE](/montana)
-### TRIAL ABUNDANCE SURVEY
-- Three questions about patient access, who may fund trial participation, and public priorities.
 - QUESTION 1 OF 3
 ### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
 - Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
@@ -58,7 +56,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
