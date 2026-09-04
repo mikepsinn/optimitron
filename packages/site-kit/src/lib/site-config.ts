@@ -1439,19 +1439,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       },
     },
 
-    topLevelNavItems: [],
-    sidebarSections: [
-      {
-        id: "case",
-        label: "THE CASE",
-        items: ["humanityVGovernment", "joinCourt"],
-      },
-      {
-        id: "contact",
-        label: "CONTACT",
-        items: ["contact"],
-      },
-    ],
+    topLevelNavItems: ["humanityVGovernment", "joinCourt", "contact"],
+    sidebarSections: [],
     // No vote CTA: the shared sidebar button renders "Answer the Question"
     // over a /#vote anchor that does not exist here. The court's vote
     // surfaces are the /humanity-v-government verdict and /court join
