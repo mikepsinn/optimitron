@@ -159,6 +159,19 @@ test("requires provider credentials and the canonical auth URL only in productio
   );
 });
 
+test("names the app when asked about one it does not manage", () => {
+  // The Vercel build command passes the app name as a string argument, so a
+  // typo there surfaces here. Failing with the offending name is what makes
+  // that diagnosable from a build log.
+  assert.throws(
+    () =>
+      getMissingVercelAppEnvironmentVariables("warondiseas", {
+        VERCEL_ENV: "production",
+      }),
+    (error) => error.message.includes("warondiseas"),
+  );
+});
+
 test("allows an app with no required environment variables", () => {
   assert.deepEqual(
     getMissingVercelAppEnvironmentVariables("curedao", {
