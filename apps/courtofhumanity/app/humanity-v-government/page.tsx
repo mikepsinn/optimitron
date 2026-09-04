@@ -11,7 +11,6 @@ import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   PHARMA_LIVES_SAVED_ANNUAL,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-  TREATY_REDUCTION_PCT,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_DEATHS_SINCE_1900,
@@ -237,14 +236,7 @@ export default async function HumanityVGovernmentPage() {
                   param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
                   valueOverride="604"
                 />{" "}
-                times more on weapons than on testing which medicines work. The
-                1% Treaty asks them to redirect{" "}
-                <ParameterValue
-                  figures={2}
-                  param={TREATY_REDUCTION_PCT}
-                  valueOverride="1%"
-                />{" "}
-                of military spending to pragmatic clinical trials.
+                times more on weapons than on testing which medicines work.
               </p>
             </div>
             <div className="border-2 border-foreground bg-background p-4">
@@ -259,7 +251,8 @@ export default async function HumanityVGovernmentPage() {
                   param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
                   valueOverride="443 years"
                 />
-                . The treaty model compresses that queue to{" "}
+                . The cited model estimates that an adequately funded pragmatic
+                trial program could compress that queue to{" "}
                 <ParameterValue
                   figures={2}
                   param={DFDA_QUEUE_CLEARANCE_YEARS}

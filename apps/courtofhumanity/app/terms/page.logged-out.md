@@ -46,10 +46,6 @@
 #### THE CASE
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
 - [JOIN THE COURT](/court)
-#### LEARN MORE
-- [ABOUT](/about)
-- [FAQ](/faq)
-- [CONTACT](/contact)
 - [hello@courtofhumanity.org](mailto:hello@courtofhumanity.org)
 - [PRIVACY POLICY](/privacy)
 - [TERMS OF SERVICE](/terms)
