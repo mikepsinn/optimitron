@@ -2,6 +2,7 @@
 
 import { SURVEY_COUNTRIES, SURVEY_ROLES, SURVEY_UPDATES_LABEL } from "../../lib/survey-participant"
 import type { SurveyParticipant } from "../../lib/survey-participant"
+import { US_REGION_OPTIONS } from "../../lib/us-states"
 
 export type ParticipantDraft = Omit<SurveyParticipant, "role"> & { role: string }
 
@@ -22,11 +23,19 @@ export function SurveyParticipantFields({ value, onChange }: {
             {SURVEY_COUNTRIES.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
           </select>
         </label>
-        {value.countryCode ? (
+        {value.countryCode === "US" ? (
           <label className="font-black">
-            {value.countryCode === "US" ? "State" : "State / region (optional)"}
-            <input className={inputClass} autoComplete="address-level1" maxLength={100}
-              required={value.countryCode === "US"} value={value.regionCode}
+            State
+            <select className={inputClass} autoComplete="address-level1" required value={value.regionCode}
+              onChange={(event) => onChange({ ...value, regionCode: event.target.value })}>
+              <option value="">Choose a state</option>
+              {US_REGION_OPTIONS.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
+            </select>
+          </label>
+        ) : value.countryCode ? (
+          <label className="font-black">
+            State / region (optional)
+            <input className={inputClass} autoComplete="address-level1" maxLength={100} value={value.regionCode}
               onChange={(event) => onChange({ ...value, regionCode: event.target.value })} />
           </label>
         ) : null}

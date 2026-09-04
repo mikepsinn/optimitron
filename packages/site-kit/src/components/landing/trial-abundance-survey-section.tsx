@@ -26,6 +26,7 @@ import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
 import { SurveyParticipantFields } from "./survey-participant-fields"
 import type { ParticipantDraft } from "./survey-participant-fields"
 import { surveyParticipantSchema } from "../../lib/survey-participant"
+import { normalizeUsRegionCode } from "../../lib/us-states"
 import { AlertCard } from "@optimitron/neobrutalist-ui/ui/alert-card"
 
 type SurveyStage =
@@ -133,7 +134,7 @@ export default function TrialAbundanceSurveySection({
   const completionRef = useRef<HTMLDivElement>(null)
   const hasRetriedSync = useRef(false)
   const [participant, setParticipant] = useState<ParticipantDraft>({
-    countryCode: "", regionCode: "", role: "", story: "", updates: false,
+    countryCode: "US", regionCode: "", role: "", story: "", updates: false,
     ...initialParticipant,
   })
   const participantEdited = useRef(false)
@@ -164,11 +165,15 @@ export default function TrialAbundanceSurveySection({
       .then(async (response) => response.ok ? response.json() : null)
       .then((profile: Partial<ParticipantDraft> | null) => {
         if (!profile || participantEdited.current) return
-        setParticipant((current) => ({ ...current,
-          countryCode: profile.countryCode || current.countryCode,
-          regionCode: profile.regionCode || current.regionCode,
-          role: profile.role || current.role,
-        }))
+        setParticipant((current) => {
+          const countryCode = profile.countryCode || current.countryCode
+          const regionCode = profile.regionCode || current.regionCode
+          return { ...current, countryCode,
+            // Profiles saved before the state select hold names like "Missouri".
+            regionCode: countryCode === "US" ? normalizeUsRegionCode(regionCode) ?? regionCode : regionCode,
+            role: profile.role || current.role,
+          }
+        })
       }).catch(() => { /* The user can enter details if profile loading fails. */ })
     return () => controller.abort()
   }, [isVisualCapture, status])

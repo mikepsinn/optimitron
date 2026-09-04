@@ -7,7 +7,7 @@ import {
   stateSlug,
   SUPPORTER_ROLES,
   US_STATES,
-  type StateName,
+  type StateAbbreviation,
   type SupporterRole,
 } from "@/lib/right-to-try";
 
@@ -20,14 +20,16 @@ export const metadata: Metadata = {
   },
 };
 
-function matchState(value: string | undefined): StateName | undefined {
+function matchState(value: string | undefined): StateAbbreviation | undefined {
   if (!value) return undefined;
   const normalized = value.trim().toLowerCase();
   const match = US_STATES.find(
-    ([name]) =>
-      name.toLowerCase() === normalized || stateSlug(name) === normalized,
+    ([name, abbreviation]) =>
+      name.toLowerCase() === normalized ||
+      stateSlug(name) === normalized ||
+      abbreviation.toLowerCase() === normalized,
   );
-  return match?.[0];
+  return match?.[1];
 }
 
 function matchRole(value: string | undefined): SupporterRole | undefined {
@@ -47,7 +49,7 @@ export default async function SurveyPage({
         headingAs="h1"
         visualState={parseTrialAbundanceVisualState(visual)}
         initialRole={matchRole(role)}
-        initialState={matchState(state)}
+        initialStateCode={matchState(state)}
       />
     </Layout>
   );

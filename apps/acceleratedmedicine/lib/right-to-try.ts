@@ -1,3 +1,9 @@
+import {
+  US_STATES,
+  type StateAbbreviation,
+  type StateName,
+} from "@optimitron/site-kit/lib/us-states";
+
 export const RIGHT_TO_TRY_SOURCES = {
   montanaSb535:
     "https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9",
@@ -9,62 +15,10 @@ export const RIGHT_TO_TRY_SOURCES = {
     "https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters",
 } as const;
 
-export const US_STATES = [
-  ["Alabama", "AL"],
-  ["Alaska", "AK"],
-  ["Arizona", "AZ"],
-  ["Arkansas", "AR"],
-  ["California", "CA"],
-  ["Colorado", "CO"],
-  ["Connecticut", "CT"],
-  ["Delaware", "DE"],
-  ["Florida", "FL"],
-  ["Georgia", "GA"],
-  ["Hawaii", "HI"],
-  ["Idaho", "ID"],
-  ["Illinois", "IL"],
-  ["Indiana", "IN"],
-  ["Iowa", "IA"],
-  ["Kansas", "KS"],
-  ["Kentucky", "KY"],
-  ["Louisiana", "LA"],
-  ["Maine", "ME"],
-  ["Maryland", "MD"],
-  ["Massachusetts", "MA"],
-  ["Michigan", "MI"],
-  ["Minnesota", "MN"],
-  ["Mississippi", "MS"],
-  ["Missouri", "MO"],
-  ["Montana", "MT"],
-  ["Nebraska", "NE"],
-  ["Nevada", "NV"],
-  ["New Hampshire", "NH"],
-  ["New Jersey", "NJ"],
-  ["New Mexico", "NM"],
-  ["New York", "NY"],
-  ["North Carolina", "NC"],
-  ["North Dakota", "ND"],
-  ["Ohio", "OH"],
-  ["Oklahoma", "OK"],
-  ["Oregon", "OR"],
-  ["Pennsylvania", "PA"],
-  ["Rhode Island", "RI"],
-  ["South Carolina", "SC"],
-  ["South Dakota", "SD"],
-  ["Tennessee", "TN"],
-  ["Texas", "TX"],
-  ["Utah", "UT"],
-  ["Vermont", "VT"],
-  ["Virginia", "VA"],
-  ["Washington", "WA"],
-  ["West Virginia", "WV"],
-  ["Wisconsin", "WI"],
-  ["Wyoming", "WY"],
-] as const;
-
-export type StateName = (typeof US_STATES)[number][0];
-
-export type StateAbbreviation = (typeof US_STATES)[number][1];
+// The list lives in site-kit so the shared survey's state select and these
+// campaign pages cannot drift apart.
+export { US_STATES };
+export type { StateAbbreviation, StateName };
 
 export const SUPPORTER_ROLES = [
   "patient-or-caregiver",

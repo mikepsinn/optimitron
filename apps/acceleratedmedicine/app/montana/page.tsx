@@ -225,7 +225,7 @@ export default function MontanaPage() {
         </Container>
       </SectionContainer>
 
-      <StateSupportSection initialState="Montana" />
+      <StateSupportSection initialStateCode="MT" />
     </Layout>
   );
 }

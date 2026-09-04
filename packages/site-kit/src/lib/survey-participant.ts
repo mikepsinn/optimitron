@@ -1,5 +1,6 @@
 import countries from "world-countries"
 import { z } from "zod"
+import { normalizeUsRegionCode, US_REGIONS } from "./us-states"
 
 export const SURVEY_COUNTRIES = countries
   .map((country) => ({ code: country.cca2, name: country.name.common }))
@@ -14,6 +15,8 @@ export const SURVEY_ROLES = [
   ["other", "Other"],
 ] as const
 
+const US_REGION_CODES = new Set<string>(US_REGIONS.map(([, code]) => code))
+
 export const surveyParticipantSchema = z.object({
   countryCode: z.string().refine(
     (value) => SURVEY_COUNTRIES.some(({ code }) => code === value),
@@ -26,10 +29,16 @@ export const surveyParticipantSchema = z.object({
   ]),
   story: z.string().trim().max(2000),
   updates: z.boolean(),
-}).refine((value) => value.countryCode !== "US" || Boolean(value.regionCode), {
-  message: "Enter your state.",
-  path: ["regionCode"],
 })
+  // Older clients and prefilled links send "Missouri" or "US-MO"; store the
+  // bare code so every US answer for one state lands on one regionCode.
+  .transform((value) => value.countryCode !== "US" ? value
+    : { ...value, regionCode: normalizeUsRegionCode(value.regionCode) ?? value.regionCode })
+  .superRefine((value, ctx) => {
+    if (value.countryCode === "US" && !US_REGION_CODES.has(value.regionCode)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["regionCode"], message: "Choose your state." })
+    }
+  })
 
 export type SurveyParticipant = z.infer<typeof surveyParticipantSchema>
 

@@ -28,6 +28,7 @@ const input = {
   sourceUrl: "https://acceleratedmedicine.org/survey",
   timestamp: "2026-09-02T12:00:00.000Z",
   participant: {
+    // Sent as a name on purpose: the route must store the bare code.
     countryCode: "US", regionCode: "Missouri", role: "patient-or-caregiver",
     story: "Local integration test", updates: false,
   },
@@ -96,7 +97,7 @@ describe("both survey routes with PostgreSQL", () => {
   it("saves answers, consent and profile together; retries preserve the original submission", async () => {
     expect((await submit()).status).toBe(200)
     const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, include: { person: true } })
-    expect(user).toMatchObject({ countryCode: "US", regionCode: "Missouri", newsletterSubscribed: false })
+    expect(user).toMatchObject({ countryCode: "US", regionCode: "MO", newsletterSubscribed: false })
     expect(user.person?.countryCode).toBe("US")
     const submission = await prisma.formSubmission.findFirstOrThrow({
       where: { respondentUserId: userId, idempotencyKey: input.submissionKey },
@@ -105,11 +106,11 @@ describe("both survey routes with PostgreSQL", () => {
     expect(submission.subject?.personId).toBe(user.personId)
     expect(submission.submittedAt).toBeInstanceOf(Date)
     expect(Object.fromEntries(submission.responses.map((response) => [response.field.key, response.valueJson])))
-      .toMatchObject({ ...input.participant, email, patientAccessAnswer: "YES", selfFundedAccessAnswer: "ABSTAIN", militaryAllocationPercent: 35 })
+      .toMatchObject({ ...input.participant, regionCode: "MO", email, patientAccessAnswer: "YES", selfFundedAccessAnswer: "ABSTAIN", militaryAllocationPercent: 35 })
     expect(await prisma.referendumVote.count({ where: { userId } })).toBe(2)
     expect(await prisma.wishocraticAllocation.findFirst({ where: { userId } }))
       .toMatchObject({ allocationA: 35, allocationB: 65 })
-    expect(await (await GET()).json()).toEqual({ countryCode: "US", regionCode: "Missouri", role: "patient-or-caregiver" })
+    expect(await (await GET()).json()).toEqual({ countryCode: "US", regionCode: "MO", role: "patient-or-caregiver" })
 
     // A new response changes the reusable profile; replaying an old request must not undo it.
     const changed = { ...input, submissionKey: randomUUID(), participant: { ...input.participant, countryCode: "CA", regionCode: "Ontario", updates: true } }
@@ -121,6 +122,7 @@ describe("both survey routes with PostgreSQL", () => {
       .toMatchObject({ countryCode: "CA", regionCode: "Ontario", newsletterSubscribed: false })
     // Invalid details must not change either the profile or existing votes.
     expect((await submit({ ...input, submissionKey: randomUUID(), patientAccessAnswer: "NO", participant: { ...input.participant, regionCode: "" } })).status).toBe(400)
+    expect((await submit({ ...input, submissionKey: randomUUID(), patientAccessAnswer: "NO", participant: { ...input.participant, regionCode: "Show Me State" } })).status).toBe(400)
     expect(await prisma.user.findUnique({ where: { id: userId } })).toMatchObject({ countryCode: "CA" })
     const vote = await prisma.referendumVote.findFirst({ where: { userId, referendum: { slug: TRIAL_ABUNDANCE_REFERENDUM_SLUG } } })
     expect(vote?.answer).toBe("YES")
