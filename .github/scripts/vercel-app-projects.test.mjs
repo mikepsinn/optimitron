@@ -8,6 +8,11 @@ import {
   VERCEL_APP_PROJECTS,
 } from "./vercel-app-projects.mjs";
 import {
+  getMissingVercelAppEnvironmentVariables,
+  validateVercelAppEnvironment,
+  VERCEL_APP_ENV_REQUIREMENTS,
+} from "./vercel-app-env.mjs";
+import {
   getVercelAppBuildMatches,
   loadWorkspacePackages,
   shouldAutoBuildPreview,
@@ -84,11 +89,83 @@ test("declares one Vercel project for every deployed app", () => {
       vercelJson.buildCommand,
       `${project.rootDirectory} needs a Vercel build command`,
     );
+    assert.match(
+      vercelJson.buildCommand,
+      new RegExp(
+        `^node \.\.\/\.\.\/\.github\/scripts\/vercel-app-env\.mjs ${project.appName} &&`,
+        "u",
+      ),
+      `${project.rootDirectory} must validate its deployment environment before the build`,
+    );
     assert.equal(
       vercelJson.ignoreCommand,
       `node ../../.github/scripts/vercel-ignore-build.mjs ${project.appName}`,
     );
   }
+});
+
+test("declares environment requirements for every Vercel app", () => {
+  assert.deepEqual(
+    Object.keys(VERCEL_APP_ENV_REQUIREMENTS).sort(),
+    VERCEL_APP_PROJECTS.map(({ appName }) => appName).sort(),
+  );
+});
+
+test("reports all missing variables without exposing values", () => {
+  const environment = {
+    VERCEL_ENV: "production",
+    DATABASE_URL: "postgresql://example",
+    NEXTAUTH_SECRET: "secret",
+    RESEND_API_KEY: "resend",
+    RIGHT_TO_TRY_RATE_LIMIT_SECRET: "rate-limit-secret",
+  };
+  assert.deepEqual(
+    getMissingVercelAppEnvironmentVariables("acceleratedmedicine", environment),
+    ["NEXTAUTH_URL", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
+  );
+  assert.throws(
+    () => validateVercelAppEnvironment("acceleratedmedicine", environment),
+    (error) =>
+      error.message.includes("GOOGLE_CLIENT_ID") &&
+      !error.message.includes("postgresql://example") &&
+      !error.message.includes("rate-limit-secret"),
+  );
+});
+
+test("requires provider credentials and the canonical auth URL only in production", () => {
+  const previewEnvironment = {
+    VERCEL_ENV: "preview",
+    DATABASE_URL: "postgresql://example",
+    NEXTAUTH_SECRET: "secret",
+  };
+  assert.deepEqual(
+    getMissingVercelAppEnvironmentVariables(
+      "trialabundancesurvey",
+      previewEnvironment,
+    ),
+    [],
+  );
+  assert.deepEqual(
+    getMissingVercelAppEnvironmentVariables("trialabundancesurvey", {
+      ...previewEnvironment,
+      VERCEL_ENV: "production",
+    }),
+    [
+      "NEXTAUTH_URL",
+      "RESEND_API_KEY",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET",
+    ],
+  );
+});
+
+test("allows an app with no required environment variables", () => {
+  assert.deepEqual(
+    getMissingVercelAppEnvironmentVariables("curedao", {
+      VERCEL_ENV: "production",
+    }),
+    [],
+  );
 });
 
 test("classifies custom domains and Vercel deployment URLs", () => {
