@@ -199,62 +199,6 @@ export const WAR_ON_DISEASE_FAQ: FaqConfig = {
 }
 
 /**
- * Court of Humanity FAQ (Judicial variant)
- */
-export const COURT_OF_HUMANITY_FAQ: FaqConfig = {
-  title: 'COURT QUESTIONS',
-  subtitle: 'How cases, plaintiffs, membership, and verdicts work',
-  sections: [
-    {
-      category: 'THE COURT',
-      questions: [
-        {
-          q: 'What is the Court of Humanity?',
-          a: 'A public court where humanity brings cases against institutions that harm people. The Court publishes each claim, its cited evidence, a plaintiff register, and verified member verdicts.',
-        },
-        {
-          q: 'What kind of court is this?',
-          a: 'The Court operates independently of governments. Its verdicts form a public record; they are not orders issued by a government court.',
-        },
-        {
-          q: 'What can members do?',
-          a: 'Members can inspect case records and cast one verified verdict per case. Joining the Court is separate from registering a plaintiff or supporting another campaign.',
-        },
-      ],
-    },
-    {
-      category: 'THE CASE RECORD',
-      questions: [
-        {
-          q: 'What is Humanity v. Government?',
-          a: 'It is the first case on the docket. It alleges that governments caused preventable deaths and economic harm after accepting a duty to promote the general welfare. The case page presents the claim, evidence, damages model, and verdict.',
-        },
-        {
-          q: 'How do I register a plaintiff?',
-          a: 'Use Register a Plaintiff to add yourself or another affected person to the public case record. Plaintiff registration is separate from Court membership and verdict voting.',
-        },
-        {
-          q: 'What does a verdict do?',
-          a: 'A verdict records the verified opinion of participating members. It does not file a lawsuit, create legal liability, or guarantee compensation.',
-        },
-        {
-          q: 'Who operates the Court?',
-          a: 'The Institute for Accelerated Medicine, a 501(c)(3) nonprofit, operates the site. Case records, cited evidence, and vote totals are published for public inspection.',
-        },
-      ],
-    },
-  ],
-  ctaSection: {
-    title: 'REVIEW THE FIRST CASE',
-    subtitle: 'Read the claim and cited evidence before voting',
-    buttons: [
-      { label: 'READ THE CASE', href: '/humanity-v-government', variant: 'primary' },
-      { label: 'REGISTER A PLAINTIFF', href: 'https://warondisease.org/plaintiffs', variant: 'secondary' },
-    ],
-  },
-}
-
-/**
  * DIH FAQ (Professional/Institutional variant)
  */
 export const DIH_FAQ: FaqConfig = {

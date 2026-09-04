@@ -79,10 +79,5 @@ export function buildHumanityVGovernmentStructuredData() {
       "Humanity v Government damages",
       "Humanity v Government asks whether governments owe damages for war deaths, regulatory delay, and misallocation of public money.",
     ),
-    claim(
-      ROUTES.humanityVGovernment,
-      "Humanity v Government settlement",
-      "The 1% Treaty is the settlement: redirect 1% of military spending to clinical trials.",
-    ),
   ]);
 }

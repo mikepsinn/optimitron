@@ -131,7 +131,6 @@ import {
   WISHOCRACY_FAQ,
   DFDA_FAQ,
   SURVEY_FAQ,
-  COURT_OF_HUMANITY_FAQ,
 } from "./faq";
 import { createLogger } from "./logger";
 import { MESSAGING } from "./messaging";
@@ -1410,7 +1409,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     domain: "courtofhumanity.org",
     email: "hello@courtofhumanity.org",
     defaultRoute: "/",
-    enabledFeatures: [SITE_FEATURES.ADVOCACY, SITE_FEATURES.FAQ],
+    enabledFeatures: [SITE_FEATURES.ADVOCACY],
     showPoliticalContent: true,
     authEnabled: true,
     dashboardEnabled: true,
@@ -1448,9 +1447,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
       },
       {
-        id: "learn",
-        label: "THE COURT",
-        items: ["about", "faq", "contact"],
+        id: "contact",
+        label: "CONTACT",
+        items: ["contact"],
       },
     ],
     // No vote CTA: the shared sidebar button renders "Answer the Question"
@@ -1469,11 +1468,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         id: "case",
         label: "THE CASE",
         items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
-      },
-      {
-        id: "learn",
-        label: "LEARN MORE",
-        items: ["about", "faq", "contact"],
       },
     ],
 
@@ -1499,8 +1493,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
 
     legalItems: ["privacy", "terms"],
     copyrightText: "© 2026 Institute for Accelerated Medicine | CC BY-NC 4.0",
-    faq: COURT_OF_HUMANITY_FAQ,
-
     faviconPrompt: `Black scales of justice on yellow (#FFE66D), thick black outline, neobrutalist.`,
 
     ogPrompt: `"THE COURT OF HUMANITY" neobrutalist. Black/white/yellow. Scales of justice, gavel, signature lines. "HUMANITY V. GOVERNMENT • READ THE CASE • RENDER YOUR VERDICT".`,

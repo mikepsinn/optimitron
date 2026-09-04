@@ -30,9 +30,9 @@
 - DUTY
 - The duty purchased by that $36.5 trillion annual payment is measurable: maximize median healthy life expectancy and median after-tax inflation-adjusted income.
 - BREACH
-- Governments spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more on weapons than on testing which medicines work. The 1% Treaty asks them to redirect [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of military spending to pragmatic clinical trials.
+- Governments spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more on weapons than on testing which medicines work.
 - CAUSATION
-- At the current discovery rate, finding first treatments for the remaining untreated diseases takes [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The treaty model compresses that queue to [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- At the current discovery rate, finding first treatments for the remaining untreated diseases takes [443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The cited model estimates that an adequately funded pragmatic trial program could compress that queue to [36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 - DAMAGES
 - The full claim is per living human because the survivors inherited the missing scientists, doctors, children, treatments, income, and public money destroyed by the policy.
 ### THE THREE COUNTS
