@@ -1,19 +1,13 @@
 import type { Metadata } from "next"
 import {
   CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA,
-  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
-  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA,
-  WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR,
-  WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR,
-  WAR_DEATHS_SINCE_1900,
 } from "@optimitron/data/parameters"
 import { PersonDeathCauseCategory } from "@optimitron/db/enums"
 import Link from "next/link"
 import Layout from "@/components/layout"
 import { ParameterValue } from "@/components/shared/ParameterValue"
-import { WelfareClaim } from "@/components/shared/WelfareClaim"
-import { formatCount, formatSignificantFigures } from "@/lib/format-count"
+import { formatCount } from "@/lib/format-count"
 import {
   getRepresentedPeopleGalleryData,
   type RepresentedPeopleSortKey,
@@ -41,15 +35,13 @@ const FILTER_PARAM_KEYS = new Set([
 ])
 
 const HUMANITY_V_GOVERNMENT_LABEL = "Humanity v. Government"
-// The 1% Treaty is canonical to warondisease.org; this app does not serve it.
-const TREATY_URL = "https://warondisease.org/treaty"
 
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Register a Plaintiff",
   description:
-    "Sign the 1% Treaty for yourself or someone who can no longer sign. Humanity v. Government should count the victims, not wave at a fog bank.",
+    "Add yourself or a person you represent to the public record for Humanity v. Government.",
   robots: { index: true, follow: true },
 }
 
@@ -161,82 +153,17 @@ export default async function PlaintiffsPage({
       <section className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:py-14">
         <header className="space-y-6">
           <h1 className="max-w-4xl text-4xl font-black uppercase leading-none sm:text-6xl">
-            Register plaintiffs for Humanity v Government.
+            Register a plaintiff
           </h1>
           <div className="max-w-5xl space-y-4 text-lg font-bold leading-8 text-muted-foreground sm:text-2xl sm:leading-10">
             <p>
-              <WelfareClaim /> Since 1900 they spent{" "}
-              <ParameterValue
-                figures={3}
-                param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-              />{" "}
-              murdering{" "}
-              <ParameterValue figures={3} param={WAR_DEATHS_SINCE_1900} /> people.
-            </p>
-            <p>
-              Had they adopted the{" "}
-              <a
-                className="underline underline-offset-4"
-                href={TREATY_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                1% Treaty
-              </a>{" "}
-              and frozen military spending in 1900, that money would have funded{" "}
-              <ParameterValue
-                figures={3}
-                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
-                valueOverride={formatSignificantFigures(
-                  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS.value,
-                  3,
-                )}
-              />{" "}
-              years of clinical trials. Disease would have been eradicated by{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
-              />
-              . Aging reversed by{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
-              />
-              .{" "}
-              <a
-                className="text-sm underline underline-offset-4"
-                href="https://manual.WarOnDisease.org/knowledge/appendix/parameters-and-calculations.html"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                methodology
-              </a>
+              Add yourself or a person you represent to the public record for{" "}
+              {HUMANITY_V_GOVERNMENT_LABEL}.
             </p>
             <p className="text-foreground">
-              Every disease case since{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
-              />{" "}
-              and every aging death since{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
-              />{" "}
-              is misallocation harm — wrongful, attributable, registerable.
-            </p>
-            <p className="text-foreground">
-              Register anyone you know who suffered disease since{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR}
-              />{" "}
-              or died since{" "}
-              <ParameterValue
-                display="integer"
-                param={WAR_TRIAL_REDIRECT_AGING_PLEADING_CUTOFF_YEAR}
-              />
-              .
+              Describe the harm and add evidence you can verify. Registration
+              does not file a lawsuit, prove liability, or guarantee
+              compensation.
             </p>
           </div>
         </header>
@@ -330,11 +257,10 @@ export default async function PlaintiffsPage({
               Who belongs here?
             </summary>
             <p className="mt-3 max-w-4xl font-bold leading-7 text-muted-foreground">
-              Anyone you love who can&apos;t speak for themselves. Dementia,
-              severe illness, disability, captivity, no internet, or death. Their
-              names still count — they make preventable death harder to hide. Add
-              a relative, a patient, a friend, a neighbor, or anyone with
-              unfinished business with the governments of Earth.
+              Add yourself or someone you are authorized to represent. This can
+              include a relative, patient, friend, or person who cannot register
+              because of illness, disability, captivity, lack of internet
+              access, or death.
             </p>
           </details>
         </section>

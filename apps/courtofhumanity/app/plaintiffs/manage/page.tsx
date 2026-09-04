@@ -1,19 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import {
-  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS,
-  CUMULATIVE_MILITARY_SPENDING_FED_ERA,
-  WAR_DEATHS_SINCE_1900,
-} from "@optimitron/data/parameters"
 import { CourtCasePartyRole, PersonConditionStatus } from "@optimitron/db"
 import { PersonDeathCauseCategory } from "@optimitron/db/enums"
 import Layout from "@/components/layout"
-import { ParameterValue } from "@/components/shared/ParameterValue"
-import { WelfareClaim } from "@/components/shared/WelfareClaim"
 import { defaultButtonClassName } from "@optimitron/site-kit/components/ui/default-button"
 import { getSessionUserId } from "@/lib/auth-utils"
-import { formatSignificantFigures } from "@/lib/format-count"
 import { HUMANITY_V_GOVERNMENT_CASE_SLUG } from "@/lib/humanity-v-government-case.server"
 import { splitDisplayNameIntoNameParts } from "@/lib/person-name"
 import { prisma } from "@/lib/prisma"
@@ -287,31 +279,6 @@ export default async function ManagePlaintiffsPage({
                 {HUMANITY_V_GOVERNMENT_LABEL}
               </Link>
               , the Court of Humanity class action.
-            </p>
-            <p>
-              <WelfareClaim /> Over the last century, they spent{" "}
-              <ParameterValue
-                className="font-black"
-                figures={2}
-                param={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
-              />{" "}
-              murdering{" "}
-              <ParameterValue
-                className="font-black"
-                figures={2}
-                param={WAR_DEATHS_SINCE_1900}
-              />{" "}
-              humans. That money could have funded{" "}
-              <ParameterValue
-                className="font-black"
-                figures={2}
-                param={CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS}
-                valueOverride={formatSignificantFigures(
-                  CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS.value,
-                  2,
-                )}
-              />{" "}
-              years of clinical trials at current government spending.
             </p>
             <p>
               Open any plaintiff. Add the photo, disease or cause, relationship,

@@ -13,9 +13,6 @@ export const dynamic = "force-dynamic"
 
 /**
  * Lite participant home for the Court: standing on the case + where to act.
- * Case management (plaintiff records, evidence) arrives with the court
- * routes in issue #254; until then the actions deep-link to the live case
- * surfaces on warondisease.org.
  */
 export default async function CourtDashboardPage() {
   let userId: string
@@ -46,12 +43,10 @@ export default async function CourtDashboardPage() {
             ) : (
               <p className="text-lg font-bold">
                 You are not on the plaintiff register yet.{" "}
-                <a
-                  href="https://warondisease.org/plaintiffs"
-                  className="underline"
-                >
+                <Link href={ROUTES.plaintiffs} className="underline">
                   Register a plaintiff
-                </a>.
+                </Link>
+                .
               </p>
             )}
           </Card>
