@@ -193,7 +193,7 @@ describe("site variant registry", () => {
     expect(warSite.ui.nav.menuTitle).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.footer.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.footer.bottomText).toBe(
-      "© {year} Accelerated Medicine Foundation Inc.",
+      `© {year} ${INTERNATIONAL_CAMPAIGN_NAME}.`,
     );
     expect(warSite.footerComplianceNotice).toBeNull();
     expect(getSiteConfig("optimitron").footerComplianceNotice).toBeNull();

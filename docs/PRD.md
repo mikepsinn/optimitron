@@ -415,7 +415,7 @@ whose measured gross margin can cover Earth Optimization Services operating
 costs. Customers may buy execution capacity and workflow outcomes, but not
 truth, verification results, public queue priority, or mission ranking.
 Commercial EOS revenue, contracts, expenses, and liabilities remain legally
-and operationally separate from Accelerated Medicine Foundation and its DBA
+and operationally separate from Accelerated Medicine Foundation Inc and its DBA
 campaign donations. A pilot advances only with a named payer, deliverable,
 cost, receipt, verification method, and margin calculation.
 

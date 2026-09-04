@@ -439,8 +439,7 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: "⚡ Optimitron",
     brandDescription: "The Earth Optimization Machine.",
-    bottomText:
-      "© 4237 Wishonia. All rights reserved in this and 6,412 adjacent timelines. Unauthorized reproduction of the general welfare is encouraged and, frankly, overdue.",
+    bottomText: `© 4237 ${INTERNATIONAL_CAMPAIGN_ORG_NAME}. All rights reserved in this and 6,412 adjacent timelines. Unauthorized reproduction of the general welfare is encouraged and, frankly, overdue.`,
     columns: [
       { title: "App", items: footerAppLinks },
       { title: "Analysis", items: exploreLinks },
@@ -514,7 +513,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     brandDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    bottomText: `© {year} ${NONPROFIT.legalName}.`,
+    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
     columns: [
       {
         title: "Do Something",

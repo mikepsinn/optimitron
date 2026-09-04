@@ -13,7 +13,7 @@ import { ROUTES } from "@/lib/routes"
 export const metadata: Metadata = {
   title: "Donation Received",
   description:
-    "Your donation to Accelerated Medicine Foundation (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.",
+    "Your donation to Accelerated Medicine Foundation Inc (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.",
 }
 
 /**

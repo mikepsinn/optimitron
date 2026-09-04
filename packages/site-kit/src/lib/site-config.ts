@@ -150,7 +150,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
-const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA for the Accelerated Medicine Foundation. The Accelerated Medicine Foundation is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. The Accelerated Medicine Foundation Inc is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 
 // ===== INTERFACES =====
 
@@ -634,7 +634,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "Decentralized Institutes of Health - Making Suffering Optional Through Math",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
     faq: DIH_FAQ,
 
@@ -808,7 +809,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       },
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
     faq: WAR_ON_DISEASE_FAQ,
 
@@ -954,7 +956,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "Decentralized Framework for Drug Assessment - Evidence-Based Treatment Information",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: DFDA_FAQ,
 
     // Image generation prompts
@@ -1134,7 +1137,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "Wishocracy - Discover Your Global Priorities",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: WISHOCRACY_FAQ,
 
     // Image generation prompts
@@ -1239,7 +1243,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "Global Clinical Trial Abundance Survey - An Independent Research Initiative",
     },
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: SURVEY_FAQ,
 
     // Image generation prompts
@@ -1381,6 +1386,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
 
     legalItems: ["privacy", "terms"],
+    // CureDAO keeps its own notice: this variant sets `legalEntityName` to
+    // "CureDAO", so its Terms and Privacy pages name CureDAO as the operator.
+    // Crediting the campaign here would contradict them on the same page.
     copyrightText: "© 2025 CureDAO | CC BY-NC 4.0",
     faq: WAR_ON_DISEASE_FAQ,
 
@@ -1486,7 +1494,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
 
     legalItems: ["privacy", "terms"],
-    copyrightText: "© 2026 Institute for Accelerated Medicine | CC BY-NC 4.0",
+    copyrightText:
+      "© 2026 International Campaign to End War and Disease | CC BY-NC 4.0",
     faviconPrompt: `Black scales of justice on yellow (#FFE66D), thick black outline, neobrutalist.`,
 
     ogPrompt: `"THE COURT OF HUMANITY" neobrutalist. Black/white/yellow. Scales of justice, gavel, signature lines. "HUMANITY V. GOVERNMENT • READ THE CASE • RENDER YOUR VERDICT".`,
@@ -1613,7 +1622,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     legalItems: ["privacy", "terms"],
     copyrightText:
-      "© 2025 Accelerated Medicine Foundation (Institute for Accelerated Medicine) | CC BY-NC 4.0",
+      "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 
