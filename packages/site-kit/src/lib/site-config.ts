@@ -439,8 +439,9 @@ export interface SiteConfig {
 
   /**
    * Header wordmark override. Without it the header shows `name` on mobile and
-   * `title` on desktop, which also feed page titles and OG metadata — set this
-   * when the visible wordmark should differ from the SEO title.
+   * `title` on desktop. `title` also feeds page titles and OG metadata, and
+   * `name` the About/Contact headings — set this when the visible wordmark
+   * should differ from those.
    */
   headerBrandLabel?: string;
 
