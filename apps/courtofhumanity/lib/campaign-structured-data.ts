@@ -60,13 +60,8 @@ export function buildCourtStructuredData() {
     webPage(ROUTES.court, "Court of Humanity"),
     claim(
       ROUTES.court,
-      "Human consent claim",
-      "Humans can join a public jury and hold governments accountable for killing, injuring, or ruining families.",
-    ),
-    claim(
-      ROUTES.court,
-      "Settlement claim",
-      "The 1% Treaty is the proposed settlement mechanism for the Court of Humanity campaign.",
+      "Public membership claim",
+      "Verified humans can join the Court of Humanity, inspect case evidence, and cast one verdict per case.",
     ),
   ]);
 }

@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The Court of Humanity
-- Meta description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Meta description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Canonical: https://courtofhumanity.org
 - Open Graph title: The Court of Humanity
-- Open Graph description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Open Graph description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Open Graph image: https://courtofhumanity.org/assets/courtofhumanity/courtofhumanity-og-1200x630.png
 - Twitter title: The Court of Humanity
-- Twitter description: The public court where humanity brings its case against the governments it pays to protect it. First on the docket: Humanity v. Government.
+- Twitter description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 
 ## Visible Page Copy
 

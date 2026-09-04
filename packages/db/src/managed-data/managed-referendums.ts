@@ -58,7 +58,7 @@ export const MANAGED_REFERENDUMS: readonly ManagedReferendumRecord[] = [
     question: TRIAL_ABUNDANCE_REFERENDUM_QUESTION,
     kind: ReferendumKind.GENERAL,
     description:
-      "Measures public support for eligible patients joining pragmatic clinical trials through their regular physician.",
+      "Measures public support for patients joining pragmatic clinical trials through their regular physician.",
     bodyMarkdown:
       "Pragmatic clinical trials compare treatments during routine medical care. Participation is voluntary and requires informed consent and appropriate safety oversight.",
     status: ReferendumStatus.ACTIVE,

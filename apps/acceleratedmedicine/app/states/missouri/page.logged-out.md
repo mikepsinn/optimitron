@@ -18,7 +18,7 @@
 ## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Help bring pragmatic trials, shared results, and more treatment options to patients in Missouri.
 - QUESTION 1 OF 3
-### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
+### Should patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
 - Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
 - YES
 - NOT SURE

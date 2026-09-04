@@ -57,6 +57,25 @@ const answerOptions: Array<{
   { answer: "NO", label: "No" },
 ]
 
+const pragmaticTrialPattern = /pragmatic clinical trials?/i
+const pragmaticTrialTriggerClassName =
+  "inline text-brutal-pink underline decoration-dotted underline-offset-2"
+
+function PragmaticTrialQuestion({ question }: { question: string }) {
+  const match = pragmaticTrialPattern.exec(question)
+  if (!match || match.index === undefined) return question
+
+  return (
+    <>
+      {question.slice(0, match.index)}
+      <PragmaticTrialsDialog triggerClassName={pragmaticTrialTriggerClassName}>
+        {match[0]}
+      </PragmaticTrialsDialog>
+      {question.slice(match.index + match[0].length)}
+    </>
+  )
+}
+
 function getInitialStage(
   visualState: TrialAbundanceVisualState | undefined,
 ): SurveyStage {
@@ -301,7 +320,9 @@ export default function TrialAbundanceSurveySection({
                   Question 1 of 3
                 </p>
                 <StepHeading className="text-xl font-black leading-snug sm:text-3xl">
-                  {TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
+                  <PragmaticTrialQuestion
+                    question={TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
+                  />
                 </StepHeading>
                 <p className="font-bold text-muted-foreground">
                   Pragmatic trials compare treatments during routine care.
@@ -328,7 +349,9 @@ export default function TrialAbundanceSurveySection({
                   Question 2 of 3
                 </p>
                 <StepHeading className="text-xl font-black leading-snug sm:text-3xl">
-                  {TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION}
+                  <PragmaticTrialQuestion
+                    question={TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION}
+                  />
                 </StepHeading>
                 <p className="font-bold text-muted-foreground">
                   This asks whether the patient may cover trial costs. It does
@@ -359,7 +382,7 @@ export default function TrialAbundanceSurveySection({
                 <StepHeading className="text-center text-lg font-bold leading-snug sm:text-2xl">
                   Considering only these two priorities, how would you split
                   public spending between military and weapons and{" "}
-                  <PragmaticTrialsDialog triggerClassName="inline text-brutal-pink underline decoration-dotted underline-offset-2">
+                  <PragmaticTrialsDialog triggerClassName={pragmaticTrialTriggerClassName}>
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>
                   ?

@@ -1,17 +1,12 @@
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
-import {
-  GLOBAL_DISEASE_DEATHS_DAILY,
-  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-} from "@optimitron/data/parameters"
-import { ParameterValue } from "./shared/ParameterValue"
 
 // The case and verdict surfaces live in this app (issue #254). Plaintiff
 // registration still lives on warondisease.org until it migrates too.
 const CASE_URL = "/humanity-v-government"
 const PLAINTIFFS_URL = "https://warondisease.org/plaintiffs"
-const VERDICT_URL = "/court"
+const VERDICT_URL = "/humanity-v-government#verdict"
 
 const actionButtonClassName =
   "inline-block border-4 border-primary px-6 py-3 text-center text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
@@ -47,22 +42,10 @@ export function CourtHomePage() {
               Humanity v. Government
             </h2>
             <p className="mt-6 text-lg font-medium leading-relaxed">
-              The defendants collect $
-              <ParameterValue
-                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
-                display="integer"
-                className="font-black text-brutal-pink"
-              />{" "}
-              for weapons for every $1 they spend testing which medicines work,
-              while{" "}
-              <ParameterValue
-                param={GLOBAL_DISEASE_DEATHS_DAILY}
-                format={{ precision: 0 }}
-                className="font-black text-brutal-pink"
-              />{" "}
-              humans die of disease every day. The plaintiffs are the humans
-              who pay them to promote the general welfare. The remedy sought:
-              redirect 1% of military spending to pragmatic clinical trials.
+              The case alleges that governments breached their duty to promote
+              the general welfare, causing preventable deaths and economic harm.
+              Read the claim and cited evidence, add affected people to the
+              public plaintiff register, then render a verdict.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <a href={CASE_URL} className={`${actionButtonClassName} bg-brutal-cyan text-foreground`}>

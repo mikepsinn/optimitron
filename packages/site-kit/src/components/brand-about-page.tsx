@@ -18,7 +18,7 @@ const ABOUT_CONTENT: Partial<Record<SiteVariant, {
 }>> = {
   "courtofhumanity.org": {
     outcome:
-      "Read Humanity v. Government — the public case for redirecting 1% of military spending from weapons to cures — and put your name on the record as a plaintiff.",
+      "Read Humanity v. Government, inspect its cited evidence, add affected people to the public plaintiff register, and render a verified verdict.",
     action: "Read the case",
     href: "/humanity-v-government",
   },

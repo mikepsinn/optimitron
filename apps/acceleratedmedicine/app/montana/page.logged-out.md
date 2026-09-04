@@ -66,7 +66,7 @@
 - [CURRENT MONTANA CODE](https://mca.legmt.gov/bills/mca/title_0500/chapter_0120/part_0010/sections_index.html)
 - [TREATMENT CENTER LICENSING](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters)
 - QUESTION 1 OF 3
-### Should eligible patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
+### Should patients have the right to join a pragmatic clinical trial for a promising treatment through their physician?
 - Pragmatic trials compare treatments during routine care. Participation remains voluntary and requires informed consent and appropriate safety oversight.
 - YES
 - NOT SURE
