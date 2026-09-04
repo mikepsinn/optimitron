@@ -92,13 +92,13 @@ export default function TrialAbundanceSurveySection({
   title,
   description,
 }: TrialAbundanceSurveySectionProps) {
-  const PatientAccessHeading = title ? "h2" : Heading
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const referralCode = searchParams?.get("ref") ?? null
   const inviteToken = searchParams?.get("invite") ?? null
   const isVisualCapture = visualState !== undefined
   const [stage, setStage] = useState<SurveyStage>(getInitialStage(visualState))
+  const StepHeading = stage === "patient-access" && title ? "h2" : Heading
   const [patientAccessAnswer, setPatientAccessAnswer] =
     useState<TrialAbundanceAnswer | null>(
       visualState === "complete" ? "YES" : null,
@@ -300,9 +300,9 @@ export default function TrialAbundanceSurveySection({
                 <p className="text-sm font-black uppercase text-brutal-pink">
                   Question 1 of 3
                 </p>
-                <PatientAccessHeading className="text-xl font-black leading-snug sm:text-3xl">
+                <StepHeading className="text-xl font-black leading-snug sm:text-3xl">
                   {TRIAL_ABUNDANCE_REFERENDUM_QUESTION}
-                </PatientAccessHeading>
+                </StepHeading>
                 <p className="font-bold text-muted-foreground">
                   Pragmatic trials compare treatments during routine care.
                   Participation remains voluntary and requires informed consent
@@ -327,9 +327,9 @@ export default function TrialAbundanceSurveySection({
                 <p className="text-sm font-black uppercase text-brutal-pink">
                   Question 2 of 3
                 </p>
-                <h2 className="text-xl font-black leading-snug sm:text-3xl">
+                <StepHeading className="text-xl font-black leading-snug sm:text-3xl">
                   {TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION}
-                </h2>
+                </StepHeading>
                 <p className="font-bold text-muted-foreground">
                   This asks whether the patient may cover trial costs. It does
                   not waive informed consent or safety oversight.
@@ -356,14 +356,14 @@ export default function TrialAbundanceSurveySection({
                 <p className="text-sm font-black uppercase text-brutal-pink">
                   Question 3 of 3
                 </p>
-                <p className="text-center text-lg font-bold leading-snug sm:text-2xl">
+                <StepHeading className="text-center text-lg font-bold leading-snug sm:text-2xl">
                   Considering only these two priorities, how would you split
                   public spending between military and weapons and{" "}
                   <PragmaticTrialsDialog triggerClassName="inline text-brutal-pink underline decoration-dotted underline-offset-2">
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>
                   ?
-                </p>
+                </StepHeading>
 
                 <AllocationDisplay
                   clinicalTrialsAllocation={clinicalTrialsAllocation}
@@ -407,7 +407,7 @@ export default function TrialAbundanceSurveySection({
 
         {stage === "details" ? (
           <SurveyCard>
-            <h2 className="text-2xl font-black uppercase">About you</h2>
+            <StepHeading className="text-2xl font-black uppercase">About you</StepHeading>
             <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void handleComplete() }}>
               <SurveyParticipantFields value={participant} onChange={(value) => {
                 participantEdited.current = true
@@ -425,16 +425,20 @@ export default function TrialAbundanceSurveySection({
         {stage === "complete" ? (
           <div ref={completionRef} className="space-y-8">
             {saveStatus === "saved" && session?.user ? (
-              <ReferralLinkCard
-                referralLink={shareUrl}
-                shareTemplates={shareTemplates}
-                hashtags="PragmaticTrials,ClinicalResearch"
-                introText="Invite someone else to answer the same three questions. Their response will be attributed to your referral link."
-                copyLinkLabel="COPY SURVEY LINK"
-                linkContentType="trial_abundance_referral"
-              />
+              <>
+                <StepHeading className="sr-only">Survey complete</StepHeading>
+                <ReferralLinkCard
+                  referralLink={shareUrl}
+                  shareTemplates={shareTemplates}
+                  hashtags="PragmaticTrials,ClinicalResearch"
+                  introText="Invite someone else to answer the same three questions. Their response will be attributed to your referral link."
+                  copyLinkLabel="COPY SURVEY LINK"
+                  linkContentType="trial_abundance_referral"
+                />
+              </>
             ) : status === "authenticated" || visualState === "save-error" ? (
               <SurveyCard>
+                <StepHeading className="sr-only">Save your response</StepHeading>
                 {saveStatus === "error" ? <>
                   <AlertCard type="error" message="We could not save your response. Your answers are still in this browser." />
                   <Button onClick={() => void saveResponse()}>Retry save</Button>
@@ -442,9 +446,9 @@ export default function TrialAbundanceSurveySection({
               </SurveyCard>
             ) : (
               <Card className="mx-auto max-w-3xl border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-                <h2 className="mb-2 text-2xl font-black uppercase">
+                <StepHeading className="mb-2 text-2xl font-black uppercase">
                   Save your response
-                </h2>
+                </StepHeading>
                 <p className="mb-6 font-bold">
                   Verify once to store this response and get a personal survey
                   link for referrals.
