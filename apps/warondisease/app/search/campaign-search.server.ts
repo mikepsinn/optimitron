@@ -162,12 +162,30 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
   },
   {
     description:
+      "Wear your campaign QR code. Print the artwork or upgrade the shirts you already own.",
+    emoji: "👕",
+    href: ROUTES.shirt,
+    keywords: ["shirt", "t-shirt", "tshirt", "qr code", "print", "wear"],
+    section: "Recruit",
+    title: "Get the Shirt",
+  },
+  {
+    description:
       "Spend an hour a day with one person ending war and disease.",
     emoji: "💘",
     href: ROUTES.love,
     keywords: ["love", "date", "dating", "partner", "hour"],
     section: "Recruit",
     title: "Earth Optimization Date",
+  },
+  {
+    description:
+      "Find someone you would not mind ending war and disease with, and spend one useful hour on it together.",
+    emoji: "❤️",
+    href: ROUTES.missions,
+    keywords: ["missions", "date", "dating", "match", "hour", "together"],
+    section: "Recruit",
+    title: "Earth Optimization Missions",
   },
   {
     description:
@@ -254,6 +272,42 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     keywords: ["contact", "email", "reach", "support"],
     section: "About",
     title: "Contact",
+  },
+  {
+    description:
+      "Tell us what is confusing, irritating, broken, or missing on this site.",
+    emoji: "❗",
+    href: ROUTES.feedback,
+    keywords: ["feedback", "complaint", "bug", "broken", "confusing", "suggest"],
+    section: "About",
+    title: "Feedback",
+  },
+  {
+    description:
+      "Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph.",
+    emoji: "🔌",
+    href: ROUTES.mcp,
+    keywords: ["mcp", "claude", "chatgpt", "agent", "connector", "ai"],
+    section: "Build on it",
+    title: "Optimitron MCP",
+  },
+  {
+    description:
+      "OAuth, tasks, referrals, votes, people, and organizations for your own app.",
+    emoji: "🛠️",
+    href: ROUTES.developers,
+    keywords: ["developers", "api", "oauth", "openapi", "rest", "integration"],
+    section: "Build on it",
+    title: "Earth Optimization API",
+  },
+  {
+    description:
+      "Every MCP tool the server exposes, with its scope, admin gate, and parameters.",
+    emoji: "📖",
+    href: ROUTES.developersTools,
+    keywords: ["mcp tools", "tool reference", "scopes", "parameters", "api"],
+    section: "Build on it",
+    title: "MCP Tool Reference",
   },
   {
     description: "What we collect and what we do not.",

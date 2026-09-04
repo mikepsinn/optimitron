@@ -411,6 +411,19 @@ export const publicSiteAppRoutes = Object.freeze({
     },
     {
       covers: [
+        "apps/warondisease/app/shirt/page.tsx",
+        "apps/warondisease/app/shirt/shirt-client.tsx",
+        "apps/warondisease/components/shirt/TshirtSilhouette.tsx",
+        "packages/site-kit/src/components/task-funding/TaskFundingProgress.tsx",
+        "packages/site-kit/src/lib/task-funding/status.server.ts",
+      ],
+      label: "Get the shirt",
+      routeName: "shirt",
+      routePath: "/shirt",
+      sourcePage: "apps/warondisease/app/shirt/page.tsx",
+    },
+    {
+      covers: [
         "apps/warondisease/app/fix-ai/page.tsx",
         "apps/warondisease/app/fix-ai/content.ts",
         "apps/warondisease/app/fix-ai/corpus.server.ts",
@@ -432,6 +445,62 @@ export const publicSiteAppRoutes = Object.freeze({
       routeName: "employees",
       routePath: "/employees",
       sourcePage: "apps/warondisease/app/employees/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/missions/page.tsx",
+        "apps/warondisease/app/missions/mission-safety.ts",
+        "apps/warondisease/app/missions/mission-safety-notice.tsx",
+        "apps/warondisease/app/missions/missions.server.ts",
+      ],
+      label: "Earth Optimization Missions",
+      routeName: "missions",
+      routePath: "/missions",
+      sourcePage: "apps/warondisease/app/missions/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/feedback/page.tsx",
+        "packages/site-kit/src/lib/feedback.server.ts",
+      ],
+      label: "Feedback form",
+      routeName: "feedback",
+      routePath: "/feedback",
+      sourcePage: "apps/warondisease/app/feedback/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/mcp/page.tsx",
+        "packages/site-kit/src/components/shared/CopyableCode.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+        "packages/site-kit/src/lib/mcp/catalog.generated.json",
+      ],
+      label: "MCP setup",
+      routeName: "mcp",
+      routePath: "/mcp",
+      sourcePage: "apps/warondisease/app/mcp/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/developers/page.tsx",
+        "packages/site-kit/src/components/shared/CopyableCode.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+      ],
+      label: "Earth Optimization API",
+      routeName: "developers",
+      routePath: "/developers",
+      sourcePage: "apps/warondisease/app/developers/page.tsx",
+    },
+    {
+      covers: [
+        "apps/warondisease/app/developers/tools/page.tsx",
+        "packages/site-kit/src/lib/mcp-catalog.ts",
+        "packages/site-kit/src/lib/mcp/catalog.generated.json",
+      ],
+      label: "MCP tool reference",
+      routeName: "developers-tools",
+      routePath: "/developers/tools",
+      sourcePage: "apps/warondisease/app/developers/tools/page.tsx",
     },
     {
       covers: ["apps/warondisease/app/survey/demo/page.tsx"],

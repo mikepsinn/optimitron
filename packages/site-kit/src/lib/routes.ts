@@ -90,6 +90,8 @@ export const ROUTES = {
   wishocracy: '/wishocracy',
   dfda: '/dfda',
   mcp: '/mcp',
+  developers: '/developers',
+  developersTools: '/developers/tools',
   surveyDemo: '/survey/demo',
 
   // Studies (dfda)

@@ -243,14 +243,14 @@ const input = {
 const siteAppInput = {
   ...input,
   summary: {
-    appCount: 7,
-    appRoutes: 8,
+    appCount: 8,
+    appRoutes: 9,
     changedRoutes: 0,
     compatibilityRoutes: 0,
     copyOnlyRoutes: 0,
     unchangedRoutes: 0,
     erroredRoutes: 0,
-    totalRoutes: 8,
+    totalRoutes: 9,
   },
   routes: [
     {
@@ -396,6 +396,23 @@ const siteAppInput = {
       markdownDiff: null,
       pairs: [],
     },
+    {
+      appId: "courtofhumanity",
+      appLabel: "Court of Humanity",
+      captureKind: "app",
+      routeName: "site-app-courtofhumanity-home",
+      routeLabel: "courtofhumanity.org · Home",
+      routePath: "/",
+      routeUrl: null,
+      productionUrl: "https://courtofhumanity.org/",
+      authState: "logged-out",
+      changed: false,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "captured",
+      markdownDiff: null,
+      pairs: [],
+    },
   ],
 };
 
@@ -469,7 +486,7 @@ assert(
 assert(html.includes("1 baseline missing"), "summary chip: baseline missing");
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
 assert(html.includes("4 routes"), "summary chip: total");
-assert(siteAppsHtml.includes("7 apps"), "peer-app summary chip");
+assert(siteAppsHtml.includes("8 apps"), "peer-app summary chip");
 assert(
   !html.includes("Visual capture contract failed"),
   "complete review omits coverage failure",

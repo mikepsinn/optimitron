@@ -58,24 +58,35 @@
 - Add your first, middle, and last name (optional)
 - Display my name publicly on the signer list and leaderboards (recommended). This makes your profile public across the site.
 - MAKING SUFFERING OPTIONAL
-#### ACT
+#### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)
-- [READ & SIGN THE TREATY](/treaty)
+- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
+- [FEEDBACK](/feedback)
+#### TELL SOMEONE ELSE
 - [TELL TWO PEOPLE](/send)
-- [ENDORSE AS AN ORGANIZATION](/join)
+- [MANAGE HUMANITY](/dashboard)
+- [GET THE SHIRT](/shirt)
+- [THE JOKE](/joke)
 - [REMIND PRESIDENTS](/employees)
-#### PROGRESS
+- [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
+- [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
 - [TREATY SIGNATORIES](/signatories)
-- [SEARCH](/search)
-- [THE PLAN](/the-plan)
-#### LEARN & SHARE
+#### LEARN SOMETHING
+- [SIGN THE TREATY](/treaty)
+- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
+- [PODCAST](https://manual.warondisease.org/listen)
+- [COURT OF HUMANITY](https://optimitron.com/court)
+- [MCP](/mcp)
+- [DEVELOPERS](/developers)
+- [THE PLAN](/the-plan)
 - [FAQ](/faq)
 - [ABOUT](/about)
-- [PODCAST](https://manual.warondisease.org/listen)
-- [HANG UP FLYERS](/poster)
-- [GO DOOR TO DOOR](/door-to-door)
 - [INSTITUTES](/institutes)
+- [SEARCH](/search)
+#### YOUR ORGANIZATION
+- [JOIN AS AN ORGANIZATION](/join)
 - [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@warondisease.org](mailto:hello@warondisease.org)

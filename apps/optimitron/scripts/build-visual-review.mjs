@@ -32,6 +32,7 @@ import {
 } from "./visual-capture-contract.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 import {
+  APP_PREVIEW_ORDER,
   APP_PREVIEW_LABELS,
   getAppPreviewRouteUrl,
   parseAppPreviewUrls,
@@ -221,16 +222,12 @@ const VARIANT_DOMAIN_LABELS = {
   trialabundancesurvey: "trialabundancesurvey.org",
   curedao: "curedao.org",
   acceleratedmedicine: "acceleratedmedicine.org",
+  courtofhumanity: "courtofhumanity.org",
 };
 
-const SITE_APP_ORDER = [
-  "warondisease",
-  "dfda",
-  "wishocracy",
-  "trialabundancesurvey",
-  "curedao",
-  "acceleratedmedicine",
-];
+const SITE_APP_ORDER = APP_PREVIEW_ORDER.filter(
+  (appName) => appName !== "optimitron",
+);
 
 const siteAppManifestsByVariant = loadSiteAppRouteManifests(screenshotsRoot);
 const beforeSiteAppManifestsByVariant = beforeScreenshotsRoot
