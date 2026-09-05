@@ -63,7 +63,7 @@ async function answerSurvey(page: Page) {
   await survey.getByRole("slider").press("ArrowRight")
   await survey.getByRole("button", { name: "Continue", exact: true }).click()
   await survey.getByRole("combobox", { name: "Country", exact: true }).selectOption("US")
-  await survey.getByLabel("State", { exact: true }).selectOption("MO")
+  await survey.getByRole("combobox", { name: "State", exact: true }).selectOption("MO")
   await survey.getByRole("combobox", { name: "Your role", exact: true }).selectOption("patient-or-caregiver")
   await survey.getByRole("textbox", { name: "Why does this matter to you?", exact: false }).fill("I want more treatment options.")
   await expect(survey.getByRole("checkbox")).not.toBeChecked()
