@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
 - [Go to Dashboard](/dashboard)
 ## THANK YOU!
 - Your support funds patient education, pragmatic-trial research, and public treatment evidence.

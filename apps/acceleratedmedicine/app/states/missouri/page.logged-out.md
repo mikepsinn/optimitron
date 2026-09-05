@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
 - [Go to Dashboard](/dashboard)
 ## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Help bring pragmatic trials, shared results, and more treatment options to patients in Missouri.
@@ -62,7 +62,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT

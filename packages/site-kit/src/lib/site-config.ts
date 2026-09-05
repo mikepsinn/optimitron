@@ -437,6 +437,14 @@ export interface SiteConfig {
   /** Where the treaty vote/share CTA appears in the sidebar. Defaults to bottom. */
   sidebarVoteCtaPlacement?: "top" | "bottom";
 
+  /**
+   * Header wordmark override. Without it the header shows `name` on mobile and
+   * `title` on desktop. `title` also feeds page titles and OG metadata, and
+   * `name` the About/Contact headings — set this when the visible wordmark
+   * should differ from those.
+   */
+  headerBrandLabel?: string;
+
   /** Footer branding (first column) */
   footerBranding?: FooterBranding;
 
@@ -1511,6 +1519,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   "acceleratedmedicine.org": {
     name: "RTT",
     title: "Right to Trial Initiative",
+    // The site lives at acceleratedmedicine.org, so the wordmark names the
+    // organization. `title` stays "Right to Trial Initiative" because the
+    // per-page metadata titles are written against it.
+    headerBrandLabel: "Accelerated Medicine",
     description:
       "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],

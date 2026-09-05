@@ -13,7 +13,8 @@
 
 ## Visible Page Copy
 
-- [RIGHT TO TRIAL INITIATIVE](/)
+- [ACCELERATED MEDICINE](/)
+- [Go to Dashboard](/dashboard)
 - RIGHT TO TRIAL IMPACT
 ## WE CAN FIND TREATMENTS 181 YEARS SOONER.
 - Today, the average disease without an effective treatment waits 222 years for its first one. Give patients the right to join low-cost clinical trials, and the central estimate falls to 40.5 years.
@@ -277,7 +278,6 @@
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
-- [DONATE](/donate)
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT

@@ -48,4 +48,3 @@
 ### STILL HAVE QUESTIONS?
 - Talk with us or support the research
 - [CONTACT US](/contact)
-- [SUPPORT THE RESEARCH](/donate)
