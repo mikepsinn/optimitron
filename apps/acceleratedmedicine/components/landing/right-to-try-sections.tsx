@@ -437,14 +437,15 @@ export function RightToTrialImpactPreviewSection() {
 
 export function StateSupportSection({
   initialRole,
-  initialState,
+  initialStateCode,
   heading,
   body,
   headingAs = "h2",
   visualState,
 }: {
   initialRole?: SupporterRole;
-  initialState?: string;
+  /** Stored as `User.regionCode`; a name like "Missouri" would not match the select. */
+  initialStateCode?: StateAbbreviation;
   heading?: string;
   body?: string;
   headingAs?: "h1" | "h2";
@@ -459,7 +460,7 @@ export function StateSupportSection({
       visualState={visualState}
       disableIntroAnimation={Boolean(visualState)}
       initialParticipant={{
-        ...(initialState ? { countryCode: "US", regionCode: initialState } : {}),
+        ...(initialStateCode ? { countryCode: "US", regionCode: initialStateCode } : {}),
         role: initialRole ?? "",
       }}
     />

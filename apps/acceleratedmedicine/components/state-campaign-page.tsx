@@ -72,7 +72,7 @@ export function StateCampaignPage({
         heading={campaign.headline}
         headingAs="h1"
         initialRole={initialRole}
-        initialState={campaign.name}
+        initialStateCode={campaign.abbreviation}
       />
 
       <SectionContainer bgColor="pink" borderPosition="bottom">
