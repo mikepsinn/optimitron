@@ -19,7 +19,7 @@ export function summarizeFundingAllocations(allocations: {
   allocationA: number
   allocationB: number
   updatedAt: Date
-}[], userId: string) {
+}[], userId?: string) {
   const latest = new Map<string, { military: number; updatedAt: Date }>()
   for (const allocation of allocations) {
     const forward = allocation.itemAId === MILITARY_ALLOCATION_ITEM_ID && allocation.itemBId === TRIALS_ALLOCATION_ITEM_ID
@@ -35,7 +35,7 @@ export function summarizeFundingAllocations(allocations: {
   const values = [...latest.values()].map(value => value.military).sort((a, b) => a - b)
   const middle = Math.floor(values.length / 2)
   return {
-    user: latest.get(userId)?.military ?? null,
+    user: userId ? latest.get(userId)?.military ?? null : null,
     average: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null,
     median: values.length ? (values[middle]! + values[Math.floor((values.length - 1) / 2)]!) / 2 : null,
   }

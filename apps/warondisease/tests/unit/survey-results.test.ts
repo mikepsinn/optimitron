@@ -47,4 +47,9 @@ describe("funding results", () => {
     expect(summarizeFundingAllocations([], "a")).toEqual({ user: null, average: null, median: null })
     expect(summarizeFundingAllocations([allocation("b", 20)], "a")).toEqual({ user: null, average: 20, median: 20 })
   })
+
+  it("returns only aggregate values when no participant is requested", () => {
+    expect(summarizeFundingAllocations([allocation("a", 20), allocation("b", 60)]))
+      .toEqual({ user: null, average: 40, median: 40 })
+  })
 })

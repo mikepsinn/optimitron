@@ -19,7 +19,15 @@ const questions = [
 ]
 
 export async function getDashboardSurveyResults(userId: string): Promise<DashboardSurveyResults> {
-  const slugs = questions.map(question => question.slug)
+  return getSurveyResults(questions, userId)
+}
+
+export async function getTrialAbundanceSurveyResults(userId?: string): Promise<DashboardSurveyResults> {
+  return getSurveyResults(questions.filter(question => question.slug !== TREATY_REFERENDUM_SLUG), userId)
+}
+
+async function getSurveyResults(selectedQuestions: typeof questions, userId?: string): Promise<DashboardSurveyResults> {
+  const slugs = selectedQuestions.map(question => question.slug)
   const [referendums, votes, allocations] = await Promise.all([
     prisma.referendum.findMany({
       where: { slug: { in: slugs }, deletedAt: null },
@@ -46,7 +54,7 @@ export async function getDashboardSurveyResults(userId: string): Promise<Dashboa
     }),
   ])
   return {
-    questions: questions.flatMap(question => {
+    questions: selectedQuestions.flatMap(question => {
       const referendum = referendums.find(item => item.slug === question.slug)
       return referendum ? [{
         ...question,

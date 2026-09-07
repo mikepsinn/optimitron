@@ -21,6 +21,7 @@
 - YES
 - NOT SURE
 - NO
+- [View current survey results](/results)
 - AN INDEPENDENT RESEARCH INITIATIVE
 #### ABOUT
 - [ABOUT](/about)
