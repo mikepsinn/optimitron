@@ -93,6 +93,8 @@ export async function calculateUserRank(referralCount: number): Promise<number> 
           ON v."referredByUserId" = u."id"
           AND v."referendumId" = r."id"
           AND v."deletedAt" IS NULL
+          AND v."voteSource" = 'SELF'
+          AND EXISTS (SELECT 1 FROM "Person" p WHERE p."id" = v."personId" AND p."deletedAt" IS NULL AND p."lifeStatus" = 'LIVING')
         GROUP BY u."id"
         HAVING COUNT(v."id") > ${referralCount}
       ) subquery
@@ -106,6 +108,8 @@ export async function calculateUserRank(referralCount: number): Promise<number> 
     FROM "ReferendumVote" v
     INNER JOIN "Referendum" r ON r."id" = v."referendumId" AND r."slug" = ${TREATY_REFERENDUM_SLUG}
     WHERE v."referredByUserId" IS NOT NULL AND v."deletedAt" IS NULL
+      AND v."voteSource" = 'SELF'
+      AND EXISTS (SELECT 1 FROM "Person" p WHERE p."id" = v."personId" AND p."deletedAt" IS NULL AND p."lifeStatus" = 'LIVING')
   `
   return Number(usersWithReferrals[0]?.count ?? 0) + 1
 }

@@ -24,7 +24,7 @@ import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { EmailSignatureCard } from "@/components/dashboard/EmailSignatureCard"
 import { StickyShareFooter } from "@/components/dashboard/StickyShareFooter"
-import { MilitaryVsClinicalTrialsAllocationCard } from "@/components/dashboard/MilitaryVsClinicalTrialsAllocationCard"
+import { SurveyResultsCard } from "@/components/dashboard/SurveyResultsCard"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
 export function DashboardClient({
@@ -141,12 +141,8 @@ export function DashboardClient({
             </div>
           )}
 
-          {/* Allocation Comparison */}
-          <div className="mb-8">
-            <MilitaryVsClinicalTrialsAllocationCard
-              userAllocation={initialData.allocation.user}
-              averageAllocation={initialData.allocation.average}
-            />
+          <div className="mb-8" id="survey-results">
+            <SurveyResultsCard results={initialData.surveyResults} />
           </div>
 
           {(showPoliticalContent || hasActivity || hasBadges || hasOrganizations || hasLeaderboard) && (

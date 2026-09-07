@@ -16,7 +16,10 @@ import { getReferralTreeStats } from "@/lib/referral.server"
 import { GLOBAL_COORDINATION_TARGET_PCT, GLOBAL_POPULATION_2024 } from "@/lib/parameters-calculations-citations"
 import { validateUsername } from "@/lib/username"
 import { buildUserInviteReferralUrl } from "@/lib/url"
-import { countTreatyVotes, getUserTreatyVote } from "@/lib/treaty-votes.server"
+import { countTreatyVotes } from "@/lib/treaty-votes.server"
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty"
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server"
+import { getDashboardSurveyResults } from "@/lib/survey-results.server"
 import { ensurePersonForUser } from "@/lib/person.server"
 import {
   getUserDisplayAvatar,
@@ -104,7 +107,10 @@ export async function getDashboardData() {
           createdAt: true,
           _count: {
             select: {
-              referendumVotes: true,
+              referendumVotes: { where: {
+                ...buildOfficialReferendumVoteWhere(),
+                referendum: { slug: TREATY_REFERENDUM_SLUG, deletedAt: null },
+              } },
             },
           },
         },
@@ -121,18 +127,11 @@ export async function getDashboardData() {
     referredByUserId: userWithDashboardData.id,
   })
 
-  const organizationVotesCount = userWithDashboardData.createdOrganizations.reduce(
-    (total, org) => total + org._count.referendumVotes,
-    0,
-  )
-
   const shareCount = await prisma.shareAttempt.count({
     where: {
       userId: userWithDashboardData.id,
     },
   })
-
-  const totalImpact = referralCount + organizationVotesCount
 
   const referralTree = await getReferralTreeStats(userWithDashboardData.id, {
     publicRecruitsLimit: 20,
@@ -143,12 +142,12 @@ export async function getDashboardData() {
     orderBy: { createdAt: "desc" },
   })
 
-  const actualReach =
-    shareCount > 0 ? shareCount * 265 : totalImpact * 265
-
-  const rank = await calculateUserRank(totalImpact)
-  const totalVotes = await countTreatyVotes()
-  await getUserTreatyVote(user.id)
+  const [actualReach, rank, totalVotes, surveyResults] = await Promise.all([
+    prisma.referralClick.count({ where: { referrerUserId: user.id, deletedAt: null } }),
+    calculateUserRank(referralCount),
+    countTreatyVotes(),
+    getDashboardSurveyResults(user.id),
+  ])
 
   const enabledProviders = getEnabledProviders()
   const primaryMembership = userWithDashboardData.organizationMemberships[0]
@@ -182,7 +181,7 @@ export async function getDashboardData() {
     },
     stats: {
       referrals: referralCount,
-      shares: shareCount || referralCount * 3,
+      shares: shareCount,
       reach: actualReach,
       rank,
     },
@@ -246,10 +245,7 @@ export async function getDashboardData() {
       current: (totalVotes / GLOBAL_POPULATION_2024.value) * 100,
       target: GLOBAL_COORDINATION_TARGET_PCT.value * 100,
     },
-    allocation: {
-      user: null as number | null,
-      average: 50,
-    },
+    surveyResults,
     organizations: {
       created: userWithDashboardData.createdOrganizations.map((org) => ({
         id: org.id,
@@ -268,7 +264,8 @@ export async function getTopReferrers() {
     by: ["referredByUserId"],
     where: {
       referredByUserId: { not: null },
-      deletedAt: null,
+      ...buildOfficialReferendumVoteWhere(),
+      referendum: { slug: TREATY_REFERENDUM_SLUG, deletedAt: null },
     },
     _count: { _all: true },
     orderBy: { _count: { referredByUserId: "desc" } },

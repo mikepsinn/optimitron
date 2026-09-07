@@ -60,7 +60,7 @@ export function StatsOverview({ stats, onMetricClick, className }: StatsOverview
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-bold uppercase text-muted-foreground">Hearts & Minds Reached</p>
+                    <p className="text-sm font-bold uppercase text-muted-foreground">Referral Link Visits</p>
                     <p className="text-4xl font-black text-brutal-yellow">{stats.reach.toLocaleString()}</p>
                   </div>
                   <Globe className="h-12 w-12 text-brutal-yellow" />
@@ -70,8 +70,7 @@ export function StatsOverview({ stats, onMetricClick, className }: StatsOverview
           </TooltipTrigger>
           <TooltipContent className="bg-background border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm">
             <p className="font-bold text-sm">
-              Estimated reach based on your referrals and shares. Each referral generates an average of 265 social media
-              impressions.
+              Recorded visits through your referral links. Repeat visits can count more than once.
             </p>
           </TooltipContent>
         </Tooltip>

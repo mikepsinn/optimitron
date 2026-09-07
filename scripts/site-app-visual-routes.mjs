@@ -62,6 +62,9 @@ function getCampaignHomeFiles(appName) {
 
 const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/DashboardClient.tsx",
+  "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
+  "packages/site-kit/src/lib/survey-results.ts",
+  "packages/site-kit/src/lib/survey-results.server.ts",
   "packages/site-kit/src/components/dashboard/StatsOverview.tsx",
   "packages/site-kit/src/components/dashboard/ProfileCard.tsx",
   "packages/site-kit/src/components/dashboard/ReferralGoalCard.tsx",
