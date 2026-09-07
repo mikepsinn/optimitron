@@ -233,6 +233,8 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       authRole: "user",
       covers: [
         "apps/trialabundancesurvey/app/dashboard/page.tsx",
+        "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+        ...surveyResultsFiles,
         "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
         "packages/site-kit/src/lib/trial-abundance-votes.server.ts",
       ],
@@ -261,6 +263,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       covers: [
         "apps/acceleratedmedicine/app/dashboard/page.tsx",
         "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+        ...surveyResultsFiles,
       ],
       label: "Survey dashboard — signed-in user",
       routeName: "dashboard-authenticated",
