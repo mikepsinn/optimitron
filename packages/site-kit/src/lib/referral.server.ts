@@ -2,6 +2,7 @@ import { prisma } from "./prisma"
 import { resolveUsernameAlias } from "./user"
 import { countTreatyVotes } from "./treaty-votes.server"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
+import { buildOfficialReferendumVoteWhere } from "./referendum-vote-classification.server"
 
 /**
  * Finds a user by Person.handle or referral code.
@@ -106,6 +107,8 @@ export async function getReferralTreeStats(
       WHERE v."referredByUserId" = ${userId}
         AND v."referendumId" = ${referendumId}
         AND v."deletedAt" IS NULL
+        AND v."voteSource" = 'SELF'
+        AND EXISTS (SELECT 1 FROM "Person" p WHERE p."id" = v."personId" AND p."deletedAt" IS NULL AND p."lifeStatus" = 'LIVING')
 
       UNION ALL
 
@@ -114,6 +117,8 @@ export async function getReferralTreeStats(
       INNER JOIN tree t ON v."referredByUserId" = t.voter_id
       WHERE v."referendumId" = ${referendumId}
         AND v."deletedAt" IS NULL
+        AND v."voteSource" = 'SELF'
+        AND EXISTS (SELECT 1 FROM "Person" p WHERE p."id" = v."personId" AND p."deletedAt" IS NULL AND p."lifeStatus" = 'LIVING')
         AND t.depth < 20
         AND NOT (v."userId" = ANY(t.visited))
     )
@@ -128,8 +133,7 @@ export async function getReferralTreeStats(
   const publicRecruits = await prisma.referendumVote.findMany({
     where: {
       referredByUserId: userId,
-      referendumId,
-      deletedAt: null,
+      ...buildOfficialReferendumVoteWhere({ referendumId }),
       user: {
         person: {
           OR: [{ isPublic: true }, { handle: { not: null } }],

@@ -2,6 +2,7 @@ import "server-only"
 import type { Prisma } from "@optimitron/db"
 import { prisma } from "./prisma"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
+import { buildOfficialReferendumVoteWhere } from "./referendum-vote-classification.server"
 
 export type PublicProfileLink = {
   id: string
@@ -159,7 +160,7 @@ export async function getPublicUserProfile(handleOrUsername: string) {
   const referralCount = await prisma.referendumVote.count({
     where: {
       referredByUserId: user.id,
-      deletedAt: null,
+      ...buildOfficialReferendumVoteWhere(),
       referendum: { slug: TREATY_REFERENDUM_SLUG },
     },
   })

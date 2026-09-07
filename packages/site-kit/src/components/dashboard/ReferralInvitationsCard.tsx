@@ -49,12 +49,11 @@ export function ReferralInvitationsCard({
   ).length
   const totalCount = invitations.length
 
-  const updateStatus = async (id: string, status: DashboardReferralInvitation["status"]) => {
+  const updateStatus = async (id: string, status: Exclude<DashboardReferralInvitation["status"], "VOTED">) => {
     setWorkingId(id)
     setError(null)
     try {
-      const savedStatus = status === "VOTED" ? ReferralInvitationStatus.CONVERTED
-        : status === "REMINDED" ? ReferralInvitationStatus.COPIED
+      const savedStatus = status === "REMINDED" ? ReferralInvitationStatus.COPIED
         : status === "DECLINED" ? ReferralInvitationStatus.DECLINED
         : ReferralInvitationStatus.PENDING
       const response = await fetch("/api/referral-invitations", {
@@ -154,16 +153,6 @@ export function ReferralInvitationsCard({
                     >
                       <Copy className="w-3 h-3 mr-1" />
                       {copied ? "Copied!" : "Copy reminder"}
-                    </Button>
-                    <Button
-                      onClick={() => updateStatus(c.id, "VOTED")}
-                      disabled={working}
-                      size="sm"
-                      variant="outline"
-                      className="bg-background border-4 border-primary font-black uppercase text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
-                    >
-                      <Check className="w-3 h-3 mr-1" />
-                      Voted
                     </Button>
                     <Button
                       onClick={() => updateStatus(c.id, "DECLINED")}

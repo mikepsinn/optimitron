@@ -31,12 +31,12 @@ describe("dashboard invitation controls through the API", () => {
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async () => {} } })
   })
 
-  it("saves the Voted control as a converted invitation", async () => {
-    render(<ReferralInvitationsCard invitations={[invitation]} referralLink={invitation.referralUrl} />)
-    fireEvent.click(screen.getByRole("button", { name: "Voted", exact: true }))
-    await waitFor(() => expect(boundary.saved.status).toBe("CONVERTED"))
-    expect(boundary.saved.convertedAt).toBeInstanceOf(Date)
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+  it("rejects a manual conversion so the later verified vote can still link the invitation", async () => {
+    const response = await PATCH(new Request("https://warondisease.org/api/referral-invitations", {
+      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: "invite", status: "CONVERTED" }),
+    }) as never)
+    expect(response.status).toBe(400)
+    expect(boundary.saved).toEqual({})
   })
 
   it("records a copied reminder with its copy timestamp", async () => {
@@ -49,7 +49,7 @@ describe("dashboard invitation controls through the API", () => {
   it("shows rejected updates instead of silently treating them as saved", async () => {
     vi.stubGlobal("fetch", async () => new Response(null, { status: 503 }))
     render(<ReferralInvitationsCard invitations={[invitation]} referralLink={invitation.referralUrl} />)
-    fireEvent.click(screen.getByRole("button", { name: "Voted", exact: true }))
+    fireEvent.click(screen.getByRole("button", { name: "Copy reminder" }))
     expect(await screen.findByRole("alert")).toHaveTextContent("We could not save that invitation update")
     expect(boundary.saved).toEqual({})
   })
