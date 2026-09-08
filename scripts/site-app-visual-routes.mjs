@@ -7,6 +7,12 @@ const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
 const researchPageFile =
   "packages/site-kit/src/components/research-page.tsx";
+const surveyResultsFiles = [
+  "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
+  "packages/site-kit/src/lib/survey-results.ts",
+  "packages/site-kit/src/lib/survey-results.server.ts",
+  "packages/site-kit/src/lib/survey-results-visual.ts",
+];
 const dfdaHowItWorksFiles = [
   "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
   "packages/site-kit/src/components/how-it-works/HowItWorksStep.tsx",
@@ -62,6 +68,9 @@ function getCampaignHomeFiles(appName) {
 
 const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/DashboardClient.tsx",
+  "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
+  "packages/site-kit/src/lib/survey-results.ts",
+  "packages/site-kit/src/lib/survey-results.server.ts",
   "packages/site-kit/src/components/dashboard/StatsOverview.tsx",
   "packages/site-kit/src/components/dashboard/ProfileCard.tsx",
   "packages/site-kit/src/components/dashboard/ReferralGoalCard.tsx",
@@ -224,6 +233,8 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       authRole: "user",
       covers: [
         "apps/trialabundancesurvey/app/dashboard/page.tsx",
+        "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+        ...surveyResultsFiles,
         "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
         "packages/site-kit/src/lib/trial-abundance-votes.server.ts",
       ],
@@ -252,6 +263,7 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       covers: [
         "apps/acceleratedmedicine/app/dashboard/page.tsx",
         "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+        ...surveyResultsFiles,
       ],
       label: "Survey dashboard — signed-in user",
       routeName: "dashboard-authenticated",
@@ -677,6 +689,27 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/trialabundancesurvey/app/research/page.tsx",
     },
     {
+      covers: ["apps/trialabundancesurvey/app/results/page.tsx", ...surveyResultsFiles],
+      label: "Public survey results",
+      routeName: "results",
+      routePath: "/results",
+      sourcePage: "apps/trialabundancesurvey/app/results/page.tsx",
+    },
+    {
+      covers: ["apps/trialabundancesurvey/app/results/page.tsx", ...surveyResultsFiles],
+      label: "Survey results — populated preview",
+      routeName: "results-preview",
+      routePath: "/results?visual=1",
+      sourcePage: "apps/trialabundancesurvey/app/results/page.tsx",
+    },
+    {
+      covers: ["apps/trialabundancesurvey/app/results/page.tsx", ...surveyResultsFiles],
+      label: "Survey results — no saved answers",
+      routeName: "results-empty-preview",
+      routePath: "/results?visual=empty",
+      sourcePage: "apps/trialabundancesurvey/app/results/page.tsx",
+    },
+    {
       covers: ["apps/trialabundancesurvey/app/contact/page.tsx"],
       label: "Contact",
       routeName: "contact",
@@ -1070,6 +1103,10 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         ...(routeName.startsWith("dashboard") ? { authenticated: true, authRole: "user" } : {}),
         covers: [
           `packages/site-kit/src/components/${component}`,
+          ...(routeName.startsWith("dashboard") ? [
+            "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
+            ...surveyResultsFiles,
+          ] : []),
           ...(routeName === "auth-error" ? [
             "packages/site-kit/src/components/auth/SurveyAuthErrorContent.tsx",
             `apps/${appName}/app/auth/error/error-content.tsx`,

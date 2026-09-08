@@ -6,6 +6,7 @@ import {
 import { prisma } from "./prisma"
 import { ensurePersonForUser } from "./person.server"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
+import { buildOfficialReferendumVoteWhere } from "./referendum-vote-classification.server"
 
 export async function getTreatyReferendum() {
   const referendum = await prisma.referendum.findUnique({
@@ -48,9 +49,7 @@ export async function countTreatyVotes(where: {
 
   return prisma.referendumVote.count({
     where: {
-      referendumId: referendum.id,
-      deletedAt: null,
-      voteSource: ReferendumVoteSource.SELF,
+      ...buildOfficialReferendumVoteWhere({ referendumId: referendum.id }),
       ...(where.referredByUserId
         ? { referredByUserId: where.referredByUserId }
         : {}),

@@ -259,7 +259,6 @@ export async function PATCH(req: NextRequest) {
 
     const updateData: {
       status?: ReferralInvitationStatus
-      convertedAt?: Date | null
       copiedAt?: Date
       sentAt?: Date
       messageText?: string
@@ -274,7 +273,6 @@ export async function PATCH(req: NextRequest) {
       const validStatuses: ReferralInvitationStatus[] = [
         ReferralInvitationStatus.PENDING,
         ReferralInvitationStatus.SENT,
-        ReferralInvitationStatus.CONVERTED,
         ReferralInvitationStatus.DECLINED,
         ReferralInvitationStatus.COPIED,
         ReferralInvitationStatus.CANCELLED,
@@ -284,9 +282,7 @@ export async function PATCH(req: NextRequest) {
       }
 
       updateData.status = status as ReferralInvitationStatus
-      if (status === ReferralInvitationStatus.CONVERTED) {
-        updateData.convertedAt = existing.convertedAt ?? new Date()
-      } else if (status === ReferralInvitationStatus.SENT) {
+      if (status === ReferralInvitationStatus.SENT) {
         updateData.sentAt = existing.sentAt ?? new Date()
       }
     }

@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@optimitron/neobrutalist-ui/ui/card"
+import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { useRouter } from "next/navigation"
 import { Target, Check, Clock, X as XIcon, Send, Copy } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@optimitron/neobrutalist-ui/cn"
 import type { DashboardReferralInvitation } from "@/types/dashboard"
 import { createLogger } from "@/lib/logger"
+import { ReferralInvitationStatus } from "@optimitron/db/enums"
 
 const log = createLogger("referral-invitations-card")
 
@@ -40,6 +41,7 @@ export function ReferralInvitationsCard({
   const router = useRouter()
   const [workingId, setWorkingId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const votedCount = invitations.filter((c) => c.status === "VOTED").length
   const pendingCount = invitations.filter(
@@ -47,17 +49,23 @@ export function ReferralInvitationsCard({
   ).length
   const totalCount = invitations.length
 
-  const updateStatus = async (id: string, status: DashboardReferralInvitation["status"]) => {
+  const updateStatus = async (id: string, status: Exclude<DashboardReferralInvitation["status"], "VOTED">) => {
     setWorkingId(id)
+    setError(null)
     try {
-      await fetch("/api/referral-invitations", {
+      const savedStatus = status === "REMINDED" ? ReferralInvitationStatus.COPIED
+        : status === "DECLINED" ? ReferralInvitationStatus.DECLINED
+        : ReferralInvitationStatus.PENDING
+      const response = await fetch("/api/referral-invitations", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, status: savedStatus, ...(status === "REMINDED" ? { action: "markCopied" } : {}) }),
       })
+      if (!response.ok) throw new Error("We could not save that invitation update. Please try again.")
       router.refresh()
     } catch (err) {
       log.error("Failed to update referral invitation", { error: err })
+      setError("We could not save that invitation update. Please try again.")
     } finally {
       setWorkingId(null)
     }
@@ -81,6 +89,7 @@ export function ReferralInvitationsCard({
 
   const content = (
     <>
+      {error ? <p role="alert" className="mb-4 text-sm font-bold text-destructive">{error}</p> : null}
       {/* Summary bar */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="border-4 border-primary bg-brutal-cyan p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
@@ -144,16 +153,6 @@ export function ReferralInvitationsCard({
                     >
                       <Copy className="w-3 h-3 mr-1" />
                       {copied ? "Copied!" : "Copy reminder"}
-                    </Button>
-                    <Button
-                      onClick={() => updateStatus(c.id, "VOTED")}
-                      disabled={working}
-                      size="sm"
-                      variant="outline"
-                      className="bg-background border-4 border-primary font-black uppercase text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
-                    >
-                      <Check className="w-3 h-3 mr-1" />
-                      Voted
                     </Button>
                     <Button
                       onClick={() => updateStatus(c.id, "DECLINED")}

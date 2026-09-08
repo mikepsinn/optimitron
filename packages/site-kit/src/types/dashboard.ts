@@ -1,4 +1,5 @@
 import type { EnabledProviders } from "@/lib/auth-utils"
+import type { DashboardSurveyResults } from "../lib/survey-results"
 
 export interface DashboardUser {
   id: string
@@ -68,11 +69,6 @@ export interface DashboardOrganizations {
   created: DashboardOrganization[]
 }
 
-export interface DashboardAllocation {
-  user: number | null
-  average: number
-}
-
 export interface DashboardPublicRecruit {
   id: string
   name: string | null
@@ -116,7 +112,7 @@ export interface DashboardData {
   enabledProviders: EnabledProviders
   activities: DashboardActivity[]
   globalProgress: DashboardProgress
-  allocation: DashboardAllocation
+  surveyResults: DashboardSurveyResults
   organizations: DashboardOrganizations
 }
 
@@ -127,4 +123,3 @@ export interface LeaderboardEntry {
   image: string | null
   referrals: number
 }
-

@@ -36,6 +36,7 @@ export const ROUTES = {
   // Research / Evidence
   impact: '/impact',
   research: '/research',
+  surveyResults: '/results',
   references: '/references',
 
   // Universal Right to Try education

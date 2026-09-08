@@ -1214,7 +1214,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
 
     // Navigation - Ultra-minimal for nervous nonprofits
-    topLevelNavItems: ["vote", "faq"],
+    topLevelNavItems: ["vote", "surveyResults", "faq"],
     sidebarSections: [], // No sidebar sections - keep it simple
 
     footerBranding: {

@@ -14,6 +14,12 @@ import { TRIAL_ABUNDANCE_REFERENDUM_QUESTION } from "@optimitron/db/constants"
 import { buildUserReferralUrl } from "../../lib/url"
 import { ReferralLinkCard } from "../shared/ReferralLinkCard"
 import { PendingResponseRecovery } from "./pending-response-recovery"
+import Link from "next/link"
+import { SurveyResultsCard } from "../dashboard/SurveyResultsCard"
+import { getTrialAbundanceSurveyResults } from "../../lib/survey-results.server"
+import { getSurveyResultsVisualFixture } from "../../lib/survey-results-visual"
+import { getSiteConfig } from "../../lib/site-config"
+import { ROUTES } from "../../lib/routes"
 
 export const dynamic = "force-dynamic"
 
@@ -41,7 +47,8 @@ export default async function LiteDashboardPage({
     redirect("/auth/signin?callbackUrl=/dashboard")
   }
 
-  const [vote, selfFundedAccessVote, allocation] = recoveryPreview
+  const [[vote, selfFundedAccessVote, allocation], results] = await Promise.all([
+    recoveryPreview
     ? [null, null, null]
     : visualPreview
     ? [
@@ -49,11 +56,18 @@ export default async function LiteDashboardPage({
         { answer: "ABSTAIN" as const },
         { allocationA: 35, allocationB: 65 },
       ]
-    : await Promise.all([
+    : Promise.all([
         getUserTrialAbundanceVote(sessionUser.id),
         getUserTrialAbundanceSelfFundedAccessVote(sessionUser.id),
         getUserTrialAbundanceAllocation(sessionUser.id),
-      ])
+      ]),
+    visualPreview
+      ? getSurveyResultsVisualFixture("1", !recoveryPreview)!
+      : getTrialAbundanceSurveyResults(sessionUser.id),
+  ])
+  const resultsUrl = getSiteConfig().domain === "trialabundancesurvey.org"
+    ? ROUTES.surveyResults
+    : `https://trialabundancesurvey.org${ROUTES.surveyResults}`
   const headersList = await headers()
   const host = headersList.get("host") ?? "trialabundancesurvey.org"
   const proto = /^(localhost|127\.0\.0\.1)(:|$)/.test(host) ? "http" : "https"
@@ -108,6 +122,11 @@ export default async function LiteDashboardPage({
               </div>
             ) : null}
           </Card>
+
+          <SurveyResultsCard results={results} />
+          <p className="my-6 font-bold">
+            <Link href={resultsUrl} className="underline underline-offset-4">View public survey results</Link>
+          </p>
 
           <ReferralLinkCard
             referralLink={surveyUrl}

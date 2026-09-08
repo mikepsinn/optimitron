@@ -53,6 +53,15 @@ export interface NavItem {
  * Each variant decides which items to show and how to organize them.
  */
 export const NAV_ITEMS_MAP = {
+  surveyResults: {
+    id: "surveyResults",
+    label: "Survey results",
+    path: ROUTES.surveyResults,
+    description: "Current survey results on patient access, patient-funded clinical trials, and research funding priorities.",
+    canonicalVariant: VARIANTS.SURVEY,
+    allowedVariants: [VARIANTS.SURVEY],
+    useSiteDefaultOg: true,
+  },
   // About section items
   home: {
     id: "home",
