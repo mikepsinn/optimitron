@@ -1139,6 +1139,20 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
+  if ([VARIANTS.WAR_ON_DISEASE, VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
+    routes.push({
+      label: "Pragmatic clinical trials explanation",
+      routeName: "pragmatic-trials-dialog",
+      routePath: siteVariant === VARIANTS.WAR_ON_DISEASE ? "/" : "/?visual=question",
+      openDialog: siteVariant === VARIANTS.WAR_ON_DISEASE ? "pragmatic clinical trials" : "pragmatic clinical trial",
+      captureSelector: '[role="dialog"]',
+      covers: [
+        "packages/site-kit/src/components/landing/PragmaticTrialsDialog.tsx",
+        "packages/neobrutalist-ui/src/ui/dialog.tsx",
+      ],
+    });
+  }
+
   const publicRoutes = getPublicSiteAppRoutes(appName);
   const publicRouteNames = new Set(publicRoutes.map(({ routeName }) => routeName));
   const screenshotRoutes = [

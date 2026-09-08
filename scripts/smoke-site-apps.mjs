@@ -284,6 +284,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             routePath,
             captureSelector,
             openMenu,
+            openDialog,
           },
           lane,
         ) => {
@@ -347,6 +348,11 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               await menuDialog
                 .getByRole("button", { name: "Log Out" })
                 .waitFor({ state: "visible" });
+              await forceAnimationsComplete(page);
+            }
+            if (openDialog) {
+              await page.getByRole("button", { name: openDialog, exact: true }).first().click();
+              await page.getByRole("dialog").waitFor({ state: "visible" });
               await forceAnimationsComplete(page);
             }
             const screenshotPath = path.join(

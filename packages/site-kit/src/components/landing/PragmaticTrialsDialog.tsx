@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { X } from "lucide-react"
 import { ParameterInline } from "../shared/ParameterValue"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import {
@@ -33,7 +34,8 @@ export function PragmaticTrialsDialog({
         </button>
       </DialogTrigger>
       <DialogContent
-        className="!inset-0 !h-[100dvh] !w-screen !max-w-none !translate-x-0 !translate-y-0 gap-0 overflow-y-auto overscroll-y-contain border-0 p-0 shadow-none sm:rounded-none"
+        showCloseButton={false}
+        className="block !inset-0 !h-[100dvh] !w-screen !max-w-none !translate-x-0 !translate-y-0 gap-0 overflow-y-auto overscroll-y-contain border-0 p-0 shadow-none sm:rounded-none"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         <div className="min-h-full bg-background">
@@ -49,6 +51,17 @@ export function PragmaticTrialsDialog({
                 </DialogDescription>
               </DialogHeader>
             </div>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="Close explanation"
+                className="absolute right-5 top-5 size-11 rounded-none border-2 border-primary sm:right-8 sm:top-6"
+              >
+                <X className="size-5" aria-hidden="true" />
+              </Button>
+            </DialogClose>
           </div>
 
           <div className="mx-auto max-w-6xl space-y-6 p-5 pb-8 sm:p-8">
