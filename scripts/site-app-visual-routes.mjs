@@ -1032,6 +1032,9 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     const landingRoute = routes.find(({ routePath }) => routePath === "/");
     if (landingRoute) {
       landingRoute.covers = [...(landingRoute.covers ?? []), surveyComponent];
+      if (siteVariant === VARIANTS.SURVEY) {
+        landingRoute.covers.push("packages/site-kit/src/lib/site-config.ts");
+      }
     }
     routes.push(
       {

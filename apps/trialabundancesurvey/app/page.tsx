@@ -1,6 +1,7 @@
 import Layout from "../components/layout"
 import TrialAbundanceSurveySection from "@/components/landing/trial-abundance-survey-section"
 import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual"
+import { ROUTES } from "@optimitron/site-kit/lib/routes"
 
 interface HomePageProps {
   searchParams?: Promise<{ visual?: string }>
@@ -19,6 +20,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <TrialAbundanceSurveySection
         disableIntroAnimation={Boolean(visualState)}
         visualState={visualState}
+        resultsHref={ROUTES.surveyResults}
       />
     </Layout>
   )
