@@ -1,5 +1,5 @@
 import { STORAGE_KEYS, type StorageKey } from "./constants"
-import type { SurveyParticipant } from "./survey-participant"
+import type { SurveyParticipant, SurveyProfile } from "./survey-participant"
 
 export type PendingOrganizationEndorsementDraft = {
   clientDraftId: string
@@ -301,6 +301,11 @@ export const storage = {
     setStorageItem(STORAGE_KEYS.PENDING_TRIAL_ABUNDANCE_RESPONSE, response),
   removePendingTrialAbundanceResponse: () =>
     removeStorageItem(STORAGE_KEYS.PENDING_TRIAL_ABUNDANCE_RESPONSE),
+
+  getSurveyProfileHints: () => getStorageItem<Partial<Pick<SurveyProfile, "countryCode" | "regionCode" | "role">>>(STORAGE_KEYS.SURVEY_PROFILE_HINTS),
+  setSurveyProfileHints: ({ countryCode, regionCode, role }: Partial<Pick<SurveyProfile, "countryCode" | "regionCode" | "role">>) =>
+    setStorageItem(STORAGE_KEYS.SURVEY_PROFILE_HINTS, { countryCode, regionCode, role }),
+  removeSurveyProfileHints: () => removeStorageItem(STORAGE_KEYS.SURVEY_PROFILE_HINTS),
 
   getPostVoteFlowState: () => getStorageItem<{ dismissedVerification?: boolean; screen?: number; sentCount?: number }>(STORAGE_KEYS.POST_VOTE_FLOW_STATE),
   setPostVoteFlowState: (data: { dismissedVerification?: boolean; screen?: number; sentCount?: number }) =>

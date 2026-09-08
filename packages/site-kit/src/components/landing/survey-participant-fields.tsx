@@ -8,16 +8,17 @@ export type ParticipantDraft = Omit<SurveyParticipant, "role"> & { role: string 
 
 const inputClass = "mt-2 w-full border-4 border-primary bg-background p-3 font-bold"
 
-export function SurveyParticipantFields({ value, onChange }: {
+export function SurveyParticipantFields({ value, onChange, optional = false }: {
   value: ParticipantDraft
   onChange: (value: ParticipantDraft) => void
+  optional?: boolean
 }) {
   return (
     <>
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="font-black">
-          Country
-          <select className={inputClass} autoComplete="country" required value={value.countryCode}
+          Country{optional ? " (optional)" : ""}
+          <select className={inputClass} autoComplete="country" required={!optional} value={value.countryCode}
             onChange={(event) => onChange({ ...value, countryCode: event.target.value, regionCode: "" })}>
             <option value="">Choose a country</option>
             {SURVEY_COUNTRIES.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
@@ -25,8 +26,8 @@ export function SurveyParticipantFields({ value, onChange }: {
         </label>
         {value.countryCode === "US" ? (
           <label className="font-black">
-            State
-            <select className={inputClass} autoComplete="address-level1" required value={value.regionCode}
+            State{optional ? " (optional)" : ""}
+            <select className={inputClass} autoComplete="address-level1" required={!optional} value={value.regionCode}
               onChange={(event) => onChange({ ...value, regionCode: event.target.value })}>
               <option value="">Choose a state</option>
               {US_REGION_OPTIONS.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
@@ -41,8 +42,8 @@ export function SurveyParticipantFields({ value, onChange }: {
         ) : null}
       </div>
       <label className="font-black">
-        Your role
-        <select className={inputClass} required value={value.role}
+        Your role{optional ? " (optional)" : ""}
+        <select className={inputClass} required={!optional} value={value.role}
           onChange={(event) => onChange({ ...value, role: event.target.value })}>
           <option value="">Choose a role</option>
           {SURVEY_ROLES.map(([key, label]) => <option key={key} value={key}>{label}</option>)}

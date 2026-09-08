@@ -17,7 +17,7 @@ export const SURVEY_ROLES = [
 
 const US_REGION_CODES = new Set<string>(US_REGIONS.map(([, code]) => code))
 
-export const surveyParticipantSchema = z.object({
+const participantFieldsSchema = z.object({
   countryCode: z.string().refine(
     (value) => SURVEY_COUNTRIES.some(({ code }) => code === value),
     "Choose your country.",
@@ -30,6 +30,8 @@ export const surveyParticipantSchema = z.object({
   story: z.string().trim().max(2000),
   updates: z.boolean(),
 })
+
+export const surveyParticipantSchema = participantFieldsSchema
   // Older clients and prefilled links send "Missouri" or "US-MO"; store the
   // bare code so every US answer for one state lands on one regionCode.
   .transform((value) => value.countryCode !== "US" ? value
@@ -41,6 +43,23 @@ export const surveyParticipantSchema = z.object({
   })
 
 export type SurveyParticipant = z.infer<typeof surveyParticipantSchema>
+
+// Dashboard fields can be saved independently. Legacy survey drafts keep their
+// original validation above until their verification link has been used.
+export const surveyProfileSchema = participantFieldsSchema.extend({
+  countryCode: participantFieldsSchema.shape.countryCode.or(z.literal("")),
+  role: participantFieldsSchema.shape.role.or(z.literal("")),
+}).transform((value) => ({
+  ...value,
+  regionCode: !value.countryCode ? "" : value.countryCode === "US"
+    ? normalizeUsRegionCode(value.regionCode) ?? value.regionCode : value.regionCode,
+})).superRefine((value, ctx) => {
+  if (value.countryCode === "US" && value.regionCode && !US_REGION_CODES.has(value.regionCode)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["regionCode"], message: "Choose a state from the list." })
+  }
+})
+
+export type SurveyProfile = z.infer<typeof surveyProfileSchema>
 
 export const SURVEY_UPDATES_LABEL =
   "Send me occasional updates about clinical trials and patient access."

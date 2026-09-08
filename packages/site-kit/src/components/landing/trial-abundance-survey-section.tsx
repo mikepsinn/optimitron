@@ -24,17 +24,14 @@ import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
 import { AuthForm } from "../auth/AuthForm"
 import { ReferralLinkCard } from "../shared/ReferralLinkCard"
 import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
-import { SurveyParticipantFields } from "./survey-participant-fields"
 import type { ParticipantDraft } from "./survey-participant-fields"
-import { surveyParticipantSchema } from "../../lib/survey-participant"
-import { normalizeUsRegionCode } from "../../lib/us-states"
+import { surveyProfileSchema } from "../../lib/survey-participant"
 import { AlertCard } from "@optimitron/neobrutalist-ui/ui/alert-card"
 
 type SurveyStage =
   | "patient-access"
   | "self-funded-access"
   | "allocation"
-  | "details"
   | "complete"
 export type { TrialAbundanceVisualState } from "../../lib/trial-abundance-visual"
 import type { TrialAbundanceVisualState } from "../../lib/trial-abundance-visual"
@@ -84,7 +81,6 @@ function getInitialStage(
 ): SurveyStage {
   if (visualState === "self-funded") return "self-funded-access"
   if (visualState === "allocation") return "allocation"
-  if (visualState === "details") return "details"
   if (visualState === "save-error") return "complete"
   if (visualState === "complete" || visualState === "saved") return "complete"
   return "patient-access"
@@ -136,13 +132,7 @@ export default function TrialAbundanceSurveySection({
   )
   const completionRef = useRef<HTMLDivElement>(null)
   const hasRetriedSync = useRef(false)
-  const [participant, setParticipant] = useState<ParticipantDraft>({
-    countryCode: "US", regionCode: "", role: "", story: "", updates: false,
-    ...initialParticipant,
-  })
-  const participantEdited = useRef(false)
   const saveInFlight = useRef(false)
-  const [participantError, setParticipantError] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">(
     visualState === "save-error" ? "error" : visualState === "saved" ? "saved" : "idle",
   )
@@ -162,26 +152,6 @@ export default function TrialAbundanceSurveySection({
   }, [])
 
   useEffect(() => {
-    if (isVisualCapture || status !== "authenticated") return
-    const controller = new AbortController()
-    void fetch("/api/survey/profile", { signal: controller.signal })
-      .then(async (response) => response.ok ? response.json() : null)
-      .then((profile: Partial<ParticipantDraft> | null) => {
-        if (!profile || participantEdited.current) return
-        setParticipant((current) => {
-          const countryCode = profile.countryCode || current.countryCode
-          const regionCode = profile.regionCode || current.regionCode
-          return { ...current, countryCode,
-            // Profiles saved before the state select hold names like "Missouri".
-            regionCode: countryCode === "US" ? normalizeUsRegionCode(regionCode) ?? regionCode : regionCode,
-            role: profile.role || current.role,
-          }
-        })
-      }).catch(() => { /* The user can enter details if profile loading fails. */ })
-    return () => controller.abort()
-  }, [isVisualCapture, status])
-
-  useEffect(() => {
     if (isVisualCapture) return
 
     const pending = storage.getPendingTrialAbundanceResponse()
@@ -195,10 +165,6 @@ export default function TrialAbundanceSurveySection({
     setMilitaryAllocation(pending.militaryAllocationPercent)
     setPatientAccessAnswer(pending.patientAccessAnswer)
     setSelfFundedAccessAnswer(pending.selfFundedAccessAnswer)
-    if (pending.participant) {
-      participantEdited.current = true
-      setParticipant(pending.participant)
-    }
     setStage("complete")
     setUserHasDragged(true)
   }, [isVisualCapture])
@@ -255,18 +221,19 @@ export default function TrialAbundanceSurveySection({
 
   const handleComplete = async () => {
     if (!patientAccessAnswer || !selfFundedAccessAnswer) return
-    const parsed = surveyParticipantSchema.safeParse(participant)
-    if (!parsed.success) {
-      setParticipantError(parsed.error.issues[0]?.message ?? "Please check your details.")
-      return
+    if (initialParticipant) {
+      // State/role links can prefill the optional dashboard form. They are not
+      // respondent-confirmed details and must not be submitted with the answers.
+      const hints = surveyProfileSchema.safeParse({
+        countryCode: "", regionCode: "", role: "", story: "", updates: false, ...initialParticipant,
+      })
+      if (hints.success) storage.setSurveyProfileHints(hints.data)
     }
-    setParticipantError(null)
 
     setStage("complete")
 
     const response = {
       submissionKey: crypto.randomUUID(),
-      participant: parsed.data,
       inviteToken,
       militaryAllocationPercent: militaryAllocation,
       organizationId: organizationId ?? null,
@@ -422,10 +389,10 @@ export default function TrialAbundanceSurveySection({
 
                 {userHasDragged ? (
                   <Button
-                    onClick={() => setStage("details")}
-                    className="h-16 w-full border-4 border-primary bg-brutal-cyan text-xl font-black uppercase text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                    onClick={() => void handleComplete()}
+                    className="min-h-16 h-auto w-full whitespace-normal border-4 border-primary bg-brutal-cyan py-3 text-lg sm:text-xl font-black uppercase text-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    Continue
+                    {status === "authenticated" ? "Save my response" : "Continue to verification"}
                   </Button>
                 ) : null}
                 <BackButton onClick={() => setStage("self-funded-access")}>
@@ -435,23 +402,6 @@ export default function TrialAbundanceSurveySection({
             </motion.div>
           ) : null}
         </AnimatePresence>
-
-        {stage === "details" ? (
-          <SurveyCard>
-            <StepHeading className="text-2xl font-black uppercase">About you</StepHeading>
-            <form className="flex flex-col gap-5" onSubmit={(event) => { event.preventDefault(); void handleComplete() }}>
-              <SurveyParticipantFields value={participant} onChange={(value) => {
-                participantEdited.current = true
-                setParticipant(value)
-              }} />
-              {participantError ? <AlertCard type="error" message={participantError} /> : null}
-              <Button type="submit" className="h-14 text-lg font-black uppercase">
-                {status === "authenticated" ? "Save my response" : "Continue to verification"}
-              </Button>
-            </form>
-            <BackButton onClick={() => setStage("allocation")}>Back to allocation</BackButton>
-          </SurveyCard>
-        ) : null}
 
         {stage === "complete" ? (
           <div ref={completionRef} className="space-y-8">
@@ -471,6 +421,9 @@ export default function TrialAbundanceSurveySection({
                   copyLinkLabel="COPY SURVEY LINK"
                   linkContentType="trial_abundance_referral"
                 />
+                <p className="text-center font-bold">
+                  <Link href="/dashboard" className="underline underline-offset-4">Your survey dashboard</Link>
+                </p>
               </>
             ) : status === "authenticated" || visualState === "save-error" ? (
               <SurveyCard>

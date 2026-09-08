@@ -20,11 +20,12 @@ import { getTrialAbundanceSurveyResults } from "../../lib/survey-results.server"
 import { getSurveyResultsVisualFixture } from "../../lib/survey-results-visual"
 import { getSiteConfig } from "../../lib/site-config"
 import { ROUTES } from "../../lib/routes"
+import { SurveyProfileSection } from "./SurveyProfileSection"
 
 export const dynamic = "force-dynamic"
 
 interface LiteDashboardPageProps {
-  searchParams?: Promise<{ recovery?: string; visual?: string }>
+  searchParams?: Promise<{ recovery?: string; visual?: string; profile?: string }>
 }
 
 /**
@@ -136,6 +137,10 @@ export default async function LiteDashboardPage({
             copyLinkLabel="COPY SURVEY LINK"
             linkContentType="trial_abundance_referral"
             className="mb-6"
+          />
+          <SurveyProfileSection
+            initialProfile={visualPreview ? { countryCode: "", regionCode: "", role: "", story: "", updates: false } : undefined}
+            defaultOpen={visualPreview && resolvedSearchParams?.profile === "1"}
           />
         </Container>
       </SectionContainer>

@@ -10,6 +10,7 @@ import type { TrialAbundanceResponseInput } from "./trial-abundance-response"
 import { SURVEY_UPDATES_LABEL } from "./survey-participant"
 
 export const TRIAL_ABUNDANCE_FORM_KEY = "trial-abundance:verified-response"
+export const TRIAL_ABUNDANCE_PROFILE_FORM_KEY = "trial-abundance:participant-profile"
 
 const fields = [
   ["patientAccessAnswer", TRIAL_ABUNDANCE_REFERENDUM_QUESTION, FormFieldType.SINGLE_SELECT],
@@ -28,15 +29,24 @@ function hash(value: unknown) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex")
 }
 
-export async function getTrialAbundanceFormRevision() {
+export function getTrialAbundanceFormRevision() {
+  return getSurveyFormRevision(TRIAL_ABUNDANCE_FORM_KEY, "Trial Abundance Survey", fields)
+}
+
+export function getTrialAbundanceProfileFormRevision() {
+  return getSurveyFormRevision(TRIAL_ABUNDANCE_PROFILE_FORM_KEY, "Trial Abundance Survey — About you",
+    fields.filter(([key]) => ["countryCode", "regionCode", "role", "story", "updates"].includes(key)))
+}
+
+async function getSurveyFormRevision(sourceKey: string, title: string, formFields: ReadonlyArray<(typeof fields)[number]>) {
   const { user } = await upsertWishoniaUser(prisma)
-  const contentHash = hash(fields)
+  const contentHash = hash(formFields)
   const form = await prisma.form.upsert({
-    where: { sourceKey: TRIAL_ABUNDANCE_FORM_KEY },
+    where: { sourceKey },
     // An empty update makes Prisma emulate upsert, which can race on the first responses.
-    update: { sourceKey: TRIAL_ABUNDANCE_FORM_KEY },
+    update: { sourceKey },
     create: {
-      sourceKey: TRIAL_ABUNDANCE_FORM_KEY, title: "Trial Abundance Survey",
+      sourceKey, title,
       createdByUserId: user.id, purpose: FormPurpose.SURVEY,
       status: FormStatus.OPEN, visibility: ContentVisibility.PRIVATE,
     },
@@ -52,7 +62,7 @@ export async function getTrialAbundanceFormRevision() {
         formId: form.id, contentHash, version: (latest._max.version ?? 0) + 1,
         title: form.title, createdByUserId: user.id,
         status: ModelRevisionStatus.PUBLISHED, publishedAt: new Date(),
-        fields: { create: fields.map(([key, prompt, type], position) => ({ key, prompt, type, position })) },
+        fields: { create: formFields.map(([key, prompt, type], position) => ({ key, prompt, type, position })) },
       } })
     }
     await tx.form.update({ where: { id: form.id }, data: { currentRevisionId: revision.id } })

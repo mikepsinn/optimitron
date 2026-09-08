@@ -1056,12 +1056,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         covers: [surveyComponent],
       },
       {
-        label: "Participant details and consent",
-        routeName: "home-details",
-        routePath: "/?visual=details",
-        covers: [surveyComponent, "packages/site-kit/src/components/landing/survey-participant-fields.tsx"],
-      },
-      {
         label: "Response save retry",
         routeName: "home-save-error",
         routePath: "/?visual=save-error",
@@ -1098,10 +1092,10 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         surveyComponent,
       ],
     });
-    if (siteVariant === VARIANTS.SURVEY) routes.push({
+    routes.push({
       authenticated: true,
       authRole: "user",
-      label: "Saved response and results link",
+      label: "Saved response and dashboard link",
       routeName: "home-saved",
       routePath: "/?visual=saved",
       covers: [
@@ -1115,6 +1109,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       ["auth-error", "/auth/error?error=Verification", "auth/SurveyAuthErrorPage.tsx"],
       ["auth-verify-request", "/auth/verify-request", "auth/SurveyVerifyRequestPage.tsx"],
       ["dashboard-saved-preview", "/dashboard?visual=1", "survey/SurveyDashboardPage.tsx"],
+      ["dashboard-profile-preview", "/dashboard?visual=1&profile=1", "survey/SurveyProfileSection.tsx"],
       ["dashboard-retry-preview", "/dashboard?visual=1&recovery=error", "survey/pending-response-recovery.tsx"],
     ]) {
       routes.push({
@@ -1122,6 +1117,12 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         ...(routeName.startsWith("dashboard") ? { authenticated: true, authRole: "user" } : {}),
         covers: [
           `packages/site-kit/src/components/${component}`,
+          ...(routeName === "dashboard-profile-preview" ? [
+            "packages/site-kit/src/components/landing/survey-participant-fields.tsx",
+            "packages/site-kit/src/lib/survey-participant.ts",
+            "packages/site-kit/src/lib/trial-abundance-profile-route.ts",
+            "packages/site-kit/src/lib/trial-abundance-profile.server.ts",
+          ] : []),
           ...(routeName.startsWith("dashboard") ? [
             "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
             ...surveyResultsFiles,
