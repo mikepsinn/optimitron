@@ -149,7 +149,7 @@ test("an authenticated response stays in the browser after a failed save and ret
   await page.getByRole("button", { name: "Retry save", exact: true }).click()
   await expect(page.getByRole("button", { name: "COPY SURVEY LINK", exact: true })).toBeVisible()
   expect(await savedSubmissions(email)).toHaveLength(1)
-  if (AUTH_E2E_APP === "trialabundancesurvey") {
+  if (process.env.AUTH_E2E_APP === "trialabundancesurvey") {
     await expect(page.getByRole("link", { name: "View survey results", exact: true })).toHaveAttribute("href", "/results")
   }
   await page.reload()

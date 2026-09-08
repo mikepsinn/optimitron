@@ -1098,6 +1098,18 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         surveyComponent,
       ],
     });
+    if (siteVariant === VARIANTS.SURVEY) routes.push({
+      authenticated: true,
+      authRole: "user",
+      label: "Saved response and results link",
+      routeName: "home-saved",
+      routePath: "/?visual=saved",
+      covers: [
+        surveyComponent,
+        "packages/site-kit/src/lib/trial-abundance-visual.ts",
+        "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
+      ],
+    });
     for (const [routeName, routePath, component] of [
       ["auth-signin", "/auth/signin", "auth/SurveySignInPage.tsx"],
       ["auth-error", "/auth/error?error=Verification", "auth/SurveyAuthErrorPage.tsx"],

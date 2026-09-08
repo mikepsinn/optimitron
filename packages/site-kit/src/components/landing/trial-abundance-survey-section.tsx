@@ -86,7 +86,7 @@ function getInitialStage(
   if (visualState === "allocation") return "allocation"
   if (visualState === "details") return "details"
   if (visualState === "save-error") return "complete"
-  if (visualState === "complete") return "complete"
+  if (visualState === "complete" || visualState === "saved") return "complete"
   return "patient-access"
 }
 
@@ -144,7 +144,7 @@ export default function TrialAbundanceSurveySection({
   const saveInFlight = useRef(false)
   const [participantError, setParticipantError] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">(
-    visualState === "save-error" ? "error" : "idle",
+    visualState === "save-error" ? "error" : visualState === "saved" ? "saved" : "idle",
   )
 
   const saveResponse = useCallback(async () => {

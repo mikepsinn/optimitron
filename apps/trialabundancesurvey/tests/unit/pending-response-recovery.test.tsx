@@ -42,12 +42,15 @@ describe("pending Trial Abundance response recovery", () => {
     })
     syncPendingTrialAbundanceResponse.mockResolvedValue(true)
 
-    render(<PendingResponseRecovery />)
+    const { rerender } = render(<PendingResponseRecovery />)
 
     expect(
       screen.getByText("Saving the response from this browser…"),
     ).toBeInTheDocument()
     await waitFor(() => expect(refresh).toHaveBeenCalledOnce())
+    expect(screen.getByText("Response saved. Loading it now…")).toBeInTheDocument()
+    rerender(<PendingResponseRecovery hasRecordedResponse />)
+    expect(screen.queryByText("Response saved. Loading it now…")).not.toBeInTheDocument()
     expect(
       screen.queryByText(/No response on file yet/u),
     ).not.toBeInTheDocument()
@@ -74,7 +77,7 @@ describe("pending Trial Abundance response recovery", () => {
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true)
 
-    render(<PendingResponseRecovery />)
+    render(<PendingResponseRecovery hasRecordedResponse />)
 
     const retry = await screen.findByRole("button", { name: "Retry save" })
     expect(screen.getByText(/still saved in this browser/u)).toBeInTheDocument()
