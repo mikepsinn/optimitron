@@ -13,12 +13,12 @@ export const EMPTY_SURVEY_PROFILE: SurveyProfile = {
   countryCode: "", regionCode: "", role: "", story: "", updates: false,
 }
 
-export function SurveyProfileSection({ initialProfile, defaultOpen = false }: {
-  initialProfile?: SurveyProfile
+export function SurveyProfileSection({ visualPreview = false, defaultOpen = false }: {
+  visualPreview?: boolean
   defaultOpen?: boolean
 }) {
-  const [profile, setProfile] = useState<ParticipantDraft>(initialProfile ?? EMPTY_SURVEY_PROFILE)
-  const [loaded, setLoaded] = useState(Boolean(initialProfile))
+  const [profile, setProfile] = useState<ParticipantDraft>(EMPTY_SURVEY_PROFILE)
+  const [loaded, setLoaded] = useState(visualPreview)
   const [status, setStatus] = useState<"idle" | "loading" | "saving" | "saved">("idle")
   const [error, setError] = useState<string | null>(null)
   const inFlight = useRef(false)
@@ -49,7 +49,7 @@ export function SurveyProfileSection({ initialProfile, defaultOpen = false }: {
   }
 
   async function saveProfile() {
-    if (inFlight.current || !loaded) return
+    if (visualPreview || inFlight.current || !loaded) return
     const parsed = surveyProfileSchema.safeParse(profile)
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details.")
@@ -86,7 +86,7 @@ export function SurveyProfileSection({ initialProfile, defaultOpen = false }: {
             : <Button onClick={() => void loadProfile()}>Retry</Button>
         ) : (
           <form onSubmit={(event) => { event.preventDefault(); void saveProfile() }}>
-            <fieldset disabled={status === "saving"} className="flex min-w-0 flex-col gap-5">
+            <fieldset disabled={visualPreview || status === "saving"} className="flex min-w-0 flex-col gap-5">
               <SurveyParticipantFields optional value={profile} onChange={(value) => {
                 setProfile(value); setStatus("idle"); setError(null)
               }} />

@@ -139,7 +139,7 @@ export default async function LiteDashboardPage({
             className="mb-6"
           />
           <SurveyProfileSection
-            initialProfile={visualPreview ? { countryCode: "", regionCode: "", role: "", story: "", updates: false } : undefined}
+            visualPreview={visualPreview}
             defaultOpen={visualPreview && resolvedSearchParams?.profile === "1"}
           />
         </Container>
