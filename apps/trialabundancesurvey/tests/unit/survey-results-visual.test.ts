@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { getSurveyResultsVisualFixture } from "@optimitron/site-kit/lib/survey-results-visual"
+import { parseTrialAbundanceVisualState } from "@optimitron/site-kit/lib/trial-abundance-visual"
 
 afterEach(() => vi.unstubAllEnvs())
 
@@ -9,6 +10,7 @@ describe("survey results previews", () => {
     vi.stubEnv("SITE_APP_VISUAL_FIXTURES", "")
     expect(getSurveyResultsVisualFixture("1")).toBeUndefined()
     expect(getSurveyResultsVisualFixture("empty")).toBeUndefined()
+    expect(parseTrialAbundanceVisualState("saved")).toBeUndefined()
   })
 
   it("keeps ordinary development requests on real data", () => {

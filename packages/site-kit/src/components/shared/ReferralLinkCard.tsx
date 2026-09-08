@@ -97,7 +97,7 @@ export function ReferralLinkCard({
 
           <div className="mb-3 border-4 border-primary bg-brutal-yellow/10 p-4">
             <p className="text-xs font-black uppercase text-muted-foreground mb-2">Share Text</p>
-            <p className="text-sm text-foreground/80 whitespace-pre-wrap">{selectedTemplate.text}</p>
+            <p className="text-sm text-foreground/80 whitespace-pre-wrap [overflow-wrap:anywhere]">{selectedTemplate.text}</p>
           </div>
 
           <Button

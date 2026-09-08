@@ -53,6 +53,8 @@ export function PendingResponseRecovery({
   }
 
   if (state === "saved") {
+    if (hasRecordedResponse) return null
+
     return (
       <p className="text-lg font-bold" aria-live="polite">
         Response saved. Loading it now…

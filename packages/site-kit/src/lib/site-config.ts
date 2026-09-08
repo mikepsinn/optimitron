@@ -1225,7 +1225,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "about",
         label: "ABOUT",
-        items: ["about", "research", "faq"],
+        items: ["about", "research", "surveyResults", "faq"],
       },
     ],
     contactInfo: {

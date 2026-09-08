@@ -1032,6 +1032,9 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     const landingRoute = routes.find(({ routePath }) => routePath === "/");
     if (landingRoute) {
       landingRoute.covers = [...(landingRoute.covers ?? []), surveyComponent];
+      if (siteVariant === VARIANTS.SURVEY) {
+        landingRoute.covers.push("packages/site-kit/src/lib/site-config.ts");
+      }
     }
     routes.push(
       {
@@ -1093,6 +1096,18 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       covers: [
         "apps/trialabundancesurvey/app/embed/page.tsx",
         surveyComponent,
+      ],
+    });
+    if (siteVariant === VARIANTS.SURVEY) routes.push({
+      authenticated: true,
+      authRole: "user",
+      label: "Saved response and results link",
+      routeName: "home-saved",
+      routePath: "/?visual=saved",
+      covers: [
+        surveyComponent,
+        "packages/site-kit/src/lib/trial-abundance-visual.ts",
+        "packages/site-kit/src/components/shared/ReferralLinkCard.tsx",
       ],
     });
     for (const [routeName, routePath, component] of [

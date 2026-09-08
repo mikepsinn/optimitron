@@ -12,6 +12,7 @@ import confetti from "canvas-confetti"
 import { AnimatePresence, motion } from "framer-motion"
 import { CheckSquare, Square } from "lucide-react"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
@@ -47,6 +48,7 @@ interface TrialAbundanceSurveySectionProps {
   headingAs?: "h1" | "h2"
   title?: string
   description?: string
+  resultsHref?: string
 }
 
 const answerOptions: Array<{
@@ -84,7 +86,7 @@ function getInitialStage(
   if (visualState === "allocation") return "allocation"
   if (visualState === "details") return "details"
   if (visualState === "save-error") return "complete"
-  if (visualState === "complete") return "complete"
+  if (visualState === "complete" || visualState === "saved") return "complete"
   return "patient-access"
 }
 
@@ -111,6 +113,7 @@ export default function TrialAbundanceSurveySection({
   headingAs: Heading = "h1",
   title,
   description,
+  resultsHref,
 }: TrialAbundanceSurveySectionProps) {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
@@ -141,7 +144,7 @@ export default function TrialAbundanceSurveySection({
   const saveInFlight = useRef(false)
   const [participantError, setParticipantError] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">(
-    visualState === "save-error" ? "error" : "idle",
+    visualState === "save-error" ? "error" : visualState === "saved" ? "saved" : "idle",
   )
 
   const saveResponse = useCallback(async () => {
@@ -455,6 +458,11 @@ export default function TrialAbundanceSurveySection({
             {saveStatus === "saved" && session?.user ? (
               <>
                 <StepHeading className="sr-only">Survey complete</StepHeading>
+                {resultsHref ? (
+                  <Link href={resultsHref} className="block text-center font-bold underline underline-offset-4">
+                    View survey results
+                  </Link>
+                ) : null}
                 <ReferralLinkCard
                   referralLink={shareUrl}
                   shareTemplates={shareTemplates}
