@@ -1,27 +1,32 @@
 import { NextResponse } from "next/server"
+import { ZodError } from "zod"
 import { AuthenticationRequiredError, requireAuth } from "./auth-utils"
-import { prisma } from "./prisma"
-import { TRIAL_ABUNDANCE_FORM_KEY } from "./trial-abundance-submission.server"
+import { surveyProfileSchema } from "./survey-participant"
+import { getSurveyProfile, saveSurveyProfile } from "./trial-abundance-profile.server"
 
 export async function GET() {
   try {
     const { userId } = await requireAuth()
-    const [user, role] = await Promise.all([
-      prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { countryCode: true, regionCode: true } }),
-      prisma.formResponse.findFirst({
-        where: {
-          deletedAt: null, field: { key: "role" },
-          submission: { respondentUserId: userId, deletedAt: null, status: "SUBMITTED",
-            formRevision: { form: { sourceKey: TRIAL_ABUNDANCE_FORM_KEY } } },
-        },
-        orderBy: { createdAt: "desc" }, select: { valueJson: true },
-      }),
-    ])
-    return NextResponse.json({ ...user, role: typeof role?.valueJson === "string" ? role.valueJson : "" },
-      { headers: { "Cache-Control": "private, no-store" } })
+    return NextResponse.json(await getSurveyProfile(userId), { headers: { "Cache-Control": "private, no-store" } })
   } catch (error) {
-    if (error instanceof AuthenticationRequiredError) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    console.error("Survey profile load failed", error)
-    return NextResponse.json({ error: "Profile unavailable" }, { status: 503 })
+    return profileError(error)
   }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { userId } = await requireAuth()
+    const profile = surveyProfileSchema.parse(await request.json())
+    await saveSurveyProfile(userId, profile)
+    return NextResponse.json({ ...profile, hasProfile: true }, { headers: { "Cache-Control": "private, no-store" } })
+  } catch (error) {
+    return profileError(error)
+  }
+}
+
+function profileError(error: unknown) {
+  if (error instanceof AuthenticationRequiredError) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (error instanceof ZodError || error instanceof SyntaxError) return NextResponse.json({ error: "Please check your details." }, { status: 400 })
+  console.error("Survey profile request failed", error)
+  return NextResponse.json({ error: "We could not load or save your details. Please try again." }, { status: 503 })
 }

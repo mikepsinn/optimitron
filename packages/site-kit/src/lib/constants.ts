@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
   SIGNUP_INVITE_TOKEN: "signup_invite_token",
   PENDING_VOTE: "pendingVote",
   PENDING_TRIAL_ABUNDANCE_RESPONSE: "pendingTrialAbundanceResponse",
+  SURVEY_PROFILE_HINTS: "surveyProfileHints",
   MILITARY_ALLOCATION: "militaryAllocation",
   PENDING_ORGANIZATION: "pendingOrganization",
   PENDING_WISHOCRACY: "pendingWishocracy",

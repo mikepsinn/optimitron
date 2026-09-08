@@ -1,1 +1,1 @@
-export { GET } from "@optimitron/site-kit/lib/trial-abundance-profile-route"
+export { GET, PUT } from "@optimitron/site-kit/lib/trial-abundance-profile-route"

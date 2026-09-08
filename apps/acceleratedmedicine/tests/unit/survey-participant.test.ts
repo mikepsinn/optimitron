@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { surveyParticipantSchema } from "@optimitron/site-kit/lib/survey-participant";
+import { surveyParticipantSchema, surveyProfileSchema } from "@optimitron/site-kit/lib/survey-participant";
 import { normalizeUsRegionCode } from "@optimitron/site-kit/lib/us-states";
 
 const base = {
@@ -10,6 +10,22 @@ const base = {
   story: "",
   updates: false,
 };
+
+describe("optional dashboard profile", () => {
+  it("accepts a role or country without the other details", () => {
+    const empty = { countryCode: "", regionCode: "", role: "", story: "", updates: false };
+    for (const profile of [empty, { ...empty, role: "clinician" }, { ...empty, countryCode: "US" }]) {
+      expect(surveyProfileSchema.parse(profile)).toEqual(profile);
+    }
+  });
+
+  it("normalizes a supplied state and rejects invalid values", () => {
+    expect(surveyProfileSchema.parse({ ...base, regionCode: "Missouri" }).regionCode).toBe("MO");
+    expect(surveyProfileSchema.safeParse({ ...base, regionCode: "unknown" }).success).toBe(false);
+    expect(surveyProfileSchema.safeParse({ ...base, role: "unknown" }).success).toBe(false);
+    expect(surveyProfileSchema.safeParse({ ...base, story: "a".repeat(2001) }).success).toBe(false);
+  });
+});
 
 describe("normalizeUsRegionCode", () => {
   it.each([

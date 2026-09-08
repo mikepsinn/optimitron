@@ -2,7 +2,6 @@ export type TrialAbundanceVisualState =
   | "question"
   | "self-funded"
   | "allocation"
-  | "details"
   | "complete"
   | "saved"
   | "save-error"
@@ -13,5 +12,5 @@ export function parseTrialAbundanceVisualState(value?: string): TrialAbundanceVi
       ? "saved" : undefined
   }
   return value === "question" || value === "self-funded" || value === "allocation" ||
-    value === "details" || value === "complete" || value === "save-error" ? value : undefined
+    value === "complete" || value === "save-error" ? value : undefined
 }

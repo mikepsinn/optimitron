@@ -61,12 +61,8 @@ async function answerSurvey(page: Page) {
   await expect(survey.getByText("Question 2 of 3", { exact: true })).toBeVisible()
   await survey.getByRole("button", { name: "Not sure", exact: true }).click()
   await survey.getByRole("slider").press("ArrowRight")
-  await survey.getByRole("button", { name: "Continue", exact: true }).click()
-  await survey.getByRole("combobox", { name: "Country", exact: true }).selectOption("US")
-  await survey.getByRole("combobox", { name: "State", exact: true }).selectOption("MO")
-  await survey.getByRole("combobox", { name: "Your role", exact: true }).selectOption("patient-or-caregiver")
-  await survey.getByRole("textbox", { name: "Why does this matter to you?", exact: false }).fill("I want more treatment options.")
-  await expect(survey.getByRole("checkbox")).not.toBeChecked()
+  await expect(survey.getByText("Question 3 of 3", { exact: true })).toBeVisible()
+  await expect(survey.getByRole("combobox")).toHaveCount(0)
 }
 
 async function savedSubmissions(email: string) {
@@ -108,13 +104,31 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   expect(await savedSubmissions(email)).toHaveLength(1)
   expect(submission.personId).toBe(submission.userPersonId)
   expect(submission.emailVerified).toBeTruthy()
-  expect(submission).toMatchObject({ countryCode: "US", regionCode: "MO", newsletterSubscribed: false })
+  expect(submission).toMatchObject({ countryCode: null, regionCode: null, newsletterSubscribed: false })
   expect(submission.answers).toMatchObject({
-    countryCode: "US", regionCode: "MO", role: "patient-or-caregiver",
-    story: "I want more treatment options.", updates: false, email,
+    countryCode: null, regionCode: null, role: null, story: null, updates: null, email,
     patientAccessAnswer: "YES", selfFundedAccessAnswer: "ABSTAIN", militaryAllocationPercent: 49,
   })
   await capture(page, "survey-auth-dashboard")
+
+  const profile = page.locator("#survey-profile")
+  await expect(profile).not.toHaveAttribute("open")
+  await profile.getByText("About you (optional)", { exact: true }).click()
+  await expect(profile.getByRole("combobox", { name: /^Country/ })).toHaveValue("")
+  await expect(profile.getByRole("checkbox")).not.toBeChecked()
+  await profile.getByRole("combobox", { name: /^Your role/ }).selectOption("patient-or-caregiver")
+  await profile.getByRole("button", { name: "Save details", exact: true }).click()
+  await expect(profile.getByRole("status")).toHaveText("Details saved.")
+  await page.reload()
+  await profile.getByText("About you (optional)", { exact: true }).click()
+  await expect(profile.getByRole("combobox", { name: /^Your role/ })).toHaveValue("patient-or-caregiver")
+  await expect(profile.getByRole("combobox", { name: /^Country/ })).toHaveValue("")
+  const submissionsWithProfile = await savedSubmissions(email)
+  expect(submissionsWithProfile).toHaveLength(2)
+  expect(submissionsWithProfile.find(({ id }) => id === submission.id)?.answers).toEqual(submission.answers)
+  expect(submissionsWithProfile.find(({ id }) => id !== submission.id)?.answers).toMatchObject({
+    countryCode: "", regionCode: "", role: "patient-or-caregiver", story: "", updates: false,
+  })
 
   await page.getByRole("button", { name: "Toggle menu" }).click()
   await page.getByRole("button", { name: "Log Out", exact: true }).click()

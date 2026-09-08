@@ -6,7 +6,8 @@ import {
   TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_SLUG,
 } from "@optimitron/db"
 import { POST } from "../../app/api/votes/sync/route"
-import { GET } from "../../app/api/survey/profile/route"
+import { GET, PUT } from "../../app/api/survey/profile/route"
+import { PUT as putTrialAbundanceProfile } from "../../../trialabundancesurvey/app/api/survey/profile/route"
 import { POST as postTrialAbundance } from "../../../trialabundancesurvey/app/api/votes/sync/route"
 import { prisma } from "../../lib/prisma"
 import { createAuthAdapter } from "@optimitron/site-kit/lib/auth-adapter"
@@ -35,7 +36,7 @@ const input = {
 }
 const createdReferendums: string[] = []
 
-function submit(body = input, handler = POST) {
+function submit(body: Record<string, unknown> = input, handler = POST) {
   return handler(new Request("http://localhost/api/votes/sync", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
   }))
@@ -110,7 +111,7 @@ describe("both survey routes with PostgreSQL", () => {
     expect(await prisma.referendumVote.count({ where: { userId } })).toBe(2)
     expect(await prisma.wishocraticAllocation.findFirst({ where: { userId } }))
       .toMatchObject({ allocationA: 35, allocationB: 65 })
-    expect(await (await GET()).json()).toEqual({ countryCode: "US", regionCode: "MO", role: "patient-or-caregiver" })
+    expect(await (await GET()).json()).toEqual({ ...input.participant, regionCode: "MO", hasProfile: true })
 
     // A new response changes the reusable profile; replaying an old request must not undo it.
     const changed = { ...input, submissionKey: randomUUID(), participant: { ...input.participant, countryCode: "CA", regionCode: "Ontario", updates: true } }
@@ -126,5 +127,49 @@ describe("both survey routes with PostgreSQL", () => {
     expect(await prisma.user.findUnique({ where: { id: userId } })).toMatchObject({ countryCode: "CA" })
     const vote = await prisma.referendumVote.findFirst({ where: { userId, referendum: { slug: TRIAL_ABUNDANCE_REFERENDUM_SLUG } } })
     expect(vote?.answer).toBe("YES")
+  })
+
+  it("saves an optional profile without changing answers, then preserves it after an answer-only response", async () => {
+    const { participant: _, ...answers } = input
+    expect((await submit(answers)).status).toBe(200)
+    const votes = await prisma.referendumVote.findMany({ where: { userId }, orderBy: { id: "asc" } })
+    const allocations = await prisma.wishocraticAllocation.findMany({ where: { userId } })
+    const originalSubmission = await prisma.formSubmission.findFirstOrThrow({ where: { respondentUserId: userId } })
+    const profile = { countryCode: "", regionCode: "", role: "clinician", story: "", updates: true }
+    for (const handler of [PUT, putTrialAbundanceProfile]) {
+      const response = await handler(new Request("http://localhost/api/survey/profile", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...profile, userId: "not-the-session-user" }),
+      }))
+      expect(response.status).toBe(200)
+      expect(await response.json()).toEqual({ ...profile, hasProfile: true })
+      expect(await (await GET()).json()).toEqual({ ...profile, hasProfile: true })
+    }
+    expect(await prisma.referendumVote.findMany({ where: { userId }, orderBy: { id: "asc" } })).toEqual(votes)
+    expect(await prisma.wishocraticAllocation.findMany({ where: { userId } })).toEqual(allocations)
+    expect(await prisma.formSubmission.findUnique({ where: { id: originalSubmission.id } })).toEqual(originalSubmission)
+    expect(await prisma.activity.count({ where: { userId, type: "VOTED_REFERENDUM" } })).toBe(1)
+    expect((await submit({ ...answers, submissionKey: randomUUID() })).status).toBe(200)
+    expect(await (await GET()).json()).toEqual({ ...profile, hasProfile: true })
+
+    const cleared = { ...profile, role: "", updates: false }
+    expect((await PUT(new Request("http://localhost/api/survey/profile", {
+      method: "PUT", body: JSON.stringify(cleared),
+    }))).status).toBe(200)
+    expect(await (await GET()).json()).toEqual({ ...cleared, hasProfile: true })
+    expect(await prisma.user.findUnique({ where: { id: userId } })).toMatchObject({ newsletterSubscribed: false })
+  })
+
+  it("rejects anonymous profile access and invalid updates without a saved profile", async () => {
+    const profileRequest = (body: unknown) => new Request("http://localhost/api/survey/profile", { method: "PUT", body: JSON.stringify(body) })
+    const profile = { ...input.participant, regionCode: "unknown-state" }
+    expect((await PUT(profileRequest(profile))).status).toBe(400)
+    expect(await prisma.formSubmission.count({ where: { respondentUserId: userId } })).toBe(0)
+    vi.mocked(getServerSession).mockResolvedValue(null)
+    expect((await GET()).status).toBe(401)
+    for (const handler of [PUT, putTrialAbundanceProfile]) {
+      expect((await handler(profileRequest(input.participant))).status).toBe(401)
+    }
+    expect(await prisma.formSubmission.count({ where: { respondentUserId: userId } })).toBe(0)
   })
 })

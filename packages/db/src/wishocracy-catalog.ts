@@ -6,7 +6,7 @@ import {
   DEFAULT_WISHOCRATIC_ITEMS,
 } from "@optimitron/data/wishocratic-items-registry"
 import type { PrismaClient } from "./generated/prisma/client.js"
-import { JurisdictionType } from "./generated/prisma/client.js"
+import { JurisdictionType, Prisma } from "./generated/prisma/client.js"
 
 const ALL_WISHOCRATIC_ITEM_IDS = Object.keys(DEFAULT_WISHOCRATIC_ITEMS) as DefaultWishocraticItemId[]
 
@@ -35,9 +35,9 @@ export async function ensureWishocraticItemsExist(
     select: { id: true },
   })
 
-  await Promise.all(uniqueIds.map((itemId) => {
+  await Promise.all(uniqueIds.map(async (itemId) => {
     const record = getDefaultWishocraticCatalogRecord(itemId)
-    return prisma.wishocraticItem.upsert({
+    const upsert = () => prisma.wishocraticItem.upsert({
       where: { id: itemId },
       create: {
         id: record.id,
@@ -59,5 +59,12 @@ export async function ensureWishocraticItemsExist(
         deletedAt: null,
       },
     })
+    try {
+      await upsert()
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") throw error
+      // A concurrent insert can win the jurisdiction/name constraint before the ID conflict is handled.
+      await upsert()
+    }
   }))
 }
