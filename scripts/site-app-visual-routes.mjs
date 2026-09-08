@@ -88,7 +88,11 @@ function getAuthenticatedMenuRoute(appName) {
     authenticated: true,
     authRole: "user",
     captureSelector: '[role="dialog"]',
-    covers: [sourcePage, "packages/site-kit/src/components/layout.tsx"],
+    covers: [
+      sourcePage,
+      "packages/site-kit/src/components/layout.tsx",
+      "packages/site-kit/src/lib/nav-items.ts",
+    ],
     label: "Navigation menu — signed-in user",
     openMenu: true,
     routeName: "navigation-menu-authenticated",

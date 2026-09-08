@@ -151,7 +151,7 @@ export const NAV_ITEMS_MAP = {
   },
   employees: {
     id: "employees",
-    label: "Remind Presidents",
+    label: "President Management System",
     path: ROUTES.employees,
     description:
       "See which presidents are late and remind them to sign the 1% Treaty",
