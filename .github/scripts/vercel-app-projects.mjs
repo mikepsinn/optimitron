@@ -82,6 +82,16 @@ function project(
   });
 }
 
+// Once a repository has more than one Vercel project, Vercel names each
+// project's GitHub deployment environment "Production <en dash> <project>"
+// rather than plain "Production", so an equality check against "Production"
+// classifies every split app's production deploy as a preview. Match the
+// leading word instead, which still excludes the "Preview <en dash> <project>"
+// names.
+export function isProductionDeploymentEnvironment(value) {
+  return /^production(?:\s|$)/i.test(String(value ?? "").trim());
+}
+
 export function getVercelAppByUrl(value) {
   let hostname;
   try {

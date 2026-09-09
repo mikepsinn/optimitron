@@ -198,7 +198,7 @@ test("skips unrelated production deployments without invoking failure handlers",
 
   assert.match(
     targetBlock,
-    /const smokeUrls = isProtectedVercelDeploymentUrl && app[\s\S]*?: \[targetUrl\];/u,
+    /const smokeUrls = smokesPublicDomain && app[\s\S]*?: \[targetUrl\];/u,
     "an unknown protected deployment must retain a URL long enough to emit app=unknown",
   );
   assert.doesNotMatch(
