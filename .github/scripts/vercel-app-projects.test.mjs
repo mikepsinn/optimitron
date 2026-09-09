@@ -5,6 +5,7 @@ import {
   getGitLinkProblem,
   getProjectPatch,
   getVercelAppByUrl,
+  isProductionDeploymentEnvironment,
   VERCEL_APP_PROJECTS,
 } from "./vercel-app-projects.mjs";
 import {
@@ -20,6 +21,11 @@ import {
 
 const ciWorkflow = readFileSync(
   new URL("../workflows/ci.yml", import.meta.url),
+  "utf8",
+);
+
+const smokeDeployWorkflow = readFileSync(
+  new URL("../workflows/smoke-deploy.yml", import.meta.url),
   "utf8",
 );
 
@@ -196,6 +202,53 @@ test("classifies custom domains and Vercel deployment URLs", () => {
     "optimitron",
   );
   assert.equal(getVercelAppByUrl("https://dih-earth.vercel.app"), undefined);
+});
+
+test("recognizes the per-project production environment Vercel reports", () => {
+  // Vercel sends "Production \u2013 wishocracy" for every split app, so the
+  // deploy smoke used to treat seven of eight production deploys as previews
+  // and hit the protected *.vercel.app URL instead of the public domain.
+  for (const { projectName } of VERCEL_APP_PROJECTS) {
+    assert.equal(
+      isProductionDeploymentEnvironment(`Production \u2013 ${projectName}`),
+      true,
+    );
+    assert.equal(
+      isProductionDeploymentEnvironment(`Preview \u2013 ${projectName}`),
+      false,
+    );
+  }
+  assert.equal(isProductionDeploymentEnvironment("Production"), true);
+  assert.equal(isProductionDeploymentEnvironment("production"), true);
+  assert.equal(isProductionDeploymentEnvironment("Preview"), false);
+  assert.equal(isProductionDeploymentEnvironment("visual-review-web"), false);
+  assert.equal(isProductionDeploymentEnvironment(""), false);
+  assert.equal(isProductionDeploymentEnvironment(undefined), false);
+});
+
+test("keeps preview-only smoke off per-project production deployments", () => {
+  // The job-level expressions run before checkout, so they repeat the rule
+  // inline instead of importing the helper above. The Playwright job is
+  // preview-only: an equality check there let it run against every split app's
+  // production deployment, because those environments are named
+  // "Production <en dash> <project>" rather than "Production".
+  const playwrightGate = smokeDeployWorkflow.slice(
+    smokeDeployWorkflow.indexOf("name: Playwright preview smoke"),
+  );
+  assert.match(
+    playwrightGate,
+    /!startsWith\(github\.event\.deployment\.environment, 'Production'\)/u,
+  );
+  assert.match(
+    playwrightGate,
+    /!startsWith\(github\.event\.deployment_status\.environment, 'Production'\)/u,
+  );
+  assert.equal(
+    /github\.event\.deployment(?:_status)?\.environment != '[Pp]roduction'/u.test(
+      playwrightGate,
+    ),
+    false,
+  );
 });
 
 test("creates Git previews only for auto-build or explicit preview branches", () => {

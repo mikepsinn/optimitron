@@ -28,15 +28,20 @@ jobs:
       !startsWith(github.event.deployment_status.environment, 'visual-review') &&
       (github.event.deployment.creator.login == 'vercel[bot]' ||
         github.event.deployment_status.creator.login == 'vercel[bot]' ||
-        ((github.event.deployment.environment == 'Production' ||
-          github.event.deployment.environment == 'production' ||
-          github.event.deployment_status.environment == 'Production' ||
-          github.event.deployment_status.environment == 'production' ||
+        ((startsWith(github.event.deployment.environment, 'Production') ||
+          startsWith(github.event.deployment_status.environment, 'Production') ||
           contains(github.event.deployment_status.environment_url, 'warondisease.org') ||
           contains(github.event.deployment_status.environment_url, 'optimitron.com')) &&
           github.event.deployment_status.state == 'success'))
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # Only the plain "Production" deployment that deploy-production creates maps
+    # to the Production GitHub environment. Its branch policy accepts protected
+    # branches only, and Vercel's own "Production <en dash> <project>"
+    # deployments carry a commit sha as their ref, so routing those here would
+    # block the job instead of smoking them. They stay on Preview, which is also
+    # where the per-app VERCEL_AUTOMATION_BYPASS_SECRET_<APP> secrets live; the
+    # smoke target step below still classifies them as production.
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com')) && 'Production' || 'Preview' }}
       deployment: false
@@ -55,6 +60,10 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
+            const { pathToFileURL } = require("node:url");
+            const { isProductionDeploymentEnvironment } = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/vercel-app-projects.mjs`).href
+            );
             const { owner, repo } = context.repo;
             const eventDeployment = context.payload.deployment || {};
             const initialStatus = context.payload.deployment_status || {};
@@ -104,7 +113,7 @@ jobs:
                 status.environment || deployment.environment || "",
               );
               return (
-                /^production$/i.test(environment) ||
+                isProductionDeploymentEnvironment(environment) ||
                 isProductionUrl(status.environment_url)
               );
             }
@@ -267,6 +276,28 @@ jobs:
 
             core.setFailed(`Deployment did not reach success with an environment URL before smoke timeout; last status: ${lastStatus}.`);
 
+      # Resolving the app first is what lets the step below read the same
+      # per-app bypass secret the smoke step uses. Reading the optimitron-only
+      # secret there made every app look unprotected, so the public-domain
+      # fallback never ran and protected deployment URLs were smoked instead.
+      - name: Resolve smoke app
+        id: smoke_app
+        if: steps.deployment_status.outputs.state != 'skipped'
+        env:
+          RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from "node:fs";
+          import { getVercelAppByUrl } from "./.github/scripts/vercel-app-projects.mjs";
+
+          const targetUrl = String(process.env.RESOLVED_DEPLOYMENT_URL || "").trim();
+          const app = getVercelAppByUrl(targetUrl);
+          appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `app=${app?.appName ?? "unknown"}\n`,
+          );
+          NODE
+
       - name: Resolve smoke target
         id: target
         if: steps.deployment_status.outputs.state != 'skipped'
@@ -275,12 +306,15 @@ jobs:
           DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
           RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
           RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          # Same expression as the smoke step below; they must agree about
+          # whether this app can reach its protected deployment URL.
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets[format('VERCEL_AUTOMATION_BYPASS_SECRET_{0}', steps.smoke_app.outputs.app)] || (steps.smoke_app.outputs.app == 'optimitron' && secrets.VERCEL_AUTOMATION_BYPASS_SECRET) || '' }}
         run: |
           node --input-type=module <<'NODE'
           import { appendFileSync } from "node:fs";
           import {
             getVercelAppByUrl,
+            isProductionDeploymentEnvironment,
             VERCEL_APP_PROJECTS,
           } from "./.github/scripts/vercel-app-projects.mjs";
 
@@ -312,7 +346,7 @@ jobs:
             ]),
           );
           const isProduction =
-            /^production$/i.test(environmentName) ||
+            isProductionDeploymentEnvironment(environmentName) ||
             productionHosts.has(parsedUrl.hostname.toLowerCase());
           const environment = isProduction ? "Production" : "Preview";
           const isProtectedVercelDeploymentUrl =
@@ -699,10 +733,8 @@ jobs:
         github.event.deployment_status.creator.login == 'vercel[bot]') &&
       !startsWith(github.event.deployment.environment, 'visual-review') &&
       !startsWith(github.event.deployment_status.environment, 'visual-review') &&
-      github.event.deployment.environment != 'Production' &&
-      github.event.deployment.environment != 'production' &&
-      github.event.deployment_status.environment != 'Production' &&
-      github.event.deployment_status.environment != 'production'
+      !startsWith(github.event.deployment.environment, 'Production') &&
+      !startsWith(github.event.deployment_status.environment, 'Production')
     runs-on: ubuntu-latest
     timeout-minutes: 105
     environment:
