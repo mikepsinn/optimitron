@@ -8,7 +8,7 @@ describe("survey profile visual preview", () => {
   it("cannot write synthetic profile values to the signed-in account", () => {
     const fetch = vi.fn()
     vi.stubGlobal("fetch", fetch)
-    const { container } = render(<SurveyProfileSection visualPreview defaultOpen />)
+    const { container } = render(<SurveyProfileSection visualPreview />)
 
     expect(screen.getByRole("button", { name: "Save details" })).toBeDisabled()
     expect(screen.getByRole("combobox", { name: /^Country/ })).toBeDisabled()

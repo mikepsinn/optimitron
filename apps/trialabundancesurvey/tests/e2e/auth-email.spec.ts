@@ -30,7 +30,7 @@ async function requestLink(page: Page, email: string) {
 
 async function expectDashboard(page: Page) {
   await expect(page).toHaveURL(/\/dashboard$/u)
-  await expect(page.getByRole("heading", { name: "Your survey response" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Your survey dashboard" })).toBeVisible()
   const session = await (await page.request.get("/api/auth/session")).json()
   expect(Boolean(session.user?.id), "Email verification must create a real session").toBe(true)
 }
@@ -112,15 +112,14 @@ test("survey email link saves the answers and lands on the dashboard", async ({ 
   await capture(page, "survey-auth-dashboard")
 
   const profile = page.locator("#survey-profile")
-  await expect(profile).not.toHaveAttribute("open")
-  await profile.getByText("About you (optional)", { exact: true }).click()
+  await expect(profile).toHaveAttribute("open", "")
   await expect(profile.getByRole("combobox", { name: /^Country/ })).toHaveValue("")
   await expect(profile.getByRole("checkbox")).not.toBeChecked()
   await profile.getByRole("combobox", { name: /^Your role/ }).selectOption("patient-or-caregiver")
   await profile.getByRole("button", { name: "Save details", exact: true }).click()
   await expect(profile.getByRole("status")).toHaveText("Details saved.")
   await page.reload()
-  await profile.getByText("About you (optional)", { exact: true }).click()
+  await expect(profile).toHaveAttribute("open", "")
   await expect(profile.getByRole("combobox", { name: /^Your role/ })).toHaveValue("patient-or-caregiver")
   await expect(profile.getByRole("combobox", { name: /^Country/ })).toHaveValue("")
   const submissionsWithProfile = await savedSubmissions(email)
@@ -210,7 +209,7 @@ test("an already-issued homepage callback finishes on the dashboard in a new bro
     const freshPage = await freshContext.newPage()
     await freshPage.goto(link.href)
     await expect(freshPage).toHaveURL(/\/dashboard$/u)
-    await expect(freshPage.getByRole("heading", { name: "Your survey response" })).toBeVisible()
+    await expect(freshPage.getByRole("heading", { name: "Your survey dashboard" })).toBeVisible()
     const session = await (await freshPage.request.get(new URL("/api/auth/session", link.origin).href)).json()
     expect(Boolean(session.user?.id)).toBe(true)
   } finally {
