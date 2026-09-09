@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { AllocationBar } from "@optimitron/neobrutalist-ui/ui/allocation-bar"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 import { getSiteConfig } from "../../lib/site-config"
@@ -24,8 +25,6 @@ export default function WarVsCuresChart({ showReasonLabel = true }: WarVsCuresCh
   const ratio = getParameterValue(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO, "round")
   const militaryLabel = showPoliticalContent ? "WEAPONS AND MILITARY" : "MILITARY"
   const trialLabel = showPoliticalContent ? "PUBLICLY FUNDED CLINICAL TRIALS" : "CLINICAL TRIALS"
-
-  const trialsBarWidth = (GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value / GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value * 100).toFixed(2)
 
   return (
     <SectionContainer bgColor="background" borderPosition="bottom" padding="lg" className="overflow-hidden">
@@ -69,73 +68,38 @@ export default function WarVsCuresChart({ showReasonLabel = true }: WarVsCuresCh
           THAN {trialLabel}
         </motion.p>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            {/* Military Bar */}
-            <div>
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.6 }}
-                className="flex items-center justify-between mb-2"
-              >
-                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">{militaryLabel}</div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-pink">{militarySpending}</div>
-              </motion.div>
-              <motion.div
-                data-visual-force-complete
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.87, 0, 0.13, 1], delay: 0.7 }}
-                style={{ originX: 0 }}
-                className="relative h-24 bg-brutal-pink border-2 border-primary"
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink-foreground uppercase">
-                    {militarySpending} FOR <br />
-                    {militaryLabel}
-                  </span>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Medical Research Bar */}
-            <div>
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.9 }}
-                className="flex items-center justify-between mb-2"
-              >
-                <div className="text-lg sm:text-xl md:text-2xl font-black uppercase">{trialLabel}</div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-cyan">{clinicalTrials}</div>
-              </motion.div>
-              <div className="flex items-center gap-4">
-                <motion.div
-                  data-visual-force-complete
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, ease: [0.87, 0, 0.13, 1], delay: 1 }}
-                  style={{ originX: 0, width: `${trialsBarWidth}%` }}
-                  className="relative h-24 bg-brutal-cyan border-2 border-primary"
-                />
-                <motion.span
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 1.3 }}
-                  className="min-w-0 text-base font-black uppercase leading-tight text-foreground sm:text-xl"
-                >
-                  {clinicalTrials} FOR <br />
-                  {trialLabel}
-                </motion.span>
-              </div>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto space-y-6">
+          <AllocationBar
+            label={militaryLabel}
+            size="large"
+            showTrack={false}
+            maxValue={GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value}
+            segments={[{
+              label: militaryLabel,
+              value: GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value,
+              displayValue: militarySpending,
+              colorClassName: "bg-brutal-pink",
+              valueClassName: "text-brutal-pink",
+              content: (
+                <span className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink-foreground uppercase text-center">
+                  {militarySpending} FOR<br />{militaryLabel}
+                </span>
+              ),
+            }]}
+          />
+          <AllocationBar
+            label={trialLabel}
+            size="large"
+            showTrack={false}
+            maxValue={GLOBAL_MILITARY_SPENDING_ANNUAL_2024.value}
+            segments={[{
+              label: trialLabel,
+              value: GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL.value,
+              displayValue: clinicalTrials,
+              colorClassName: "bg-brutal-cyan",
+              valueClassName: "text-brutal-cyan",
+            }]}
+          />
         </div>
       </Container>
     </SectionContainer>

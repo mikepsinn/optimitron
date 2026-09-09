@@ -1,4 +1,5 @@
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
+import { AllocationBar } from "@optimitron/neobrutalist-ui/ui/allocation-bar"
 import { MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO } from "@optimitron/data/parameters"
 import type { DashboardSurveyResults } from "../../lib/survey-results"
 
@@ -13,17 +14,13 @@ const percent = (value: number) => `${value.toLocaleString("en-US", { maximumFra
 function FundingBar({ label, military }: { label: string; military: number }) {
   const trials = 100 - military
   return (
-    <div className="space-y-2">
-      <h4 className="font-black">{label}</h4>
-      <div className="flex h-7 overflow-hidden border-2 border-primary" aria-hidden="true">
-        <div className="bg-brutal-cyan" style={{ width: `${trials}%` }} />
-        <div className="bg-brutal-pink" style={{ width: `${military}%` }} />
-      </div>
-      <div className="flex justify-between gap-4 text-sm font-bold">
-        <span>Clinical trials <span className="tabular-nums">{percent(trials)}</span></span>
-        <span className="text-right">Military <span className="tabular-nums">{percent(military)}</span></span>
-      </div>
-    </div>
+    <AllocationBar
+      label={<h4>{label}</h4>}
+      segments={[
+        { label: "Clinical trials", value: trials, displayValue: percent(trials), colorClassName: "bg-brutal-cyan" },
+        { label: "Military", value: military, displayValue: percent(military), colorClassName: "bg-brutal-pink" },
+      ]}
+    />
   )
 }
 
@@ -39,8 +36,8 @@ export function SurveyResultsCard({ results, headingAs: Heading = "h2", fundingF
       <QuestionHeading className="text-lg font-black mb-2">Military or clinical trials?</QuestionHeading>
       <p className="text-sm font-bold mb-6">How survey respondents would divide funding between the two.</p>
       {results.funding.average !== null ? (
-        <div className={`grid gap-6 ${results.funding.user === null ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
-          <FundingBar label="Average response" military={results.funding.average} />
+        <div className="space-y-8">
+          <FundingBar label="Average desired allocation" military={results.funding.average} />
           {results.funding.user !== null ? <FundingBar label="Your response" military={results.funding.user} /> : null}
           <FundingBar label="Current government spending" military={ratio / (ratio + 1) * 100} />
         </div>

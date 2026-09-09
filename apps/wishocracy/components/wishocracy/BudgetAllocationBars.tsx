@@ -3,9 +3,12 @@
 import { useMemo, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { BUDGET_CATEGORIES, BudgetCategoryId, getActualGovernmentAllocations } from "@/lib/wishocracy-data"
-import { calculateAllocationsFromPairwise, Comparison } from "@/lib/wishocracy-calculations"
+import { BUDGET_CATEGORIES, getActualGovernmentAllocations } from "@/lib/wishocracy-data"
+import type { BudgetCategoryId } from "@/lib/wishocracy-data"
+import { calculateAllocationsFromPairwise } from "@/lib/wishocracy-calculations"
+import type { Comparison } from "@/lib/wishocracy-calculations"
 import { ArrowUpDown } from "lucide-react"
+import { AllocationBar } from "@optimitron/neobrutalist-ui/ui/allocation-bar"
 
 interface BudgetAllocationBarsProps {
   comparisons: Comparison[]
@@ -108,45 +111,21 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
                 <span className="text-lg">{category.icon}</span>
                 <span className="uppercase">{category.name}</span>
               </div>
-              {/* Your allocation bar */}
-              <div className="h-6 bg-muted border-2 border-primary relative overflow-visible">
-                <div
-                  className="h-full bg-brutal-cyan border-r-2 border-primary transition-all duration-300"
-                  style={{ width: `${percentage}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-black whitespace-nowrap"
-                  style={{ left: `calc(${percentage}% + 4px)` }}
-                >
-                  {percentage.toFixed(1)}% YOU
-                </span>
-              </div>
-              {/* Community average allocation bar */}
-              <div className="h-6 bg-muted border-2 border-brutal-pink relative overflow-visible">
-                <div
-                  className="h-full bg-brutal-pink border-r-2 border-primary transition-all duration-300"
-                  style={{ width: `${avgPercent}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap"
-                  style={{ left: `calc(${avgPercent}% + 4px)` }}
-                >
-                  {avgPercent.toFixed(1)}% AVG
-                </span>
-              </div>
-              {/* Government allocation bar */}
-              <div className="h-6 border-2 border-black relative overflow-visible">
-                <div
-                  className="h-full bg-black transition-all duration-300"
-                  style={{ width: `${govPercent}%` }}
-                />
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 text-xs font-bold whitespace-nowrap text-black"
-                  style={{ left: `calc(${govPercent}% + 4px)` }}
-                >
-                  {govPercent.toFixed(1)}% GOVT
-                </span>
-              </div>
+              <AllocationBar
+                label="Your priorities"
+                size="compact"
+                segments={[{ label: "Your priorities", value: percentage, displayValue: percentage.toFixed(1) + "%", colorClassName: "bg-brutal-cyan" }]}
+              />
+              <AllocationBar
+                label="Community average"
+                size="compact"
+                segments={[{ label: "Community average", value: avgPercent, displayValue: avgPercent.toFixed(1) + "%", colorClassName: "bg-brutal-pink" }]}
+              />
+              <AllocationBar
+                label="Government spending"
+                size="compact"
+                segments={[{ label: "Government spending", value: govPercent, displayValue: govPercent.toFixed(1) + "%", colorClassName: "bg-black" }]}
+              />
             </div>
           )
         })}
