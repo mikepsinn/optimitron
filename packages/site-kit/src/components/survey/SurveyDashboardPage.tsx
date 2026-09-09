@@ -25,7 +25,7 @@ import { SurveyProfileSection } from "./SurveyProfileSection"
 export const dynamic = "force-dynamic"
 
 interface LiteDashboardPageProps {
-  searchParams?: Promise<{ recovery?: string; visual?: string; profile?: string }>
+  searchParams?: Promise<{ recovery?: string; visual?: string }>
 }
 
 /**
@@ -63,8 +63,8 @@ export default async function LiteDashboardPage({
         getUserTrialAbundanceAllocation(sessionUser.id),
       ]),
     visualPreview
-      ? getSurveyResultsVisualFixture("1", !recoveryPreview)!
-      : getTrialAbundanceSurveyResults(sessionUser.id),
+      ? getSurveyResultsVisualFixture("1")!
+      : getTrialAbundanceSurveyResults(),
   ])
   const resultsUrl = getSiteConfig().domain === "trialabundancesurvey.org"
     ? ROUTES.surveyResults
@@ -89,9 +89,28 @@ export default async function LiteDashboardPage({
       <SectionContainer bgColor="background" borderPosition="none" padding="lg">
         <Container>
           <h1 className="text-4xl sm:text-5xl font-black uppercase mb-6">
-            Your survey response
+            Your survey dashboard
           </h1>
+
+          <SurveyResultsCard results={results} fundingFirst />
+          <p className="my-6 font-bold">
+            <Link href={resultsUrl} className="underline underline-offset-4">View public survey results</Link>
+          </p>
+
+          <SurveyProfileSection visualPreview={visualPreview} />
+
+          <ReferralLinkCard
+            referralLink={surveyUrl}
+            shareTemplates={shareTemplates}
+            hashtags="PragmaticTrials,ClinicalResearch"
+            introText="Invite someone else to answer the same three questions with your personal referral link."
+            copyLinkLabel="COPY SURVEY LINK"
+            linkContentType="trial_abundance_referral"
+            className="mb-6"
+          />
+
           <Card className="border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-6">
+            <h2 className="text-2xl font-black uppercase mb-4">Your responses</h2>
             <PendingResponseRecovery
               hasRecordedResponse={Boolean(vote)}
               visualState={recoveryPreview ? "error" : undefined}
@@ -124,24 +143,6 @@ export default async function LiteDashboardPage({
             ) : null}
           </Card>
 
-          <SurveyResultsCard results={results} />
-          <p className="my-6 font-bold">
-            <Link href={resultsUrl} className="underline underline-offset-4">View public survey results</Link>
-          </p>
-
-          <ReferralLinkCard
-            referralLink={surveyUrl}
-            shareTemplates={shareTemplates}
-            hashtags="PragmaticTrials,ClinicalResearch"
-            introText="Invite someone else to answer the same three questions with your personal referral link."
-            copyLinkLabel="COPY SURVEY LINK"
-            linkContentType="trial_abundance_referral"
-            className="mb-6"
-          />
-          <SurveyProfileSection
-            visualPreview={visualPreview}
-            defaultOpen={visualPreview && resolvedSearchParams?.profile === "1"}
-          />
         </Container>
       </SectionContainer>
     </Layout>

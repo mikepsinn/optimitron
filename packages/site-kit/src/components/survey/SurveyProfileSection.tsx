@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { AlertCard } from "@optimitron/neobrutalist-ui/ui/alert-card"
 import { SurveyParticipantFields } from "../landing/survey-participant-fields"
@@ -13,17 +13,19 @@ export const EMPTY_SURVEY_PROFILE: SurveyProfile = {
   countryCode: "", regionCode: "", role: "", story: "", updates: false,
 }
 
-export function SurveyProfileSection({ visualPreview = false, defaultOpen = false }: {
+export function SurveyProfileSection({ visualPreview = false, defaultOpen = true }: {
   visualPreview?: boolean
   defaultOpen?: boolean
 }) {
   const [profile, setProfile] = useState<ParticipantDraft>(EMPTY_SURVEY_PROFILE)
   const [loaded, setLoaded] = useState(visualPreview)
-  const [status, setStatus] = useState<"idle" | "loading" | "saving" | "saved">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "saving" | "saved">(
+    defaultOpen && !visualPreview ? "loading" : "idle",
+  )
   const [error, setError] = useState<string | null>(null)
   const inFlight = useRef(false)
 
-  async function loadProfile() {
+  const loadProfile = useCallback(async () => {
     if (inFlight.current) return
     inFlight.current = true
     setStatus("loading")
@@ -46,7 +48,11 @@ export function SurveyProfileSection({ visualPreview = false, defaultOpen = fals
       inFlight.current = false
       setStatus("idle")
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (defaultOpen && !visualPreview) void loadProfile()
+  }, [defaultOpen, loadProfile, visualPreview])
 
   async function saveProfile() {
     if (visualPreview || inFlight.current || !loaded) return

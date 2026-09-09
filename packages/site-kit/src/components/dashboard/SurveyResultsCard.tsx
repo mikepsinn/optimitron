@@ -27,16 +27,32 @@ function FundingBar({ label, military }: { label: string; military: number }) {
   )
 }
 
-export function SurveyResultsCard({ results, headingAs: Heading = "h2" }: {
+export function SurveyResultsCard({ results, headingAs: Heading = "h2", fundingFirst = false }: {
   results: DashboardSurveyResults
   headingAs?: "h1" | "h2"
+  fundingFirst?: boolean
 }) {
   const ratio = MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value
   const QuestionHeading = Heading === "h1" ? "h2" : "h3"
+  const fundingSection = (
+    <div className={fundingFirst ? "mb-10" : "mt-10"}>
+      <QuestionHeading className="text-lg font-black mb-2">Military or clinical trials?</QuestionHeading>
+      <p className="text-sm font-bold mb-6">How survey respondents would divide funding between the two.</p>
+      {results.funding.average !== null ? (
+        <div className={`grid gap-6 ${results.funding.user === null ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
+          <FundingBar label="Average response" military={results.funding.average} />
+          {results.funding.user !== null ? <FundingBar label="Your response" military={results.funding.user} /> : null}
+          <FundingBar label="Current government spending" military={ratio / (ratio + 1) * 100} />
+        </div>
+      ) : <p className="text-sm font-bold text-muted-foreground">Funding results will appear after a response is saved.</p>}
+      {results.funding.median !== null ? <p className="mt-4 text-sm font-bold text-muted-foreground">Median response: {percent(100 - results.funding.median)} to clinical trials.</p> : null}
+    </div>
+  )
   return (
     <Card className="border-4 border-primary bg-background p-5 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <section aria-labelledby="survey-results-heading">
         <Heading id="survey-results-heading" className="text-2xl sm:text-3xl font-black uppercase mb-6">Survey results</Heading>
+        {fundingFirst ? fundingSection : null}
         <div className={`grid gap-8 ${results.questions.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
           {results.questions.map(({ slug, title, question, percentages }) => (
             <div key={slug} className="flex flex-col gap-3">
@@ -62,18 +78,7 @@ export function SurveyResultsCard({ results, headingAs: Heading = "h2" }: {
             </div>
           ))}
         </div>
-        <div className="mt-10">
-          <QuestionHeading className="text-lg font-black mb-2">Military or clinical trials?</QuestionHeading>
-          <p className="text-sm font-bold mb-6">How survey respondents would divide funding between the two.</p>
-          {results.funding.average !== null ? (
-            <div className={`grid gap-6 ${results.funding.user === null ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
-              <FundingBar label="Average response" military={results.funding.average} />
-              {results.funding.user !== null ? <FundingBar label="Your response" military={results.funding.user} /> : null}
-              <FundingBar label="Current government spending" military={ratio / (ratio + 1) * 100} />
-            </div>
-          ) : <p className="text-sm font-bold text-muted-foreground">Funding results will appear after a response is saved.</p>}
-          {results.funding.median !== null ? <p className="mt-4 text-sm font-bold text-muted-foreground">Median response: {percent(100 - results.funding.median)} to clinical trials.</p> : null}
-        </div>
+        {fundingFirst ? null : fundingSection}
       </section>
     </Card>
   )
