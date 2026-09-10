@@ -799,6 +799,14 @@ export const publicSiteAppRoutes = Object.freeze({
 
 export const publicSiteAppRouteExemptions = Object.freeze([
   {
+    reason: "Redirects to studies.dfda.earth; there is no local page to capture.",
+    sourcePage: "apps/dfda/app/observational-studies/page.tsx",
+  },
+  {
+    reason: "Redirects to studies.dfda.earth; there is no local page to capture.",
+    sourcePage: "apps/dfda/app/mega-studies/page.tsx",
+  },
+  {
     reason:
       "This legacy route immediately redirects to the captured acceleratedmedicine donation-success page and has no local visual state.",
     sourcePage: "apps/warondisease/app/donate/success/page.tsx",

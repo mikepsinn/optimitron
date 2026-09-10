@@ -543,13 +543,12 @@ export const NAV_ITEMS_MAP = {
   megaStudies: {
     id: "megaStudies",
     label: "Mega Studies",
-    path: ROUTES.megaStudies,
+    path: "https://studies.dfda.earth",
+    isExternal: true,
     description:
       "Outcome labels for 10,000+ foods, drugs, and supplements with treatment effectiveness rankings measured by change from baseline across 100+ conditions",
     emoji: "📊",
     pageTitle: "Mega Studies - Treatment Effectiveness Rankings",
-    canonicalVariant: VARIANTS.DFDA,
-    allowedVariants: [VARIANTS.DFDA],
     keywords: [
       "treatment rankings",
       "drug effectiveness",
@@ -576,13 +575,12 @@ export const NAV_ITEMS_MAP = {
   observationalStudies: {
     id: "observationalStudies",
     label: "Observational Studies",
-    path: ROUTES.observationalStudies,
+    path: "https://studies.dfda.earth",
+    isExternal: true,
     description:
       "Explore causal relationships between treatments and conditions from thousands of aggregated n-of-1 studies. Discover correlations and treatment effects from real-world patient data",
     emoji: "🔬",
     pageTitle: "Observational Studies - Aggregated N-of-1 Research",
-    canonicalVariant: VARIANTS.DFDA,
-    allowedVariants: [VARIANTS.DFDA],
     keywords: [
       "n-of-1 studies",
       "observational research",

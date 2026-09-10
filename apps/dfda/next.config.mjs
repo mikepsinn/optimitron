@@ -43,6 +43,16 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: "/observational-studies",
+        destination: "https://studies.dfda.earth",
+        permanent: true,
+      },
+      {
+        source: "/mega-studies",
+        destination: "https://studies.dfda.earth",
+        permanent: true,
+      },
       { source: "/campaigns", destination: "/", permanent: false },
       { source: "/campaigns/:path*", destination: "/", permanent: false },
       { source: "/auth/signup", destination: "/auth/signin", permanent: false },
