@@ -50,7 +50,7 @@ function delayDays(dueAt: Date | string | null, referenceMs: number) {
   const dueMs = dateMs(dueAt)
   return dueMs == null
     ? 0
-    : Math.max(0, Math.floor((referenceMs - dueMs) / DAY_MS))
+    : Math.max(0, (referenceMs - dueMs) / DAY_MS)
 }
 
 function formatEffort(hours: number | null | undefined) {
@@ -97,11 +97,12 @@ function ProgramCard({
   const programDueMs =
     dateMs(treatyProgram?.dueAt) ??
     (signerDueDates.length > 0 ? Math.min(...signerDueDates) : null)
-  const currentDelayDays =
+  const elapsedDelayDays =
     programDueMs == null
       ? 0
-      : Math.max(0, Math.floor((referenceMs - programDueMs) / DAY_MS))
-  const costOfDelay = getTreatyLevelCostOfDelay(currentDelayDays)
+      : Math.max(0, (referenceMs - programDueMs) / DAY_MS)
+  const currentDelayDays = Math.floor(elapsedDelayDays)
+  const costOfDelay = getTreatyLevelCostOfDelay(elapsedDelayDays)
   const combinedEffort =
     treatyProgram?.estimatedEffortHours ??
     signerTasks.reduce((sum, task) => sum + (task.estimatedEffortHours ?? 0), 0)
@@ -209,7 +210,7 @@ function ProgramCard({
               💀 Dead already from the delay
             </p>
             <p
-              className="mt-1 text-2xl font-black leading-none sm:text-3xl"
+              className="mt-1 text-2xl font-black tabular-nums leading-none sm:text-3xl"
               data-volatile="treaty-deaths-from-delay"
             >
               {Math.floor(costOfDelay.deathsFromDelay).toLocaleString("en-US")}
@@ -220,7 +221,9 @@ function ProgramCard({
                 display="withUnit"
                 param={GLOBAL_DISEASE_DEATHS_DAILY}
               />{" "}
-              × {currentDelayDays.toLocaleString("en-US")} days
+              × <span data-volatile="treaty-delay-days">
+                {elapsedDelayDays.toLocaleString("en-US", { maximumFractionDigits: 3 })}
+              </span>{" "}days
             </p>
           </div>
           <div className="bg-brutal-red px-4 py-3 text-brutal-red-foreground">
@@ -228,7 +231,7 @@ function ProgramCard({
               💸 Wasted on disease while they delay
             </p>
             <p
-              className="mt-1 text-2xl font-black leading-none sm:text-3xl"
+              className="mt-1 text-2xl font-black tabular-nums leading-none max-[360px]:text-xl sm:text-3xl"
               data-volatile="treaty-money-wasted"
             >
               ${Math.floor(costOfDelay.wastedUsd).toLocaleString("en-US")}
@@ -318,7 +321,7 @@ function SignerRow({
       </a>
 
       <div
-        className="text-sm font-black text-brutal-red"
+        className="text-sm font-black tabular-nums text-brutal-red"
         data-volatile="signer-deaths-from-delay"
       >
         <span className="mr-1 lg:hidden">Deaths from delay:</span>
@@ -328,7 +331,7 @@ function SignerRow({
           : "—"}
       </div>
       <div
-        className="text-sm font-black text-brutal-red"
+        className="text-sm font-black tabular-nums text-brutal-red"
         data-volatile="signer-money-wasted"
       >
         <span className="mr-1 lg:hidden">Wasted by delay:</span>
@@ -358,7 +361,7 @@ export function OverdueSignerList({
   signerTasks,
   treatyProgram,
 }: OverdueSignerListProps) {
-  const hydratedNow = useHydratedNow()
+  const hydratedNow = useHydratedNow(1000)
   const [page, setPage] = useState(0)
   const [query, setQuery] = useState("")
   const referenceMs = getAccountabilityReferenceMs(
