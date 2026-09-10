@@ -53,6 +53,21 @@ function delayDays(dueAt: Date | string | null, referenceMs: number) {
     : Math.max(0, (referenceMs - dueMs) / DAY_MS)
 }
 
+// The cost block renders for any elapsed delay above zero, and overdueCount
+// counts a signer the moment its due time passes, so the badge has to agree.
+// formatDelayDuration rounds to whole days and would label the first 23 hours
+// "0 days overdue", hence the sub-day arms here.
+function formatOverdueDuration(days: number) {
+  if (days >= 1) return formatDelayDuration(days)
+  const hours = days * 24
+  if (hours >= 1) {
+    const rounded = Math.round(hours)
+    return `${rounded} ${rounded === 1 ? "hour" : "hours"}`
+  }
+  const minutes = Math.max(1, Math.round(hours * 60))
+  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`
+}
+
 function formatEffort(hours: number | null | undefined) {
   if (hours == null || hours <= 0) return "—"
   const seconds = hours * 3600
@@ -101,7 +116,6 @@ function ProgramCard({
     programDueMs == null
       ? 0
       : Math.max(0, (referenceMs - programDueMs) / DAY_MS)
-  const currentDelayDays = Math.floor(elapsedDelayDays)
   const costOfDelay = getTreatyLevelCostOfDelay(elapsedDelayDays)
   const combinedEffort =
     treatyProgram?.estimatedEffortHours ??
@@ -121,9 +135,9 @@ function ProgramCard({
           {title}
         </a>
         <div className="flex flex-col items-end gap-1">
-          {currentDelayDays > 0 ? (
+          {elapsedDelayDays > 0 ? (
             <span className="border-2 border-background bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
-              {formatDelayDuration(currentDelayDays)} overdue
+              {formatOverdueDuration(elapsedDelayDays)} overdue
             </span>
           ) : null}
           {formatCombinedEffort(combinedEffort) ? (

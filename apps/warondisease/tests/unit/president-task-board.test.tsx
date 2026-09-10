@@ -95,6 +95,34 @@ describe("President task board", () => {
     }
   })
 
+  it("marks the treaty overdue during the first delayed day", () => {
+    // The cost block and the "N employees have overdue tasks" heading both
+    // start the moment a due time passes. A badge keyed to whole days used to
+    // stay hidden until hour 24, so the card claimed deaths from a delay it
+    // was not calling overdue.
+    vi.useFakeTimers()
+    vi.setSystemTime(SERVER_NOW)
+    const dayMs = 86_400_000
+    const { unmount } = render(
+      <OverdueSignerList
+        serverNowMs={SERVER_NOW}
+        signerTasks={[signer({ dueAt: new Date(SERVER_NOW - dayMs / 4) })]}
+        treatyProgram={{
+          dueAt: new Date(SERVER_NOW - dayMs / 4),
+          estimatedEffortHours: null,
+          id: "1-pct-treaty",
+          title: "Ratify the 1% Treaty",
+        }}
+      />,
+    )
+    try {
+      expect(screen.getByText("6 hours overdue")).toBeTruthy()
+    } finally {
+      unmount()
+      vi.useRealTimers()
+    }
+  })
+
   it("keeps the project, overdue impact, task columns, and reminder actions", () => {
     render(
       <OverdueSignerList
