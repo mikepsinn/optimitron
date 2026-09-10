@@ -1,0 +1,88 @@
+# /results?visual=1
+
+## Metadata
+
+- Page title: Wishocracy Results
+- Meta description: Compare average preferred budget allocations with current US government allocations across the same spending areas.
+- Canonical: https://wishocracy.org/results
+- Open Graph title: Wishocracy
+- Open Graph description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
+- Open Graph image: https://wishocracy.org/assets/wishocracy/wishocracy-og-1200x630.png
+- Twitter title: Wishocracy
+- Twitter description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
+
+## Visible Page Copy
+
+## WISHOCRACY RESULTS
+- See how people would allocate public money, alongside current US government allocations across the same spending areas.
+- [Add your priorities](/)
+- [How the results work](/about)
+- SORT BY: AVERAGE PREFERRED ALLOCATION
+- 💰
+- UNIVERSAL BASIC INCOME
+- Average preferred allocation 65.0%
+- Current government allocation 0.0%
+- 🔬
+- PRAGMATIC CLINICAL TRIALS
+- Average preferred allocation 1.6%
+- Current government allocation 0.1%
+- 🏥
+- ADDICTION TREATMENT PROGRAMS
+- Current government allocation 0.9%
+- 👶
+- EARLY CHILDHOOD EDUCATION
+- 🔐
+- CYBERSECURITY & INFRASTRUCTURE PROTECTION
+- Current government allocation 0.2%
+- 🚔
+- DRUG WAR (ENFORCEMENT + INCARCERATION)
+- Current government allocation 5.1%
+- DEPORTING CRIMINAL IMMIGRANTS
+- 🚨
+- DEPORTING NON-CRIMINAL IMMIGRANTS
+- Current government allocation 0.5%
+- 🌽
+- AGRIBUSINESS SUBSIDIES
+- Current government allocation 1.5%
+- 🛢️
+- FOSSIL FUEL SUBSIDIES
+- Current government allocation 0.7%
+- ☢️
+- NUCLEAR WEAPONS DEVELOPMENT
+- Current government allocation 4.2%
+- 🔒
+- VIOLENT CRIME INCARCERATION
+- Current government allocation 3.7%
+- 🛡️
+- BASE MILITARY BUDGET
+- Current government allocation 54.9%
+- 💣
+- BOMBING IRAN
+- Current government allocation 2.5%
+- 🇮🇱
+- MILITARY AID FOR ISRAEL'S WAR IN GAZA
+- Current government allocation 1.0%
+- 🚢
+- YEMEN & HOUTHI MILITARY STRIKES
+- Current government allocation 0.3%
+- 🏦
+- CORPORATE WELFARE
+- Current government allocation 9.7%
+- 👁️
+- MASS SURVEILLANCE PROGRAMS
+- 🔍
+- SOLVING ACTUAL VIOLENT CRIME
+- Current government allocation 0.6%
+- 🌍
+- HUMANITARIAN FOREIGN AID
+- Current government allocation 2.0%
+- 🎖️
+- VETERANS HEALTHCARE
+- Current government allocation 8.2%
+- 🚀
+- NASA & SCIENCE RESEARCH
+- Current government allocation 1.7%
+- CLEAN ENERGY R&D
+- Average preferred allocation
+- Current government allocation
+- Percentages are shares of the spending areas shown, not the entire US budget.
