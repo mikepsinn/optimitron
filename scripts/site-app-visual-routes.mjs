@@ -7,7 +7,11 @@ const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
 const researchPageFile =
   "packages/site-kit/src/components/research-page.tsx";
+const allocationBarFile = "packages/neobrutalist-ui/src/ui/allocation-bar.tsx";
+const spendingChartFile = "packages/site-kit/src/components/landing/war-vs-cures-chart.tsx";
+const wishocracyBarsFile = "apps/wishocracy/components/wishocracy/BudgetAllocationBars.tsx";
 const surveyResultsFiles = [
+  allocationBarFile,
   "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
   "packages/site-kit/src/lib/survey-results.ts",
   "packages/site-kit/src/lib/survey-results.server.ts",
@@ -36,6 +40,8 @@ const dfdaHowItWorksFiles = [
   "packages/site-kit/src/components/how-it-works/steps/Step7FDAiAgent.tsx",
 ];
 const campaignHomeSharedFiles = [
+  allocationBarFile,
+  spendingChartFile,
   "packages/site-kit/src/components/campaign-home-page.tsx",
   "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
   "packages/site-kit/src/components/landing/final-cta.tsx",
@@ -67,6 +73,7 @@ function getCampaignHomeFiles(appName) {
 }
 
 const warOnDiseaseDashboardFiles = [
+  allocationBarFile,
   "packages/site-kit/src/components/dashboard/DashboardClient.tsx",
   "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
   "packages/site-kit/src/lib/survey-results.ts",
@@ -223,6 +230,8 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       covers: [
         "apps/wishocracy/app/dashboard/page.tsx",
         "apps/wishocracy/app/dashboard/dashboard-client.tsx",
+        wishocracyBarsFile,
+        allocationBarFile,
       ],
       label: "Allocation dashboard — signed-in user",
       routeName: "dashboard-authenticated",
@@ -320,6 +329,8 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/warondisease/app/research/page.tsx",
         researchPageFile,
+        spendingChartFile,
+        allocationBarFile,
       ],
       label: "Research and evidence",
       routeName: "research",
