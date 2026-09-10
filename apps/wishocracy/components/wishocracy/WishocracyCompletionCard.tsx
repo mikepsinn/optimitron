@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
+import Link from "next/link"
+import { ROUTES } from "@optimitron/site-kit/lib/routes"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2 } from "lucide-react"
 import confetti from "canvas-confetti"
@@ -128,6 +130,11 @@ export function WishocracyCompletionCard({
       </div>
 
       {/* Share Section */}
+      <div className="mb-6 text-center">
+        <Button asChild variant="outline" className="h-auto whitespace-normal font-bold">
+          <Link href={ROUTES.wishocracyResults}>Compare with the public results</Link>
+        </Button>
+      </div>
       <div className="bg-brutal-cyan/20 border-4 border-primary p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6">
         <h3 className="font-black text-md uppercase mb-3 text-center">
           Share Your Priorities
@@ -161,7 +168,7 @@ export function WishocracyCompletionCard({
             <>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 text-brutal-pink flex-shrink-0" />
-                <span>Sign in to save your results and compare with others</span>
+                <span>Sign in to save your priorities and include them in the public results</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 text-brutal-pink flex-shrink-0" />
@@ -169,7 +176,7 @@ export function WishocracyCompletionCard({
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 text-brutal-pink flex-shrink-0" />
-                <span>Explore the treatments database to see where funding goes</span>
+                <span>Compare public priorities with current government allocations</span>
               </div>
             </>
           ) : (

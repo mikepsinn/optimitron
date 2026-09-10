@@ -37,6 +37,7 @@ export const ROUTES = {
   impact: '/impact',
   research: '/research',
   surveyResults: '/results',
+  wishocracyResults: '/results',
   references: '/references',
 
   // Universal Right to Try education

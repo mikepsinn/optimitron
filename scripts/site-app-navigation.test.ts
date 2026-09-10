@@ -15,6 +15,13 @@ const repoRoot = path.resolve(
 );
 const pageExtensions = ["tsx", "ts", "jsx", "js"];
 
+test("Wishocracy and Trial Abundance results stay on their own sites", async () => {
+  const { getCanonicalRedirect } = await import("../packages/site-kit/src/lib/canonical-routes.ts");
+  const { VARIANTS } = await import("../packages/site-kit/src/lib/site-variant-types.ts");
+  assert.equal(getCanonicalRedirect("/results", VARIANTS.WISHOCRACY), null);
+  assert.equal(getCanonicalRedirect("/results", VARIANTS.SURVEY), null);
+});
+
 function normalizePath(filePath: string) {
   return filePath.split(path.sep).join("/");
 }
