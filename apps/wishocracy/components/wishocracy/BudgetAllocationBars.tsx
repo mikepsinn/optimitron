@@ -14,6 +14,12 @@ interface BudgetAllocationBarsProps {
   comparisons: Comparison[]
 }
 
+const allocationLabels = {
+  user: "Your preferred allocation",
+  average: "Average preferred allocation",
+  government: "Current government allocation",
+}
+
 export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps) {
   const [sortBy, setSortBy] = useState<"user" | "government" | "average">("user")
   const [searchQuery, setSearchQuery] = useState("")
@@ -96,10 +102,10 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
           )}
           variant="outline"
           size="sm"
-          className="w-full font-bold uppercase border-2 border-primary"
+          className="h-auto min-h-8 w-full whitespace-normal py-2 font-bold uppercase border-2 border-primary"
         >
           <ArrowUpDown className="w-4 h-4 mr-2" />
-          Sort by: {sortBy === "user" ? "Your Priorities" : sortBy === "average" ? "Community Average" : "Gov Spending"}
+          Sort by: {allocationLabels[sortBy]}
         </Button>
       </div>
 
@@ -112,19 +118,19 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
                 <span className="uppercase">{category.name}</span>
               </div>
               <AllocationBar
-                label="Your priorities"
+                label={allocationLabels.user}
                 size="compact"
-                segments={[{ label: "Your priorities", value: percentage, displayValue: percentage.toFixed(1) + "%", colorClassName: "bg-brutal-cyan" }]}
+                segments={[{ label: allocationLabels.user, value: percentage, displayValue: percentage.toFixed(1) + "%", colorClassName: "bg-brutal-cyan" }]}
               />
               <AllocationBar
-                label="Community average"
+                label={allocationLabels.average}
                 size="compact"
-                segments={[{ label: "Community average", value: avgPercent, displayValue: avgPercent.toFixed(1) + "%", colorClassName: "bg-brutal-pink" }]}
+                segments={[{ label: allocationLabels.average, value: avgPercent, displayValue: avgPercent.toFixed(1) + "%", colorClassName: "bg-brutal-pink" }]}
               />
               <AllocationBar
-                label="Government spending"
+                label={allocationLabels.government}
                 size="compact"
-                segments={[{ label: "Government spending", value: govPercent, displayValue: govPercent.toFixed(1) + "%", colorClassName: "bg-black" }]}
+                segments={[{ label: allocationLabels.government, value: govPercent, displayValue: govPercent.toFixed(1) + "%", colorClassName: "bg-black" }]}
               />
             </div>
           )
@@ -134,15 +140,15 @@ export function BudgetAllocationBars({ comparisons }: BudgetAllocationBarsProps)
         <div className="flex items-center justify-center gap-3 text-xs mb-2 flex-wrap">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-brutal-cyan border-2 border-primary" />
-            <span className="font-bold">Your Priorities</span>
+            <span className="font-bold">{allocationLabels.user}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-brutal-pink border-2 border-brutal-pink" />
-            <span className="font-bold">Community Avg</span>
+            <span className="font-bold">{allocationLabels.average}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-black border-2 border-primary" />
-            <span className="font-bold">Gov Spending</span>
+            <span className="font-bold">{allocationLabels.government}</span>
           </div>
         </div>
         <p className="text-center text-[10px] text-muted-foreground">
