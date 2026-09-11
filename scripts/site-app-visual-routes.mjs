@@ -669,6 +669,27 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   wishocracy: [
     {
+      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile, "apps/wishocracy/lib/wishocracy-visual.ts", "apps/wishocracy/lib/wishocracy-average-allocations.ts"],
+      label: "Public allocation results",
+      routeName: "results",
+      routePath: "/results?visual=1",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
+    },
+    {
+      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile],
+      label: "Results without responses",
+      routeName: "results-empty",
+      routePath: "/results?visual=empty",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
+    },
+    {
+      covers: ["apps/wishocracy/app/page.tsx", "apps/wishocracy/components/wishocracy/WishocracyCompletionCard.tsx", wishocracyBarsFile],
+      label: "Completed allocation and public results link",
+      routeName: "allocation-complete",
+      routePath: "/?visual=complete",
+      sourcePage: "apps/wishocracy/app/page.tsx",
+    },
+    {
       covers: ["apps/wishocracy/app/contact/page.tsx"],
       label: "Contact",
       routeName: "contact",
@@ -798,6 +819,14 @@ export const publicSiteAppRoutes = Object.freeze({
 });
 
 export const publicSiteAppRouteExemptions = Object.freeze([
+  {
+    reason: "Redirects to studies.dfda.earth; there is no local page to capture.",
+    sourcePage: "apps/dfda/app/observational-studies/page.tsx",
+  },
+  {
+    reason: "Redirects to studies.dfda.earth; there is no local page to capture.",
+    sourcePage: "apps/dfda/app/mega-studies/page.tsx",
+  },
   {
     reason:
       "This legacy route immediately redirects to the captured acceleratedmedicine donation-success page and has no local visual state.",

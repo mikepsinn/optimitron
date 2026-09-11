@@ -59,7 +59,26 @@ export const NAV_ITEMS_MAP = {
     path: ROUTES.surveyResults,
     description: "Current survey results on patient access, patient-funded clinical trials, and research funding priorities.",
     canonicalVariant: VARIANTS.SURVEY,
-    allowedVariants: [VARIANTS.SURVEY],
+    allowedVariants: [VARIANTS.SURVEY, VARIANTS.WISHOCRACY],
+    useSiteDefaultOg: true,
+  },
+  wishocracyResults: {
+    id: "wishocracyResults",
+    label: "Results",
+    path: ROUTES.wishocracyResults,
+    description: "Compare average preferred budget allocations with current US government allocations across the same spending areas.",
+    pageTitle: "Wishocracy Results",
+    canonicalVariant: VARIANTS.WISHOCRACY,
+    allowedVariants: [VARIANTS.WISHOCRACY, VARIANTS.SURVEY],
+    useSiteDefaultOg: true,
+  },
+  wishocracyAbout: {
+    id: "wishocracyAbout",
+    label: "About",
+    path: ROUTES.about,
+    description: "How Wishocracy turns pairwise choices into budget priorities, how the results are calculated, and the research behind it.",
+    pageTitle: "About Wishocracy",
+    canonicalVariant: VARIANTS.WISHOCRACY,
     useSiteDefaultOg: true,
   },
   // About section items
@@ -543,13 +562,12 @@ export const NAV_ITEMS_MAP = {
   megaStudies: {
     id: "megaStudies",
     label: "Mega Studies",
-    path: ROUTES.megaStudies,
+    path: "https://studies.dfda.earth",
+    isExternal: true,
     description:
       "Outcome labels for 10,000+ foods, drugs, and supplements with treatment effectiveness rankings measured by change from baseline across 100+ conditions",
     emoji: "📊",
     pageTitle: "Mega Studies - Treatment Effectiveness Rankings",
-    canonicalVariant: VARIANTS.DFDA,
-    allowedVariants: [VARIANTS.DFDA],
     keywords: [
       "treatment rankings",
       "drug effectiveness",
@@ -576,13 +594,12 @@ export const NAV_ITEMS_MAP = {
   observationalStudies: {
     id: "observationalStudies",
     label: "Observational Studies",
-    path: ROUTES.observationalStudies,
+    path: "https://studies.dfda.earth",
+    isExternal: true,
     description:
       "Explore causal relationships between treatments and conditions from thousands of aggregated n-of-1 studies. Discover correlations and treatment effects from real-world patient data",
     emoji: "🔬",
     pageTitle: "Observational Studies - Aggregated N-of-1 Research",
-    canonicalVariant: VARIANTS.DFDA,
-    allowedVariants: [VARIANTS.DFDA],
     keywords: [
       "n-of-1 studies",
       "observational research",

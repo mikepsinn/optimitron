@@ -1119,7 +1119,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "about",
         label: "ABOUT",
-        items: ["about", "faq"],
+        items: ["wishocracyAbout", "wishocracyResults", "faq"],
       },
     ],
     contactInfo: {

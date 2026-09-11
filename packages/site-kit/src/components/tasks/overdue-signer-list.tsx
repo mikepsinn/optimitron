@@ -50,7 +50,22 @@ function delayDays(dueAt: Date | string | null, referenceMs: number) {
   const dueMs = dateMs(dueAt)
   return dueMs == null
     ? 0
-    : Math.max(0, Math.floor((referenceMs - dueMs) / DAY_MS))
+    : Math.max(0, (referenceMs - dueMs) / DAY_MS)
+}
+
+// The cost block renders for any elapsed delay above zero, and overdueCount
+// counts a signer the moment its due time passes, so the badge has to agree.
+// formatDelayDuration rounds to whole days and would label the first 23 hours
+// "0 days overdue", hence the sub-day arms here.
+function formatOverdueDuration(days: number) {
+  if (days >= 1) return formatDelayDuration(days)
+  const hours = days * 24
+  if (hours >= 1) {
+    const rounded = Math.round(hours)
+    return `${rounded} ${rounded === 1 ? "hour" : "hours"}`
+  }
+  const minutes = Math.max(1, Math.round(hours * 60))
+  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`
 }
 
 function formatEffort(hours: number | null | undefined) {
@@ -97,11 +112,11 @@ function ProgramCard({
   const programDueMs =
     dateMs(treatyProgram?.dueAt) ??
     (signerDueDates.length > 0 ? Math.min(...signerDueDates) : null)
-  const currentDelayDays =
+  const elapsedDelayDays =
     programDueMs == null
       ? 0
-      : Math.max(0, Math.floor((referenceMs - programDueMs) / DAY_MS))
-  const costOfDelay = getTreatyLevelCostOfDelay(currentDelayDays)
+      : Math.max(0, (referenceMs - programDueMs) / DAY_MS)
+  const costOfDelay = getTreatyLevelCostOfDelay(elapsedDelayDays)
   const combinedEffort =
     treatyProgram?.estimatedEffortHours ??
     signerTasks.reduce((sum, task) => sum + (task.estimatedEffortHours ?? 0), 0)
@@ -120,9 +135,9 @@ function ProgramCard({
           {title}
         </a>
         <div className="flex flex-col items-end gap-1">
-          {currentDelayDays > 0 ? (
+          {elapsedDelayDays > 0 ? (
             <span className="border-2 border-background bg-brutal-red px-2 py-0.5 text-xs font-black uppercase tracking-wide text-brutal-red-foreground">
-              {formatDelayDuration(currentDelayDays)} overdue
+              {formatOverdueDuration(elapsedDelayDays)} overdue
             </span>
           ) : null}
           {formatCombinedEffort(combinedEffort) ? (
@@ -209,7 +224,7 @@ function ProgramCard({
               💀 Dead already from the delay
             </p>
             <p
-              className="mt-1 text-2xl font-black leading-none sm:text-3xl"
+              className="mt-1 text-2xl font-black tabular-nums leading-none sm:text-3xl"
               data-volatile="treaty-deaths-from-delay"
             >
               {Math.floor(costOfDelay.deathsFromDelay).toLocaleString("en-US")}
@@ -220,7 +235,9 @@ function ProgramCard({
                 display="withUnit"
                 param={GLOBAL_DISEASE_DEATHS_DAILY}
               />{" "}
-              × {currentDelayDays.toLocaleString("en-US")} days
+              × <span data-volatile="treaty-delay-days">
+                {elapsedDelayDays.toLocaleString("en-US", { maximumFractionDigits: 3 })}
+              </span>{" "}days
             </p>
           </div>
           <div className="bg-brutal-red px-4 py-3 text-brutal-red-foreground">
@@ -228,7 +245,7 @@ function ProgramCard({
               💸 Wasted on disease while they delay
             </p>
             <p
-              className="mt-1 text-2xl font-black leading-none sm:text-3xl"
+              className="mt-1 text-2xl font-black tabular-nums leading-none max-[360px]:text-xl sm:text-3xl"
               data-volatile="treaty-money-wasted"
             >
               ${Math.floor(costOfDelay.wastedUsd).toLocaleString("en-US")}
@@ -318,7 +335,7 @@ function SignerRow({
       </a>
 
       <div
-        className="text-sm font-black text-brutal-red"
+        className="text-sm font-black tabular-nums text-brutal-red"
         data-volatile="signer-deaths-from-delay"
       >
         <span className="mr-1 lg:hidden">Deaths from delay:</span>
@@ -328,7 +345,7 @@ function SignerRow({
           : "—"}
       </div>
       <div
-        className="text-sm font-black text-brutal-red"
+        className="text-sm font-black tabular-nums text-brutal-red"
         data-volatile="signer-money-wasted"
       >
         <span className="mr-1 lg:hidden">Wasted by delay:</span>
@@ -358,7 +375,7 @@ export function OverdueSignerList({
   signerTasks,
   treatyProgram,
 }: OverdueSignerListProps) {
-  const hydratedNow = useHydratedNow()
+  const hydratedNow = useHydratedNow(1000)
   const [page, setPage] = useState(0)
   const [query, setQuery] = useState("")
   const referenceMs = getAccountabilityReferenceMs(
