@@ -17,6 +17,7 @@ export async function GET() {
         itemBId: { in: categoryIds },
       },
       select: {
+        id: true,
         userId: true,
         itemAId: true,
         itemBId: true,

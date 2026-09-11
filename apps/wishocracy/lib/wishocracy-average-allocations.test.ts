@@ -4,7 +4,7 @@ import { BUDGET_CATEGORIES } from "./wishocracy-data"
 
 const [a, b, c] = Object.keys(BUDGET_CATEGORIES)
 function row(userId: string, amount: number, itemAId = a!, itemBId = b!, day = 1) {
-  return { userId, itemAId, itemBId, allocationA: amount, allocationB: 100 - amount, updatedAt: new Date(2026, 0, day) }
+  return { id: `${userId}-${itemAId}-${itemBId}-${day}`, userId, itemAId, itemBId, allocationA: amount, allocationB: 100 - amount, updatedAt: new Date(2026, 0, day) }
 }
 
 describe("public budget averages", () => {
@@ -25,6 +25,19 @@ describe("public budget averages", () => {
     const results = calculateAverageAllocations([row("one", 80, b!, a!, 2), row("one", 90)])
     expect(results.averageAllocations[a!]).toBe(20)
     expect(results.averageAllocations[b!]).toBe(80)
+  })
+
+  it("breaks timestamp ties consistently without overriding a newer answer", () => {
+    const first = { ...row("one", 70), id: "allocation-a" }
+    const reversed = { ...row("one", 80, b!, a!), id: "allocation-z" }
+    const forward = calculateAverageAllocations([first, reversed])
+    const backward = calculateAverageAllocations([reversed, first])
+    expect(forward.averageAllocations[a!]).toBe(20)
+    expect(backward).toEqual(forward)
+    expect(forward.totalUsers).toBe(1)
+
+    const newer = { ...first, updatedAt: new Date(2026, 0, 2) }
+    expect(calculateAverageAllocations([reversed, newer]).averageAllocations[a!]).toBe(70)
   })
 
   it("excludes other catalogs and participants with no positive allocation", () => {

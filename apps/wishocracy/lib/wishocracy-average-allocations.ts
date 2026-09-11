@@ -4,7 +4,7 @@ import { BUDGET_CATEGORIES, isBudgetCategoryId } from "./wishocracy-data"
 import type { BudgetCategoryId } from "./wishocracy-data"
 
 type SavedAllocation = Pick<WishocraticAllocation,
-  "userId" | "itemAId" | "itemBId" | "allocationA" | "allocationB" | "updatedAt"
+  "id" | "userId" | "itemAId" | "itemBId" | "allocationA" | "allocationB" | "updatedAt"
 >
 
 export interface AverageAllocationResults {
@@ -22,7 +22,11 @@ export function calculateAverageAllocations(rows: SavedAllocation[]): AverageAll
     const pairs = byUser.get(row.userId) ?? new Map<string, SavedAllocation>()
     const key = JSON.stringify([row.itemAId, row.itemBId].sort())
     const previous = pairs.get(key)
-    if (!previous || row.updatedAt > previous.updatedAt) pairs.set(key, row)
+    // Imported pairs can retain both orientations; IDs break timestamp ties stably.
+    if (!previous || row.updatedAt > previous.updatedAt ||
+      (row.updatedAt.getTime() === previous.updatedAt.getTime() && row.id > previous.id)) {
+      pairs.set(key, row)
+    }
     byUser.set(row.userId, pairs)
   }
 

@@ -10,6 +10,7 @@ export function getWishocracyVisualFixture(visual?: string) {
     categoryA: ids[0]!, categoryB: id, allocationA: 65, allocationB: 35,
   }))
   const results = calculateAverageAllocations(visual === "empty" ? [] : comparisons.map((row) => ({
+    id: `visual-${row.categoryA}-${row.categoryB}`,
     userId: "visual-review", itemAId: row.categoryA, itemBId: row.categoryB,
     allocationA: row.allocationA, allocationB: row.allocationB,
     updatedAt: new Date("2026-01-01T00:00:00Z"),

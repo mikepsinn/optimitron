@@ -12,6 +12,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 it("shows public averages without personal allocations or participant counts", () => {
   render(<BudgetAllocationBars initialResults={{ averageAllocations: allocations, totalUsers: 123456 }} />)
+  expect(screen.getAllByRole("figure").length).toBeGreaterThan(0)
   expect(screen.getAllByText("Average preferred allocation", { exact: true }).length).toBeGreaterThan(0)
   expect(screen.queryByText("Your preferred allocation", { exact: true })).toBeNull()
   expect(screen.queryByText(/123456/)).toBeNull()
