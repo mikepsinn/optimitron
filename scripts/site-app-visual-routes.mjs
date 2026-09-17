@@ -668,7 +668,7 @@ export const publicSiteAppRoutes = Object.freeze({
         "apps/courtofhumanity/app/plaintiffs/people-filter-bar.tsx",
         "apps/courtofhumanity/app/plaintiffs/person-face-tile.tsx",
         "apps/courtofhumanity/app/plaintiffs/register-plaintiff-form.tsx",
-        "packages/site-kit/src/lib/represented-people.server.ts",
+        "apps/courtofhumanity/lib/represented-people.server.ts",
       ],
       label: "Register a plaintiff",
       routeName: "plaintiffs",

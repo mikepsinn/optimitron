@@ -49,6 +49,13 @@ records; campaign callers use the transaction-aware shared enrollment helper.
 Historical backfills are not part of rollout. Gallery pagination retains the
 bounded database queries and snapshot consistency from PR #343.
 
+Court owns `apps/courtofhumanity/lib/represented-people.server.ts` and the
+PostgreSQL pagination regressions under its own integration tests. The gallery
+is not a shared site-kit service or an Accelerated Medicine feature. Optimitron
+retains generic person profiles; campaign integration uses the shared enrollment
+helper without importing Court app code. PR #346 supersedes the standalone
+pagination PR #343, including its nine database regressions.
+
 Rollback applications by reverting deployments and disabling new Court
 authorization if necessary. Keep the additive OAuth resource records, Court data,
 and triple unique index. Do not restore the old dual unique index once independent

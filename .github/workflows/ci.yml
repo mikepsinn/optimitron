@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    # Stacked PRs also need validation and their branch's preview database sync.
   workflow_dispatch:
 
 permissions:
@@ -232,7 +232,7 @@ jobs:
         with:
           node-version: 24
       - name: Test GitHub and Vercel automation
-        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
+        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/ci-stacked-preview.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
 
   core-validate:
     name: core-validate

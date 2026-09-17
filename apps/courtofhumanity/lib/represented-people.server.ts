@@ -7,12 +7,12 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { DEMO_USER_EMAIL } from "@optimitron/data/campaign";
-import { prisma } from "./prisma";
-import { getPersonHref } from "./person-href";
-import { buildOfficialReferendumVoteWhere } from "./referendum-vote-classification.server";
-import { buildApprovedOrganizationPositionWhere } from "./signatories.server";
-import { TREATY_REFERENDUM_SLUG } from "./treaty";
-import { getUserDisplayName, userDisplaySelect } from "./user-display";
+import { prisma } from "@/lib/prisma";
+import { getPersonHref } from "@/lib/person-href";
+import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
+import { buildApprovedOrganizationPositionWhere } from "@/lib/signatories.server";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
+import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 export interface RepresentedPersonCard {
   conditionName: string | null;
