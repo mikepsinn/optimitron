@@ -558,7 +558,10 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
   {
     name: "referendum-one-percent-treaty",
     path: "/agencies/dcongress/referendums/one-percent-treaty",
-    required: false,
+    required: true,
+    requiredSelector: "section h1",
+    requiredText: /^Ballot Question$/,
+    covers: ["apps/optimitron/src/app/agencies/dcongress/referendums/[slug]/page.tsx"],
   },
   {
     name: "organization-iam-public",

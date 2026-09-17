@@ -18,20 +18,31 @@ const expected = ["photo-c", "photo-b", "photo-a", "empty", "null-b", "null-a"];
 let caseId: string;
 let createdCase = false;
 let createdDemo = false;
+let previousCaseVisibility: {
+  isPublic: boolean;
+  deletedAt: Date | null;
+} | null = null;
 
 beforeAll(async () => {
   const existing = await prisma.courtCase.findUnique({
     where: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
   });
   createdCase = !existing;
+  previousCaseVisibility = existing
+    ? { isPublic: existing.isPublic, deletedAt: existing.deletedAt }
+    : null;
+  // The schema defaults cases to private. Establish this suite's public-case
+  // precondition explicitly, including when another fixture already exists.
   caseId = (
-    existing ??
-    (await prisma.courtCase.create({
-      data: {
+    await prisma.courtCase.upsert({
+      where: { slug: HUMANITY_V_GOVERNMENT_CASE_SLUG },
+      create: {
         slug: HUMANITY_V_GOVERNMENT_CASE_SLUG,
         title: "Pagination fixture",
+        isPublic: true,
       },
-    }))
+      update: { isPublic: true, deletedAt: null },
+    })
   ).id;
   const demo = await prisma.user.findUnique({
     where: { email: DEMO_USER_EMAIL },
@@ -119,6 +130,11 @@ afterAll(async () => {
     where: { id: prefix + "timeline" },
   });
   if (createdCase) await prisma.courtCase.delete({ where: { id: caseId } });
+  else if (previousCaseVisibility)
+    await prisma.courtCase.update({
+      where: { id: caseId },
+      data: previousCaseVisibility,
+    });
   if (createdDemo)
     await prisma.user.delete({ where: { email: DEMO_USER_EMAIL } });
   await prisma.$disconnect();
