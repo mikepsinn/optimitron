@@ -15,7 +15,7 @@
 
 - DEVELOPERS
 ## MCP TOOL REFERENCE
-- Every tool the Optimitron MCP server exposes — 171 tools (32 admin-gated) — generated from the same registry the live server enforces. The live machine-readable version is [optimitron.com/api/mcp/tools](https://optimitron.com/api/mcp/tools); connection instructions live at [/mcp](/mcp).
+- Every tool the Optimitron MCP server exposes — 163 tools (32 admin-gated) — generated from the same registry the live server enforces. The live machine-readable version is [optimitron.com/api/mcp/tools](https://optimitron.com/api/mcp/tools); connection instructions live at [/mcp](/mcp).
 - Each tool is listed once, under its primary scope; many accept more than one scope, so the badges on a tool name every scope that can call it.
 ### OAUTH SCOPES
 ### PUBLIC (NO SCOPE) (15)
@@ -121,7 +121,7 @@
 - status (enum) — Optional status filter to narrow dependency candidates.
 ### TASKS:PERSONAL (91)
 #### recordMeasurement tasks:personal
-- Record a personal dFDA/N-of-1 measurement such as a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable.
+- Record a personal dFDA/N-of-1 measurement such as a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable. Pass value in the supplied unit, or your personal default when omitted. The server preserves the entered value and converts it to the canonical unit. One-time unit choices do not change personal defaults.
 - PARAMETERS (15)
 - globalVariableId (string)
 - variableName (string)
@@ -147,9 +147,11 @@
 - limit (number) — Page size. Default 100, maximum 500.
 - cursor (string) — nextCursor from the previous page. Repeat the same filters until nextCursor is null.
 #### updateMeasurement tasks:personal
-- Correct one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. Pass value in the normalized unit. If the measurement was converted between units, also pass originalValue in its original unit. Units and variable identity stay unchanged. Optional metadata fields patch the existing row. The tool rejects measurements owned by another user and refreshes cached summaries.
+- Correct one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. Pass value with unitAbbreviation, unitName, or unitId to correct the entered amount and unit. The server converts it to the canonical unit and keeps the corrected input in originalValue and originalUnit. Without unit fields, value uses the existing stored unit; the server derives originalValue. Optional originalValue must match the converted value. Variable identity, timestamp, and personal defaults stay unchanged. Optional metadata fields patch the existing row. The tool rejects measurements owned by another user and refreshes cached summaries.
+- PARAMETERS (11)
 - measurementId (string, required)
-- originalValue (number) — Corrected value in the existing original unit. Required when originalUnitId differs from unitId; otherwise defaults to value.
+- unitAbbreviation (string) — Unit of the corrected value, such as mg or g.
+- originalValue (number) — Optional corrected value in the existing original unit. The server validates it against value. Omit this field when you supply unit fields.
 - duration (number | null) — Duration in seconds. Null clears it.
 - note (string | null)
 - sourceName (string | null)
@@ -158,7 +160,7 @@
 #### deleteMeasurement tasks:personal
 - Soft-delete one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. The tool rejects measurements owned by another user and refreshes cached summaries.
 #### upsertTrackingReminder tasks:personal
-- Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.
+- Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. Existing reminder amounts and personal limits convert with the preference. Unit changes are blocked if prior reminder receipts contain values without unit metadata. Use explicit units on individual measurements instead. A supplied defaultValue uses the new unit. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.
 - trackingReminderId (string) — Existing reminder ID to edit in place. Patchable: active, defaultValue, instructions, reminderStartTime, reminderEndTime, reminderFrequency, startTrackingDate, stopTrackingDate, unit fields, and fillingType. Fixed at creation: the tracked variable (variableName, globalVariableId, categoryName, combinationOperation) — to change it, create a new reminder and set active: false on this one.
 - defaultValue (number | null) — Pre-filled value, such as a normal medication dose or symptom rating. Pass null to clear it when editing.
 - unitAbbreviation (string) — Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings. Sets your personal recording unit for this variable, on create or on edit.
@@ -197,7 +199,6 @@
 - snoozeMinutes (number) — Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.
 #### respondToTrackingReminder tasks:personal
 - Answer a due tracking reminder. TRACKED records a measurement. Record value 0 when the treatment, food, or activity was not taken; those zero days are the baseline that causal analysis needs. SNOOZED defers the notification. Deactivate the reminder when it no longer applies. SKIPPED is retired: it now records a zero and returns a deprecation notice. When dateKey and trackedAt are omitted, the answer targets the reminder's most recent due occurrence within the last 7 days that is still unanswered — so an after-midnight catch-up resolves yesterday's occurrence, not tomorrow's. The response's notifyAtLocal shows where the answer landed.
-- PARAMETERS (11)
 - status (enum, required) — TRACKED records a measurement; pass value 0 for a not-taken day. SNOOZED defers the notification. SKIPPED is accepted but retired and records a zero.
 - value (number) — Override dose/rating/value. If omitted for TRACKED, the reminder defaultValue is used.
 - unitAbbreviation (string)
@@ -730,7 +731,7 @@
 #### proposeFormSubmission tasks:personal or tasks:organization
 - Propose the exact prepared form submission for human approval without executing it.
 - formSubmissionId (string, required)
-### EARTHDATA:WRITE (33)
+### EARTHDATA:WRITE (25)
 #### castReferendumVote earthdata:write
 - Cast or update the authenticated user's own referendum vote.
 - answer (enum)
@@ -819,80 +820,6 @@
 - versionKey (string)
 - contentHash (string)
 - payloadJson (object) — For calculation code: { language, source, runtime?, dependencies?, entrypoint?, inputs?, outputs?, notes? }. Code is retained as inert data and is never run by this tool or by the web application.
-#### upsertCourtCase earthdata:write
-- Create or update a Court of Humanity case root record.
-- id (string)
-- summary (string)
-- nominalPlaintiffSubjectId (string)
-- primaryRespondentSubjectId (string)
-- beneficiarySubjectId (string)
-- rootTaskId (string)
-- juryReferendumId (string)
-- metadataJson (object)
-#### addCourtCaseParty earthdata:write
-- Attach a plaintiff, respondent, class, beneficiary, or amicus Subject to a Court of Humanity case.
-- PARAMETERS (16)
-- caseId (string, required)
-- partyKey (string)
-- subjectId (string)
-- subjectExternalId (string)
-- subjectDisplayName (string)
-- subjectType (string)
-- role (enum, required)
-- capacity (enum)
-- displayNameSnapshot (string)
-- standingTheory (string)
-- powerToRemedyScore (number)
-- blameAttributionScore (number)
-- publicAccountabilityScore (number)
-- sortOrder (number)
-#### addCourtCaseClaim earthdata:write
-- Add a structured allegation or requested finding to a Court of Humanity case.
-- claimKey (string)
-- claimType (string)
-- argumentMarkdown (string, required)
-- requestedFinding (string)
-#### addCourtCaseHarm earthdata:write
-- Add a quantified or qualitative harm catalog row to a Court of Humanity case.
-- PARAMETERS (18)
-- claimId (string)
-- harmKey (string)
-- harmType (string)
-- bodyMarkdown (string)
-- affectedSubjectId (string)
-- parameterName (string)
-- lowValue (number)
-- baseValue (number)
-- highValue (number)
-- unit (string)
-#### addCourtCaseEvidence earthdata:write
-- Attach public non-sensitive evidence to a Court of Humanity case, claim, or harm.
-- PARAMETERS (19)
-- harmId (string)
-- evidenceKey (string)
-- evidenceType (string)
-- personMemorialId (string)
-- containsSensitiveData (boolean) — Must be false; sensitive evidence is not accepted.
-- reviewStatus (enum)
-#### addCourtCaseRemedy earthdata:write
-- Add a requested remedy that can point at an existing enforcement Task.
-- targetPartyId (string)
-- remedyKey (string)
-- remedyType (string)
-- bodyMarkdown (string, required)
-- amountUsdLow (number)
-- amountUsdBase (number)
-- amountUsdHigh (number)
-- deadlineAt (string)
-- enforcementTaskId (string)
-#### getCourtCase earthdata:write
-- Fetch a Court of Humanity case with parties, claims, harms, evidence, remedies, and jury referendum.
-- caseIdOrSlug (string)
-#### openCourtCaseJuryVote earthdata:write
-- Open or update the public referendum used as a Court of Humanity jury vote.
-- caseIdOrSlug (string, required)
-- questionKey (string)
-- questionTitle (string)
 #### upsertInterventionApprovalTimeline earthdata:write
 - Create or update a regulatory first-evidence/approval timeline for an intervention and condition.
 - interventionName (string, required)
@@ -917,6 +844,7 @@
 - rationale (string)
 #### recordInterventionExperience earthdata:write
 - Record a user's intervention experience with optional outcomes and side effects.
+- subjectId (string)
 - interventionGlobalVariableId (string, required)
 - status (string)
 - startedAt (string)

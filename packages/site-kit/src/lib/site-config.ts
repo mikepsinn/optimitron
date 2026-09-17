@@ -1479,6 +1479,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         label: "THE CASE",
         items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
       },
+      {
+        id: "developers",
+        label: "FOR AI AGENTS",
+        items: ["courtMcp", "courtMcpTools"],
+      },
     ],
 
     contactInfo: {

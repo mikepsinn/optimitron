@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'tests/integration/**'",
     "test:unit": "cross-env SKIP_DB_TEST_SETUP=1 vitest run --exclude 'tests/integration/**'",
-    "smoke:db": "tsx scripts/smoke-treaty-db.ts"
+    "smoke:db": "tsx scripts/smoke-treaty-db.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@auth/core": "0.41.3",
@@ -19,9 +20,11 @@
     "@google/genai": "^1.50.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.10.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@neondatabase/serverless": "^1.1.0",
     "@next/third-parties": "^15.5.15",
     "@optimitron/db": "workspace:^",
+    "@optimitron/mcp": "workspace:^",
     "@optimitron/site-kit": "workspace:^",
     "@optimitron/neobrutalist-ui": "workspace:^",
     "@optimitron/data": "workspace:^",

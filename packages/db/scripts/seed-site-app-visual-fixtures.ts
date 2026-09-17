@@ -79,7 +79,9 @@ try {
   ]);
 
   if (!user.personId) {
-    throw new Error("Managed demo user must have a Person before visual capture.");
+    throw new Error(
+      "Managed demo user must have a Person before visual capture.",
+    );
   }
   if (user.organizationMemberships.length !== 1) {
     throw new Error(
@@ -202,6 +204,48 @@ try {
       },
     }),
   ]);
+
+  await prisma.$transaction(async (tx) => {
+    const juryData = {
+      title: "Public spending accountability",
+      question:
+        "Should governments publish the evidence behind major spending decisions?",
+      description: "Review this public case and record your verdict.",
+      kind: "COURT_CASE" as const,
+      status: "ACTIVE" as const,
+      publishedAt: VISUAL_FIXTURE_CREATED_AT,
+      createdByUserId: user.id,
+      deletedAt: null,
+    };
+    const jury = await tx.referendum.upsert({
+      where: { slug: "court-visual-jury-verdict" },
+      create: {
+        ...juryData,
+        slug: "court-visual-jury-verdict",
+        createdAt: VISUAL_FIXTURE_CREATED_AT,
+      },
+      update: juryData,
+    });
+    const caseData = {
+      title: "Public spending accountability",
+      summary:
+        "A public case asking whether governments should publish the evidence behind major spending decisions.",
+      isPublic: true,
+      status: "VOTING" as const,
+      createdByUserId: user.id,
+      juryReferendumId: jury.id,
+      deletedAt: null,
+    };
+    await tx.courtCase.upsert({
+      where: { slug: "visual-jury" },
+      create: {
+        ...caseData,
+        slug: "visual-jury",
+        createdAt: VISUAL_FIXTURE_CREATED_AT,
+      },
+      update: caseData,
+    });
+  });
 
   console.log("Prepared local authenticated site-app visual fixtures.");
 } finally {

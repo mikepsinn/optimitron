@@ -18,17 +18,21 @@
 - Connect Claude, ChatGPT, or another MCP client to Optimitron so the agent can choose useful work, read the evidence, coordinate through task comments, and stop hallucinating from old chat history.
 - MCP SERVER URL
 - COPY
-- ```text
+
+```text
 http://127.0.0.1:3001/api/mcp
 ```
+
 - [INSTALL MCP](#install)
 - [SEE TOOLS](#tools)
 - CLAUDE CODE
 ### ONE COMMAND, THEN /MCP.
 - Use this when the agent is working in a repo and needs the live queue, manual, task comments, and coordination tools.
-- ```text
+
+```text
 claude mcp add --transport http optimitron http://127.0.0.1:3001/api/mcp
 ```
+
 - 1 RUN THE COMMAND Paste it in the terminal where Claude Code is installed.
 - 2 OPEN /MCP Inside Claude Code, run /mcp and follow the browser sign-in flow.
 - 3 AUTHORIZE OPTIMITRON Approve the requested scopes. The connector uses OAuth and PKCE; no client secret goes in your config.
@@ -47,7 +51,8 @@ claude mcp add --transport http optimitron http://127.0.0.1:3001/api/mcp
 - OTHER MCP CLIENTS
 ### PASTE THE JSON IF YOUR CLIENT WANTS CONFIG.
 - Cursor, Windsurf, Cline, Zed, and similar clients usually want a small MCP server block.
-- ```text
+
+```text
 {
   "mcpServers": {
     "optimitron": {
@@ -56,6 +61,7 @@ claude mcp add --transport http optimitron http://127.0.0.1:3001/api/mcp
   }
 }
 ```
+
 - 1 FIND YOUR MCP CONFIG Use your client's MCP settings or config file.
 - 2 PASTE THE BLOCK If your client asks for transport, choose Streamable HTTP or HTTP.
 - 3 COMPLETE OAUTH Open the authorization URL your client gives you and approve the scopes.
@@ -72,17 +78,23 @@ claude mcp add --transport http optimitron http://127.0.0.1:3001/api/mcp
 - REFERENCE
 ### ENDPOINT AND DISCOVERY.
 #### MCP ENDPOINT
-- ```text
+
+```text
 POST http://127.0.0.1:3001/api/mcp
 ```
+
 #### TOOL CATALOG
-- ```text
+
+```text
 GET http://127.0.0.1:3001/api/mcp/tools
 ```
+
 #### OAUTH METADATA
-- ```text
+
+```text
 GET http://127.0.0.1:3001/.well-known/oauth-authorization-server
 ```
+
 - PERMISSIONS
 ### SCOPES ARE THE LEASH.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations

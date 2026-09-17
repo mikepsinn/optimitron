@@ -27,6 +27,9 @@
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
 - [REGISTER A PLAINTIFF](/plaintiffs)
 - [JOIN THE COURT](/court)
+#### FOR AI AGENTS
+- [CONNECT AN AI AGENT](/mcp)
+- [COURT TOOL REFERENCE](/developers/tools)
 #### CONTACT
 - [hello@courtofhumanity.org](mailto:hello@courtofhumanity.org)
 - [PRIVACY POLICY](/privacy)

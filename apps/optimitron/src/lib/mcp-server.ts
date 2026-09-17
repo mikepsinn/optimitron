@@ -291,14 +291,6 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertConflict: [McpScope.EARTHDATA_WRITE],
   resolveGlobalVariable: [McpScope.EARTHDATA_WRITE],
   upsertSourceArtifact: [McpScope.EARTHDATA_WRITE],
-  upsertCourtCase: [McpScope.EARTHDATA_WRITE],
-  addCourtCaseParty: [McpScope.EARTHDATA_WRITE],
-  addCourtCaseClaim: [McpScope.EARTHDATA_WRITE],
-  addCourtCaseHarm: [McpScope.EARTHDATA_WRITE],
-  addCourtCaseEvidence: [McpScope.EARTHDATA_WRITE],
-  addCourtCaseRemedy: [McpScope.EARTHDATA_WRITE],
-  getCourtCase: [McpScope.EARTHDATA_WRITE],
-  openCourtCaseJuryVote: [McpScope.EARTHDATA_WRITE],
   upsertInterventionApprovalTimeline: [McpScope.EARTHDATA_WRITE],
   upsertVariableRelationshipEvidenceEstimate: [McpScope.EARTHDATA_WRITE],
   recordInterventionExperience: [McpScope.EARTHDATA_WRITE],
@@ -652,13 +644,6 @@ const AUDITED_MCP_TOOLS = new Set([
   "upsertConflict",
   "resolveGlobalVariable",
   "upsertSourceArtifact",
-  "upsertCourtCase",
-  "addCourtCaseParty",
-  "addCourtCaseClaim",
-  "addCourtCaseHarm",
-  "addCourtCaseEvidence",
-  "addCourtCaseRemedy",
-  "openCourtCaseJuryVote",
   "upsertInterventionApprovalTimeline",
   "upsertVariableRelationshipEvidenceEstimate",
   "recordInterventionExperience",
@@ -3155,231 +3140,6 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         },
       },
       required: ["sourceKey"],
-    },
-  },
-  {
-    name: "upsertCourtCase",
-    description: "Create or update a Court of Humanity case root record.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        id: { type: "string" },
-        slug: { type: "string" },
-        title: { type: "string" },
-        summary: { type: "string" },
-        status: {
-          type: "string",
-          enum: ["DRAFT", "OPEN", "VOTING", "JUDGED", "ARCHIVED"],
-        },
-        isPublic: { type: "boolean" },
-        nominalPlaintiffSubjectId: { type: "string" },
-        primaryRespondentSubjectId: { type: "string" },
-        beneficiarySubjectId: { type: "string" },
-        rootTaskId: { type: "string" },
-        juryReferendumId: { type: "string" },
-        metadataJson: { type: "object" },
-      },
-      required: ["title"],
-    },
-  },
-  {
-    name: "addCourtCaseParty",
-    description:
-      "Attach a plaintiff, respondent, class, beneficiary, or amicus Subject to a Court of Humanity case.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseId: { type: "string" },
-        partyKey: { type: "string" },
-        subjectId: { type: "string" },
-        subjectExternalId: { type: "string" },
-        subjectDisplayName: { type: "string" },
-        subjectType: { type: "string" },
-        role: {
-          type: "string",
-          enum: [
-            "NOMINAL_PLAINTIFF",
-            "NAMED_PLAINTIFF",
-            "REPRESENTATIVE_CLASS",
-            "RESPONDENT",
-            "AMICUS",
-            "BENEFICIARY",
-          ],
-        },
-        capacity: {
-          type: "string",
-          enum: [
-            "INSTITUTIONAL",
-            "OFFICIAL_CAPACITY",
-            "PERSONAL_CAPACITY",
-            "OVERSIGHT_CAPACITY",
-            "CLASS_REPRESENTATIVE",
-          ],
-        },
-        displayNameSnapshot: { type: "string" },
-        standingTheory: { type: "string" },
-        powerToRemedyScore: { type: "number" },
-        blameAttributionScore: { type: "number" },
-        publicAccountabilityScore: { type: "number" },
-        sortOrder: { type: "number" },
-        isPublic: { type: "boolean" },
-        metadataJson: { type: "object" },
-      },
-      required: ["caseId", "role"],
-    },
-  },
-  {
-    name: "addCourtCaseClaim",
-    description:
-      "Add a structured allegation or requested finding to a Court of Humanity case.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseId: { type: "string" },
-        claimKey: { type: "string" },
-        title: { type: "string" },
-        claimType: { type: "string" },
-        argumentMarkdown: { type: "string" },
-        requestedFinding: { type: "string" },
-        status: {
-          type: "string",
-          enum: ["PROPOSED", "ACCEPTED", "REJECTED", "SUPERSEDED"],
-        },
-        juryReferendumId: { type: "string" },
-        sortOrder: { type: "number" },
-        isPublic: { type: "boolean" },
-        metadataJson: { type: "object" },
-      },
-      required: ["caseId", "title", "argumentMarkdown"],
-    },
-  },
-  {
-    name: "addCourtCaseHarm",
-    description:
-      "Add a quantified or qualitative harm catalog row to a Court of Humanity case.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseId: { type: "string" },
-        claimId: { type: "string" },
-        harmKey: { type: "string" },
-        harmType: { type: "string" },
-        title: { type: "string" },
-        bodyMarkdown: { type: "string" },
-        affectedSubjectId: { type: "string" },
-        globalVariableId: { type: "string" },
-        parameterName: { type: "string" },
-        lowValue: { type: "number" },
-        baseValue: { type: "number" },
-        highValue: { type: "number" },
-        unit: { type: "string" },
-        confidenceScore: { type: "number" },
-        sortOrder: { type: "number" },
-        isPublic: { type: "boolean" },
-        status: {
-          type: "string",
-          enum: ["PROPOSED", "ACCEPTED", "REJECTED", "SUPERSEDED"],
-        },
-        metadataJson: { type: "object" },
-      },
-      required: ["caseId", "title"],
-    },
-  },
-  {
-    name: "addCourtCaseEvidence",
-    description:
-      "Attach public non-sensitive evidence to a Court of Humanity case, claim, or harm.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseId: { type: "string" },
-        claimId: { type: "string" },
-        harmId: { type: "string" },
-        evidenceKey: { type: "string" },
-        evidenceType: { type: "string" },
-        title: { type: "string" },
-        bodyMarkdown: { type: "string" },
-        sourceArtifactId: { type: "string" },
-        personMemorialId: { type: "string" },
-        globalVariableId: { type: "string" },
-        parameterName: { type: "string" },
-        sourceUrl: { type: "string" },
-        contentHash: { type: "string" },
-        isPublic: {
-          type: "boolean",
-          description: "Must be true; private evidence is not accepted.",
-        },
-        containsSensitiveData: {
-          type: "boolean",
-          description: "Must be false; sensitive evidence is not accepted.",
-        },
-        reviewStatus: {
-          type: "string",
-          enum: ["PROPOSED", "ACCEPTED", "REJECTED", "SUPERSEDED"],
-        },
-        confidenceScore: { type: "number" },
-        sortOrder: { type: "number" },
-        metadataJson: { type: "object" },
-      },
-      required: ["caseId", "title"],
-    },
-  },
-  {
-    name: "addCourtCaseRemedy",
-    description:
-      "Add a requested remedy that can point at an existing enforcement Task.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseId: { type: "string" },
-        claimId: { type: "string" },
-        targetPartyId: { type: "string" },
-        remedyKey: { type: "string" },
-        remedyType: { type: "string" },
-        title: { type: "string" },
-        bodyMarkdown: { type: "string" },
-        amountUsdLow: { type: "number" },
-        amountUsdBase: { type: "number" },
-        amountUsdHigh: { type: "number" },
-        deadlineAt: { type: "string" },
-        enforcementTaskId: { type: "string" },
-        status: {
-          type: "string",
-          enum: ["PROPOSED", "ACCEPTED", "REJECTED", "SUPERSEDED"],
-        },
-        sortOrder: { type: "number" },
-        isPublic: { type: "boolean" },
-        metadataJson: { type: "object" },
-      },
-      required: ["caseId", "title", "bodyMarkdown"],
-    },
-  },
-  {
-    name: "getCourtCase",
-    description:
-      "Fetch a Court of Humanity case with parties, claims, harms, evidence, remedies, and jury referendum.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseIdOrSlug: { type: "string" },
-        id: { type: "string" },
-        slug: { type: "string" },
-      },
-    },
-  },
-  {
-    name: "openCourtCaseJuryVote",
-    description:
-      "Open or update the public referendum used as a Court of Humanity jury vote.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        caseIdOrSlug: { type: "string" },
-        claimId: { type: "string" },
-        questionKey: { type: "string" },
-        questionTitle: { type: "string" },
-      },
-      required: ["caseIdOrSlug"],
     },
   },
   {
@@ -6846,7 +6606,6 @@ const TASK_TOOL_DEFINITIONS = [
             "DECLARATION",
             "TREATY",
             "MEMBERSHIP",
-            "COURT_CASE",
             "AMENDMENT",
             "BUDGET",
           ],
@@ -7310,6 +7069,10 @@ export function createMcpServer(
           requestId,
         });
 
+      if (!TASK_TOOL_DEFINITIONS.some((tool) => tool.name === name)) {
+        return err(`Unknown tool "${name}".`);
+      }
+
       // Scope check
       if (!hasScope(scopes, name)) {
         return err(
@@ -7676,183 +7439,6 @@ export function createMcpServer(
                 userId,
               },
               () => earthData.upsertSourceArtifact(a),
-            );
-          }
-
-          case "upsertCourtCase": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity cases.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                case: await courtData.upsertCourtCase({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "addCourtCaseParty": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity parties.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                party: await courtData.addCourtCaseParty({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "addCourtCaseClaim": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity claims.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                claim: await courtData.addCourtCaseClaim({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "addCourtCaseHarm": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity harms.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                harm: await courtData.addCourtCaseHarm({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "addCourtCaseEvidence": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity evidence.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                evidence: await courtData.addCourtCaseEvidence({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "addCourtCaseRemedy": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool drafts Court of Humanity remedies.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              async () => ({
-                remedy: await courtData.addCourtCaseRemedy({
-                  ...a,
-                  createdByUserId: userId,
-                }),
-              }),
-            );
-          }
-
-          case "getCourtCase": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool reads Court of Humanity case work.",
-              );
-            const courtData = await import("./court-data.server");
-            return ok({ case: await courtData.getCourtCase(a) });
-          }
-
-          case "openCourtCaseJuryVote": {
-            if (!userId)
-              return authRequired(
-                name,
-                "This tool opens Court of Humanity jury votes.",
-              );
-            const courtData = await import("./court-data.server");
-            return await runAuditedEarthDataTool(
-              name,
-              a,
-              {
-                clientId: options.clientId,
-                oauthGrantId: options.oauthGrantId,
-                userId,
-              },
-              () =>
-                courtData.openCourtCaseJuryVote({
-                  ...a,
-                  createdByUserId: userId,
-                }),
             );
           }
 
@@ -13938,6 +13524,7 @@ export function createMcpServer(
             const query = optionalString(a.query);
             const where: Prisma.ReferendumWhereInput = {
               deletedAt: null,
+              kind: { not: ReferendumKind.COURT_CASE },
               status,
               ...(query
                 ? {
@@ -13980,8 +13567,11 @@ export function createMcpServer(
             const kind = parseReferendumKind(a.kind, ReferendumKind.GENERAL);
             if (!kind) {
               return err(
-                "kind must be one of GENERAL, DECLARATION, TREATY, MEMBERSHIP, COURT_CASE, AMENDMENT, or BUDGET",
+                "kind must be one of GENERAL, DECLARATION, TREATY, MEMBERSHIP, AMENDMENT, or BUDGET",
               );
+            }
+            if (kind === ReferendumKind.COURT_CASE) {
+              return err("Court jury referendums must be created on https://courtofhumanity.org/api/mcp.");
             }
 
             const description = optionalString(a.description);

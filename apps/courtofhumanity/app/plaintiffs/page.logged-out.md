@@ -26,7 +26,8 @@
 - I understand public plaintiff cards, photos, comments, memorial details, and evidence may be visible to anyone.
 - PUBLIC PLAINTIFFS
 ### PLAINTIFFS IN [HUMANITY V. GOVERNMENT](/humanity-v-government)
-- [PH PORTTEST HUMAN278911 Glioblastoma ADDED BY TEST](https://optimitron.com/people/cmtltardx0000pgpiao780enm)
+- NO PUBLIC PLAINTIFFS YET
+- Add the first plaintiff above.
 - WHO BELONGS HERE?
 - Add yourself or someone you are authorized to represent. This can include a relative, patient, friend, or person who cannot register because of illness, disability, captivity, lack of internet access, or death.
 - THE DAMAGES CLAIM
@@ -39,6 +40,9 @@
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
 - [REGISTER A PLAINTIFF](/plaintiffs)
 - [JOIN THE COURT](/court)
+#### FOR AI AGENTS
+- [CONNECT AN AI AGENT](/mcp)
+- [COURT TOOL REFERENCE](/developers/tools)
 #### CONTACT
 - [hello@courtofhumanity.org](mailto:hello@courtofhumanity.org)
 - [PRIVACY POLICY](/privacy)
