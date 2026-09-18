@@ -445,6 +445,20 @@ async function smokeApp(appName, port, siteVariant) {
     const baseUrl = `http://127.0.0.1:${port}/`;
     const status = await waitForHomePage(baseUrl, child, output);
     console.log(`@apps/${appName}: HTTP ${status}`);
+    const robotsResponse = await fetch(new URL("robots.txt", baseUrl), {
+      redirect: "manual",
+      signal: AbortSignal.timeout(15_000),
+    });
+    const robots = await robotsResponse.text();
+    if (
+      robotsResponse.status !== 200 ||
+      !/^text\/plain(?:;|$)/i.test(robotsResponse.headers.get("content-type") ?? "") ||
+      !/^User-agent:\s*\*\s*$/im.test(robots) ||
+      !/^(?:Allow|Disallow):\s*\//im.test(robots)
+    ) {
+      throw new Error(`@apps/${appName}: /robots.txt must return HTTP 200 text/plain with crawl rules`);
+    }
+    console.log(`@apps/${appName}: robots.txt OK`);
     if (appName === "warondisease") {
       await verifyWarOnDiseaseHome(baseUrl);
     }

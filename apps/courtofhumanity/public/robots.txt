@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /api/agent/
+Disallow: /api
+Disallow: /admin
+Disallow: /auth
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /_next
+Disallow: /plaintiffs/manage
