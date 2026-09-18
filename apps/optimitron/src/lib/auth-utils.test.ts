@@ -239,6 +239,43 @@ describe("auth-utils OAuth support", () => {
     expect(mocks.getServerSession).not.toHaveBeenCalled();
   });
 
+  it.each([
+    { resource: "legacy", authorized: true },
+    { resource: "https://courtofhumanity.org/api/mcp", authorized: false },
+  ])("limits REST authorization to legacy grants ($resource)", async ({ resource, authorized }) => {
+    mocks.verifyMcpAccessToken.mockResolvedValue({
+      clientId: "client_field_app",
+      scopes: [McpScope.TASKS_PERSONAL],
+      sub: "user_oauth",
+    });
+    const grant = {
+      active: true,
+      clientId: "client_field_app",
+      resource,
+      revokedAt: null,
+      userId: "user_oauth",
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+    };
+    mocks.oAuthGrantFindFirst.mockImplementation(async ({ where }) =>
+      Object.entries(where).every(([key, value]) =>
+        grant[key as keyof typeof grant] === value,
+      ) ? grant : null,
+    );
+
+    const result = requireAuth(
+      new Request("https://optimitron.test/api/tasks", {
+        headers: { Authorization: "Bearer access_token" },
+      }),
+      [McpScope.TASKS_PERSONAL],
+    );
+    if (authorized) {
+      await expect(result).resolves.toMatchObject({ userId: "user_oauth" });
+    } else {
+      await expect(result).rejects.toThrow("Unauthorized");
+    }
+  });
+
   it("rejects a token after its OAuth grant is revoked", async () => {
     mocks.verifyMcpAccessToken.mockResolvedValue({
       clientId: "client_field_app",

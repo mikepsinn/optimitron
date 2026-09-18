@@ -111,6 +111,12 @@ Provider credentials can be shared only when the provider configuration includes
 every required callback URL. Separate credentials are safer when an app does not
 need the provider.
 
+Court MCP uses a separate RS256 signing key on the Optimitron OAuth issuer and
+public JWKS verification on Court. Keep Court's `NEXTAUTH_SECRET` unchanged.
+Leave `MCP_COURT_RESOURCE_ENABLED` off until the separate phase-2 grant uniqueness
+migration is deployed. See [Court MCP OAuth rollout](../docs/COURT_MCP_OAUTH_ROLLOUT.md)
+for signing variables, read-only preflight, cutover checks, and key rotation.
+
 Each app's Vercel build command runs `.github/scripts/vercel-app-env.mjs`
 before compilation. The preflight fails the deployment and lists every missing
 required variable. It never prints variable values. Authentication apps require

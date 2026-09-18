@@ -133,7 +133,15 @@ import {
   parseEnumInput,
   parseOptionalFiniteNumberInput,
 } from "@optimitron/tracking/parse";
-import { stringifyJsonSafe } from "./json-safe";
+import {
+  mcpToolInputSummary,
+  runAuditedMcpTool,
+  writeMcpToolAudit as writeSharedMcpToolAudit,
+  type McpAuditContext,
+  type McpToolAuditData,
+  type McpToolAuditInput,
+} from "@optimitron/mcp/audit";
+import { mcpResult } from "@optimitron/mcp/results";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
@@ -554,16 +562,7 @@ async function loadSessionPersonId(userId: string): Promise<string | null> {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function ok(data: unknown) {
-  const text = stringifyJsonSafe(data, 2);
-  const json = JSON.parse(text) as unknown;
-  return {
-    content: [{ type: "text" as const, text }],
-    ...(json != null && typeof json === "object" && !Array.isArray(json)
-      ? { structuredContent: json as Record<string, unknown> }
-      : {}),
-  };
-}
+const ok = mcpResult;
 
 interface ToolErrorOptions {
   code?: string;
@@ -673,192 +672,33 @@ const AUDITED_MCP_TOOLS = new Set([
   ...Object.keys(PRIVATE_EXECUTION_TOOL_SCOPES),
 ]);
 
-function stableStringify(value: unknown) {
-  const seen = new WeakSet<object>();
-  return JSON.stringify(value, (_key, item) => {
-    if (item && typeof item === "object") {
-      if (seen.has(item)) return "[Circular]";
-      seen.add(item);
-      if (!Array.isArray(item)) {
-        return Object.fromEntries(
-          Object.entries(item as Record<string, unknown>).sort(([a], [b]) =>
-            a.localeCompare(b),
-          ),
-        );
-      }
-    }
-    return item;
-  });
-}
-
-function hashMcpInput(input: unknown) {
-  return createHash("sha256")
-    .update(stableStringify(input) ?? "null")
-    .digest("hex");
-}
-
-function mcpToolInputSummary(args: Record<string, unknown>) {
-  const safeScalarKeys = [
-    "targetType",
-    "targetId",
-    "reasonType",
-    "sourceKind",
-    "referendumSlug",
-    "lifeStatus",
-    "causeCategory",
-    "position",
-    "kind",
-    "codeSystem",
-    "sourceSystem",
-    "artifactType",
-    "status",
-  ];
-  const summary: Record<string, unknown> = { keys: Object.keys(args).sort() };
-  for (const key of safeScalarKeys) {
-    const value = args[key];
-    if (
-      typeof value === "string" ||
-      typeof value === "number" ||
-      typeof value === "boolean"
-    ) {
-      summary[key] = value;
-    }
-  }
-  for (const key of [
-    "sourceUrl",
-    "sourceArtifactId",
-    "sourceKey",
-    "correctionJson",
-    "payloadJson",
-    "memorialMessage",
-    "publicComment",
-    "notes",
-  ]) {
-    summary[`${key}Present`] = args[key] != null && args[key] !== "";
-  }
-  return summary;
-}
-
-function mcpToolOutputSummary(output: unknown) {
-  const refs: Record<string, string[]> = {};
-  const visit = (value: unknown, depth = 0) => {
-    if (!value || depth > 4) return;
-    if (Array.isArray(value)) {
-      for (const item of value.slice(0, 20)) visit(item, depth + 1);
-      return;
-    }
-    if (typeof value !== "object") return;
-    for (const [key, item] of Object.entries(
-      value as Record<string, unknown>,
-    )) {
-      if (
-        typeof item === "string" &&
-        (key === "id" || /Id$/.test(key) || key === "slug" || key === "handle")
-      ) {
-        refs[key] = [...(refs[key] ?? []), item];
-      } else {
-        visit(item, depth + 1);
-      }
-    }
-  };
-  visit(output);
-  return { refs };
-}
-
-async function writeMcpToolAudit(input: {
-  agentId?: string | null;
-  args: Record<string, unknown>;
-  clientId?: string | null;
-  error?: unknown;
-  oauthGrantId?: string | null;
-  output?: unknown;
-  runId?: string | null;
-  status: McpToolCallStatus;
-  toolName: string;
-  userId?: string | null;
-}) {
-  if (!AUDITED_MCP_TOOLS.has(input.toolName)) return;
-  try {
+const mcpAuditOptions = {
+  auditedTools: AUDITED_MCP_TOOLS,
+  writeAudit: async (data: McpToolAuditData) => {
     const prisma = await getPrisma();
-    return await prisma.mcpToolCallAudit.create({
+    return prisma.mcpToolCallAudit.create({
       data: {
-        agentId: input.agentId ?? null,
-        clientId: input.clientId ?? null,
-        completedAt: new Date(),
-        errorSummary:
-          input.error == null
-            ? null
-            : input.error instanceof Error
-              ? input.error.message.slice(0, 500)
-              : String(input.error).slice(0, 500),
-        inputHash: hashMcpInput(input.args),
-        inputSummaryJson: mcpToolInputSummary(
-          input.args,
-        ) as Prisma.InputJsonValue,
-        oauthGrantId: input.oauthGrantId ?? null,
-        outputSummaryJson:
-          input.status === McpToolCallStatus.SUCCEEDED
-            ? (mcpToolOutputSummary(input.output) as Prisma.InputJsonValue)
-            : undefined,
-        status: input.status,
-        toolName: input.toolName,
-        userId: input.userId ?? null,
+        ...data,
+        inputSummaryJson: data.inputSummaryJson as Prisma.InputJsonValue,
+        outputSummaryJson: data.outputSummaryJson as Prisma.InputJsonValue | undefined,
       },
-      select: {
-        completedAt: true,
-        id: true,
-        status: true,
-        toolName: true,
-      },
+      select: { completedAt: true, id: true, status: true, toolName: true },
     });
-  } catch (auditError) {
-    console.error(
-      `[mcp] failed to audit tool "${input.toolName}":`,
-      auditError,
-    );
-  }
+  },
+  onAuditFailure: () => console.error("[mcp] failed to persist tool audit"),
+};
+
+async function writeMcpToolAudit(input: McpToolAuditInput) {
+  return writeSharedMcpToolAudit(input, mcpAuditOptions);
 }
 
 async function runAuditedEarthDataTool(
   toolName: string,
   args: Record<string, unknown>,
-  ctx: {
-    clientId?: string | null;
-    oauthGrantId?: string | null;
-    userId?: string | null;
-  },
+  ctx: McpAuditContext,
   fn: () => Promise<unknown>,
 ) {
-  const agentId = typeof args.agentId === "string" ? args.agentId : null;
-  const runId = typeof args.runId === "string" ? args.runId : null;
-  try {
-    const output = await fn();
-    await writeMcpToolAudit({
-      agentId,
-      args,
-      clientId: ctx.clientId,
-      oauthGrantId: ctx.oauthGrantId,
-      output,
-      runId,
-      status: McpToolCallStatus.SUCCEEDED,
-      toolName,
-      userId: ctx.userId,
-    });
-    return ok(output);
-  } catch (error) {
-    await writeMcpToolAudit({
-      agentId,
-      args,
-      clientId: ctx.clientId,
-      error,
-      oauthGrantId: ctx.oauthGrantId,
-      runId,
-      status: McpToolCallStatus.FAILED,
-      toolName,
-      userId: ctx.userId,
-    });
-    throw error;
-  }
+  return runAuditedMcpTool(toolName, args, ctx, fn, mcpAuditOptions);
 }
 
 // Personal-queue tools need to know *whose* queue to fetch — they cannot run

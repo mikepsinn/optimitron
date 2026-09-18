@@ -1775,7 +1775,7 @@ describe("MCP server tool dispatch", () => {
     expect(mocks.mcpToolCallAuditCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          errorSummary: "database unavailable",
+          errorSummary: "Tool execution failed.",
           inputHash: expect.any(String),
           inputSummaryJson: expect.not.objectContaining({
             message:

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { resolveOAuthResource } from "@/lib/mcp-court-oauth";
 import {
   buildMcpConsentAuthorizeUrl,
   isRedirectUriAllowed,
@@ -22,6 +23,14 @@ export async function GET(req: Request) {
   const scope = url.searchParams.get("scope");
   const codeChallenge = url.searchParams.get("code_challenge");
   const codeChallengeMethod = url.searchParams.get("code_challenge_method");
+  const resource = url.searchParams.get("resource");
+  try {
+    if (url.searchParams.getAll("resource").length > 1)
+      throw new Error("Multiple resources");
+    resolveOAuthResource(resource);
+  } catch {
+    return NextResponse.json({ error: "invalid_target" }, { status: 400 });
+  }
 
   // Validate required parameters
   if (responseType !== "code") {
@@ -81,6 +90,7 @@ export async function GET(req: Request) {
     scope,
     code_challenge: codeChallenge,
     client_name: client.clientName ?? clientId,
+    resource,
   });
 
   return NextResponse.redirect(consentUrl.toString());

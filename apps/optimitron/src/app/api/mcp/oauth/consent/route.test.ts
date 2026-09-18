@@ -57,6 +57,39 @@ describe("MCP OAuth consent route (Authorize)", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
+  });
+
+  it("binds Court consent to its resource and excludes unrelated or admin-only scopes", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("MCP_COURT_RESOURCE_ENABLED", "1");
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        resource: "https://courtofhumanity.org/api/mcp",
+        scope: "earthdata:write earthdata:admin tasks:personal github",
+        approved: true,
+        code_challenge: "challenge",
+      }),
+    );
+    expect(response.status).toBe(200);
+    expect(mocks.createAuthCode).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        resource: "https://courtofhumanity.org/api/mcp",
+        scopes: ["EARTHDATA_WRITE"],
+        organizationIds: [],
+      }),
+    });
+  });
+
+  it("rejects Court consent before the rollout gate opens", async () => {
+    vi.stubEnv("MCP_COURT_RESOURCE_ENABLED", "");
+    const response = await POST(
+      consentRequest({ resource: "https://courtofhumanity.org/api/mcp" }),
+    );
+    expect(response.status).toBe(400);
+    expect(mocks.createAuthCode).not.toHaveBeenCalled();
   });
 
   it("returns a redirect_url with an auth code when Authorize succeeds", async () => {

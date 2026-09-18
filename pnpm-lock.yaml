@@ -1463,6 +1463,9 @@ importers:
       '@optimitron/hypercerts':
         specifier: workspace:^
         version: link:../../packages/hypercerts
+      '@optimitron/mcp':
+        specifier: workspace:^
+        version: link:../../packages/mcp
       '@optimitron/obg':
         specifier: workspace:^
         version: link:../../packages/obg
@@ -3029,6 +3032,22 @@ importers:
       vitest:
         specifier: ^1.2.0
         version: 1.6.1(@types/node@20.19.37)
+
+  packages/mcp:
+    dependencies:
+      '@optimitron/db':
+        specifier: workspace:^
+        version: link:../db
+      jose:
+        specifier: ^6.2.2
+        version: 6.2.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.37
+        version: 20.19.37
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
 
   packages/neobrutalist-ui:
     dependencies:

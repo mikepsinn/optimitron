@@ -161,7 +161,7 @@ async function handleMcpRequest(req: Request): Promise<Response> {
         select: { isAdmin: true },
       }),
       prisma.oAuthGrant.findFirst({
-        where: { active: true, clientId, revokedAt: null, userId },
+        where: { active: true, clientId, resource: "legacy", revokedAt: null, userId },
         select: { id: true, organizationIds: true, scopes: true },
       }),
       prisma.organizationMember.findMany({

@@ -161,7 +161,8 @@
     "wagmi": "3.5.0",
     "web-push": "^3.6.7",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "3.25.2"
+    "zod-to-json-schema": "3.25.2",
+    "@optimitron/mcp": "workspace:^"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",

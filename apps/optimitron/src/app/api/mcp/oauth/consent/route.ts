@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
+  resolveOAuthResource,
+  LEGACY_MCP_RESOURCE,
+  filterCourtMcpScopes,
+} from "@/lib/mcp-court-oauth";
+import {
   generateAuthCode,
   AUTH_CODE_TTL_MS,
   isRedirectUriAllowed,
@@ -21,6 +26,12 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
+  let resource: string;
+  try {
+    resource = resolveOAuthResource(body.resource);
+  } catch {
+    return NextResponse.json({ error: "invalid_target" }, { status: 400 });
+  }
   const clientId = body.client_id as string;
   const redirectUri = body.redirect_uri as string;
   const state = body.state as string | null;
@@ -73,12 +84,16 @@ export async function POST(req: Request) {
   const code = generateAuthCode();
   const requestedScopes = scopesFromWire(scope);
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: session.user.id, deletedAt: null },
     select: { isAdmin: true },
   });
+  if (!user)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   let scopes = filterAllowedMcpScopes(requestedScopes, user?.isAdmin === true, {
     allowHumanApproval: isHumanApprovalOAuthRedirectUri(redirectUri),
   });
+  if (resource !== LEGACY_MCP_RESOURCE)
+    scopes = filterCourtMcpScopes(scopes, user.isAdmin);
 
   let organizationIds: string[] = [];
   let omittedOrganizationScope = false;
@@ -134,6 +149,7 @@ export async function POST(req: Request) {
       codeChallenge,
       scopes,
       organizationIds,
+      resource,
       expiresAt: new Date(Date.now() + AUTH_CODE_TTL_MS),
     },
   });

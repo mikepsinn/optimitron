@@ -10700,6 +10700,9 @@ model OAuthAuthCode {
   /// User who authorized the request
   userId String
 
+  /// Protected resource; legacy preserves existing shared MCP grants.
+  resource String @default("legacy")
+
   /// Redirect URI used in the request (must match on token exchange)
   redirectUri String
 
@@ -10742,6 +10745,9 @@ model OAuthGrant {
   /// User who granted access
   userId String
 
+  /// Protected resource; legacy preserves existing shared MCP grants.
+  resource String @default("legacy")
+
   /// Scopes the user approved
   scopes McpScope[]
 
@@ -10769,6 +10775,7 @@ model OAuthGrant {
   mcpToolCallAudits McpToolCallAudit[] @relation("OAuthGrantMcpToolCallAudits")
 
   @@unique([clientId, userId])
+  @@unique([clientId, userId, resource])
   @@index([clientId])
   @@index([userId])
   @@index([refreshTokenHash])

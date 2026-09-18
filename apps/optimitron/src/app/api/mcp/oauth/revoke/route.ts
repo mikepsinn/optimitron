@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashRefreshToken } from "@/lib/mcp-oauth";
+import { resolveOAuthResource } from "@/lib/mcp-court-oauth";
 
 export async function POST(req: Request) {
   try {
@@ -8,6 +9,13 @@ export async function POST(req: Request) {
     const formParams = body
       ? Object.fromEntries(body.entries())
       : await req.json();
+    let resource: string | undefined;
+    try {
+      if (formParams.resource != null)
+        resource = resolveOAuthResource(formParams.resource, true);
+    } catch {
+      return NextResponse.json({ active: false });
+    }
 
     const token = formParams.token as string;
     if (!token) {
@@ -17,13 +25,23 @@ export async function POST(req: Request) {
 
     // Try to find a grant by refresh token hash
     const tokenHash = hashRefreshToken(token);
-    const grant = await prisma.oAuthGrant.findUnique({
-      where: { refreshTokenHash: tokenHash },
+    const grant = await prisma.oAuthGrant.findFirst({
+      where: {
+        refreshTokenHash: tokenHash,
+        ...(resource ? { resource } : {}),
+        ...(typeof formParams.client_id === "string"
+          ? { clientId: formParams.client_id }
+          : {}),
+      },
     });
 
     if (grant && grant.active) {
-      await prisma.oAuthGrant.update({
-        where: { id: grant.id },
+      await prisma.oAuthGrant.updateMany({
+        where: {
+          id: grant.id,
+          resource: grant.resource,
+          refreshTokenHash: tokenHash,
+        },
         data: {
           active: false,
           revokedAt: new Date(),
@@ -34,11 +52,8 @@ export async function POST(req: Request) {
 
     // Per RFC 7009, always return 200 regardless of whether the token was found
     return NextResponse.json({ active: false });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(
-      { error: "server_error", error_description: message },
-      { status: 500 },
-    );
+  } catch {
+    console.error("[oauth/revoke] unexpected failure");
+    return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }

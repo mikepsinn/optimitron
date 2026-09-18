@@ -67,7 +67,7 @@ export async function requireTrackingAuth(
         select: { id: true },
       }),
       prisma.oAuthGrant.findFirst({
-        where: { active: true, clientId, revokedAt: null, userId },
+        where: { active: true, clientId, resource: "legacy", revokedAt: null, userId },
         select: { id: true, scopes: true },
       }),
     ]);

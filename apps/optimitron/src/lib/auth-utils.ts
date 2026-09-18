@@ -52,6 +52,7 @@ async function getOAuthIdentity(
       where: {
         active: true,
         clientId: payload.clientId,
+        resource: "legacy",
         revokedAt: null,
         userId: payload.sub,
       },

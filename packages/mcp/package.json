@@ -1,0 +1,25 @@
+{
+  "name": "@optimitron/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./resources": "./src/resources.ts",
+    "./auth": "./src/auth.ts",
+    "./audit": "./src/audit.ts",
+    "./results": "./src/results.ts"
+  },
+  "dependencies": {
+    "@optimitron/db": "workspace:^",
+    "jose": "^6.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.32",
+    "typescript": "^5.3.3"
+  }
+}

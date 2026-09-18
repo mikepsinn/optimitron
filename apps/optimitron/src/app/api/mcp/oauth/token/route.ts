@@ -10,40 +10,51 @@ import {
   ACCESS_TOKEN_TTL,
 } from "@/lib/mcp-oauth";
 import { scopesToWire } from "@/lib/mcp-scopes";
+import {
+  resolveOAuthResource,
+  LEGACY_MCP_RESOURCE,
+  signCourtMcpToken,
+  verifyCourtMcpRefreshToken,
+  filterCourtMcpScopes,
+} from "@/lib/mcp-court-oauth";
 
 export async function POST(req: Request) {
   try {
     const body = await req.formData().catch(() => null);
-    const params = body
-      ? Object.fromEntries(body.entries())
-      : await req.json();
+    const params = body ? Object.fromEntries(body.entries()) : await req.json();
+    let resource: string;
+    try {
+      if (body && body.getAll("resource").length > 1)
+        throw new Error("Multiple resources");
+      resource = resolveOAuthResource(params.resource);
+    } catch {
+      return NextResponse.json({ error: "invalid_target" }, { status: 400 });
+    }
 
     const grantType = params.grant_type as string;
 
     if (grantType === "authorization_code") {
-      return handleAuthorizationCode(params);
+      return await handleAuthorizationCode(params, resource);
     }
     if (grantType === "refresh_token") {
-      return handleRefreshToken(params);
+      return await handleRefreshToken(params, resource);
     }
 
     return NextResponse.json(
       { error: "unsupported_grant_type" },
       { status: 400 },
     );
-  } catch (error) {
+  } catch {
     // Never echo internal error text (Prisma/config details) to an
     // unauthenticated token-endpoint caller.
-    console.error("[oauth/token] unexpected failure:", error);
-    return NextResponse.json(
-      { error: "server_error" },
-      { status: 500 },
-    );
+    console.error("[oauth/token] unexpected failure");
+    return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
 
 async function handleAuthorizationCode(
   params: Record<string, unknown>,
+  resource: string,
 ) {
   const code = params.code as string;
   const clientId = params.client_id as string;
@@ -66,9 +77,12 @@ async function handleAuthorizationCode(
     where: { code },
   });
 
-  if (!authCode) {
+  if (!authCode || authCode.resource !== resource) {
     return NextResponse.json(
-      { error: "invalid_grant", error_description: "Invalid authorization code" },
+      {
+        error: "invalid_grant",
+        error_description: "Invalid authorization code",
+      },
       { status: 400 },
     );
   }
@@ -76,14 +90,20 @@ async function handleAuthorizationCode(
   // Validate the code
   if (authCode.used) {
     return NextResponse.json(
-      { error: "invalid_grant", error_description: "Authorization code already used" },
+      {
+        error: "invalid_grant",
+        error_description: "Authorization code already used",
+      },
       { status: 400 },
     );
   }
 
   if (authCode.expiresAt < new Date()) {
     return NextResponse.json(
-      { error: "invalid_grant", error_description: "Authorization code expired" },
+      {
+        error: "invalid_grant",
+        error_description: "Authorization code expired",
+      },
       { status: 400 },
     );
   }
@@ -110,44 +130,80 @@ async function handleAuthorizationCode(
     );
   }
 
-  // Mark code as used
-  await prisma.oAuthAuthCode.update({
-    where: { id: authCode.id },
-    data: { used: true },
+  const user = await prisma.user.findFirst({
+    where: { id: authCode.userId, deletedAt: null },
+    select: { isAdmin: true },
   });
+  if (!user)
+    return NextResponse.json({ error: "invalid_grant" }, { status: 400 });
 
   // Issue tokens
-  const scopes = authCode.scopes;
-  const organizationIds = authCode.organizationIds;
-  const accessToken = await signMcpAccessToken(
-    authCode.userId,
-    clientId,
-    scopes,
-    organizationIds,
-  );
-  const refreshToken = await signMcpRefreshToken(authCode.userId, clientId);
+  const isCourt = resource !== LEGACY_MCP_RESOURCE;
+  const scopes = isCourt
+    ? filterCourtMcpScopes(authCode.scopes, user.isAdmin)
+    : authCode.scopes;
+  const organizationIds = isCourt ? [] : authCode.organizationIds;
+  const accessToken = isCourt
+    ? await signCourtMcpToken({
+        userId: authCode.userId,
+        clientId,
+        scopes,
+        type: "access",
+      })
+    : await signMcpAccessToken(
+        authCode.userId,
+        clientId,
+        scopes,
+        organizationIds,
+      );
+  const refreshToken = isCourt
+    ? await signCourtMcpToken({
+        userId: authCode.userId,
+        clientId,
+        type: "refresh",
+      })
+    : await signMcpRefreshToken(authCode.userId, clientId);
 
-  // Upsert grant record
-  await prisma.oAuthGrant.upsert({
-    where: {
-      clientId_userId: { clientId, userId: authCode.userId },
-    },
-    create: {
-      clientId,
-      userId: authCode.userId,
-      scopes,
-      organizationIds,
-      refreshTokenHash: hashRefreshToken(refreshToken),
-      active: true,
-    },
-    update: {
+  // Claim the code and write its exact-resource grant atomically. Concurrent
+  // exchanges cannot both succeed, and a failed grant write leaves it unused.
+  const consumed = await prisma.$transaction(async (tx) => {
+    const claimed = await tx.oAuthAuthCode.updateMany({
+      where: {
+        id: authCode.id,
+        resource,
+        used: false,
+        expiresAt: { gt: new Date() },
+      },
+      data: { used: true },
+    });
+    if (claimed.count !== 1) return false;
+    const existingGrant = await tx.oAuthGrant.findFirst({
+      where: { clientId, userId: authCode.userId, resource },
+      select: { id: true },
+    });
+    const grantData = {
       scopes,
       organizationIds,
       refreshTokenHash: hashRefreshToken(refreshToken),
       active: true,
       revokedAt: null,
-    },
+    };
+    // Do not let native upsert select the old (clientId,userId) unique index
+    // while both phase-one uniqueness constraints coexist.
+    if (existingGrant) {
+      await tx.oAuthGrant.update({
+        where: { id: existingGrant.id, resource },
+        data: grantData,
+      });
+    } else {
+      await tx.oAuthGrant.create({
+        data: { clientId, userId: authCode.userId, resource, ...grantData },
+      });
+    }
+    return true;
   });
+  if (!consumed)
+    return NextResponse.json({ error: "invalid_grant" }, { status: 400 });
 
   return NextResponse.json({
     access_token: accessToken,
@@ -160,13 +216,17 @@ async function handleAuthorizationCode(
 
 async function handleRefreshToken(
   params: Record<string, unknown>,
+  resource: string,
 ) {
   const refreshToken = params.refresh_token as string;
   const clientId = params.client_id as string;
 
   if (!refreshToken) {
     return NextResponse.json(
-      { error: "invalid_request", error_description: "refresh_token is required" },
+      {
+        error: "invalid_request",
+        error_description: "refresh_token is required",
+      },
       { status: 400 },
     );
   }
@@ -174,10 +234,16 @@ async function handleRefreshToken(
   // Verify the JWT
   let tokenPayload: { sub: string; clientId: string };
   try {
-    tokenPayload = await verifyMcpRefreshToken(refreshToken);
+    tokenPayload =
+      resource === LEGACY_MCP_RESOURCE
+        ? await verifyMcpRefreshToken(refreshToken)
+        : await verifyCourtMcpRefreshToken(refreshToken);
   } catch {
     return NextResponse.json(
-      { error: "invalid_grant", error_description: "Invalid or expired refresh token" },
+      {
+        error: "invalid_grant",
+        error_description: "Invalid or expired refresh token",
+      },
       { status: 400 },
     );
   }
@@ -189,9 +255,14 @@ async function handleRefreshToken(
     );
   }
 
-  const grant = await prisma.oAuthGrant.findUnique({
+  const grant = await prisma.oAuthGrant.findFirst({
     where: {
       refreshTokenHash: hashRefreshToken(refreshToken),
+      resource,
+      clientId: tokenPayload.clientId,
+      userId: tokenPayload.sub,
+      revokedAt: null,
+      active: true,
     },
   });
 
@@ -201,15 +272,31 @@ async function handleRefreshToken(
       { status: 400 },
     );
   }
+  const user = await prisma.user.findFirst({
+    where: { id: grant.userId, deletedAt: null },
+    select: { isAdmin: true },
+  });
+  if (!user)
+    return NextResponse.json({ error: "invalid_grant" }, { status: 400 });
 
   // Issue new tokens
-  const scopes = grant.scopes;
-  const newAccessToken = await signMcpAccessToken(
-    grant.userId,
-    grant.clientId,
-    scopes,
-    grant.organizationIds,
-  );
+  const isCourt = resource !== LEGACY_MCP_RESOURCE;
+  const scopes = isCourt
+    ? filterCourtMcpScopes(grant.scopes, user.isAdmin)
+    : grant.scopes;
+  const newAccessToken = isCourt
+    ? await signCourtMcpToken({
+        userId: grant.userId,
+        clientId: grant.clientId,
+        scopes,
+        type: "access",
+      })
+    : await signMcpAccessToken(
+        grant.userId,
+        grant.clientId,
+        scopes,
+        grant.organizationIds,
+      );
 
   return NextResponse.json({
     access_token: newAccessToken,

@@ -103,7 +103,7 @@ async function removeFixtureManifest() {
 
 async function seedMcpAuthorizeFixture(input: { nonAdminEmail: string }) {
   await prisma.oAuthGrant.deleteMany({
-    where: { clientId: MCP_AUTHORIZE_CLIENT_ID },
+    where: { clientId: MCP_AUTHORIZE_CLIENT_ID, resource: "legacy" },
   });
   await prisma.oAuthClient.upsert({
     where: { clientId: MCP_AUTHORIZE_CLIENT_ID },

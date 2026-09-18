@@ -52,4 +52,23 @@ describe("MCP OAuth authorize route", () => {
     expect(consent.searchParams.get("scope")).toBe("tasks:personal");
     expect(consent.searchParams.get("client_name")).toBe("Cursor");
   });
+
+  it("carries an enabled Court resource into canonical consent", async () => {
+    vi.stubEnv("MCP_COURT_RESOURCE_ENABLED", "1");
+    const url = new URL("https://optimitron.com/api/mcp/oauth/authorize");
+    url.search = new URLSearchParams({
+      response_type: "code",
+      client_id: "mcp_client",
+      redirect_uri: "http://127.0.0.1:9999/callback",
+      code_challenge: "abc",
+      resource: "https://courtofhumanity.org/api/mcp",
+    }).toString();
+    const response = await GET(new Request(url));
+    expect(response.status).toBe(307);
+    expect(
+      new URL(response.headers.get("location")!).searchParams.get("resource"),
+    ).toBe("https://courtofhumanity.org/api/mcp");
+    url.searchParams.append("resource", "https://dfda.earth/api/mcp");
+    expect((await GET(new Request(url))).status).toBe(400);
+  });
 });

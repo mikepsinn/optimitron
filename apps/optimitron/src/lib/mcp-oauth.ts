@@ -173,9 +173,10 @@ export async function verifyMcpAccessToken(
   token: string,
 ): Promise<McpAccessTokenPayload> {
   const { payload } = await jwtVerify(token, getSecret(), {
+    algorithms: ["HS256"],
     issuer: getAcceptedMcpIssuers(),
   });
-  if (payload.type !== "access") {
+  if (payload.type !== "access" || payload.resource != null || payload.aud != null) {
     throw new Error("Not an access token");
   }
   if (
@@ -196,9 +197,10 @@ export async function verifyMcpRefreshToken(
   token: string,
 ): Promise<{ sub: string; clientId: string }> {
   const { payload } = await jwtVerify(token, getSecret(), {
+    algorithms: ["HS256"],
     issuer: getAcceptedMcpIssuers(),
   });
-  if (payload.type !== "refresh") {
+  if (payload.type !== "refresh" || payload.resource != null || payload.aud != null) {
     throw new Error("Not a refresh token");
   }
   return {
@@ -313,6 +315,7 @@ export function getOAuthMetadata() {
     token_endpoint: `${issuer}/api/mcp/oauth/token`,
     registration_endpoint: `${issuer}/api/mcp/oauth/register`,
     revocation_endpoint: `${issuer}/api/mcp/oauth/revoke`,
+    jwks_uri: `${issuer}/.well-known/jwks.json`,
     response_types_supported: ["code"],
     grant_types_supported: ["authorization_code", "refresh_token"],
     token_endpoint_auth_methods_supported: ["none"],
