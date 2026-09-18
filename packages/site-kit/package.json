@@ -25,6 +25,7 @@
     "./lib/*": "./src/lib/*",
     "./lib/court-links": "./src/lib/court-links.ts",
     "./lib/court-enrollment.server": "./src/lib/court-enrollment.server.ts",
+    "./lib/treaty-represented-person-registration.server": "./src/lib/treaty-represented-person-registration.server.ts",
     "./lib/subject.server": "./src/lib/subject.server.ts",
     "./lib/create-middleware": "./src/lib/create-middleware.ts",
     "./lib/auth-api-signup": "./src/lib/auth-api-signup.ts",
