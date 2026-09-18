@@ -74,6 +74,8 @@
   --brutal-yellow-foreground: rgb(0, 0, 0);
   --brutal-red: rgb(239, 68, 68);
   --brutal-red-foreground: rgb(255, 255, 255);
+  --brutal-green: rgb(34, 197, 94);
+  --brutal-green-foreground: rgb(0, 0, 0);
 
   /* Shadow system - hard shadows for neobrutalism */
   --shadow-x: 8px;
@@ -148,6 +150,8 @@
   --brutal-yellow-foreground: rgb(0, 0, 0);
   --brutal-red: rgb(248, 113, 113);
   --brutal-red-foreground: rgb(0, 0, 0);
+  --brutal-green: rgb(74, 222, 128);
+  --brutal-green-foreground: rgb(0, 0, 0);
 
   /* Shadow - white shadows for dark mode */
   --shadow-x: 8px;
@@ -202,6 +206,8 @@
   --color-brutal-yellow-foreground: var(--brutal-yellow-foreground);
   --color-brutal-red: var(--brutal-red);
   --color-brutal-red-foreground: var(--brutal-red-foreground);
+  --color-brutal-green: var(--brutal-green);
+  --color-brutal-green-foreground: var(--brutal-green-foreground);
 
   /* Radius - sharp edges */
   --radius-lg: var(--radius);

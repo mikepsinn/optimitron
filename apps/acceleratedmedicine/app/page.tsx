@@ -35,7 +35,11 @@ export default async function HomePage({ searchParams }: {
   const visualState = parseTrialAbundanceVisualState((await searchParams)?.visual);
   return (
     <Layout>
-      <StateSupportSection headingAs="h1" visualState={visualState} />
+      <StateSupportSection
+        heading="Take our brief survey"
+        headingAs="h1"
+        visualState={visualState}
+      />
       <UniversalRightToTryHero />
       <MontanaProofSection />
       <RightToTryEvolutionSection />

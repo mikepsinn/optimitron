@@ -40,6 +40,12 @@ export const appNavigation: AppNavigation = {
       "description": "Fund patient education, pragmatic-trial research, and public treatment evidence.",
       "emoji": "💝",
       "feature": "donate"
+    },
+    {
+      "id": "aboutUs",
+      "label": "About us",
+      "path": "/about",
+      "description": "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit."
     }
   ],
   "sidebarSections": [],
@@ -105,6 +111,12 @@ export const appNavigation: AppNavigation = {
           "path": "/faq",
           "description": "Answers about the 1% Treaty, pragmatic clinical trials, peace dividend economics, implementation feasibility, and how to help",
           "emoji": "❓"
+        },
+        {
+          "id": "aboutUs",
+          "label": "About us",
+          "path": "/about",
+          "description": "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit."
         }
       ]
     },

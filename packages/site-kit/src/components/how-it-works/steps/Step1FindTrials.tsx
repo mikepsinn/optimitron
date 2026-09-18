@@ -26,7 +26,7 @@ export function Step1FindTrials() {
               Comparative Effectiveness Rankings
             </div>
             <div className="text-xs text-muted-foreground mb-2">
-              Illustrative demo data — not real effectiveness results
+              Illustrative demo data - not real effectiveness results
             </div>
 
             <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center bg-primary/5 py-1.5 rounded-md">

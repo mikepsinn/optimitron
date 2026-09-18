@@ -239,7 +239,7 @@ function ParameterDetailContent({ param }: { param: Parameter }) {
             {citation.title}
             {citation.author?.[0] && (
               <span>
-                {" — "}
+                {" - "}
                 {citation.author[0].literal ??
                   `${citation.author[0].family ?? ""}${citation.author[0].given ? `, ${citation.author[0].given}` : ""}`}
                 {citation.author.length > 1 && " et al."}

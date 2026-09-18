@@ -8,13 +8,15 @@ import {
   ExternalLink,
   Gauge,
   HeartPulse,
-  Landmark,
   MapPin,
   Microscope,
+  Podcast,
   Scale,
   Share2,
+  SlidersHorizontal,
   Stethoscope,
   Users,
+  Workflow,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -64,67 +66,152 @@ function SourceLink({
   );
 }
 
+const heroBoxClass =
+  "flex min-h-[18rem] flex-col items-center justify-center rounded-none border-4 border-primary bg-background p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-7";
+
 export function UniversalRightToTryHero() {
   return (
     <SectionContainer
       bgColor="background"
       borderPosition="bottom"
-      className="overflow-hidden py-24 sm:py-28 lg:py-32"
+      className="overflow-hidden py-16 sm:py-20 lg:py-24"
     >
       <Container>
-        <div className="grid items-center gap-10 lg:grid-cols-[1.35fr_0.65fr]">
-          <div>
-            <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
-              The Right to Trial
-            </p>
-            <h2 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-              We can eradicate disease.
-            </h2>
-            <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-              Give every patient the right to join a clinical trial for the most
-              promising treatments—with a clinician, at a licensed treatment
-              center, wherever they live. Every patient gets more options. Every
-              result helps us find what works.
-            </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className={`${buttonShadow} bg-brutal-pink`}
-              >
-                <Link href="/montana">
-                  See how Montana did it <ArrowRight className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                className={`${buttonShadow} bg-brutal-yellow text-foreground`}
-              >
-                <a href="#state-support">
-                  Bring it to my state <MapPin className="h-5 w-5" />
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-sm">
-            <div className="rotate-2 border-4 border-primary bg-brutal-yellow p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-              <Landmark className="h-16 w-16" strokeWidth={3} />
-              <p className="mt-5 text-lg font-black uppercase">
-                How Montana is accelerating clinical discovery
+        <p className="mb-6 text-4xl font-black uppercase tracking-tight underline decoration-4 underline-offset-8 sm:text-5xl">
+          Our initiatives:
+        </p>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+          <a className="block lg:col-span-2" href="#right-to-trial">
+            <Card
+              className={`${heroBoxClass} -rotate-1 gap-5 bg-brutal-cyan`}
+            >
+              <div className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <ClipboardCheck
+                  aria-hidden="true"
+                  className="h-14 w-14"
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="text-4xl font-black uppercase leading-[0.9] tracking-tighter sm:text-5xl">
+                Right to Trial Initiative
               </p>
-              <p className="text-6xl font-black uppercase leading-none">
-                SB 535
+            </Card>
+          </a>
+          <a className="block lg:col-span-2" href="https://warondisease.org">
+            <Card
+              className={`${heroBoxClass} rotate-1 gap-5 bg-brutal-yellow`}
+            >
+              <div className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <SlidersHorizontal
+                  aria-hidden="true"
+                  className="h-14 w-14"
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="text-4xl font-black uppercase leading-[0.9] tracking-tighter sm:text-5xl md:text-6xl">
+                1% Treaty
               </p>
-              <p className="mt-4 text-lg font-bold">
-                Montana removed the terminal-illness restriction, licensed
-                experimental treatment centers, and required outcome monitoring.
-                Patients and providers now have a practical path to more
-                treatment options.
+            </Card>
+          </a>
+          <a className="block lg:col-span-2" href="https://dfda.earth">
+            <Card
+              className={`${heroBoxClass} -rotate-1 gap-5 bg-brutal-green`}
+            >
+              <div className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <Microscope
+                  aria-hidden="true"
+                  className="h-14 w-14"
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="max-w-full px-1 text-2xl font-black uppercase leading-[0.95] tracking-tight sm:text-3xl md:text-4xl">
+                Decentralized
+                <br />
+                FDA
               </p>
-            </div>
-          </div>
+            </Card>
+          </a>
+          <a
+            className="block lg:col-span-2 lg:col-start-2"
+            href="https://www.youtube.com/@WarOnDisease/podcasts"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Card
+              className={`${heroBoxClass} rotate-1 gap-5 bg-brutal-pink`}
+            >
+              <div className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <Podcast
+                  aria-hidden="true"
+                  className="h-14 w-14"
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="text-3xl font-black uppercase leading-[0.9] tracking-tighter text-brutal-pink-foreground sm:text-4xl md:text-5xl">
+                Check out our podcast
+              </p>
+            </Card>
+          </a>
+          <a
+            className="block sm:col-span-2 sm:w-[calc((100%-1.25rem)/2)] sm:justify-self-center lg:col-span-2 lg:w-auto lg:justify-self-stretch"
+            href="https://wishocracy.org"
+          >
+            <Card
+              className={`${heroBoxClass} -rotate-1 gap-5 bg-brutal-red`}
+            >
+              <div className="border-4 border-primary bg-background p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <Workflow
+                  aria-hidden="true"
+                  className="h-12 w-12"
+                  strokeWidth={3}
+                />
+              </div>
+              <p className="max-w-full px-1 text-2xl font-black uppercase leading-[0.95] tracking-tight text-brutal-red-foreground sm:text-3xl md:text-4xl">
+                Wishocracy
+              </p>
+            </Card>
+          </a>
+        </div>
+        <div className="scroll-mt-[121px]" id="right-to-trial">
+        <p className="mt-12 mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
+          The Right to Trial
+        </p>
+        <h2 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
+          We can eradicate disease.
+        </h2>
+        <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
+          Give every patient the right to join a clinical trial for the most
+          promising treatments - with a clinician, at a licensed treatment
+          center, wherever they live. Every patient gets more options. Every
+          result helps us find what works.
+        </p>
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-brutal-pink`}
+          >
+            <Link href="/montana">
+              See how Montana did it <ArrowRight className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-brutal-yellow text-foreground`}
+          >
+            <a href="#state-support">
+              Bring it to my state <MapPin className="h-5 w-5" />
+            </a>
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-background text-foreground`}
+          >
+            <Link href="/about">About us</Link>
+          </Button>
+        </div>
         </div>
       </Container>
     </SectionContainer>
@@ -498,7 +585,7 @@ export function StateCampaignMapSection() {
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
             Montana is the enacted precedent. The original Right to Try spread
-            from one state in 2014 to 41 states by 2018 — tap your state to
+            from one state in 2014 to 41 states by 2018 - tap your state to
             see what Right to Trial would mean there, then add your voice.
           </p>
         </div>

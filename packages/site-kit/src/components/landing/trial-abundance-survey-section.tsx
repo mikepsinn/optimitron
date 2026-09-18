@@ -117,7 +117,7 @@ export default function TrialAbundanceSurveySection({
   const inviteToken = searchParams?.get("invite") ?? null
   const isVisualCapture = visualState !== undefined
   const [stage, setStage] = useState<SurveyStage>(getInitialStage(visualState))
-  const StepHeading = stage === "patient-access" && title ? "h2" : Heading
+  const StepHeading = title ? "h2" : Heading
   const [patientAccessAnswer, setPatientAccessAnswer] =
     useState<TrialAbundanceAnswer | null>(
       visualState === "complete" ? "YES" : null,
@@ -267,7 +267,7 @@ export default function TrialAbundanceSurveySection({
       className="pb-24"
     >
       <Container>
-        {stage === "patient-access" && (title || description) ? (
+        {title || description ? (
           <div className="mb-10 text-center">
             {title ? (
               <Heading className="mb-3 text-3xl font-black uppercase sm:text-4xl md:text-6xl">

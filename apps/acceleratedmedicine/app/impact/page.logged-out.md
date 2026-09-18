@@ -111,7 +111,7 @@
 - Compare with standard of care treatments
 - Read about experiences from patients like you
 - Klotho-Increasing Gene Therapy
-- Illustrative demo data — hypothetical future therapy
+- Illustrative demo data - hypothetical future therapy
 - Cognitive Function (ADAS-Cog)
 - +28%
 - Memory Recall
@@ -277,6 +277,7 @@
 - [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
+- [ABOUT US](/about)
 #### SUPPORT
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)

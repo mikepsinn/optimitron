@@ -1320,7 +1320,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
+      alt: "Right to Trial Initiative - patient access, pragmatic trials, and public evidence.",
     },
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",
