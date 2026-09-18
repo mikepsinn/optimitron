@@ -65,14 +65,6 @@ const mocks = vi.hoisted(() => ({
   searchPeople: vi.fn(),
   upsertOrganization: vi.fn(),
   upsertMemorialPerson: vi.fn(),
-  addCourtCaseClaim: vi.fn(),
-  addCourtCaseEvidence: vi.fn(),
-  addCourtCaseHarm: vi.fn(),
-  addCourtCaseParty: vi.fn(),
-  addCourtCaseRemedy: vi.fn(),
-  getCourtCase: vi.fn(),
-  openCourtCaseJuryVote: vi.fn(),
-  upsertCourtCase: vi.fn(),
   reportContent: vi.fn(),
   transaction: vi.fn(),
   userFindUnique: vi.fn(),
@@ -321,16 +313,6 @@ vi.mock("../earth-data.server", () => ({
   reportContent: mocks.reportContent,
 }));
 
-vi.mock("../court-data.server", () => ({
-  addCourtCaseClaim: mocks.addCourtCaseClaim,
-  addCourtCaseEvidence: mocks.addCourtCaseEvidence,
-  addCourtCaseHarm: mocks.addCourtCaseHarm,
-  addCourtCaseParty: mocks.addCourtCaseParty,
-  addCourtCaseRemedy: mocks.addCourtCaseRemedy,
-  getCourtCase: mocks.getCourtCase,
-  openCourtCaseJuryVote: mocks.openCourtCaseJuryVote,
-  upsertCourtCase: mocks.upsertCourtCase,
-}));
 
 class ForbiddenError extends Error {
   constructor(message = "Forbidden") {
@@ -3169,7 +3151,7 @@ describe("MCP server tool dispatch", () => {
               }),
             },
           }),
-          where: { deletedAt: null, status: ReferendumStatus.ACTIVE },
+          where: { deletedAt: null, kind: { not: ReferendumKind.COURT_CASE }, status: ReferendumStatus.ACTIVE },
           take: 5,
         }),
       );
@@ -3241,93 +3223,26 @@ describe("MCP server tool dispatch", () => {
     });
   });
 
-  describe("court tools", () => {
-    it("exposes Court of Humanity drafting tools to Earth-data writers", async () => {
-      const noScopeClient = await setup("user-1", [McpScope.TASKS_PERSONAL]);
-      const writerClient = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
-
-      const noScopeNames = (await noScopeClient.listTools()).tools.map(
-        (tool) => tool.name,
-      );
-      const writerNames = (await writerClient.listTools()).tools.map(
-        (tool) => tool.name,
-      );
-
-      expect(noScopeNames).not.toContain("upsertCourtCase");
-      expect(writerNames).toEqual(
-        expect.arrayContaining([
-          "upsertCourtCase",
-          "addCourtCaseParty",
-          "addCourtCaseClaim",
-          "addCourtCaseHarm",
-          "addCourtCaseEvidence",
-          "addCourtCaseRemedy",
-          "getCourtCase",
-          "openCourtCaseJuryVote",
-        ]),
-      );
+  describe("court tool cutover", () => {
+    it("does not allow generic referendum creation to bypass Court ownership", async () => {
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({ name: "createReferendum", arguments: {
+        title: "Court jury", question: "Verdict?", kind: "COURT_CASE",
+      } });
+      expect(result.isError).toBe(true);
+      expect(mocks.referendumCreate).not.toHaveBeenCalled();
     });
-
-    it("passes the authenticated user through to court case creation", async () => {
-      mocks.upsertCourtCase.mockResolvedValue({
-        id: "case-1",
-        slug: "humanity-v-pentagon",
-        title: "Humanity v. Pentagon",
-      });
-
-      const client = await setup("agent-user", [McpScope.EARTHDATA_WRITE]);
-      const result = await client.callTool({
-        name: "upsertCourtCase",
-        arguments: {
-          title: "Humanity v. Pentagon",
-          summary: "Audit failure and resource misallocation case.",
-        },
-      });
-
-      expect(result.isError).toBeFalsy();
-      expect(mocks.upsertCourtCase).toHaveBeenCalledWith(
-        expect.objectContaining({
-          createdByUserId: "agent-user",
-          summary: "Audit failure and resource misallocation case.",
-          title: "Humanity v. Pentagon",
-        }),
-      );
-      const body = parseToolBody(result);
-      expect(body.case).toMatchObject({
-        id: "case-1",
-        slug: "humanity-v-pentagon",
-      });
-    });
-
-    it("passes the authenticated user through to court evidence creation", async () => {
-      mocks.addCourtCaseEvidence.mockResolvedValue({
-        id: "evidence-1",
-        parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
-      });
-
-      const client = await setup("agent-user", [McpScope.EARTHDATA_WRITE]);
-      const result = await client.callTool({
-        name: "addCourtCaseEvidence",
-        arguments: {
-          caseId: "case-1",
-          parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
-          title: "Pentagon unaccounted funds parameter",
-        },
-      });
-
-      expect(result.isError).toBeFalsy();
-      expect(mocks.addCourtCaseEvidence).toHaveBeenCalledWith(
-        expect.objectContaining({
-          caseId: "case-1",
-          createdByUserId: "agent-user",
-          parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
-        }),
-      );
-      const body = parseToolBody(result);
-      expect(body.evidence).toMatchObject({
-        id: "evidence-1",
-        parameterName: "PENTAGON_UNACCOUNTED_FUNDS",
-      });
+    it("neither advertises nor dispatches Court tools, even for an administrator", async () => {
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const names = (await client.listTools()).tools.map((tool) => tool.name);
+      for (const name of ["upsertCourtCase", "addCourtCaseParty", "addCourtCaseClaim",
+        "addCourtCaseHarm", "addCourtCaseEvidence", "addCourtCaseRemedy",
+        "getCourtCase", "openCourtCaseJuryVote"]) {
+        expect(names).not.toContain(name);
+        const result = await client.callTool({ name, arguments: {} });
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).message).toContain("Unknown tool");
+      }
     });
   });
 

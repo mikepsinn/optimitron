@@ -3,18 +3,13 @@ import {
   buildTreatyParameterExport,
   getTreatyParameterSetHash,
 } from "@/lib/tasks/treaty-parameter-export";
-import {
-  getHumanityVGovernmentPlaintiffCount,
-  getHumanityVGovernmentVerdictStats,
-} from "@/lib/humanity-v-government-case.server";
+import { courtUrl } from "@optimitron/site-kit/lib/court-links";
 import {
   getReferendumSiteHomeData,
   type PublicSignatoryEntry,
 } from "@/lib/referendum-site.server";
 import {
   AGENT_CACHE_SECONDS,
-  AGENT_ENDPOINT_PATHS,
-  MARKDOWN_MIRROR_PATHS,
   TARGET_QUESTIONS,
   absoluteCampaignUrl,
   getAgentReadablePaths,
@@ -135,11 +130,7 @@ export async function buildAgentManifest(site: SiteConfig) {
 
 export async function buildAgentCampaignState(site: SiteConfig) {
   const campaignSite = getCanonicalAgentReadableSite(site);
-  const [homeData, plaintiffCount, verdictStats] = await Promise.all([
-    getReferendumSiteHomeData(campaignSite),
-    getHumanityVGovernmentPlaintiffCount(),
-    getHumanityVGovernmentVerdictStats(null),
-  ]);
+  const homeData = await getReferendumSiteHomeData(campaignSite);
 
   return withMetadata({
     name: "War on Disease campaign state",
@@ -148,8 +139,8 @@ export async function buildAgentCampaignState(site: SiteConfig) {
     sourceUrls: [
       absoluteCampaignUrl(campaignSite, ROUTES.vote),
       absoluteCampaignUrl(campaignSite, ROUTES.signatories),
-      absoluteCampaignUrl(campaignSite, ROUTES.humanityVGovernment),
-      absoluteCampaignUrl(campaignSite, ROUTES.plaintiffs),
+      courtUrl("/humanity-v-government"),
+      courtUrl("/plaintiffs"),
     ],
     counts: {
       individualVotes: homeData?.individualCount ?? 0,
@@ -157,19 +148,13 @@ export async function buildAgentCampaignState(site: SiteConfig) {
       memorialVotes: homeData?.memorialVoteCount ?? 0,
       approvedOrganizations: homeData?.organizationCount ?? 0,
       publicSignatories: homeData?.publicSignatories.totalCount ?? 0,
-      plaintiffs: plaintiffCount,
-    },
-    humanityVGovernmentVerdict: {
-      referendumSlug: verdictStats.referendumSlug,
-      yesCount: verdictStats.yesCount,
-      noCount: verdictStats.noCount,
-      abstainCount: verdictStats.abstainCount,
     },
     links: {
       vote: absoluteCampaignUrl(campaignSite, ROUTES.vote),
       treaty: absoluteCampaignUrl(campaignSite, ROUTES.treaty),
       signatories: absoluteCampaignUrl(campaignSite, ROUTES.signatories),
-      plaintiffs: absoluteCampaignUrl(campaignSite, ROUTES.plaintiffs),
+      plaintiffs: courtUrl("/plaintiffs"),
+      courtState: courtUrl("/api/agent/plaintiffs"),
       parameters: absoluteCampaignUrl(campaignSite, "/api/agent/parameters"),
     },
   });
@@ -190,23 +175,6 @@ export async function buildAgentSignatories(site: SiteConfig) {
     signatories: (page?.signatories ?? []).map((entry) =>
       summarizeSignatory(campaignSite, entry),
     ),
-  });
-}
-
-export async function buildAgentPlaintiffs(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
-  const count = await getHumanityVGovernmentPlaintiffCount();
-  return withMetadata({
-    name: "Humanity v Government plaintiffs",
-    sourceUrls: [
-      absoluteCampaignUrl(campaignSite, ROUTES.plaintiffs),
-      absoluteCampaignUrl(campaignSite, ROUTES.humanityVGovernment),
-    ],
-    plaintiffCount: count,
-    registerUrl: absoluteCampaignUrl(campaignSite, ROUTES.plaintiffs),
-    caseUrl: absoluteCampaignUrl(campaignSite, ROUTES.humanityVGovernment),
-    publicDataPolicy:
-      "Only intentionally public plaintiff/case data belongs in public agent surfaces. Private account details, emails, cookies, and auth state are excluded.",
   });
 }
 
@@ -233,13 +201,7 @@ export function buildAgentDiscoveryManifest(site: SiteConfig) {
   return {
     llmsTxt: absoluteCampaignUrl(campaignSite, "/llms.txt"),
     llmsFullTxt: absoluteCampaignUrl(campaignSite, "/llms-full.txt"),
-    markdownMirrors: MARKDOWN_MIRROR_PATHS.map((entry) => ({
-      ...entry,
-      url: absoluteCampaignUrl(campaignSite, entry.path),
-    })),
-    agentEndpoints: AGENT_ENDPOINT_PATHS.map((entry) => ({
-      ...entry,
-      url: absoluteCampaignUrl(campaignSite, entry.path),
-    })),
+    markdownMirrors: getAgentReadablePaths(campaignSite).markdownMirrors,
+    agentEndpoints: getAgentReadablePaths(campaignSite).agentEndpoints,
   };
 }

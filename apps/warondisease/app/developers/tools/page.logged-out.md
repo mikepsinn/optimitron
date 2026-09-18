@@ -15,7 +15,7 @@
 
 - DEVELOPERS
 ## MCP TOOL REFERENCE
-- Every tool the Optimitron MCP server exposes — 171 tools (32 admin-gated) — generated from the same registry the live server enforces. The live machine-readable version is [optimitron.com/api/mcp/tools](https://optimitron.com/api/mcp/tools); connection instructions live at [/mcp](/mcp).
+- Every tool the Optimitron MCP server exposes — 163 tools (32 admin-gated) — generated from the same registry the live server enforces. The live machine-readable version is [optimitron.com/api/mcp/tools](https://optimitron.com/api/mcp/tools); connection instructions live at [/mcp](/mcp).
 - Each tool is listed once, under its primary scope; many accept more than one scope, so the badges on a tool name every scope that can call it.
 ### OAUTH SCOPES
 ### PUBLIC (NO SCOPE) (15)
@@ -731,7 +731,7 @@
 #### proposeFormSubmission tasks:personal or tasks:organization
 - Propose the exact prepared form submission for human approval without executing it.
 - formSubmissionId (string, required)
-### EARTHDATA:WRITE (33)
+### EARTHDATA:WRITE (25)
 #### castReferendumVote earthdata:write
 - Cast or update the authenticated user's own referendum vote.
 - answer (enum)
@@ -820,80 +820,6 @@
 - versionKey (string)
 - contentHash (string)
 - payloadJson (object) — For calculation code: { language, source, runtime?, dependencies?, entrypoint?, inputs?, outputs?, notes? }. Code is retained as inert data and is never run by this tool or by the web application.
-#### upsertCourtCase earthdata:write
-- Create or update a Court of Humanity case root record.
-- id (string)
-- summary (string)
-- nominalPlaintiffSubjectId (string)
-- primaryRespondentSubjectId (string)
-- beneficiarySubjectId (string)
-- rootTaskId (string)
-- juryReferendumId (string)
-- metadataJson (object)
-#### addCourtCaseParty earthdata:write
-- Attach a plaintiff, respondent, class, beneficiary, or amicus Subject to a Court of Humanity case.
-- PARAMETERS (16)
-- caseId (string, required)
-- partyKey (string)
-- subjectId (string)
-- subjectExternalId (string)
-- subjectDisplayName (string)
-- subjectType (string)
-- role (enum, required)
-- capacity (enum)
-- displayNameSnapshot (string)
-- standingTheory (string)
-- powerToRemedyScore (number)
-- blameAttributionScore (number)
-- publicAccountabilityScore (number)
-- sortOrder (number)
-#### addCourtCaseClaim earthdata:write
-- Add a structured allegation or requested finding to a Court of Humanity case.
-- claimKey (string)
-- claimType (string)
-- argumentMarkdown (string, required)
-- requestedFinding (string)
-#### addCourtCaseHarm earthdata:write
-- Add a quantified or qualitative harm catalog row to a Court of Humanity case.
-- PARAMETERS (18)
-- claimId (string)
-- harmKey (string)
-- harmType (string)
-- bodyMarkdown (string)
-- affectedSubjectId (string)
-- parameterName (string)
-- lowValue (number)
-- baseValue (number)
-- highValue (number)
-- unit (string)
-#### addCourtCaseEvidence earthdata:write
-- Attach public non-sensitive evidence to a Court of Humanity case, claim, or harm.
-- PARAMETERS (19)
-- harmId (string)
-- evidenceKey (string)
-- evidenceType (string)
-- personMemorialId (string)
-- containsSensitiveData (boolean) — Must be false; sensitive evidence is not accepted.
-- reviewStatus (enum)
-#### addCourtCaseRemedy earthdata:write
-- Add a requested remedy that can point at an existing enforcement Task.
-- targetPartyId (string)
-- remedyKey (string)
-- remedyType (string)
-- bodyMarkdown (string, required)
-- amountUsdLow (number)
-- amountUsdBase (number)
-- amountUsdHigh (number)
-- deadlineAt (string)
-- enforcementTaskId (string)
-#### getCourtCase earthdata:write
-- Fetch a Court of Humanity case with parties, claims, harms, evidence, remedies, and jury referendum.
-- caseIdOrSlug (string)
-#### openCourtCaseJuryVote earthdata:write
-- Open or update the public referendum used as a Court of Humanity jury vote.
-- caseIdOrSlug (string, required)
-- questionKey (string)
-- questionTitle (string)
 #### upsertInterventionApprovalTimeline earthdata:write
 - Create or update a regulatory first-evidence/approval timeline for an intervention and condition.
 - interventionName (string, required)
@@ -918,6 +844,7 @@
 - rationale (string)
 #### recordInterventionExperience earthdata:write
 - Record a user's intervention experience with optional outcomes and side effects.
+- subjectId (string)
 - interventionGlobalVariableId (string, required)
 - status (string)
 - startedAt (string)

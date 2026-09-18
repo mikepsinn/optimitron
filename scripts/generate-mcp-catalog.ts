@@ -14,20 +14,21 @@
  * the live server enforces as of the last regeneration.
  */
 
-import { writeFileSync } from "node:fs"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { getToolCatalog } from "../apps/optimitron/src/lib/mcp-server"
+import { writeFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { getToolCatalog } from "../apps/optimitron/src/lib/mcp-server";
+import { getCourtToolCatalog } from "../apps/courtofhumanity/lib/mcp/catalog";
 import {
   ALL_SCOPES,
   MCP_SCOPE_DESCRIPTIONS,
   scopeToWire,
-} from "../apps/optimitron/src/lib/mcp-scopes"
+} from "../apps/optimitron/src/lib/mcp-scopes";
 
 const OUTPUT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../packages/site-kit/src/lib/mcp/catalog.generated.json",
-)
+);
 
 const catalog = {
   endpoint: "/api/mcp",
@@ -43,9 +44,19 @@ const catalog = {
     requiredScopes: (tool.scopes ?? []).map((scope) => scopeToWire(scope)),
   })),
   transport: "Streamable HTTP (MCP 2025-03-26)",
-}
+};
 
-writeFileSync(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
+writeFileSync(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+const courtOutput = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../apps/courtofhumanity/lib/mcp/catalog.generated.json",
+);
+writeFileSync(
+  courtOutput,
+  `${JSON.stringify(getCourtToolCatalog(), null, 2)}\n`,
+  "utf8",
+);
+console.log(`Wrote Court catalog to ${courtOutput}`);
 console.log(
   `Wrote ${catalog.tools.length} tools and ${catalog.scopes.length} scopes to ${OUTPUT}`,
-)
+);

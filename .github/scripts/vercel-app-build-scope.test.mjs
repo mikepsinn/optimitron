@@ -53,7 +53,10 @@ test("keeps Optimitron content inputs without treating docs as app inputs", () =
       "apps/warondisease/app/page.tsx",
       "packages/site-kit/src/lib/site-config.ts",
     ]),
-    ["content/legislation/example.md"],
+    [
+      "content/legislation/example.md",
+      "packages/site-kit/src/lib/site-config.ts",
+    ],
   );
 });
 

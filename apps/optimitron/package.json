@@ -75,6 +75,7 @@
     "@optimitron/chat-ui": "workspace:^",
     "@optimitron/data": "workspace:^",
     "@optimitron/db": "workspace:^",
+    "@optimitron/site-kit": "workspace:^",
     "@optimitron/hypercerts": "workspace:^",
     "@optimitron/obg": "workspace:^",
     "@optimitron/opg": "workspace:^",

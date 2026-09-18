@@ -40,7 +40,7 @@ vi.mock("@/lib/subject.server", () => ({
   ensureSubjectForPerson: mocks.ensureSubjectForPerson,
 }));
 
-vi.mock("@/lib/humanity-v-government-case.server", () => ({
+vi.mock("@optimitron/site-kit/lib/court-enrollment.server", () => ({
   ensureHumanityVGovernmentPlaintiffParty:
     mocks.ensureHumanityVGovernmentPlaintiffParty,
 }));
@@ -74,7 +74,7 @@ vi.mock("@/lib/badges.server", () => ({
   checkBadgesAfterWish: mocks.checkBadgesAfterWish,
 }));
 
-import { POST } from "./route";
+import { GET, POST } from "./route";
 
 function makeRequest(slug: string, body: Record<string, unknown>) {
   return new Request(`http://localhost/api/referendums/${slug}/vote`, {
@@ -99,10 +99,7 @@ const TREATY_REFERENDUM = {
   slug: "one-percent-treaty",
 };
 
-const HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM = {
-  ...ACTIVE_REFERENDUM,
-  slug: "court-humanity-v-government-verdict",
-};
+
 
 describe("POST /api/referendums/[slug]/vote", () => {
   beforeEach(() => {
@@ -389,34 +386,35 @@ describe("POST /api/referendums/[slug]/vote", () => {
     ).not.toHaveBeenCalled();
   });
 
-  it("registers a named plaintiff on a YES Humanity v Government verdict vote", async () => {
+  it.each(["court-humanity-v-government-verdict", "court-of-humanity"])("retires Court vote slug %s before authentication", async (slug) => {
+    const res = await POST(makeRequest(slug, { answer: "yes" }), makeParams(slug));
+    expect(res.status).toBe(410);
+    expect(await res.json()).toMatchObject({ code: "COURT_ENDPOINT_MOVED", endpoint: `https://courtofhumanity.org/api/referendums/${slug}/vote` });
+    expect(mocks.requireAuth).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
+
+  it("retires Court vote reads before authentication", async () => {
+    const slug = "court-humanity-v-government-verdict";
+    const response = await GET(new Request(`https://optimitron.com/api/referendums/${slug}/vote`), makeParams(slug));
+    expect(response.status).toBe(410);
+    expect(mocks.requireAuth).not.toHaveBeenCalled();
+  });
+
+  it("does not read votes for other Court case referendums", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.findUnique.mockResolvedValue(
-      HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM,
-    );
-    const vote = {
-      id: "vote_1",
-      answer: "YES",
-      userId: "user_1",
-      referendumId: "ref_1",
-    };
-    mocks.upsert.mockResolvedValue(vote);
+    mocks.findUnique.mockResolvedValue({ ...ACTIVE_REFERENDUM, kind: "COURT_CASE" });
+    const response = await GET(new Request("https://optimitron.com/api/referendums/test-ref/vote"), makeParams("test-ref"));
+    expect(response.status).toBe(410);
+    expect(mocks.ensurePersonForUser).not.toHaveBeenCalled();
+  });
 
-    const res = await POST(
-      makeRequest("court-humanity-v-government-verdict", { answer: "yes" }),
-      makeParams("court-humanity-v-government-verdict"),
-    );
-
-    expect(res.status).toBe(200);
-    expect(mocks.ensureUserTreatyTask).not.toHaveBeenCalled();
-    expect(mocks.ensureHumanityVGovernmentPlaintiffParty).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        createdByUserId: "user_1",
-        displayName: "Mike",
-        subjectId: "subject_1",
-      }),
-    );
+  it("rejects other Court case referendums before recording votes", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue({ ...ACTIVE_REFERENDUM, kind: "COURT_CASE" });
+    const res = await POST(makeRequest("test-ref", { answer: "yes" }), makeParams("test-ref"));
+    expect(res.status).toBe(410);
+    expect(mocks.upsert).not.toHaveBeenCalled();
   });
 
   it("casts a NO vote successfully", async () => {

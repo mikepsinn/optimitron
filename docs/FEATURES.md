@@ -280,8 +280,8 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Structured accountability cases: parties, claims, harms, evidence, remedies, jury votes.
-- **Evidence:** `upsertCourtCase`, `addCourtCaseClaim`, `getCourtCase`, `openCourtCaseJuryVote` in apps/optimitron/src/lib/mcp-server.ts; apps/optimitron/src/app/court/page.tsx
-- **Acceptance:** A case built via MCP renders complete on /court with its parties, claims, and evidence.
+- **Evidence:** Eight tools in apps/courtofhumanity/lib/mcp/tools.ts, enforced by apps/courtofhumanity/lib/court-data.server.ts and served at courtofhumanity.org/api/mcp. Optimitron remains the OAuth issuer.
+- **Acceptance:** Court lists and executes all eight tools; Optimitron rejects them. Creator ownership, public moderation, private-child filtering, and atomic jury creation pass Court PostgreSQL integration tests.
 - **Roadmap:** now — campaign track (operational-surface rework is production task `optimitron:dev:court-operational-surface`)
 
 ### OPT-EARTH-05 — Leader/signer reminders

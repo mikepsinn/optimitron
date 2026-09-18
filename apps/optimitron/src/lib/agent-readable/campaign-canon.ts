@@ -1,3 +1,4 @@
+import { courtUrl } from "@optimitron/site-kit/lib/court-links";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
@@ -17,6 +18,10 @@ export const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 export const MARKDOWN_MIRROR_PATHS = [
   { key: "treaty", path: "/treaty.md", title: "Treaty mirror" },
+  { key: "faq", path: "/faq.md", title: "Campaign FAQ mirror" },
+] as const;
+
+const COURT_MARKDOWN_MIRROR_PATHS = [
   { key: "court", path: "/court.md", title: "Court mirror" },
   {
     key: "humanity-v-government",
@@ -24,7 +29,6 @@ export const MARKDOWN_MIRROR_PATHS = [
     title: "Humanity v Government mirror",
   },
   { key: "plaintiffs", path: "/plaintiffs.md", title: "Plaintiffs mirror" },
-  { key: "faq", path: "/faq.md", title: "Campaign FAQ mirror" },
 ] as const;
 
 export type MarkdownMirrorKey = (typeof MARKDOWN_MIRROR_PATHS)[number]["key"];
@@ -44,11 +48,6 @@ export const AGENT_ENDPOINT_PATHS = [
     key: "signatories",
     path: "/api/agent/signatories",
     title: "Public signatories",
-  },
-  {
-    key: "plaintiffs",
-    path: "/api/agent/plaintiffs",
-    title: "Plaintiff count",
   },
   {
     key: "parameters",
@@ -73,7 +72,7 @@ export const CAMPAIGN_FAQ_ITEMS = [
   {
     question: "How do I register a plaintiff?",
     answer:
-      "Go to /plaintiffs and add a person who was harmed by war, state violence, regulatory delay, or preventable disease. Public entries show the name and story you choose to publish; private account details are not part of the public case.",
+      "Go to https://courtofhumanity.org/plaintiffs and add a person who was harmed by war, state violence, regulatory delay, or preventable disease. Public entries show the name and story you choose to publish; private account details are not part of the public case.",
   },
   {
     question: "What is the health and wealth math?",
@@ -132,18 +131,19 @@ export function getAgentReadablePaths(site: SiteConfig): AgentReadablePaths {
   return {
     pages: pagePaths.map((entry) => ({
       ...entry,
-      url: absoluteCampaignUrl(site, entry.path),
+      url: ["/court", "/humanity-v-government", "/plaintiffs"].includes(entry.path)
+        ? courtUrl(entry.path) : absoluteCampaignUrl(site, entry.path),
     })),
-    markdownMirrors: MARKDOWN_MIRROR_PATHS.map((entry) => ({
+    markdownMirrors: [...MARKDOWN_MIRROR_PATHS.map((entry) => ({
       path: entry.path,
       title: entry.title,
       url: absoluteCampaignUrl(site, entry.path),
-    })),
-    agentEndpoints: AGENT_ENDPOINT_PATHS.map((entry) => ({
+    })), ...COURT_MARKDOWN_MIRROR_PATHS.map(entry => ({ ...entry, url: courtUrl(entry.path) }))],
+    agentEndpoints: [...AGENT_ENDPOINT_PATHS.map((entry) => ({
       path: entry.path,
       title: entry.title,
       url: absoluteCampaignUrl(site, entry.path),
-    })),
+    })), { path: "/api/agent/plaintiffs", title: "Court plaintiff count", url: courtUrl("/api/agent/plaintiffs") }],
   };
 }
 

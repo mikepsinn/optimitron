@@ -51,13 +51,13 @@ describe("agent-readable campaign surfaces", () => {
 
     for (const path of [
       "https://warondisease.org/treaty.md",
-      "https://warondisease.org/humanity-v-government.md",
-      "https://warondisease.org/plaintiffs.md",
+      "https://courtofhumanity.org/humanity-v-government.md",
+      "https://courtofhumanity.org/plaintiffs.md",
       "https://warondisease.org/faq.md",
       "https://warondisease.org/api/agent/manifest",
       "https://warondisease.org/api/agent/campaign-state",
       "https://warondisease.org/api/agent/signatories",
-      "https://warondisease.org/api/agent/plaintiffs",
+      "https://courtofhumanity.org/api/agent/plaintiffs",
       "https://warondisease.org/api/agent/parameters",
     ]) {
       expect(text).toContain(path);
@@ -69,17 +69,17 @@ describe("agent-readable campaign surfaces", () => {
 
     expect(paths.markdownMirrors.map((entry) => entry.path)).toEqual([
       "/treaty.md",
+      "/faq.md",
       "/court.md",
       "/humanity-v-government.md",
       "/plaintiffs.md",
-      "/faq.md",
     ]);
     expect(paths.agentEndpoints.map((entry) => entry.path)).toEqual([
       "/api/agent/manifest",
       "/api/agent/campaign-state",
       "/api/agent/signatories",
-      "/api/agent/plaintiffs",
       "/api/agent/parameters",
+      "/api/agent/plaintiffs",
     ]);
     expect(JSON.stringify(paths)).not.toMatch(
       /\/(?:admin|auth|dashboard|profile|settings)(?:\/|"|$)/,
@@ -89,7 +89,6 @@ describe("agent-readable campaign surfaces", () => {
   it("builds markdown mirrors from the canonical registry", () => {
     for (const key of MARKDOWN_MIRROR_KEYS) {
       const text = buildMarkdownMirror(key, site, {
-        courtMarkdown: "Court body from referendum data.",
         treatyMarkdown: "Treaty body from referendum data.",
       });
 

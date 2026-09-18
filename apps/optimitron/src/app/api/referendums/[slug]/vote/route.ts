@@ -1,3 +1,4 @@
+import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
@@ -22,7 +23,7 @@ import {
 import { createLogger } from "@/lib/logger";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
-import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
+import { ensureHumanityVGovernmentPlaintiffParty } from "@optimitron/site-kit/lib/court-enrollment.server";
 import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { sendPostVoteShareEmail } from "@/lib/email/post-vote-share-email";
@@ -33,13 +34,23 @@ import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const log = createLogger("referendum-vote");
 
+function courtVoteMoved(slug: string) {
+  return NextResponse.json({
+      error: "Court voting has moved. Reconnect on Court of Humanity.",
+      code: "COURT_ENDPOINT_MOVED",
+      endpoint: `https://courtofhumanity.org/api/referendums/${encodeURIComponent(slug)}/vote`,
+    }, { status: 410 });
+}
+
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [McpScope.EARTHDATA_WRITE]);
     const { slug } = await params;
+    if ([COURT_OF_HUMANITY_SLUG, HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG].includes(slug)) return courtVoteMoved(slug);
+    const { userId } = await requireAuth(request, [McpScope.EARTHDATA_WRITE]);
     const body = (await request.json()) as {
       answer: string;
       displayName?: string;
@@ -76,6 +87,8 @@ export async function POST(
         { status: 404 },
       );
     }
+
+    if (referendum.kind === "COURT_CASE") return courtVoteMoved(slug);
 
     if (referendum.status !== ReferendumStatus.ACTIVE) {
       return NextResponse.json(
@@ -281,8 +294,7 @@ export async function POST(
     // register a plaintiff claim.
     if (
       answer === "YES" &&
-      (referendum.slug === TREATY_REFERENDUM_SLUG ||
-        referendum.slug === HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG)
+      referendum.slug === TREATY_REFERENDUM_SLUG
     ) {
       await registerHumanityVGovernmentPlaintiff();
     }
@@ -407,12 +419,13 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request);
     const { slug } = await params;
+    if ([COURT_OF_HUMANITY_SLUG, HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG].includes(slug)) return courtVoteMoved(slug);
+    const { userId } = await requireAuth(request);
 
     const referendum = await prisma.referendum.findUnique({
       where: { slug, deletedAt: null },
-      select: { id: true },
+      select: { id: true, kind: true },
     });
     if (!referendum) {
       return NextResponse.json(
@@ -420,6 +433,8 @@ export async function GET(
         { status: 404 },
       );
     }
+
+    if (referendum.kind === "COURT_CASE") return courtVoteMoved(slug);
 
     const person = await ensurePersonForUser(userId);
     const vote = await prisma.referendumVote.findUnique({

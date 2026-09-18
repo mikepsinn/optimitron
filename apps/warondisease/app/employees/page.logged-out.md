@@ -42,7 +42,7 @@
 - This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [2 Quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
 - 💀 DEAD ALREADY FROM THE DELAY
 - [treaty-deaths-from-delay]
-- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × 611 DAYS
+- RATE: [150K deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × [TREATY-DELAY-DAYS] DAYS
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [treaty-money-wasted]
 - RATE: [$10T/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
@@ -71,24 +71,24 @@
 - MAKING SUFFERING OPTIONAL
 #### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)
-- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
+- [REGISTER A PLAINTIFF](https://courtofhumanity.org/plaintiffs)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
 - [TELL TWO PEOPLE](/send)
 - [MANAGE HUMANITY](/dashboard)
 - [GET THE SHIRT](/shirt)
 - [THE JOKE](/joke)
-- [REMIND PRESIDENTS](/employees)
+- [PRESIDENT MANAGEMENT SYSTEM](/employees)
 - [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
 - [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
 - [TREATY SIGNATORIES](/signatories)
 #### LEARN SOMETHING
 - [SIGN THE TREATY](/treaty)
-- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [HUMANITY V. GOVERNMENT](https://courtofhumanity.org/humanity-v-government)
 - [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-- [COURT OF HUMANITY](https://optimitron.com/court)
+- [COURT OF HUMANITY](https://courtofhumanity.org/court)
 - [MCP](/mcp)
 - [DEVELOPERS](/developers)
 - [THE PLAN](/the-plan)
