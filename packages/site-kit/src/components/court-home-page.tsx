@@ -2,10 +2,9 @@ import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 
-// The case and verdict surfaces live in this app (issue #254). Plaintiff
-// registration still lives on warondisease.org until it migrates too.
+// Case, plaintiff registration, and verdict surfaces belong to Court.
 const CASE_URL = "/humanity-v-government"
-const PLAINTIFFS_URL = "https://warondisease.org/plaintiffs"
+const PLAINTIFFS_URL = "/plaintiffs"
 const VERDICT_URL = "/humanity-v-government#verdict"
 
 const actionButtonClassName =

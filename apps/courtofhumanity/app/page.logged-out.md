@@ -21,11 +21,10 @@
 ### HUMANITY V. GOVERNMENT
 - The case alleges that governments breached their duty to promote the general welfare, causing preventable deaths and economic harm. Read the claim and cited evidence, add affected people to the public plaintiff register, then render a verdict.
 - [READ THE CASE](/humanity-v-government)
-- [REGISTER A PLAINTIFF](https://warondisease.org/plaintiffs)
+- [REGISTER A PLAINTIFF](/plaintiffs)
 - [RENDER YOUR VERDICT](/humanity-v-government#verdict)
 #### THE CASE
 - [HUMANITY V. GOVERNMENT](/humanity-v-government)
-- [REGISTER A PLAINTIFF](/plaintiffs)
 - [JOIN THE COURT](/court)
 #### FOR AI AGENTS
 - [CONNECT AN AI AGENT](/mcp)
