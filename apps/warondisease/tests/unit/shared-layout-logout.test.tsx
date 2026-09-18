@@ -2,6 +2,8 @@ import React from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import Layout from "../../../../packages/site-kit/src/components/layout"
+import { NavigationProvider } from "../../../../packages/site-kit/src/components/navigation-provider"
+import { appNavigation } from "../../lib/navigation"
 import { ROUTES } from "../../../../packages/site-kit/src/lib/routes"
 
 const mocks = vi.hoisted(() => ({
@@ -37,9 +39,9 @@ describe("shared authenticated navigation", () => {
 
   it("logs the user out from the menu and returns to the site home page", async () => {
     render(
-      <Layout>
+      <NavigationProvider navigation={appNavigation}><Layout>
         <main>Page content</main>
-      </Layout>,
+      </Layout></NavigationProvider>,
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Toggle menu" }))

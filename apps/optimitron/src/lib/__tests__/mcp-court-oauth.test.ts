@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import {
   afterEach,
   beforeAll,
@@ -153,7 +154,7 @@ describe("Court resource credentials", () => {
     ).rejects.toThrow();
   });
 
-  it("accepts legacy loopback aliases only with the configured issuer protocol and port", () => {
+  it("accepts issuer loopback aliases only with the configured protocol and port", () => {
     vi.stubEnv("VERCEL_ENV", "development");
     vi.stubEnv("MCP_OAUTH_ISSUER", "http://localhost:3001");
     expect(resolveOAuthResource("http://127.0.0.1:3001/api/mcp")).toBe(
@@ -171,6 +172,39 @@ describe("Court resource credentials", () => {
     expect(() =>
       resolveOAuthResource("http://127.0.0.1:3001/api/mcp"),
     ).toThrow();
+  });
+
+  it("accepts dFDA's documented local resource without opening arbitrary resources or production loopback", () => {
+    const dfdaPackage = JSON.parse(
+      readFileSync(
+        new URL("../../../../dfda/package.json", import.meta.url),
+        "utf8",
+      ),
+    ) as { scripts: { dev: string } };
+    const port = /--port\s+(\d+)/.exec(dfdaPackage.scripts.dev)?.[1];
+    expect(port).toBeDefined();
+    vi.stubEnv("VERCEL_ENV", "development");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "http://localhost:3001");
+    // dFDA metadata uses the resource server's origin, not the issuer's port.
+    const resources = ["localhost", "127.0.0.1", "[::1]"].map(
+      (hostname) => `http://${hostname}:${port}/api/mcp`,
+    );
+    for (const resource of resources) {
+      expect(resolveOAuthResource(resource)).toBe("legacy");
+    }
+    for (const resource of [
+      `https://localhost:${port}/api/mcp`,
+      `http://attacker.invalid:${port}/api/mcp`,
+      `http://localhost:${port}/api/mcp?x=1`,
+      `http://localhost:${port}/api/mcp/tools`,
+      "http://localhost:3017/api/mcp",
+    ]) {
+      expect(() => resolveOAuthResource(resource)).toThrow();
+    }
+    vi.stubEnv("VERCEL_ENV", "production");
+    for (const resource of resources) {
+      expect(() => resolveOAuthResource(resource)).toThrow();
+    }
   });
 
   it("pins production resource and permits only explicitly configured local resources", () => {

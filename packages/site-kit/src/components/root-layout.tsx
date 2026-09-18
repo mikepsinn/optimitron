@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 
 import { getSiteConfig } from "../lib/site-config";
 import { Providers } from "./providers";
+import { NavigationProvider } from "./navigation-provider";
+import type { AppNavigation } from "../lib/app-navigation";
 
 export { buildSiteMetadata } from "../lib/site-metadata";
 
@@ -38,7 +40,8 @@ const fontVariables = `${dmSans.variable} ${spaceMono.variable} ${sourceSerif.va
 
 export function SiteRootLayout({
   children,
-}: Readonly<{ children: ReactNode }>) {
+  navigation,
+}: Readonly<{ children: ReactNode; navigation: AppNavigation }>) {
   const config = getSiteConfig();
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const analyticsScript = gaId
@@ -49,7 +52,7 @@ export function SiteRootLayout({
     <html lang="en">
       <body className={`font-sans antialiased ${fontVariables}`}>
         <Providers authEnabled={config.authEnabled !== false}>
-          {children}
+          <NavigationProvider navigation={navigation}>{children}</NavigationProvider>
         </Providers>
         {process.env.VERCEL ? (
           <Script

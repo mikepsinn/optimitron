@@ -54,6 +54,7 @@ try {
       where: { email: DEMO_EMAIL },
       select: {
         id: true,
+        password: true,
         organizationMemberships: {
           where: {
             organization: { slug: DEMO_ORGANIZATION_SLUG },
@@ -93,6 +94,19 @@ try {
     MILITARY_ITEM_ID,
     PRAGMATIC_TRIALS_ITEM_ID,
   ]);
+
+  // A separate local-only account exercises regular-user menu visibility.
+  // Keep the managed demo admin for existing dashboard/organization fixtures.
+  await prisma.user.upsert({
+    where: { email: "visual-member@example.invalid" },
+    update: { isAdmin: false, password: user.password, deletedAt: null },
+    create: {
+      email: "visual-member@example.invalid",
+      password: user.password,
+      emailVerified: VISUAL_FIXTURE_CREATED_AT,
+      isAdmin: false,
+    },
+  });
 
   await prisma.$transaction([
     prisma.organization.updateMany({
@@ -211,6 +225,12 @@ try {
       question:
         "Should governments publish the evidence behind major spending decisions?",
       description: "Review this public case and record your verdict.",
+      bodyMarkdown: [
+        "## Evidence before the jury",
+        "The public record links the spending decision to its expected effects on health and income.",
+        "- Publish the evidence behind major spending decisions.\n- Give affected people a chance to challenge the assumptions.",
+        "[Read the case](/humanity-v-government)",
+      ].join("\n\n"),
       kind: "COURT_CASE" as const,
       status: "ACTIVE" as const,
       publishedAt: VISUAL_FIXTURE_CREATED_AT,

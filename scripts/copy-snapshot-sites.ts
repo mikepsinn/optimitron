@@ -35,14 +35,16 @@ import type { ChildProcess } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import type { SiteVariant } from "../packages/site-kit/src/lib/site-config";
-import {
-  getInternalNavigationRoutesForVariant,
-  getSiteConfigForVariant,
-  VARIANTS,
-} from "../packages/site-kit/src/lib/site-config";
+import { VARIANTS, type SiteVariant } from "../packages/site-kit/src/lib/site-variant-types";
+import { getInternalNavigationRoutesForVariant } from "./site-app-navigation";
+import { getSiteConfigForVariant } from "../packages/site-kit/src/lib/site-config";
 import { buildCopyPreviewMarkdown } from "../apps/optimitron/src/lib/copy-preview-markdown";
 import { extractVisibleCopyMarkdown } from "./lib/copy-preview-dom";
+import {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+  waitForFonts,
+} from "../apps/optimitron/e2e/utils/visual-settle.mjs";
 import {
   getPublicSiteAppRoutes,
   getSourcePageForRoutePath,
@@ -103,7 +105,7 @@ interface Site {
   port: number;
   /**
    * `own` sites delegate to their package's renderer; `nav` sites are rendered
-   * here from their site-config navigation routes.
+   * here from their app-local navigation routes.
    */
   renderer: "own" | "nav";
   variant: SiteVariant;
@@ -408,7 +410,7 @@ function publicSnapshotRoutes(site: Site): string[] {
     .map((route) => route.routePath);
 }
 
-/** Sites in `apps/` — routes come from their site-config navigation. */
+/** Sites in `apps/` — routes come from their app-local navigation. */
 async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
   const routes = [
     ...new Set([
@@ -436,6 +438,13 @@ async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
     const context = await browser.newContext({
       viewport: { width: 1440, height: 900 },
     });
+    // This renderer captures logged-out presentation; it does not validate auth.
+    // Avoid compiling the auth backend just to establish an anonymous session.
+    // Provider requests, writes, and all other APIs retain their real behavior.
+    await context.route(`${baseUrl}/api/auth/session`, async (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      await route.fulfill({ contentType: "application/json", body: "null" });
+    });
     const page = await context.newPage();
 
     for (const routePath of routes) {
@@ -458,14 +467,16 @@ async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
       await page
         .waitForLoadState("networkidle", { timeout: 20_000 })
         .catch(() => {});
-      await page.evaluate(() => document.fonts.ready);
-      await page.waitForTimeout(500);
+      await waitForFonts(page);
+      await prepareFullPageVisualCapture(page);
+      await forceAnimationsComplete(page);
 
       const metadata = await extractMetadata(page);
-      // A 5xx or a page with no metadata at all is a broken render. Writing a
-      // snapshot from it would replace real copy with "[missing]" placeholders.
+      // Missing responses, HTTP errors, and pages without metadata are broken
+      // renders. Snapshots would replace real copy with error text or placeholders.
       if (
-        (status !== null && status >= 500) ||
+        status === null ||
+        status >= 400 ||
         (!metadata.title && !metadata.description && !metadata.openGraphTitle)
       ) {
         throw new Error(

@@ -221,6 +221,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
       const needsAuthentication = screenshotRoutes.some(
         ({ authenticated }) => authenticated,
       );
+      const needsRegularUser = screenshotRoutes.some(({ expectAdmin }) => expectAdmin === false);
 
       async function openLane() {
         const browser = await chromium.launch({
@@ -238,6 +239,10 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
           });
           const loggedOutPage = await loggedOutContext.newPage();
           const authenticatedPage = await authenticatedContext.newPage();
+          const regularUserContext = needsRegularUser
+            ? await browser.newContext({ ...contextOptions, baseURL: baseUrl })
+            : null;
+          const regularUserPage = await regularUserContext?.newPage();
           await Promise.all([
             freezeClock(loggedOutPage),
             freezeClock(authenticatedPage),
@@ -250,8 +255,19 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
             );
           }
+          if (regularUserContext && regularUserPage) {
+            await freezeClock(regularUserPage);
+            if (!(await signInViaApi(regularUserContext.request, { email: "visual-member@example.invalid" }))) {
+              throw new Error(`@apps/${appName}: regular visual user could not sign in`);
+            }
+            const session = await (await regularUserContext.request.get("/api/auth/session")).json();
+            if (!session.user?.id || session.user.isAdmin !== false) {
+              throw new Error(`@apps/${appName}: regular visual user must have a non-admin session`);
+            }
+          }
           return {
             authenticatedPage,
+            regularUserPage,
             close: () => browser.close().catch(() => {}),
             loggedOutPage,
           };
@@ -289,7 +305,9 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
           },
           lane,
         ) => {
-          const page = authenticated
+          const page = expectAdmin === false
+            ? lane.regularUserPage
+            : authenticated
             ? lane.authenticatedPage
             : lane.loggedOutPage;
           const pageUrl = new URL(routePath, baseUrl);
@@ -353,6 +371,10 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
                 const adminLink = menuDialog.locator('a[href="/admin"]');
                 await adminLink.waitFor({ state: "visible" });
                 await adminLink.scrollIntoViewIfNeeded();
+              } else if (expectAdmin === false) {
+                if (await menuDialog.locator('a[href="/admin"]').count()) {
+                  throw new Error(`${appName}: regular-user navigation exposes the admin link`);
+                }
               }
               await forceAnimationsComplete(page);
             }

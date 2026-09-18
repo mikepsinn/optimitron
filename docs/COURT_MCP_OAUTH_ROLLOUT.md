@@ -6,6 +6,12 @@ Keep Court's existing `NEXTAUTH_SECRET`; do not change its browser-session trust
 
 ## Phase 1: additive deployment, gate off
 
+The preparation branch is `feature/court-oauth-preparation`. Merge and deploy it
+before the Court cutover in [PR #345](https://github.com/mikepsinn/optimitron/pull/345).
+Do not merge the cutover branch into the preparation branch: that would combine
+the migrations and remove the verification pause. After preparation is merged,
+retarget the cutover PR to `main`.
+
 Deploy the additive OAuth resource migration and all legacy grant filters first.
 Existing rows and older writers default to `resource = 'legacy'`.
 The migration adds uniqueness on `(clientId, userId, resource)` and deliberately
@@ -50,15 +56,27 @@ A successful result does not prove deployment or database readiness.
 
 ## Phase 2: separate migration and explicit cutover
 
-1. Verify the additive migration is deployed.
-2. Verify every legacy grant consumer filters `resource = 'legacy'`.
-3. Deploy a separate migration that drops only `OAuthGrant_clientId_userId_key`.
-4. Verify `OAuthGrant_clientId_userId_resource_key` remains unique.
-5. Deploy and verify the Court resource server with the gate off.
-6. Verify the issuer's public JWKS and private/public agreement.
-7. Enable `MCP_COURT_RESOURCE_ENABLED=1` only after those checks pass.
-8. Reconnect a Court client with its exact resource and verify consent, access, refresh, and revocation.
-9. Verify Court rejects legacy tokens and Optimitron/dFDA reject Court tokens.
+1. Verify the additive migration and preparation application are deployed, including
+   every legacy grant consumer's `resource = 'legacy'` filter. Resolve #299 first;
+   a successful migration with a failed application deployment is insufficient.
+2. Deploy Court from the reviewed cutover branch while Optimitron continues running
+   preparation. Verify Court's discovery and eight-tool catalog with issuance off.
+3. Verify the issuer's public JWKS and private/public agreement.
+4. Apply the reviewed cutover migration separately, dropping only
+   `OAuthGrant_clientId_userId_key`. Verify the triple unique index remains.
+5. Enable `MCP_COURT_RESOURCE_ENABLED=1` on the preparation issuer.
+6. Reconnect a Court client with its exact resource and verify consent, access,
+   refresh, revocation, and audit attribution. Check that existing Optimitron/dFDA
+   connections still work and that each server rejects the other's tokens.
+7. Only after verification, set the **GitHub Production environment variable**
+   `COURT_MCP_CUTOVER_READY=1`, then merge the cutover PR to `main`. This permits
+   the idempotent migration job and Optimitron's Court-tool removal to deploy.
+
+The production workflow fails before migrations while the cutover migration is
+present and this readiness variable is unset. Optimitron deployment depends on
+that job. Preparation contains no cutover migration, so it does not require the
+readiness variable. Keep the variable set after the completed cutover; it records
+the completed one-time rollout prerequisite. Do not set it merely to make CI green.
 
 The phase-2 DROP is intentionally not included in phase 1. Inspect deployed indexes
 with this read-only SQL through the approved database workflow:

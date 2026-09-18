@@ -1,12 +1,12 @@
 /**
- * Navigation Items Registry
+ * Legacy page metadata and redirect registry
  *
- * Centralized registry of all available navigation items.
- * Site variants can compose their navigation from these items.
+ * Existing page metadata and legacy redirect rules.
+ * App menus are defined independently in each app's lib/navigation.ts.
  *
  * NOTE: All paths are imported from lib/routes.ts (single source of truth)
  *
- * Nav items also serve as the source of truth for page metadata.
+ * These entries remain the source for existing page metadata.
  * Use getPageMetadata(id) to generate Next.js Metadata for pages.
  */
 

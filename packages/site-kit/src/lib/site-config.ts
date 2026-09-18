@@ -1,7 +1,7 @@
 /**
  * Site Configuration System
  *
- * This file is the SINGLE SOURCE OF TRUTH for the multi-site strategy.
+ * Shared site branding and runtime configuration. App menus live in each app's lib/navigation.ts.
  * One codebase powers multiple domains, each with distinct positioning and audience.
  *
  * ============================================================================
@@ -70,8 +70,8 @@
  * - trialabundancesurvey.org: Minimal (reduce intimidation factor)
  * - dfda.earth: Treatment-first (clinical decision support)
  *
- * The navigation system uses:
- * - topLevelNavItems: Outside accordion, always visible
+ * Each app's lib/navigation.ts supplies AppNavigation to the shared UI:
+ * - topLevelItems: Outside accordion, always visible
  * - sidebarSections: Accordion sections with grouped items
  * - footerSections: Footer column organization
  *
@@ -191,7 +191,8 @@ export const ALL_PUBLIC_SITE_FEATURES = Object.freeze(
 
 // Donate entry points are hidden on every variant for now. The /donate pages,
 // routes, and nav items stay alive so restoring the links is one flag flip.
-export const SHOW_DONATE_LINKS = false;
+export { SHOW_DONATE_LINKS } from "./navigation-features";
+import { SHOW_DONATE_LINKS } from "./navigation-features";
 
 const HIDDEN_NAV_ITEM_IDS: ReadonlySet<NavItemId> = new Set<NavItemId>(
   SHOW_DONATE_LINKS ? [] : ["donate"],
@@ -221,24 +222,6 @@ export interface SiteSitemapConfig {
   includePublicPageRoutes?: boolean;
   /** Dynamic route groups this variant should expose in its sitemap. */
   dynamicRouteGroups?: readonly SitemapDynamicRouteGroup[];
-}
-
-/**
- * Navigation section for sidebar (accordion structure)
- */
-export interface NavSection {
-  id: string;
-  label: string; // e.g., "FIND TREATMENT", "THE EVIDENCE"
-  items: NavItemId[];
-}
-
-/**
- * Footer column section
- */
-export interface FooterSection {
-  id: string;
-  label: string; // e.g., "TAKE ACTION", "RESOURCES"
-  items: NavItemId[];
 }
 
 /**
@@ -423,14 +406,6 @@ export interface SiteConfig {
   /** Sitemap behavior for generated static sitemap XML. */
   sitemap?: SiteSitemapConfig;
 
-  // ===== NAVIGATION SYSTEM =====
-
-  /** Top-level navigation items (shown outside accordion in sidebar) */
-  topLevelNavItems?: NavItemId[];
-
-  /** Sidebar accordion sections */
-  sidebarSections?: NavSection[];
-
   /** Whether the sidebar includes the treaty vote/share CTA. Defaults to true. */
   sidebarVoteCtaEnabled?: boolean;
 
@@ -448,9 +423,6 @@ export interface SiteConfig {
   /** Footer branding (first column) */
   footerBranding?: FooterBranding;
 
-  /** Footer column sections */
-  footerSections?: FooterSection[];
-
   /** Contact information (footer contact column) */
   contactInfo?: ContactInfo;
 
@@ -459,9 +431,6 @@ export interface SiteConfig {
 
   /** Legal entity name used on privacy policy, terms, and other formal/legal surfaces */
   legalEntityName?: string;
-
-  /** Legal links (bottom of footer) */
-  legalItems?: NavItemId[];
 
   /** Copyright text (bottom of footer) */
   copyrightText?: string;
@@ -566,59 +535,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         },
       ],
     },
-
-    // Navigation system - Optimized for conversion: vote (survey), the plan, and institutes are top-level
-    topLevelNavItems: ["vote", "thePlan", "institutes"],
-    sidebarSections: [
-      {
-        id: "find-treatment",
-        label: "FIND TREATMENT",
-        items: ["conditions", "treatments", "findTrials"],
-      },
-      {
-        id: "evidence",
-        label: "THE EVIDENCE",
-        items: ["research", "references", "faq"],
-      },
-      {
-        id: "support",
-        label: "SUPPORT THE MISSION",
-        items: [
-          "thePlan",
-          "donate",
-          "volunteer",
-          /* 'campaigns', */ "divisions",
-        ],
-      },
-    ],
     footerBranding: {
       title: "THE DECENTRALIZED INSTITUTES OF HEALTH",
       tagline: "MAKING SUFFERING OPTIONAL THROUGH MATH",
     },
-    footerSections: [
-      {
-        id: "join",
-        label: "VOTE ON THE TREATY",
-        items: ["vote", "thePlan", "institutes", "donate", "volunteer"],
-      },
-      {
-        id: "manual",
-        label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "youtubeChannel"],
-      },
-      {
-        id: "resources",
-        label: "RESOURCES",
-        items: [
-          "conditions",
-          "treatments",
-          "research",
-          "references",
-          "about",
-          "dfdaStudies",
-        ],
-      },
-    ],
     contactInfo: {
       email: "hello@dih.earth",
       website: "https://dih.earth",
@@ -641,7 +561,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 640,
       alt: "Decentralized Institutes of Health - Making Suffering Optional Through Math",
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
@@ -717,78 +636,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         },
       ],
     },
-
-    // Navigation: keep the vote button primary, then expose the next useful
-    // campaign actions without turning the sidebar into a route inventory.
-    // Mirrors the original apps/optimitron War on Disease variant menu: one
-    // flat list in the same order, no accordion sections. The vote CTA stays
-    // at the top of the sheet.
-    topLevelNavItems: [
-      "treaty",
-      "manageHumanity",
-      "plaintiffs",
-      "employees",
-      "shirt",
-      "poster",
-      "doorToDoor",
-      "joke",
-      "missions",
-      "tasks",
-    ],
     sidebarVoteCtaPlacement: "top",
-    sidebarSections: [],
     footerBranding: {
       title: "THE WAR ON DISEASE",
       tagline: "MAKING SUFFERING OPTIONAL",
     },
-    // The four original footer columns. Campaign-app pages that had no place in
-    // the original footer are appended to the closest column so they stay
-    // reachable.
-    footerSections: [
-      {
-        id: "do-something",
-        label: "DO SOMETHING",
-        items: ["vote", "plaintiffs", "donate", "feedback"],
-      },
-      {
-        id: "tell-someone-else",
-        label: "TELL SOMEONE ELSE",
-        items: [
-          "send",
-          "manageHumanity",
-          "shirt",
-          "joke",
-          "employees",
-          "people",
-          "tasks",
-          "signatories",
-        ],
-      },
-      {
-        id: "learn-something",
-        label: "LEARN SOMETHING",
-        items: [
-          "treaty",
-          "humanityVGovernmentCase",
-          "treatyImpact",
-          "manual",
-          "listenPodcast",
-          "courtOfHumanity",
-          "campaignMcp",
-          "developers",
-          "thePlan",
-          "faq",
-          "about",
-          "institutes",
-          "search",
-        ],
-      },
-      {
-        id: "your-organization",
-        label: "YOUR ORGANIZATION",
-        items: ["join", "volunteer"],
-      },
-    ],
     contactInfo: {
       email: "hello@warondisease.org",
       website: "https://warondisease.org",
@@ -816,7 +668,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         height: 630,
       },
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
@@ -891,56 +742,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         },
       ],
     },
-
-    // Navigation system - TREATMENT-FOCUSED for clinical encyclopedia
-    // Priority: Conditions → Treatments → Trials → Studies
-    // Research scoped to MEDICAL EVIDENCE (not macro-economic policy)
-    topLevelNavItems: ["conditions", "treatments", "mcp"],
-    sidebarSections: [
-      {
-        id: "find-treatment",
-        label: "FIND TREATMENT",
-        items: ["conditions", "treatments", "findTrials"],
-      },
-      {
-        id: "studies",
-        label: "STUDIES",
-        items: ["megaStudies", "observationalStudies"],
-      },
-      {
-        id: "evidence",
-        label: "MEDICAL EVIDENCE",
-        items: ["research", "references", "faq"],
-      },
-      {
-        id: "studies-tools",
-        label: "STUDIES & TOOLS",
-        items: ["dfdaStudies", "dfdaImpact", "dfdaSpec"],
-      },
-    ],
     footerBranding: {
       title: "DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT",
       tagline: "EVIDENCE-BASED TREATMENT INFORMATION",
     },
-    footerSections: [
-      {
-        id: "treatments",
-        label: "TREATMENTS",
-        items: ["conditions", "treatments", "findTrials"],
-      },
-      {
-        id: "resources",
-        label: "RESOURCES",
-        items: [
-          "about",
-          "research",
-          "faq",
-          "dfdaImpact",
-          "dfdaSpec",
-          "dfdaStudies",
-        ],
-      },
-    ],
     contactInfo: {
       email: "hello@dfda.earth",
       website: "https://dfda.earth",
@@ -963,7 +768,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "Decentralized Framework for Drug Assessment - Evidence-Based Treatment Information",
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: DFDA_FAQ,
@@ -1105,23 +909,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           type: "image/png",
         },
       ],
-    },
-
-    // Navigation - Minimal for values research focus
-    topLevelNavItems: ["wishocracy", "faq"],
-    sidebarSections: [], // No sidebar sections - keep it simple
+    }, // No sidebar sections - keep it simple
 
     footerBranding: {
       title: "WISHOCRACY",
       tagline: "DISCOVER YOUR GLOBAL PRIORITIES",
     },
-    footerSections: [
-      {
-        id: "about",
-        label: "ABOUT",
-        items: ["wishocracyAbout", "wishocracyResults", "faq"],
-      },
-    ],
     contactInfo: {
       email: "hello@wishocracy.org",
       website: "https://wishocracy.org",
@@ -1144,7 +937,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "Wishocracy - Discover Your Global Priorities",
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: WISHOCRACY_FAQ,
@@ -1211,23 +1003,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           type: "image/png",
         },
       ],
-    },
-
-    // Navigation - Ultra-minimal for nervous nonprofits
-    topLevelNavItems: ["vote", "surveyResults", "faq"],
-    sidebarSections: [], // No sidebar sections - keep it simple
+    }, // No sidebar sections - keep it simple
 
     footerBranding: {
       title: "GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY",
       tagline: "AN INDEPENDENT RESEARCH INITIATIVE",
     },
-    footerSections: [
-      {
-        id: "about",
-        label: "ABOUT",
-        items: ["about", "research", "surveyResults", "faq"],
-      },
-    ],
     contactInfo: {
       email: "hello@trialabundancesurvey.org",
       website: "https://trialabundancesurvey.org",
@@ -1250,7 +1031,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "Global Clinical Trial Abundance Survey - An Independent Research Initiative",
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
     faq: SURVEY_FAQ,
@@ -1326,48 +1106,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation - SIMPLIFIED for campaign focus (same as War on Disease)
-    topLevelNavItems: ["vote"],
-    sidebarSections: [
-      {
-        id: "join",
-        label: "VOTE ON THE TREATY",
-        items: ["vote", "thePlan", "volunteer" /* 'campaigns' */],
-      },
-      {
-        id: "learn",
-        label: "LEARN MORE",
-        items: ["about", "faq"],
-      },
-      {
-        id: "support",
-        label: "SUPPORT THE MISSION",
-        items: ["institutes"],
-      },
-    ],
-
     footerBranding: {
       title: "CUREDAO",
       tagline: "MAKING SUFFERING OPTIONAL",
     },
-
-    footerSections: [
-      {
-        id: "join",
-        label: "VOTE ON THE TREATY",
-        items: ["vote", "thePlan", "volunteer"],
-      },
-      {
-        id: "manual",
-        label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "readOnline"],
-      },
-      {
-        id: "learn",
-        label: "LEARN MORE",
-        items: ["about", "faq"],
-      },
-    ],
 
     contactInfo: {
       email: "hello@curedao.org",
@@ -1392,8 +1134,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "CureDAO - Making Suffering Optional",
     },
-
-    legalItems: ["privacy", "terms"],
     // CureDAO keeps its own notice: this variant sets `legalEntityName` to
     // "CureDAO", so its Terms and Privacy pages name CureDAO as the operator.
     // Crediting the campaign here would contradict them on the same page.
@@ -1454,14 +1194,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         type: "image/png",
       },
     },
-
-    topLevelNavItems: [
-      "humanityVGovernment",
-      "courtPlaintiffs",
-      "joinCourt",
-      "contact",
-    ],
-    sidebarSections: [],
     // No vote CTA: the shared sidebar button renders "Answer the Question"
     // over a /#vote anchor that does not exist here. The court's vote
     // surfaces are the /humanity-v-government verdict and /court join
@@ -1472,19 +1204,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       title: "COURT OF HUMANITY",
       tagline: "HUMANITY V. GOVERNMENT",
     },
-
-    footerSections: [
-      {
-        id: "case",
-        label: "THE CASE",
-        items: ["humanityVGovernment", "courtPlaintiffs", "joinCourt"],
-      },
-      {
-        id: "developers",
-        label: "FOR AI AGENTS",
-        items: ["courtMcp", "courtMcpTools"],
-      },
-    ],
 
     contactInfo: {
       email: "hello@courtofhumanity.org",
@@ -1505,8 +1224,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "The Court of Humanity — Humanity v. Government",
     },
-
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2026 International Campaign to End War and Disease | CC BY-NC 4.0",
     faviconPrompt: `Black scales of justice on yellow (#FFE66D), thick black outline, neobrutalist.`,
@@ -1578,43 +1295,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         },
       ],
     },
-
-    // Navigation system - state action first, evidence and support second
-    topLevelNavItems: [
-      "rightToTryMontana",
-      "rightToTryStates",
-      "rightToTryModelAct",
-      "rightToTrialImpact",
-      "donate",
-    ],
-    sidebarSections: [],
     sidebarVoteCtaEnabled: false,
     footerBranding: {
       title: "RIGHT TO TRIAL INITIATIVE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
-    footerSections: [
-      {
-        id: "right-to-try",
-        label: "RIGHT TO TRIAL",
-        items: [
-          "rightToTryMontana",
-          "rightToTryStates",
-          "rightToTrySurvey",
-          "rightToTryModelAct",
-        ],
-      },
-      {
-        id: "evidence",
-        label: "EVIDENCE",
-        items: ["rightToTrialImpact", "research", "faq"],
-      },
-      {
-        id: "support",
-        label: "SUPPORT",
-        items: ["donate", "volunteer", "rightToTryEmailUpdates"],
-      },
-    ],
     contactInfo: {
       email: "hello@acceleratedmedicine.org",
       website: "https://acceleratedmedicine.org",
@@ -1637,7 +1322,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       height: 630,
       alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
     },
-    legalItems: ["privacy", "terms"],
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
@@ -1811,97 +1495,8 @@ function resolveNavItems(ids: NavItemId[]): NavItem[] {
   return resolveNavItemsForVariant(ids, getSiteVariant());
 }
 
-export interface InternalNavigationRoute {
-  label: string;
-  path: string;
-}
-
-/**
- * Get every distinct internal page linked by a site's navigation.
- *
- * This includes the app homepage plus top-level, sidebar, footer, and legal
- * navigation. Cross-site and external links are excluded.
- */
-export function getInternalNavigationRoutesForVariant(
-  variant: SiteVariant,
-): InternalNavigationRoute[] {
-  const config = getSiteConfigForVariant(variant);
-  const navItemIds = [
-    ...(config.topLevelNavItems ?? []),
-    ...(config.sidebarSections ?? []).flatMap((section) => section.items),
-    ...(config.footerSections ?? []).flatMap((section) => section.items),
-    ...(config.legalItems ?? []),
-  ];
-  const routes = new Map<string, InternalNavigationRoute>();
-
-  routes.set(config.defaultRoute, {
-    label: "Home",
-    path: config.defaultRoute,
-  });
-  for (const item of resolveNavItemsForVariant(navItemIds, variant)) {
-    if (item.isExternal || !item.path.startsWith("/")) {
-      continue;
-    }
-
-    const [pathWithoutHash] = item.path.split("#", 1);
-    const [pathWithoutQuery] = pathWithoutHash.split("?", 1);
-    const path = pathWithoutQuery || "/";
-    if (!routes.has(path)) {
-      routes.set(path, { label: item.label, path });
-    }
-  }
-
-  return [...routes.values()];
-}
-
 export function getResolvedNavItem(id: NavItemId): NavItem {
   return resolveNavItems([id])[0];
-}
-
-/**
- * Get top-level navigation items (shown outside accordion)
- *
- * @returns Array of resolved navigation items
- */
-export function getTopLevelNavItems(): NavItem[] {
-  const config = getSiteConfig();
-  return config.topLevelNavItems
-    ? resolveNavItems(config.topLevelNavItems)
-    : [];
-}
-
-/**
- * Get sidebar sections with resolved navigation items
- *
- * @returns Array of sections with their resolved nav items
- */
-export function getSidebarSections(): Array<
-  NavSection & { resolvedItems: NavItem[] }
-> {
-  const config = getSiteConfig();
-  if (!config.sidebarSections) return [];
-
-  return config.sidebarSections.map((section) => ({
-    ...section,
-    resolvedItems: resolveNavItems(section.items),
-  }));
-}
-
-/**
- * Get footer sections with resolved navigation items
- *
- * @returns Array of footer sections with their resolved nav items
- */
-export function getFooterSections(): Array<
-  FooterSection & { resolvedItems: NavItem[] }
-> {
-  const config = getSiteConfig();
-  if (!config.footerSections) return [];
-
-  return config.footerSections.map((section) => ({
-    ...section,
-    resolvedItems: resolveNavItems(section.items),
-  }));
 }
 
 /**
@@ -1958,16 +1553,6 @@ export function getImpactAnalysisInfo(): ImpactAnalysisInfo {
 export function getLegalEntityName(): string {
   const config = getSiteConfig();
   return config.legalEntityName || config.emailBranding.orgName || config.title;
-}
-
-/**
- * Get legal navigation items (for footer)
- *
- * @returns Array of resolved legal items
- */
-export function getLegalItems(): NavItem[] {
-  const config = getSiteConfig();
-  return config.legalItems ? getNavItems(config.legalItems) : [];
 }
 
 /**

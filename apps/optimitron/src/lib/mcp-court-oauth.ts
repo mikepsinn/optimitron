@@ -56,6 +56,8 @@ export function resolveOAuthResource(
       const alias = new URL("/api/mcp", issuer);
       alias.hostname = hostname;
       legacyResources.add(alias.toString());
+      // dFDA's local MCP server runs on 3011, separately from the OAuth issuer.
+      legacyResources.add(`http://${hostname}:3011/api/mcp`);
     }
   }
   if (legacyResources.has(value)) return LEGACY_MCP_RESOURCE;

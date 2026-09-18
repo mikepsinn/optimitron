@@ -3,9 +3,16 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { SessionContext, SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
-import Layout from "../../../../packages/site-kit/src/components/layout"
-import NotFoundPage from "../../../../packages/site-kit/src/components/not-found"
+import SharedLayout from "../../../../packages/site-kit/src/components/layout"
+import { NavigationProvider } from "../../../../packages/site-kit/src/components/navigation-provider"
+import { appNavigation } from "../../lib/navigation"
+import NotFoundPage from "../../../acceleratedmedicine/app/not-found"
+import CureDaoNotFoundPage from "../../../curedao/app/not-found"
 import { VARIANTS } from "../../../../packages/site-kit/src/lib/site-variant-types"
+
+function Layout({ children }: { children: React.ReactNode }) {
+  return <NavigationProvider navigation={appNavigation}><SharedLayout>{children}</SharedLayout></NavigationProvider>
+}
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }))
@@ -68,7 +75,7 @@ describe("fallback 404 session context", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_VARIANT", VARIANTS.CUREDAO)
     const fetch = vi.fn(async (_url: string) => new Response(JSON.stringify({ hasVoted: false })))
     vi.stubGlobal("fetch", fetch)
-    render(<NotFoundPage />)
+    render(<CureDaoNotFoundPage />)
     fireEvent.click(screen.getByRole("button", { name: "Toggle menu" }))
     expect(screen.queryByRole("link", { name: /ADMIN/ })).not.toBeInTheDocument()
     expect(fetch.mock.calls.some(([url]) => String(url).includes("/api/auth/session"))).toBe(false)

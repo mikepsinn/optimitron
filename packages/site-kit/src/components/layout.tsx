@@ -23,16 +23,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import {
-  getTopLevelNavItems,
-  getSidebarSections,
   getFooterBranding,
-  getFooterSections,
   getContactInfo,
-  getLegalItems,
   getCopyrightText,
   getSiteConfig,
 } from "../lib/site-config";
-import type { NavItem } from "../lib/nav-items";
+import type { NavigationItem as NavItem } from "../lib/app-navigation";
+import { visibleNavigationItems } from "../lib/app-navigation";
+import { useAppNavigation } from "./navigation-provider";
 import { VoteOrShareButton } from "./shared/VoteOrShareButton";
 import { ROUTES } from "../lib/routes";
 interface LayoutProps {
@@ -127,14 +125,21 @@ export function Layout({ children }: LayoutProps) {
     );
   };
 
-  // Get navigation data from site config
+  // App-owned menu data; shared branding and permission checks.
   const siteConfig = getSiteConfig();
-  const topLevelItems = getTopLevelNavItems();
-  const sidebarSections = getSidebarSections();
+  const navigation = useAppNavigation();
+  const topLevelItems = visibleNavigationItems(navigation.topLevelItems, isAdmin);
+  const sidebarSections = navigation.sidebarSections.map((section) => ({
+    ...section,
+    resolvedItems: visibleNavigationItems(section.resolvedItems, isAdmin),
+  }));
   const footerBranding = getFooterBranding();
-  const footerSections = getFooterSections();
+  const footerSections = navigation.footerSections.map((section) => ({
+    ...section,
+    resolvedItems: visibleNavigationItems(section.resolvedItems, isAdmin),
+  }));
   const contactInfo = getContactInfo();
-  const legalItems = getLegalItems();
+  const legalItems = visibleNavigationItems(navigation.legalItems, isAdmin);
   const copyrightText = getCopyrightText();
   const footerComplianceNotice = siteConfig.footerComplianceNotice;
   const sidebarVoteCta =

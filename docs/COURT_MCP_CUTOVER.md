@@ -1,8 +1,11 @@
 # Court MCP ownership cutover
 
-This is the second stage of `COURT_MCP_OAUTH_ROLLOUT.md`. Both PRs require human
-review and merge. No production application or database deployment is performed
-by preparing these changes.
+This is [PR #345](https://github.com/mikepsinn/optimitron/pull/345), the second
+stage of `COURT_MCP_OAUTH_ROLLOUT.md`. Its prerequisite is
+[PR #350](https://github.com/mikepsinn/optimitron/pull/350)
+(`feature/court-oauth-preparation`). Both require human review and merge.
+Keep this PR based on preparation until preparation merges, then retarget it to
+`main`. Do not merge this PR into the preparation branch.
 
 ## Deployment order
 
@@ -13,18 +16,27 @@ by preparing these changes.
    database migration. Keep `MCP_COURT_RESOURCE_ENABLED` disabled. All grant
    consumers must use an explicit resource; existing credentials remain in
    `legacy`, with the original IDs and refresh hashes.
-3. After reviewing this PR, apply the second migration removing only the old
-   client/user unique index. The client/user/resource constraint remains.
-   No Court business tables or existing records change.
-4. Provision the dedicated Court signing key and public JWKS on Optimitron using
-   the preparation guide, then enable the Court resource. Keep the existing
+3. Deploy only Court from this reviewed branch while Optimitron remains on the
+   preparation deployment and Court token issuance is disabled. Verify public
+   discovery and the eight-tool catalog at `https://courtofhumanity.org`.
+4. Provision the dedicated Court signing key and public JWKS on the preparation
+   issuer. Verify key agreement using the preparation guide. Keep the existing
    NextAuth/session secrets unchanged on both apps.
-5. Deploy Court from this PR before deploying Optimitron's removal. Verify public
-   discovery and catalog, then connect a test client using PKCE and explicit
+5. Apply this PR's reviewed migration removing only the old client/user unique
+   index. The additive migration must already be recorded as applied, so
+   `pnpm db:deploy` from this branch has only the contract migration pending.
+   Verify the client/user/resource unique index remains; no records change.
+   Enable Court issuance on the preparation issuer, then connect a test client
+   using PKCE and explicit
    `resource=https://courtofhumanity.org/api/mcp`. Confirm consent shows Court,
    perform an authenticated read, refresh, and revoke. Inspect Court errors and
    redacted audit attribution using that test client's IDs.
-6. Deploy Optimitron's removal. Confirm both HTTP and stdio omit and reject all
+6. Verify existing Optimitron/dFDA connections and wrong-resource rejection.
+   Set the **GitHub Production environment variable**
+   `COURT_MCP_CUTOVER_READY=1` only after these checks succeed. Merge this PR to
+   `main` and deploy Optimitron's removal. The production workflow blocks before
+   migrations and therefore before Optimitron deployment until that variable is
+   set. Confirm both HTTP and stdio omit and reject all
    eight Court tools. There are no forwarding tools. Legacy public pages/mirrors
    redirect to Court with query parameters; retired writes return JSON `410`
    identifying the Court endpoint instead of redirecting bearer credentials.
@@ -53,7 +65,7 @@ Court owns `apps/courtofhumanity/lib/represented-people.server.ts` and the
 PostgreSQL pagination regressions under its own integration tests. The gallery
 is not a shared site-kit service or an Accelerated Medicine feature. Optimitron
 retains generic person profiles; campaign integration uses the shared enrollment
-helper without importing Court app code. PR #346 supersedes the standalone
+helper without importing Court app code. This PR supersedes the standalone
 pagination PR #343, including its nine database regressions.
 
 Rollback applications by reverting deployments and disabling new Court
