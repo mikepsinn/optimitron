@@ -36,7 +36,11 @@ export function resolveOAuthResource(
 ): string {
   if (value == null || value === "") return LEGACY_MCP_RESOURCE;
   if (typeof value !== "string") throw new Error("Invalid OAuth resource");
-  if (value === getCourtMcpResource()) {
+  const courtResource =
+    process.env.VERCEL_ENV === "production" || process.env.MCP_COURT_RESOURCE
+      ? getCourtMcpResource()
+      : null;
+  if (value === courtResource) {
     if (!allowDisabledCourt && !isCourtMcpEnabled())
       throw new Error("Court MCP authorization is not enabled");
     return value;

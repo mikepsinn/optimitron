@@ -222,6 +222,37 @@ describe("Court resource credentials", () => {
     expect(() => resolveOAuthResource(COURT_MCP_RESOURCE)).toThrow();
   });
 
+  it.each([undefined, "development", "preview"])(
+    "rejects Court authorization without a configured resource in %s",
+    async (environment) => {
+      vi.stubEnv("VERCEL_ENV", environment ?? "");
+      if (environment === undefined) delete process.env.VERCEL_ENV;
+      vi.stubEnv("MCP_COURT_RESOURCE", "");
+      expect(() => courtMcpResource(environment)).toThrow();
+      expect(() => resolveOAuthResource(COURT_MCP_RESOURCE)).toThrow();
+      await expect(
+        signCourtMcpToken({ userId: "user", clientId: "client", type: "access" }),
+      ).rejects.toThrow();
+    },
+  );
+
+  it("keeps explicit legacy resources usable with Court off and unconfigured", () => {
+    vi.stubEnv("VERCEL_ENV", "development");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "http://localhost:3001");
+    vi.stubEnv("MCP_COURT_RESOURCE", "");
+    vi.stubEnv("MCP_COURT_RESOURCE_ENABLED", "0");
+    for (const resource of [
+      undefined,
+      "https://optimitron.com/api/mcp",
+      "https://dfda.earth/api/mcp",
+      "http://localhost:3001/api/mcp",
+      "http://localhost:3011/api/mcp",
+    ]) {
+      expect(resolveOAuthResource(resource)).toBe("legacy");
+    }
+    expect(() => resolveOAuthResource(COURT_MCP_RESOURCE)).toThrow();
+  });
+
   it("projects public JWKS members and rejects mismatched private keys", async () => {
     vi.stubEnv(
       "MCP_COURT_SIGNING_PUBLIC_JWKS",

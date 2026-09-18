@@ -7,7 +7,9 @@ export function courtMcpResource(
   environment: string | undefined,
   configured?: string,
 ): string {
-  if (environment === "production" || !configured) return COURT_MCP_RESOURCE;
+  if (environment === "production") return COURT_MCP_RESOURCE;
+  if (!configured)
+    throw new Error("Court MCP resource must be configured outside production");
   const url = new URL(configured);
   if (
     url.username ||

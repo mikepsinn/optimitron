@@ -61,6 +61,7 @@ describe("MCP OAuth consent route (Authorize)", () => {
   });
 
   it("binds Court consent to its resource and excludes unrelated or admin-only scopes", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
     vi.stubEnv("MCP_COURT_RESOURCE_ENABLED", "1");
     const response = await POST(
       consentRequest({

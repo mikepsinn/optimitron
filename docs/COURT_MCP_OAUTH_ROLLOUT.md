@@ -6,7 +6,8 @@ Keep Court's existing `NEXTAUTH_SECRET`; do not change its browser-session trust
 
 ## Phase 1: additive deployment, gate off
 
-The preparation branch is `feature/court-oauth-preparation`. Merge and deploy it
+Preparation is [PR #350](https://github.com/mikepsinn/optimitron/pull/350)
+(`feature/court-oauth-preparation`). Merge and deploy it
 before the Court cutover in [PR #345](https://github.com/mikepsinn/optimitron/pull/345).
 Do not merge the cutover branch into the preparation branch: that would combine
 the migrations and remove the verification pause. After preparation is merged,
@@ -34,12 +35,14 @@ material in source control, PR comments, screenshots, or Court's environment.
 | `MCP_COURT_SIGNING_PRIVATE_KEY` | PKCS8 RSA private key PEM for RS256; literal newlines or escaped `\n` are accepted. |
 | `MCP_COURT_SIGNING_KEY_ID` | Unique ID of the active key; must match a public JWKS entry. |
 | `MCP_COURT_SIGNING_PUBLIC_JWKS` | JSON object with a `keys` array of public RSA keys. Keep retired public keys while tokens remain valid. |
-| `MCP_COURT_RESOURCE` | Fixed local/preview resource override, such as `http://localhost:3001/api/mcp`. Use the actual Court endpoint. |
+| `MCP_COURT_RESOURCE` | Required outside production, such as `http://localhost:3017/api/mcp`. Use the actual Court endpoint. |
 
 Production always uses `https://courtofhumanity.org/api/mcp`, irrespective of the
 resource override. Preview/local resources require HTTPS or loopback HTTP, exactly
 `/api/mcp`, and no credentials, query, or fragment. Configure the same resource
 on issuer and resource server. Never infer it from incoming Host headers.
+Missing local/preview configuration rejects Court authorization and token issuance;
+legacy Optimitron and dFDA resources remain available with Court off.
 
 Production issuer: `https://optimitron.com`.
 Public key endpoint: `https://optimitron.com/.well-known/jwks.json`.
