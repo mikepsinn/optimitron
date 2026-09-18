@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { McpToolCallStatus } from "@optimitron/db/enums";
 import { mcpResult } from "./results";
 
 function stableStringify(value: unknown) {
@@ -105,7 +106,7 @@ export interface McpToolAuditInput extends McpAuditContext {
   args: Record<string, unknown>;
   error?: unknown;
   output?: unknown;
-  status: "SUCCEEDED" | "FAILED";
+  status: McpToolCallStatus;
   toolName: string;
 }
 
@@ -120,7 +121,7 @@ export interface McpToolAuditData {
   inputHash: string;
   inputSummaryJson: Record<string, unknown>;
   outputSummaryJson?: { refs: Record<string, string[]> };
-  status: "SUCCEEDED" | "FAILED";
+  status: McpToolCallStatus;
   toolName: string;
 }
 
@@ -145,11 +146,11 @@ export async function writeMcpToolAudit<T>(
       userId: input.userId ?? null,
       completedAt: (options.now ?? (() => new Date()))(),
       // Driver/domain exceptions can contain private arguments or SQL values.
-      errorSummary: input.status === "FAILED" ? "Tool execution failed." : null,
+      errorSummary: input.status === McpToolCallStatus.FAILED ? "Tool execution failed." : null,
       inputHash: hashMcpInput(input.args),
       inputSummaryJson: mcpToolInputSummary(input.args),
       outputSummaryJson:
-        input.status === "SUCCEEDED"
+        input.status === McpToolCallStatus.SUCCEEDED
           ? mcpToolOutputSummary(input.output)
           : undefined,
       status: input.status,
@@ -172,22 +173,16 @@ export async function runAuditedMcpTool<T>(
   fn: () => Promise<unknown>,
   options: McpAuditOptions<T>,
 ) {
-  const attribution = {
-    ...ctx,
-    agentId:
-      ctx.agentId ?? (typeof args["agentId"] === "string" ? args["agentId"] : null),
-    runId: ctx.runId ?? (typeof args["runId"] === "string" ? args["runId"] : null),
-  };
   try {
     const output = await fn();
     await writeMcpToolAudit(
-      { ...attribution, args, output, status: "SUCCEEDED", toolName },
+      { ...ctx, args, output, status: McpToolCallStatus.SUCCEEDED, toolName },
       options,
     );
     return mcpResult(output);
   } catch (error) {
     await writeMcpToolAudit(
-      { ...attribution, args, error, status: "FAILED", toolName },
+      { ...ctx, args, error, status: McpToolCallStatus.FAILED, toolName },
       options,
     );
     throw error;

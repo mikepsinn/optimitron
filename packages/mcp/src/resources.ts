@@ -1,6 +1,8 @@
+import { McpScope } from "@optimitron/db/enums";
+
 export const LEGACY_MCP_RESOURCE = "legacy";
 export const COURT_MCP_RESOURCE = "https://courtofhumanity.org/api/mcp";
-export const COURT_MCP_SCOPES = ["EARTHDATA_WRITE", "EARTHDATA_ADMIN"] as const;
+export const COURT_MCP_SCOPES = [McpScope.EARTHDATA_WRITE, McpScope.EARTHDATA_ADMIN] as const;
 
 /** Configuration must supply a fixed audience, never an untrusted Host header. */
 export function courtMcpResource(

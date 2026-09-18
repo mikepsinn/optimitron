@@ -4,7 +4,7 @@ import {
   type JWTVerifyGetKey,
   type JWTPayload,
 } from "jose";
-import type { McpScope } from "@optimitron/db/enums";
+import { McpScope } from "@optimitron/db/enums";
 import { COURT_MCP_RESOURCE, COURT_MCP_SCOPES } from "./resources";
 
 export interface CourtMcpAccessToken {
@@ -107,8 +107,7 @@ export async function authenticateCourtMcpRequest(
   const claims = await options.verify(authorization.slice(7));
   const identity = await options.resolveIdentity(claims);
   if (
-    !identity ||
-    identity.userId !== claims.sub ||
+    identity?.userId !== claims.sub ||
     identity.clientId !== claims.clientId ||
     identity.resource !== claims.resource
   ) {
@@ -117,7 +116,7 @@ export async function authenticateCourtMcpRequest(
   const scopes = claims.scopes.filter(
     (scope) =>
       identity.scopes.includes(scope) &&
-      (scope !== "EARTHDATA_ADMIN" || identity.isAdmin),
+      (scope !== McpScope.EARTHDATA_ADMIN || identity.isAdmin),
   );
   return {
     userId: claims.sub,

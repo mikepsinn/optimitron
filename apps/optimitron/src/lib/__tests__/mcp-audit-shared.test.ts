@@ -20,8 +20,8 @@ describe("shared MCP auditing", () => {
     const { rows, options } = captureAudit();
     const output = { id: "case-1", evidence: [{ id: "evidence-1", notes: "private output" }] };
     const response = await runAuditedMcpTool("addCourtCaseEvidence", {
-      notes: "private input", sourceUrl: "https://private.invalid/document", agentId: "agent-1", runId: "run-1",
-    }, { clientId: "client-1", oauthGrantId: "grant-1", userId: "user-1" }, async () => output, options);
+      notes: "private input", sourceUrl: "https://private.invalid/document", agentId: "spoofed-agent", runId: "spoofed-run",
+    }, { agentId: "agent-1", runId: "run-1", clientId: "client-1", oauthGrantId: "grant-1", userId: "user-1" }, async () => output, options);
     expect(response.structuredContent).toEqual(output);
     expect(rows[0]).toMatchObject({
       agentId: "agent-1", runId: "run-1", clientId: "client-1", oauthGrantId: "grant-1", userId: "user-1",
@@ -32,6 +32,22 @@ describe("shared MCP auditing", () => {
     expect(JSON.stringify(rows)).not.toContain("private input");
     expect(JSON.stringify(rows)).not.toContain("private output");
     expect(JSON.stringify(rows)).not.toContain("private.invalid");
+  });
+
+  it.each([false, true])("does not trust argument attribution when execution fails: %s", async (fails) => {
+    const { rows, options } = captureAudit();
+    const execution = runAuditedMcpTool("example", {
+      agentId: "spoofed-agent", runId: "spoofed-run",
+    }, { userId: "user-1", clientId: "client-1", oauthGrantId: "grant-1" }, async () => {
+      if (fails) throw new Error("Execution failed");
+      return { id: "case-1" };
+    }, options);
+    if (fails) await expect(execution).rejects.toThrow("Execution failed");
+    else await execution;
+    expect(rows[0]).toMatchObject({
+      agentId: null, runId: null, userId: "user-1", clientId: "client-1", oauthGrantId: "grant-1",
+    });
+    expect(JSON.stringify(rows)).not.toContain("spoofed-");
   });
 
   it("hashes reordered inputs equally and changed private content differently", async () => {

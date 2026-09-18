@@ -12,7 +12,7 @@ import {
   courtMcpResource,
   LEGACY_MCP_RESOURCE,
 } from "@optimitron/mcp/resources";
-import type { McpScope } from "@optimitron/db/enums";
+import { McpScope } from "@optimitron/db/enums";
 import { getIssuerUrl, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "./mcp-oauth";
 import { getAllSiteConfigs } from "./site";
 
@@ -75,7 +75,7 @@ export function filterCourtMcpScopes(
   return scopes.filter(
     (scope) =>
       (COURT_MCP_SCOPES as readonly string[]).includes(scope) &&
-      (scope !== "EARTHDATA_ADMIN" || isAdmin),
+      (scope !== McpScope.EARTHDATA_ADMIN || isAdmin),
   );
 }
 
