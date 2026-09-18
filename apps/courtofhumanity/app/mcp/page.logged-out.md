@@ -16,7 +16,11 @@
 ## CONNECT AN AI AGENT
 - Draft cases, organize public evidence, and open jury votes through the Court of Humanity MCP server.
 - Add a remote MCP connection in your AI client.
-- Enter this server URL: https://courtofhumanity.org/api/mcp
+- Enter this server URL: COPY
+
+```text
+https://courtofhumanity.org/api/mcp
+```
 - Complete sign-in on Optimitron and authorize Court access. You can use your existing account.
 - Court tools have moved from Optimitron. Add this connection and authorize it even if your client already connects to Optimitron.
 ### Your cases and permissions

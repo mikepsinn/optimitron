@@ -61,6 +61,13 @@ records; campaign callers use the transaction-aware shared enrollment helper.
 Historical backfills are not part of rollout. Gallery pagination retains the
 bounded database queries and snapshot consistency from PR #343.
 
+Optimitron retains the treaty representation POST at
+`/api/referendums/one-percent-treaty/represented-people` for its campaign forms
+and saved offline drafts. It shares generic person and memorial registration
+with Court and calls the transaction-aware Court enrollment helper. Other
+legacy Court representation writes return `410`; no authenticated write is
+redirected across domains.
+
 Court owns `apps/courtofhumanity/lib/represented-people.server.ts` and the
 PostgreSQL pagination regressions under its own integration tests. The gallery
 is not a shared site-kit service or an Accelerated Medicine feature. Optimitron

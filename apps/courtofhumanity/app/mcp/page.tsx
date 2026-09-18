@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CopyableCode } from "@optimitron/site-kit/components/shared/CopyableCode";
 import Layout from "@/components/layout";
 import { COURT_MCP_ENDPOINT } from "@/lib/mcp/catalog";
 
@@ -23,9 +24,10 @@ export default function CourtMcpPage() {
           <li>Add a remote MCP connection in your AI client.</li>
           <li>
             Enter this server URL:
-            <code className="mt-3 block break-all border-2 border-foreground bg-muted p-4 text-sm">
-              {COURT_MCP_ENDPOINT}
-            </code>
+            <CopyableCode
+              className="mt-3 border-2 border-foreground bg-muted [&_pre]:break-all [&_pre]:font-normal"
+              code={COURT_MCP_ENDPOINT}
+            />
           </li>
           <li>
             Complete sign-in on Optimitron and authorize Court access. You can
