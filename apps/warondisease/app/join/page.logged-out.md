@@ -4,7 +4,7 @@
 
 - Page title: Join as an Organization
 - Meta description: Your members probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with your audience.
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/join
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png

@@ -1626,6 +1626,8 @@ export async function listDueTrackingRemindersForUser(
             : status,
         fillingType: reminder.nOf1Variable.fillingType,
         globalVariable: reminder.globalVariable,
+        globalVariableId: reminder.globalVariableId,
+        nOf1VariableId: reminder.nOf1Variable.id,
         instructions: reminder.instructions,
         isOverdue,
         notification,
@@ -1687,13 +1689,18 @@ export function toCompactTrackingNotifications(result: {
   dateKey?: string;
   endDateKey?: string;
   notifications: Array<{
+    dateKey: string;
     defaultValue?: number | null;
     derivedStatus: NotificationStatus | TrackingReminderDerivedStatus;
     fillingType?: FillingType;
     globalVariable: { name: string };
+    globalVariableId: string;
+    nOf1VariableId: string;
     notifyAt: Date;
     notifyAtLocal: string;
     reminderId: string;
+    canRespond?: false;
+    responseUnavailableReason?: string;
     sameDayMeasurementCount?: number;
     unit?: string | null;
   }>;
@@ -1705,6 +1712,9 @@ export function toCompactTrackingNotifications(result: {
     ...(result.startDateKey ? { startDateKey: result.startDateKey } : {}),
     ...(result.endDateKey ? { endDateKey: result.endDateKey } : {}),
     notifications: result.notifications.map((notification) => ({
+      dateKey: notification.dateKey,
+      globalVariableId: notification.globalVariableId,
+      nOf1VariableId: notification.nOf1VariableId,
       // defaultValue and unit ride along so an agent can answer without a
       // second listTrackingReminders fetch (#249).
       defaultValue: notification.defaultValue ?? null,
@@ -1715,6 +1725,12 @@ export function toCompactTrackingNotifications(result: {
       fillingType: notification.fillingType ?? null,
       id: notification.reminderId,
       name: notification.globalVariable.name,
+      ...(notification.responseUnavailableReason
+        ? {
+            canRespond: false,
+            responseUnavailableReason: notification.responseUnavailableReason,
+          }
+        : {}),
       ...(notification.sameDayMeasurementCount
         ? { sameDayMeasurementCount: notification.sameDayMeasurementCount }
         : {}),
@@ -1750,6 +1766,14 @@ function storedTrackingNotificationToQueueItem(
   const reminder = notification.trackingReminder;
   const notifyAt = notification.notifyAt;
   const dateKey = getZonedDateKey(notifyAt, timeZone);
+  const range = dayRange(dateKey, timeZone);
+  const canRespond =
+    reminder.active &&
+    reminder.deletedAt === null &&
+    (!reminder.stopTrackingDate || reminder.stopTrackingDate >= range.start) &&
+    Boolean(
+      reminderOccurrenceWithinRange(reminder, { ...range, dateKey, timeZone }),
+    );
   const snoozeElapsed =
     notification.status === NotificationStatus.SNOOZED &&
     notifyAt.getTime() <= Date.now();
@@ -1768,6 +1792,8 @@ function storedTrackingNotificationToQueueItem(
         : notification.status,
     fillingType: reminder.nOf1Variable.fillingType,
     globalVariable: reminder.globalVariable,
+    globalVariableId: reminder.globalVariableId,
+    nOf1VariableId: reminder.nOf1Variable.id,
     instructions: reminder.instructions,
     isOverdue,
     notification,
@@ -1781,6 +1807,13 @@ function storedTrackingNotificationToQueueItem(
     reminderEndTime: reminder.reminderEndTime,
     reminderFrequency: reminder.reminderFrequency,
     reminderId: reminder.id,
+    ...(!canRespond
+      ? {
+          canRespond: false as const,
+          responseUnavailableReason:
+            "This reminder is inactive or no longer scheduled on this date. Review its schedule before attempting a response.",
+        }
+      : {}),
     reminderStartTime: reminder.reminderStartTime,
     // A current schedule cannot reconstruct the historical scheduled instant
     // after the reminder was edited. Keep it null instead of inventing one.
@@ -1857,9 +1890,17 @@ export async function listTrackingReminderNotificationsForUser(
     where: { id: userId },
   });
   const timeZone = user?.timeZone ?? "UTC";
+  const today = getZonedDateKey(new Date(), timeZone);
+  const isBacklog =
+    status === TrackingReminderDerivedStatus.OVERDUE &&
+    [input.dateKey, input.startDateKey, input.endDateKey].every(
+      (value) => value === undefined || value === null || value === "",
+    );
   const dateKeys = trackingNotificationDateKeys(
-    input,
-    getZonedDateKey(new Date(), timeZone),
+    isBacklog
+      ? { startDateKey: shiftDateKey(today, -13), endDateKey: today }
+      : input,
+    today,
   );
   const dayResults = [];
   for (const dateKey of dateKeys) {
@@ -1892,7 +1933,20 @@ export async function listTrackingReminderNotificationsForUser(
       orderBy: [{ notifyAt: "asc" }],
       where: {
         deletedAt: null,
-        notifyAt: { gte: firstRange.start, lt: lastRange.end },
+        notifyAt: isBacklog
+          ? { lt: new Date() }
+          : { gte: firstRange.start, lt: lastRange.end },
+        ...(isBacklog
+          ? {
+              status: {
+                in: [
+                  NotificationStatus.PENDING,
+                  NotificationStatus.SENT,
+                  NotificationStatus.SNOOZED,
+                ],
+              },
+            }
+          : {}),
         userId,
       },
     });
@@ -1925,14 +1979,29 @@ export async function listTrackingReminderNotificationsForUser(
           (!status || notification.derivedStatus === status),
       )
       .sort(
-        (left, right) => left.notifyAt.getTime() - right.notifyAt.getTime(),
+        (left, right) =>
+          (isBacklog ? -1 : 1) *
+          (left.notifyAt.getTime() - right.notifyAt.getTime()),
       ),
     userId,
     timeZone,
-    { end: lastRange.end, start: firstRange.start },
+    {
+      end: lastRange.end,
+      start: new Date(
+        unmatchedStoredNotifications.reduce(
+          (earliest, item) =>
+            Math.min(
+              earliest,
+              dayRange(item.dateKey, timeZone).start.getTime(),
+            ),
+          firstRange.start.getTime(),
+        ),
+      ),
+    },
   );
-  const result =
-    dateKeys.length === 1
+  const result = isBacklog
+    ? { notifications, timeZone }
+    : dateKeys.length === 1
       ? { dateKey: dateKeys[0], notifications, timeZone }
       : {
           endDateKey: dateKeys[dateKeys.length - 1],
@@ -1942,9 +2011,19 @@ export async function listTrackingReminderNotificationsForUser(
         };
   // Compact is the default so queue-answering clients get the light shape
   // without knowing to ask; compact: false opts into the full records (#249).
-  return input.compact === false
-    ? result
-    : toCompactTrackingNotifications(result);
+  const response =
+    input.compact === false ? result : toCompactTrackingNotifications(result);
+  return isBacklog
+    ? {
+        ...response,
+        backlog: {
+          storedNotifications: "all outstanding dates",
+          generatedStartDateKey: dateKeys[0],
+          generatedEndDateKey: dateKeys[dateKeys.length - 1],
+          note: "Unstored schedule occurrences are generated only for this window. Use startDateKey/endDateKey to inspect earlier schedules.",
+        },
+      }
+    : response;
 }
 
 /**

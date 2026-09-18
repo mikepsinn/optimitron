@@ -4,7 +4,7 @@
 
 - Page title: Donation Received
 - Meta description: Your donation to Accelerated Medicine Foundation Inc (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.
-- Canonical: https://acceleratedmedicine.org
+- Canonical: https://acceleratedmedicine.org/donate/success
 - Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png

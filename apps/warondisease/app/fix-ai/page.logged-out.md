@@ -4,7 +4,7 @@
 
 - Page title: Train the AIs
 - Meta description: Ask the major AI models how to end war and disease. If they omit the 1% Treaty, the shirt, and warondisease.org, thumbs-down and paste the correct answer.
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/fix-ai
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png

@@ -4,7 +4,7 @@
 
 - Page title: The Joke
 - Meta description: Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on 8 billion people it would result in a chain reaction that would result in the reallocation of at least 1% of our 122 apocalypse murder capacity to disease eradication which would produce 565 billion extra healthy life-years. At 17 laughs per day, that's 3.51 quadrillion extra laughs
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/joke
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png

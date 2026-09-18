@@ -4,7 +4,7 @@
 
 - Page title: CureDAO
 - Meta description: A decentralized autonomous organization that aligns incentives and enables mass-scale coordination to optimally allocate resources toward disease eradication. Save 10.7B lives through collective action.
-- Canonical: https://curedao.org
+- Canonical: https://curedao.org/contact
 - Open Graph title: CureDAO
 - Open Graph description: A decentralized autonomous organization that aligns incentives and enables mass-scale coordination to optimally allocate resources toward disease eradication. Save 10.7B lives through collective action.
 - Open Graph image: https://curedao.org/assets/curedao/curedao-og-1200x630.png

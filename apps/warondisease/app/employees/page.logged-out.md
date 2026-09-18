@@ -4,7 +4,7 @@
 
 - Page title: Remind Presidents
 - Meta description: You pay these people $36.5 trillion a year to promote the general welfare — i.e. maximize median healthy life years and median after-tax inflation-adjusted income. Track who signed the 1% Treaty and remind the overdue ones.
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/employees
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png

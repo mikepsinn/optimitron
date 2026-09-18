@@ -144,6 +144,16 @@ function matchesPattern(path: string, pattern: string): boolean {
   return path === pattern
 }
 
+function matchingRouteForVariant(path: string, variant: SiteVariant) {
+  const first = canonicalRoutes.find((route) => matchesPattern(path, route.pattern))
+  if (!first) return undefined
+  // Apps can own different content at the same path (for example /mcp).
+  // Preserve pattern precedence, but prefer that app's entry over list order.
+  return canonicalRoutes.find((route) =>
+    route.pattern === first.pattern && route.allowedVariants.includes(variant)
+  ) ?? first
+}
+
 /**
  * Check if a route is universal (available on all variants)
  */
@@ -177,9 +187,7 @@ export function getCanonicalRedirect(
   }
 
   // Find matching canonical route
-  const matchingRoute = canonicalRoutes.find((route) =>
-    matchesPattern(path, route.pattern)
-  )
+  const matchingRoute = matchingRouteForVariant(path, currentVariant)
 
   // If no canonical route defined, allow access (fallback to permissive)
   if (!matchingRoute) {
@@ -211,9 +219,7 @@ export function isRouteAllowedForVariant(
     return true
   }
 
-  const matchingRoute = canonicalRoutes.find((route) =>
-    matchesPattern(path, route.pattern)
-  )
+  const matchingRoute = matchingRouteForVariant(path, variant)
 
   if (!matchingRoute) {
     return true // No restriction defined

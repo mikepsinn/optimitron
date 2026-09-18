@@ -4,7 +4,7 @@
 
 - Page title: Wishocracy
 - Meta description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
-- Canonical: https://wishocracy.org
+- Canonical: https://wishocracy.org/terms
 - Open Graph title: Wishocracy
 - Open Graph description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
 - Open Graph image: https://wishocracy.org/assets/wishocracy/wishocracy-og-1200x630.png

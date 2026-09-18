@@ -503,12 +503,26 @@ whether an old skip meant zero or meant nobody answered.
 `listTrackingReminderNotifications` returns `notifyAtLocal` (compact: `due`) in
 the user's zone with the offset attached, plus the raw UTC instant in
 `notifyAt` (compact: `dueUtc`). `dateKey` and the day boundaries are local.
-The compact shape is the default and carries `defaultValue`, `unit`, and
+The compact shape is the default and carries `globalVariableId`, `nOf1VariableId`,
+the occurrence's local `dateKey`, `defaultValue`, `unit`, and
 `fillingType`, so answering a queue needs no `listTrackingReminders` call;
 pass `compact: false` for full records. An OVERDUE item with
 `sameDayMeasurementCount` already has same-day data for its variable recorded
 outside the notification — verify with `listMeasurements` before answering
 again, or you may duplicate data.
+
+With `status: "OVERDUE"` and no date parameters, the queue returns all persisted
+outstanding notifications, newest first. It also generates schedule occurrences
+for the last 14 local days. The `backlog` object discloses this generation window;
+use an explicit date range to inspect earlier schedules that have no stored
+notification. Explicit date and range queries retain their existing scope.
+Stored rows whose reminder is inactive or no longer scheduled on that date carry
+`canRespond: false` and `responseUnavailableReason`; inspect the schedule before
+attempting to answer them.
+
+Use `respondToTrackingReminderNotifications` for notification answers, corrections,
+and snoozes. `recordMeasurement` is for ad hoc entries and does not answer a
+notification.
 
 `listTrackingReminders` also defaults to a compact shape with truncated
 instructions; `getTrackingReminder` returns one reminder in full.

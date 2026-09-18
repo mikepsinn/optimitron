@@ -4,7 +4,7 @@
 
 - Page title: Wishocracy - Discover Your Global Priorities
 - Meta description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
-- Canonical: https://wishocracy.org
+- Canonical: https://wishocracy.org/wishocracy
 - Open Graph title: Wishocracy - Discover Your Global Priorities
 - Open Graph description: Compare different areas of human concern and discover what matters most to you through pairwise comparisons.
 - Open Graph image: [missing]

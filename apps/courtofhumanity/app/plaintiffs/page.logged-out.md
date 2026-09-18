@@ -4,7 +4,7 @@
 
 - Page title: Register a Plaintiff
 - Meta description: Add yourself or a person you represent to the public record for Humanity v. Government.
-- Canonical: https://courtofhumanity.org
+- Canonical: https://courtofhumanity.org/plaintiffs
 - Open Graph title: The Court of Humanity
 - Open Graph description: The public court where humanity brings cases against institutions that harm people. Inspect the evidence, register plaintiffs, and render a verified verdict.
 - Open Graph image: https://courtofhumanity.org/assets/courtofhumanity/courtofhumanity-og-1200x630.png

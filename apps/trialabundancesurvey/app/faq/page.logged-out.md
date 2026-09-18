@@ -4,7 +4,7 @@
 
 - Page title: Global Clinical Trial Abundance Survey
 - Meta description: A global research initiative to measure public support for accelerating medical progress through pragmatic clinical trials.
-- Canonical: https://trialabundancesurvey.org
+- Canonical: https://trialabundancesurvey.org/faq
 - Open Graph title: Global Clinical Trial Abundance Survey
 - Open Graph description: A global research initiative to measure public support for accelerating medical progress through pragmatic clinical trials.
 - Open Graph image: https://trialabundancesurvey.org/assets/survey/survey-og-1200x630.png

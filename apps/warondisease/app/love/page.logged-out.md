@@ -4,7 +4,7 @@
 
 - Page title: Earth Optimization Date
 - Meta description: If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/love
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png

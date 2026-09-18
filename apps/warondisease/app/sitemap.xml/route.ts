@@ -1,15 +1,14 @@
 /**
  * Sitemap Route Handler
  *
- * Generates the sitemap XML for the current variant from the shared
+ * Generates the sitemap XML for the campaign app from its public
  * route registry. There is no `generate:sitemaps` script and no
  * `public/sitemaps/*.xml` file checked in, so this always builds the
  * XML on request instead of reading a static file that does not exist.
  */
 
 import { NextResponse } from 'next/server'
-import { getSiteVariant } from '@/lib/site-config'
-import { getSitemapRoutesForVariant } from '@/lib/sitemap-routes'
+import { getCampaignSitemapRoutes } from '@/lib/sitemap-routes'
 import { getBaseUrl } from '@/lib/url'
 
 function escapeXml(value: string): string {
@@ -17,9 +16,8 @@ function escapeXml(value: string): string {
 }
 
 export async function GET(): Promise<NextResponse> {
-  const variant = getSiteVariant()
   const baseUrl = getBaseUrl()
-  const routes = getSitemapRoutesForVariant(variant)
+  const routes = getCampaignSitemapRoutes()
 
   const urlEntries = routes
     .map((route) => {

@@ -4,7 +4,7 @@
 
 - Page title: Go Door to Door
 - Meta description: The referendum lives on the internet, but some presidents of Earth still answer the door instead. Print the YES sheet, read the twenty-second pitch, and register the neighbors the internet has not reached. Every scan of your code counts instantly — and credits you.
-- Canonical: https://warondisease.org
+- Canonical: https://warondisease.org/door-to-door
 - Open Graph title: The International Campaign to End War and Disease
 - Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png
