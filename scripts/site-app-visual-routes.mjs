@@ -656,6 +656,19 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   courtofhumanity: [
     {
+      label: "Humanity v. Government",
+      routeName: "home",
+      routePath: "/",
+      sourcePage: "apps/courtofhumanity/app/page.tsx",
+      covers: [
+        "apps/courtofhumanity/app/page.tsx",
+        "apps/courtofhumanity/app/humanity-v-government/DamagesSensitivityCalculator.tsx",
+        "apps/courtofhumanity/app/humanity-v-government/HumanityVGovernmentVerdictVote.tsx",
+        "apps/courtofhumanity/app/humanity-v-government/page-metadata.ts",
+        "apps/courtofhumanity/lib/routes.ts",
+      ],
+    },
+    {
       covers: ["apps/courtofhumanity/app/not-found.tsx"],
       expectNotFound: true,
       label: "Page not found",
