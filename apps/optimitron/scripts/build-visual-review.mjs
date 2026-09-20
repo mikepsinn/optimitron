@@ -31,6 +31,8 @@ import {
   normalizeVisualRouteManifest,
 } from "./visual-capture-contract.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
+import { getVisualReviewCaptureApps, isRouteInCaptureScope, missingScheduledCaptures } from "./visual-review-scope.mjs";
+import { getVisualCopySnapshot } from "./visual-review-copy.mjs";
 import {
   APP_PREVIEW_ORDER,
   APP_PREVIEW_LABELS,
@@ -230,6 +232,15 @@ const SITE_APP_ORDER = APP_PREVIEW_ORDER.filter(
 );
 
 const siteAppManifestsByVariant = loadSiteAppRouteManifests(screenshotsRoot);
+const captureApps = getVisualReviewCaptureApps({
+  webScheduled: process.env.VISUAL_REVIEW_CAPTURE_WEB,
+  siteAppsScheduled: process.env.VISUAL_REVIEW_CAPTURE_SITE_APPS,
+  manifestApps: [
+    ...(routeManifest.routeSpecs.size > 0 ? ["optimitron"] : []),
+    ...siteAppManifestsByVariant.keys(),
+  ],
+  siteApps: SITE_APP_ORDER,
+});
 const beforeSiteAppManifestsByVariant = beforeScreenshotsRoot
   ? loadSiteAppRouteManifests(beforeScreenshotsRoot)
   : new Map();
@@ -245,6 +256,12 @@ const incompatibleSiteAppVariants = new Set(
     .map(([siteVariant]) => siteVariant),
 );
 registerSiteAppRouteSpecs(routeSpecs, routePaths, siteAppManifestsByVariant);
+for (const name of routeSpecs.keys()) {
+  if (!isRouteInCaptureScope(name, captureApps) || isRedirectOnlyScreenshotRoute(name)) {
+    routeSpecs.delete(name);
+    routePaths.delete(name);
+  }
+}
 
 main().catch((error) => {
   console.error(
@@ -323,11 +340,6 @@ function collectScreenshots(root, version) {
         continue;
       }
 
-      const filePath = path.join(projectDir, entry);
-      const assetDir = path.join(assetRoot, version, projectName);
-      mkdirSync(assetDir, { recursive: true });
-      const assetPath = path.join(assetDir, entry);
-      copyFileSync(filePath, assetPath);
       const legacyRouteName = entry
         .replace(/\.png$/i, "")
         .replace(/-(default|visual-mobile)$/i, "");
@@ -335,9 +347,17 @@ function collectScreenshots(root, version) {
         version === "before"
           ? (legacyRouteNameAliases.get(legacyRouteName) ?? legacyRouteName)
           : legacyRouteName;
+      if (!isRouteInCaptureScope(routeName, captureApps)) {
+        continue;
+      }
       if (isRedirectOnlyScreenshotRoute(routeName)) {
         continue;
       }
+      const filePath = path.join(projectDir, entry);
+      const assetDir = path.join(assetRoot, version, projectName);
+      mkdirSync(assetDir, { recursive: true });
+      const assetPath = path.join(assetDir, entry);
+      copyFileSync(filePath, assetPath);
       files.push({
         version,
         projectName,
@@ -1106,24 +1126,11 @@ function buildMarkdownDiff(routeName) {
 }
 
 function getMarkdownSnapshot(routeName) {
-  const routePath = routePaths.get(routeName);
-  if (!routePath) {
-    return null;
-  }
-
-  const fileName = isAuthenticatedMarkdownRoute(routeName)
-    ? "page.logged-in.md"
-    : "page.logged-out.md";
-  const pathname = routePath.split(/[?#]/, 1)[0] ?? "/";
-  const segments = pathname === "/" ? [] : pathname.split("/").filter(Boolean);
-  const repoRelativePath = toPosix(
-    path.join("apps", "optimitron", "src", "app", ...segments, fileName),
-  );
-  return {
-    artifactRelativePath: toPosix(path.join(...segments, fileName)),
-    fileName,
-    repoRelativePath,
-  };
+  return getVisualCopySnapshot({
+    routePath: routePaths.get(routeName),
+    appName: getSiteAppVariantFromRouteName(routeName) ?? "optimitron",
+    authenticated: isAuthenticatedMarkdownRoute(routeName),
+  });
 }
 
 function isAuthenticatedMarkdownRoute(routeName) {
@@ -1549,7 +1556,13 @@ function reviewStatusLabel(group, markdownDiff) {
 }
 
 function getBlockingReviewIssues(groups, screenshots, coverage) {
-  const issues = [...coverage.blockingIssues];
+  const issues = [
+    ...coverage.blockingIssues,
+    ...missingScheduledCaptures(
+      [...routeSpecs].map(([name, spec]) => ({ name, ...spec })),
+      screenshots.filter((screenshot) => screenshot.version === "after"),
+    ),
+  ];
   const afterCount = screenshots.filter(
     (screenshot) => screenshot.version === "after",
   ).length;

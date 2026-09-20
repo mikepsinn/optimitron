@@ -1,4 +1,6 @@
-export const FROZEN_NOW_MS = 1768435200000; // 2026-01-15T00:00:00.000Z
+import { VISUAL_FIXTURE_NOW_MS } from "../../../../packages/site-kit/src/lib/visual-fixture-clock.mjs";
+
+export const FROZEN_NOW_MS = VISUAL_FIXTURE_NOW_MS;
 
 /**
  * Freeze `Date` for deterministic captures without Playwright's clock.

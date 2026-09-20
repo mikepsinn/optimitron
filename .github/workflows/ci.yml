@@ -1276,6 +1276,8 @@ jobs:
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           VISUAL_REVIEW_APP_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
+          VISUAL_REVIEW_CAPTURE_WEB: ${{ needs.changes.outputs.web }}
+          VISUAL_REVIEW_CAPTURE_SITE_APPS: ${{ needs.changes.outputs.site_apps }}
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}

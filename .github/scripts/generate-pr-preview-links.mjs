@@ -376,7 +376,10 @@ function visualStatusLabel(route) {
   const parts = [];
   const screenshotParts = [];
   if (route.changedPairs > 0) screenshotParts.push(`${route.changedPairs} changed`);
-  if (route.missingPairs > 0) screenshotParts.push(`${route.missingPairs} missing`);
+  const baselineMissing = Number(route.baselineMissingPairs ?? 0);
+  const currentMissing = Math.max(0, Number(route.missingPairs ?? 0) - baselineMissing);
+  if (baselineMissing > 0) screenshotParts.push(`${baselineMissing} baseline missing`);
+  if (currentMissing > 0) screenshotParts.push(`${currentMissing} current missing`);
   if (screenshotParts.length > 0) {
     parts.push(`${screenshotParts.join(" / ")} screenshots`);
   }

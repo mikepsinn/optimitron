@@ -247,6 +247,14 @@ test("suppresses only routes whose baseline was skipped for a protocol refresh",
           baselineSkippedForCaptureProtocol: false,
           erroredPairs: 0,
         },
+        {
+          routeName: "site-app-dfda-home",
+          routeLabel: "dFDA home",
+          routePath: "/",
+          siteVariant: "dfda",
+          missingPairs: 2,
+          baselineMissingPairs: 0,
+        },
       ],
     }),
     CHANGED_FILES: JSON.stringify([]),
@@ -255,7 +263,8 @@ test("suppresses only routes whose baseline was skipped for a protocol refresh",
   assert.match(output, /1 route has fresh after-only screenshots/u);
   assert.doesNotMatch(output, /review-item:visual:site-app-curedao-home/u);
   assert.match(output, /review-item:visual:site-app-warondisease-home/u);
-  assert.match(output, /1 missing screenshot/u);
+  assert.match(output, /1 baseline missing screenshot/u);
+  assert.match(output, /2 current missing screenshots/u);
   assert.doesNotMatch(output, /2 missing screenshots/u);
 });
 

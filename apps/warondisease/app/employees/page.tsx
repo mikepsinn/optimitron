@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { getSiteAppRenderNowMs } from "@optimitron/site-kit/lib/visual-fixture-clock.mjs"
 import Layout from "@/components/layout"
 import { TreatyReminderComposer } from "@/components/landing/treaty-reminder-composer"
 import { OverdueSignerList } from "@/components/tasks/overdue-signer-list"
@@ -71,7 +72,7 @@ export default async function PresidentManagementPage({
         </div>
 
         <OverdueSignerList
-          serverNowMs={Date.now()}
+          serverNowMs={getSiteAppRenderNowMs()}
           signerTasks={presidentManagement.signerTasks}
           treatyProgram={presidentManagement.treatyProgram}
         />
