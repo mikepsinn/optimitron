@@ -124,6 +124,7 @@ const previewAutoBuildApps = new Set([
   "optimitron",
   "warondisease",
   "acceleratedmedicine",
+  "courtofhumanity",
 ]);
 
 export function shouldAutoBuildPreview(appName, environment = process.env) {
