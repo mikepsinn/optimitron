@@ -4,10 +4,7 @@
   "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs courtofhumanity",
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "feature/preview-courtofhumanity-*": true,
-      "feature/preview-all-*": true,
-      "**": false
+      "gh-pages": false
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",

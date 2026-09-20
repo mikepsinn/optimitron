@@ -105,11 +105,10 @@ key expires: refresh tokens last 180 days. Alternatively, revoke affected grants
 and require clients to reconnect before retiring the associated public keys.
 Never publish private keys. Court's session secret remains unchanged during rotation.
 
-## Known deployment blocker
+## Deployment credential recovery
 
-Issue [#299](https://github.com/mikepsinn/optimitron/issues/299) records the production
-GitHub Actions Vercel token failure. The existing audit found that the configured
-token returned HTTP 403 for the production team/project. Treat this as an unresolved
-deployment prerequisite until a valid team-authorized token is supplied and the
-production deployment check passes. This rollout does not retrieve, rotate, or
-change deployment credentials.
+Issue [#299](https://github.com/mikepsinn/optimitron/issues/299) is resolved:
+[production deployment on September 20, 2026](https://github.com/mikepsinn/optimitron/actions/runs/35477626060/job/105991633955)
+passed and aliased `optimitron.com`. This proves credential recovery, not completion
+of the OAuth preparation rollout. Verify the preparation commit's migration and
+application deployment separately before phase 2.
