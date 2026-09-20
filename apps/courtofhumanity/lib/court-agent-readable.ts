@@ -1,10 +1,6 @@
 import { COURT_OF_HUMANITY_QUESTION } from "@optimitron/data/referendums";
 import { courtUrl } from "@optimitron/site-kit/lib/court-links";
-const ROUTES = {
-  court: "/court",
-  humanityVGovernment: "/humanity-v-government",
-  plaintiffs: "/plaintiffs",
-};
+import { ROUTES } from "./routes";
 function canonicalLine(path: string) {
   return `Canonical HTML: ${courtUrl(path)}`;
 }
@@ -96,7 +92,7 @@ export function buildCourtAgentManifest() {
     mcpInstructions: courtUrl("/mcp"),
     toolReference: courtUrl("/developers/tools"),
     authorizationServer: "https://optimitron.com",
-    pages: ["/court", "/humanity-v-government", "/plaintiffs"].map((path) =>
+    pages: [ROUTES.court, ROUTES.humanityVGovernment, ROUTES.plaintiffs].map((path) =>
       courtUrl(path),
     ),
     markdownMirrors: [

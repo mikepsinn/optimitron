@@ -27,7 +27,7 @@ describe("Court agent ownership", () => {
         courtMarkdown: "Case evidence body",
       });
       expect(text).toContain(
-        `Canonical HTML: https://courtofhumanity.org/${key}`,
+        `Canonical HTML: https://courtofhumanity.org/${key === "humanity-v-government" ? "" : key}`,
       );
       expect(text).not.toContain("https://warondisease.org/");
       if (key === "court") expect(text).toContain("Case evidence body");
@@ -40,6 +40,9 @@ describe("Court agent ownership", () => {
 
   it("advertises only Court-owned pages, mirrors and read APIs", () => {
     const manifest = buildCourtAgentManifest();
+    expect(manifest.pages).toContain("https://courtofhumanity.org/");
+    expect(manifest.pages).not.toContain("https://courtofhumanity.org/humanity-v-government");
+    expect(manifest.markdownMirrors).toContain("https://courtofhumanity.org/humanity-v-government.md");
     const urls = [
       ...manifest.pages,
       ...manifest.markdownMirrors,
@@ -61,6 +64,8 @@ describe("Court agent ownership", () => {
     const response = await GET();
     const payload = await response.json();
     expect(payload.plaintiffCount).toBe(7);
+    expect(payload.caseUrl).toBe("https://courtofhumanity.org/");
+    expect(payload.sourceUrls).toEqual(["https://courtofhumanity.org/plaintiffs", "https://courtofhumanity.org/"]);
     expect(payload.humanityVGovernmentVerdict).toEqual({
       referendumSlug: "court-humanity-v-government-verdict",
       yesCount: 4,
