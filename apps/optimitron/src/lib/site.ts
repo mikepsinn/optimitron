@@ -1137,19 +1137,6 @@ export function getSiteFromHost(host: string | null | undefined): SiteConfig {
   ];
 }
 
-/**
- * Strict host lookup: null when nothing matches, unlike getSiteFromHost, which
- * falls back to the default site. Callers that name a site in user-facing copy
- * must not present the fallback as the site the user actually asked for.
- */
-export function findSiteByHost(
-  host: string | null | undefined,
-): SiteConfig | null {
-  if (!host) return null;
-  const key = HOST_TO_SITE_KEY[normalizeHost(host)];
-  return key ? SITE_CONFIGS[key] : null;
-}
-
 export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
   const host = headers.get("host");
   const override = headers.get(SITE_VARIANT_OVERRIDE_HEADER);

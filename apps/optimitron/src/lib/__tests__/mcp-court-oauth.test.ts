@@ -332,9 +332,4 @@ describe("resolveOAuthResourceName", () => {
       resolveOAuthResourceName(resolveOAuthResource(COURT_MCP_RESOURCE)),
     ).toBe("Court of Humanity");
   });
-
-  it("returns null rather than a wrong name for an unknown or malformed resource", () => {
-    expect(resolveOAuthResourceName("https://example.com/api/mcp")).toBeNull();
-    expect(resolveOAuthResourceName("not a url")).toBeNull();
-  });
 });

@@ -15,7 +15,7 @@ import {
 } from "@optimitron/mcp/resources";
 import { McpScope } from "@optimitron/db/enums";
 import { getIssuerUrl, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "./mcp-oauth";
-import { findSiteByHost, getAllSiteConfigs } from "./site";
+import { getAllSiteConfigs } from "./site";
 
 export { LEGACY_MCP_RESOURCE };
 
@@ -72,26 +72,13 @@ export function resolveOAuthResource(
 /**
  * Site name to show on the consent screen, given a resolved OAuth resource.
  *
- * Returns null for the legacy resource on purpose: it is one shared grant
- * across Optimitron and every legacy site, so naming a single site would tell
- * the user the grant is narrower than it is. Isolated resources get named.
- * An unrecognized host also returns null, so the screen names no site rather
- * than the wrong one.
+ * Only an isolated resource gets a name. The legacy resource is one shared
+ * grant across Optimitron and every legacy site, so naming a single site would
+ * tell the user the grant is narrower than it is.
  */
 export function resolveOAuthResourceName(resource: string): string | null {
-  if (resource === LEGACY_MCP_RESOURCE) return null;
-  const courtResource =
-    process.env.VERCEL_ENV === "production" || process.env.MCP_COURT_RESOURCE
-      ? getCourtMcpResource()
-      : null;
-  if (resource === courtResource || resource === COURT_MCP_RESOURCE) {
-    return COURT_MCP_RESOURCE_NAME;
-  }
-  try {
-    return findSiteByHost(new URL(resource).hostname)?.name ?? null;
-  } catch {
-    return null;
-  }
+  // resolveOAuthResource returns either the legacy sentinel or Court's resource.
+  return resource === LEGACY_MCP_RESOURCE ? null : COURT_MCP_RESOURCE_NAME;
 }
 
 export function filterCourtMcpScopes(
