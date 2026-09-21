@@ -19,6 +19,10 @@
  * Usage:
  *   pnpm --filter @optimitron/web copy:preview
  *   pnpm --filter @optimitron/web copy:preview -- --routes=/,/treaty
+ *
+ * Against a Vercel preview (no local database needed): set PREVIEW_BASE_URL to
+ * the deployment origin and PREVIEW_VERCEL_SHARE_TOKEN to its `_vercel_share`
+ * token. A token is valid for one deployment only.
  */
 
 import { chromium } from "@playwright/test";
@@ -41,6 +45,7 @@ const OUTPUT_ROOT = process.env.COPY_PREVIEW_OUTPUT_ROOT
 
 const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
 const SITE_KEY = process.env.PREVIEW_SITE_KEY ?? "warOnDisease";
+const VERCEL_SHARE_TOKEN = process.env.PREVIEW_VERCEL_SHARE_TOKEN;
 const ROUTES_PER_BROWSER = Math.max(
   1,
   Number.parseInt(process.env.COPY_PREVIEW_ROUTES_PER_BROWSER ?? "8", 10) || 8,
@@ -371,6 +376,14 @@ async function capturePass(
     ]);
   }
   const page = await ctx.newPage();
+  if (VERCEL_SHARE_TOKEN) {
+    // Preview deployments sit behind Vercel's protection. This visit stores the
+    // access cookie in the context, so every route below loads the real page.
+    await page.goto(
+      `${BASE}/?_vercel_share=${encodeURIComponent(VERCEL_SHARE_TOKEN)}`,
+      { waitUntil: "domcontentloaded" },
+    );
+  }
   await page.addInitScript(() => {
     Object.defineProperty(window, "__OPTIMITRON_COPY_PREVIEW__", {
       value: true,
