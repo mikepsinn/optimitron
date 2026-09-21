@@ -32,6 +32,26 @@ describe("middleware OAuth consent flow header", () => {
     ).toBe("1");
   });
 
+  it("honors the review site override on the sign-in page", async () => {
+    // Visual review captures every state under ?site=<key>. Before sign-in
+    // shared the request handler, the override was ignored on this one page.
+    const response = await middleware(
+      // The override is gated on the Host header, which a NextRequest built
+      // from a URL does not set.
+      new NextRequest("http://localhost:3001/auth/signin?site=dfda", {
+        headers: { host: "localhost:3001" },
+      }),
+      event,
+    );
+    expect(response?.status).toBe(307);
+    expect(response?.headers.get("location")).toBe(
+      "http://localhost:3001/auth/signin",
+    );
+    expect(response?.headers.get("set-cookie")).toContain(
+      "optimitron_site_key=dfda",
+    );
+  });
+
   it("leaves an ordinary sign-in alone", async () => {
     expect(await forwardedFlowHeader("/auth/signin")).toBeNull();
     expect(

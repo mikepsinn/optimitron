@@ -176,122 +176,118 @@ function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
   return null;
 }
 
-const authMiddleware = withAuth(
-  function middleware(req) {
-    const devAuthRedirect = handleDevAuthQueryParams(req);
-    if (devAuthRedirect) return devAuthRedirect;
+/** Everything this middleware does for a request, apart from withAuth's gate. */
+function handleRequest(req: NextRequest) {
+  const devAuthRedirect = handleDevAuthQueryParams(req);
+  if (devAuthRedirect) return devAuthRedirect;
 
-    const overrideResolution = resolveReviewSiteVariantOverride({
-      cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
-      host: req.headers.get("host"),
-      querySiteKey: req.nextUrl.searchParams.has(
-        SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-      )
-        ? req.nextUrl.searchParams.get(SITE_VARIANT_OVERRIDE_QUERY_PARAM)
-        : null,
-    });
-    const requestHeaders = getHeadersWithReviewSiteVariantOverride(
-      req.headers,
+  const overrideResolution = resolveReviewSiteVariantOverride({
+    cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
+    host: req.headers.get("host"),
+    querySiteKey: req.nextUrl.searchParams.has(
+      SITE_VARIANT_OVERRIDE_QUERY_PARAM,
+    )
+      ? req.nextUrl.searchParams.get(SITE_VARIANT_OVERRIDE_QUERY_PARAM)
+      : null,
+  });
+  const requestHeaders = getHeadersWithReviewSiteVariantOverride(
+    req.headers,
+    overrideResolution,
+  );
+  applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
+  const site = getSiteFromHeaders(requestHeaders);
+  logAiCrawlerRequest(req, site);
+
+  if (overrideResolution.stripQueryParam) {
+    const url = req.nextUrl.clone();
+    url.searchParams.delete(SITE_VARIANT_OVERRIDE_QUERY_PARAM);
+    return syncReviewSiteVariantCookie(
+      NextResponse.redirect(url, 307),
       overrideResolution,
     );
-    applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
-    const site = getSiteFromHeaders(requestHeaders);
-    logAiCrawlerRequest(req, site);
+  }
 
-    if (overrideResolution.stripQueryParam) {
-      const url = req.nextUrl.clone();
-      url.searchParams.delete(SITE_VARIANT_OVERRIDE_QUERY_PARAM);
+  const assetRedirectPath = getSiteStaticAssetRedirectPath(
+    site,
+    req.nextUrl.pathname,
+  );
+  if (assetRedirectPath) {
+    const url = req.nextUrl.clone();
+    const [pathname, search = ""] = assetRedirectPath.split("?");
+    url.pathname = pathname;
+    url.search = search ? `?${search}` : "";
+    return syncReviewSiteVariantCookie(
+      NextResponse.redirect(url, 308),
+      overrideResolution,
+    );
+  }
+
+  const disposition = getSiteRouteDisposition(site, req.nextUrl.pathname);
+  if (disposition.type !== "allow") {
+    if (disposition.type === "redirect") {
+      const url = new URL(disposition.url);
+      url.search = req.nextUrl.search;
+      // 307 keeps method semantics and avoids long-lived browser/CDN caching of
+      // host-routing rules that may flip when site config changes.
       return syncReviewSiteVariantCookie(
         NextResponse.redirect(url, 307),
         overrideResolution,
       );
     }
 
-    const assetRedirectPath = getSiteStaticAssetRedirectPath(
-      site,
-      req.nextUrl.pathname,
-    );
-    if (assetRedirectPath) {
-      const url = req.nextUrl.clone();
-      const [pathname, search = ""] = assetRedirectPath.split("?");
-      url.pathname = pathname;
-      url.search = search ? `?${search}` : "";
-      return syncReviewSiteVariantCookie(
-        NextResponse.redirect(url, 308),
-        overrideResolution,
-      );
-    }
-
-    const disposition = getSiteRouteDisposition(site, req.nextUrl.pathname);
-    if (disposition.type !== "allow") {
-      if (disposition.type === "redirect") {
-        const url = new URL(disposition.url);
-        url.search = req.nextUrl.search;
-        // 307 keeps method semantics and avoids long-lived browser/CDN caching of
-        // host-routing rules that may flip when site config changes.
-        return syncReviewSiteVariantCookie(
-          NextResponse.redirect(url, 307),
-          overrideResolution,
-        );
-      }
-
-      const url = req.nextUrl.clone();
-      url.pathname = "/_site-not-found";
-      url.search = "";
-      return syncReviewSiteVariantCookie(
-        NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
-        overrideResolution,
-      );
-    }
+    const url = req.nextUrl.clone();
+    url.pathname = "/_site-not-found";
+    url.search = "";
     return syncReviewSiteVariantCookie(
-      NextResponse.next({ request: { headers: requestHeaders } }),
+      NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
       overrideResolution,
     );
-  },
-  {
-    secret: process.env.NEXTAUTH_SECRET,
-    pages: {
-      signIn: ROUTES.signIn,
-    },
-    callbacks: {
-      authorized: ({ req, token }) => {
-        // Let dev-auth query-param flows through to the middleware body even
-        // when the target path is auth-protected. Otherwise withAuth bounces
-        // `/dashboard?login=demo` to /auth/signin BEFORE our
-        // handleDevAuthQueryParams handler runs — the redirect to
-        // /api/dev/login-as-demo never gets the chance to mint the cookie.
-        // `?logout=1` doesn't need this branch (logout from auth pages is
-        // expected to redirect to sign-in if you're already logged out).
-        const params = req.nextUrl.searchParams;
-        const loginAs = params.get("login");
-        if (loginAs === "demo") return true;
+  }
+  return syncReviewSiteVariantCookie(
+    NextResponse.next({ request: { headers: requestHeaders } }),
+    overrideResolution,
+  );
+}
 
-        const authPaths = [
-          ROUTES.dashboard,
-          ROUTES.profile,
-          ROUTES.census,
-          ROUTES.settings,
-          "/admin",
-        ];
-        const requiresAuth = authPaths.some((p) =>
-          req.nextUrl.pathname.startsWith(p),
-        );
-        return requiresAuth ? !!token : true;
-      },
+const authMiddleware = withAuth(handleRequest, {
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: ROUTES.signIn,
+  },
+  callbacks: {
+    authorized: ({ req, token }) => {
+      // Let dev-auth query-param flows through to the middleware body even
+      // when the target path is auth-protected. Otherwise withAuth bounces
+      // `/dashboard?login=demo` to /auth/signin BEFORE our
+      // handleDevAuthQueryParams handler runs — the redirect to
+      // /api/dev/login-as-demo never gets the chance to mint the cookie.
+      // `?logout=1` doesn't need this branch (logout from auth pages is
+      // expected to redirect to sign-in if you're already logged out).
+      const params = req.nextUrl.searchParams;
+      const loginAs = params.get("login");
+      if (loginAs === "demo") return true;
+
+      const authPaths = [
+        ROUTES.dashboard,
+        ROUTES.profile,
+        ROUTES.census,
+        ROUTES.settings,
+        "/admin",
+      ];
+      const requiresAuth = authPaths.some((p) =>
+        req.nextUrl.pathname.startsWith(p),
+      );
+      return requiresAuth ? !!token : true;
     },
   },
-);
+});
 
 // withAuth returns before it calls the wrapped function when the request is for
-// its own sign-in page, so nothing above runs on ROUTES.signIn. That page is the
-// first screen of the OAuth consent flow for a logged-out user, so the flow
-// header has to be applied here instead.
+// its own sign-in page, so handleRequest never saw ROUTES.signIn: no site
+// variant override, no consent-flow header. That page needs no auth gate, so it
+// goes to the handler directly.
 export default function middleware(req: NextRequest, event: NextFetchEvent) {
-  if (req.nextUrl.pathname === ROUTES.signIn) {
-    const requestHeaders = new Headers(req.headers);
-    applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
-    return NextResponse.next({ request: { headers: requestHeaders } });
-  }
+  if (req.nextUrl.pathname === ROUTES.signIn) return handleRequest(req);
   return authMiddleware(req as NextRequestWithAuth, event);
 }
 
