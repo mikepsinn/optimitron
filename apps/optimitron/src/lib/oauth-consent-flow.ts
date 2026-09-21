@@ -45,3 +45,20 @@ export function isOAuthConsentFlowRequest(
   }
   return callbackUrl ? callbackTargetsConsent(callbackUrl) : false;
 }
+
+/**
+ * Sets the flow header, or removes an inbound copy so a client cannot send its
+ * own. Middleware calls this on every request it forwards.
+ */
+export function applyOAuthConsentFlowHeader(
+  requestHeaders: Headers,
+  url: { pathname: string; searchParams: URLSearchParams },
+): void {
+  if (
+    isOAuthConsentFlowRequest(url.pathname, url.searchParams.get("callbackUrl"))
+  ) {
+    requestHeaders.set(OAUTH_CONSENT_FLOW_HEADER, "1");
+  } else {
+    requestHeaders.delete(OAUTH_CONSENT_FLOW_HEADER);
+  }
+}

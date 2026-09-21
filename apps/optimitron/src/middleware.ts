@@ -1,11 +1,10 @@
 import { withAuth } from "next-auth/middleware";
+import type { NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import type { NextFetchEvent, NextRequest } from "next/server";
 import { classifyAiCrawler } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
-import {
-  isOAuthConsentFlowRequest,
-  OAUTH_CONSENT_FLOW_HEADER,
-} from "@/lib/oauth-consent-flow";
+import { applyOAuthConsentFlowHeader } from "@/lib/oauth-consent-flow";
 import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
 import {
   SITE_VARIANT_OVERRIDE_COOKIE,
@@ -177,7 +176,7 @@ function handleDevAuthQueryParams(req: import("next/server").NextRequest) {
   return null;
 }
 
-export default withAuth(
+const authMiddleware = withAuth(
   function middleware(req) {
     const devAuthRedirect = handleDevAuthQueryParams(req);
     if (devAuthRedirect) return devAuthRedirect;
@@ -195,17 +194,7 @@ export default withAuth(
       req.headers,
       overrideResolution,
     );
-    if (
-      isOAuthConsentFlowRequest(
-        req.nextUrl.pathname,
-        req.nextUrl.searchParams.get("callbackUrl"),
-      )
-    ) {
-      requestHeaders.set(OAUTH_CONSENT_FLOW_HEADER, "1");
-    } else {
-      // Never trust an inbound copy of this header from the client.
-      requestHeaders.delete(OAUTH_CONSENT_FLOW_HEADER);
-    }
+    applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
     const site = getSiteFromHeaders(requestHeaders);
     logAiCrawlerRequest(req, site);
 
@@ -292,6 +281,19 @@ export default withAuth(
     },
   },
 );
+
+// withAuth returns before it calls the wrapped function when the request is for
+// its own sign-in page, so nothing above runs on ROUTES.signIn. That page is the
+// first screen of the OAuth consent flow for a logged-out user, so the flow
+// header has to be applied here instead.
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
+  if (req.nextUrl.pathname === ROUTES.signIn) {
+    const requestHeaders = new Headers(req.headers);
+    applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+  return authMiddleware(req as NextRequestWithAuth, event);
+}
 
 export const config = {
   matcher: [
