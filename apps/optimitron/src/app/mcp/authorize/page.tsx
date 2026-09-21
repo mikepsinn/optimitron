@@ -11,6 +11,7 @@ import {
   isRedirectUriAllowed,
   shouldRedirectMcpAuthorizeToIssuer,
 } from "@/lib/mcp-oauth";
+import { oauthConsentFlowMetadata } from "@/lib/oauth-consent-flow";
 import {
   DEFAULT_CONSENT_SCOPES,
   allowedMcpScopesForUser,
@@ -41,18 +42,10 @@ export async function generateMetadata({
   } catch {
     resourceName = null;
   }
-  return {
-    // `absolute` escapes the root layout's `%s | <site name>` template, which
-    // would otherwise put this app's name back into the browser tab.
-    title: {
-      absolute: resourceName
-        ? `Authorize access to ${resourceName}`
-        : "Authorize access",
-    },
-    // robots.txt covers /auth but not this route, and a consent screen carries
-    // client and scope parameters that must never be indexed.
-    robots: { follow: false, index: false },
-  };
+  return oauthConsentFlowMetadata(
+    resourceName ? `Authorize access to ${resourceName}` : "Authorize access",
+    "Review and approve an app's access to your account.",
+  );
 }
 
 function invalidRequest(message: string) {

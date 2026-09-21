@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { getConfiguredProviders } from "@/lib/auth";
-import { isOAuthConsentFlowRequest } from "@/lib/oauth-consent-flow";
+import {
+  isOAuthConsentFlowRequest,
+  oauthConsentFlowMetadata,
+} from "@/lib/oauth-consent-flow";
 import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
 
 export async function generateMetadata({
@@ -13,12 +16,7 @@ export async function generateMetadata({
   const callbackUrl =
     typeof params.callbackUrl === "string" ? params.callbackUrl : null;
   if (!isOAuthConsentFlowRequest(ROUTES.signIn, callbackUrl)) return {};
-  // Signing in to authorize another site should not advertise this app in the
-  // browser tab. `absolute` escapes the root layout's `%s | <site name>`.
-  return {
-    robots: { follow: false, index: false },
-    title: { absolute: "Sign in" },
-  };
+  return oauthConsentFlowMetadata("Sign in", "Sign in to continue.");
 }
 
 function getAuthErrorMessage(error: string | null) {

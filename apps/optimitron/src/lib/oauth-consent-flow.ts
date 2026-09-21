@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ROUTES } from "./routes";
 
 /**
@@ -61,4 +62,25 @@ export function applyOAuthConsentFlowHeader(
   } else {
     requestHeaders.delete(OAUTH_CONSENT_FLOW_HEADER);
   }
+}
+
+/**
+ * Page metadata for a screen in the consent flow. The root layout supplies this
+ * app's title template, description and social cards; every one of them would
+ * name the app in the browser tab or in a link preview, so each is replaced.
+ */
+export function oauthConsentFlowMetadata(
+  title: string,
+  description: string,
+): Metadata {
+  return {
+    // `absolute` escapes the root layout's `%s | <site name>` template.
+    title: { absolute: title },
+    description,
+    openGraph: { title, description },
+    twitter: { card: "summary", title, description },
+    // These URLs carry client and scope parameters and must never be indexed.
+    // robots.txt covers /auth but not the consent route.
+    robots: { follow: false, index: false },
+  };
 }
