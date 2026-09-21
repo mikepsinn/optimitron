@@ -192,6 +192,16 @@ const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
   "mcp-authorize.json",
 );
 const MCP_AUTHORIZE_PAGE_FILE = "apps/optimitron/src/app/mcp/authorize/page.tsx";
+const SIGN_IN_PAGE_FILE = "apps/optimitron/src/app/auth/signin/page.tsx";
+const SIGN_IN_IN_CONSENT_FLOW_PATH = `${ROUTES.signIn}?callbackUrl=${encodeURIComponent(
+  `${ROUTES.mcpAuthorize}?client_id=visual-review`,
+)}`;
+// The consent flow is where these render nothing, so its states cover them.
+const SITE_CHROME_FILES = [
+  "apps/optimitron/src/components/site/SiteChrome.tsx",
+  "apps/optimitron/src/components/site/SiteChromeFrame.tsx",
+  "apps/optimitron/src/components/site/CampaignActionFab.tsx",
+];
 const MCP_CONSENT_FORM_FILE =
   "apps/optimitron/src/app/mcp/authorize/consent-form.tsx";
 const RETRO_UI_BUTTON_FILE = "apps/optimitron/src/components/retroui/Button.tsx";
@@ -493,6 +503,13 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: '[data-testid="slide-global-failed-state"]',
     requiredText: /^INFRASTRUCTURE COLLAPSE$/,
+  },
+  {
+    covers: [SIGN_IN_PAGE_FILE, ...SITE_CHROME_FILES],
+    name: "signin-in-oauth-consent-flow",
+    path: SIGN_IN_IN_CONSENT_FLOW_PATH,
+    required: true,
+    requiredSelector: 'input[type="email"]',
   },
   {
     covers: ["apps/optimitron/src/components/Navbar.tsx"],
@@ -824,6 +841,7 @@ function loadMcpAuthorizeRoutes(): VisualRouteSpec[] {
         MCP_AUTHORIZE_PAGE_FILE,
         MCP_CONSENT_FORM_FILE,
         RETRO_UI_BUTTON_FILE,
+        ...SITE_CHROME_FILES,
       ],
       name: "mcp-authorize-admin-user",
       mcpScopeAccess: "admin",
