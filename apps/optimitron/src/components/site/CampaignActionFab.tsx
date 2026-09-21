@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { Check, Clipboard, Plus, Share2, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
 import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
+import { ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
 
 const HIDDEN_PATH_PREFIXES = [
@@ -16,6 +17,8 @@ const HIDDEN_PATH_PREFIXES = [
   "/dashboard",
   "/documents",
   "/fund",
+  // The OAuth consent screen belongs to the site being connected, not to us.
+  ROUTES.mcpAuthorize,
   "/survey",
   "/vote",
 ] as const;

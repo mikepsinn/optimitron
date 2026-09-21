@@ -2,6 +2,10 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import { classifyAiCrawler } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
+import {
+  isOAuthConsentFlowRequest,
+  OAUTH_CONSENT_FLOW_HEADER,
+} from "@/lib/oauth-consent-flow";
 import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
 import {
   SITE_VARIANT_OVERRIDE_COOKIE,
@@ -191,6 +195,17 @@ export default withAuth(
       req.headers,
       overrideResolution,
     );
+    if (
+      isOAuthConsentFlowRequest(
+        req.nextUrl.pathname,
+        req.nextUrl.searchParams.get("callbackUrl"),
+      )
+    ) {
+      requestHeaders.set(OAUTH_CONSENT_FLOW_HEADER, "1");
+    } else {
+      // Never trust an inbound copy of this header from the client.
+      requestHeaders.delete(OAUTH_CONSENT_FLOW_HEADER);
+    }
     const site = getSiteFromHeaders(requestHeaders);
     logAiCrawlerRequest(req, site);
 
