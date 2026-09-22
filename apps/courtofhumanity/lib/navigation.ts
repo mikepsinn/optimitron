@@ -59,6 +59,22 @@ export const appNavigation: AppNavigation = {
           "emoji": "⚖️"
         }
       ]
+    },
+    {
+      "id": "ai-agents",
+      "label": "FOR AI AGENTS",
+      "resolvedItems": [
+        {
+          "id": "courtMcp",
+          "label": "Connect an AI Agent",
+          "path": "/mcp"
+        },
+        {
+          "id": "courtMcpTools",
+          "label": "Court Tool Reference",
+          "path": "/developers/tools"
+        }
+      ]
     }
   ],
   "legalItems": [

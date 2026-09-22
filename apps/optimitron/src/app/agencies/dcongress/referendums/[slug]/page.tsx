@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { prisma } from "@/lib/prisma";
@@ -20,10 +20,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const referendum = await prisma.referendum.findUnique({
     where: { slug, deletedAt: null },
-    select: { title: true, question: true, description: true },
+    select: { title: true, question: true, description: true, kind: true },
   });
 
   if (!referendum) return { title: "Referendum Not Found" };
+  if (referendum.kind === "COURT_CASE") {
+    return { title: "Jury ballot | Court of Humanity" };
+  }
 
   return {
     title: `${referendum.title} | Optimitron`,
@@ -42,6 +45,14 @@ export default async function ReferendumPage({ params, searchParams }: Props) {
   });
 
   if (!referendum) notFound();
+  if (referendum.kind === "COURT_CASE") {
+    const destination = new URL(
+      `/referendums/${encodeURIComponent(slug)}`,
+      "https://courtofhumanity.org",
+    );
+    if (ref) destination.searchParams.set("ref", ref);
+    redirect(destination.toString());
+  }
 
   const user = await getCurrentUser();
 

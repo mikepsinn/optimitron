@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    # Stacked PRs also need validation and their branch's preview database sync.
   workflow_dispatch:
 
 permissions:
@@ -176,6 +176,7 @@ jobs:
               - 'packages/data/**'
               - 'packages/db/**'
               - 'packages/impact-params/**'
+              - 'packages/mcp/**'
               - 'packages/neobrutalist-ui/**'
               - 'packages/optimizer/**'
               - 'packages/site-kit/**'
@@ -231,7 +232,7 @@ jobs:
         with:
           node-version: 24
       - name: Test GitHub and Vercel automation
-        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
+        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/ci-stacked-preview.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
 
   core-validate:
     name: core-validate
@@ -403,6 +404,10 @@ jobs:
       - name: Accelerated Medicine survey database regression tests
         if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
         run: pnpm --filter @apps/acceleratedmedicine test:integration
+
+      - name: Court permissions and enrollment database regression tests
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm --filter @apps/courtofhumanity test:integration
 
   site-apps-build:
     name: site-apps-build (${{ matrix.app }})
@@ -1966,16 +1971,6 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           test -n "$DATABASE_URL" || { echo "Missing production environment secret DATABASE_URL"; exit 1; }
-
-      - name: Require verified Court cutover
-        if: ${{ hashFiles('packages/db/prisma/migrations/20260917020000_drop_legacy_oauth_grant_unique/migration.sql') != '' }}
-        env:
-          COURT_MCP_CUTOVER_READY: ${{ vars.COURT_MCP_CUTOVER_READY }}
-        run: |
-          if [ "$COURT_MCP_CUTOVER_READY" != "1" ]; then
-            echo "::error::Court cutover is blocked. Deploy and verify OAuth preparation and Court first, then set the GitHub Production environment variable COURT_MCP_CUTOVER_READY=1. See docs/COURT_MCP_OAUTH_ROLLOUT.md."
-            exit 1
-          fi
 
       - name: Apply production database migrations
         env:

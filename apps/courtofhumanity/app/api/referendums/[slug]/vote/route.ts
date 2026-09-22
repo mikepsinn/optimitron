@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { findUserByHandleOrReferralCode } from "@/lib/referral.server";
 import { createLogger } from "@/lib/logger";
+import { getPublicCourtVotingReferendum } from "@/lib/court-jury-voting.server";
 import { COURT_OF_HUMANITY_SLUG } from "@/lib/court-of-humanity";
 import { ensureHumanityVGovernmentPlaintiffParty } from "@/lib/humanity-v-government-case.server";
 import { ensureSubjectForPerson } from "@/lib/subject.server";
@@ -20,19 +21,14 @@ const log = createLogger("referendum-vote");
 
 /**
  * Court of Humanity vote endpoint, ported from the monolith's
- * `/api/referendums/[slug]/vote`. Scoped to the two referendums this app
- * serves (the Humanity v. Government verdict and Court of Humanity
- * membership) so the treaty flow — with its wish grants, badges, referral
+ * `/api/referendums/[slug]/vote`. Serves published public Court case ballots
+ * and the canonical Court membership/verdict ballots. The treaty flow
+ * — with its wish grants, badges, referral
  * point mints, invitation conversions, and post-vote emails — stays on the
  * app that owns those systems. Votes recorded here land in the same
  * `ReferendumVote` table, and YES verdicts still register the voter as a
  * named plaintiff on the case.
  */
-
-const SERVED_REFERENDUM_SLUGS = new Set<string>([
-  COURT_OF_HUMANITY_SLUG,
-  HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
-]);
 
 export async function POST(
   request: Request,
@@ -41,13 +37,6 @@ export async function POST(
   try {
     const { userId } = await requireAuth();
     const { slug } = await params;
-
-    if (!SERVED_REFERENDUM_SLUGS.has(slug)) {
-      return NextResponse.json(
-        { error: "Referendum not found" },
-        { status: 404 },
-      );
-    }
 
     const body = (await request.json()) as {
       answer: string;
@@ -81,9 +70,7 @@ export async function POST(
     const makePublic =
       typeof body.makePublic === "boolean" ? body.makePublic : true;
 
-    const referendum = await prisma.referendum.findUnique({
-      where: { slug, deletedAt: null },
-    });
+    const referendum = await getPublicCourtVotingReferendum(slug);
 
     if (!referendum) {
       return NextResponse.json(
@@ -110,54 +97,84 @@ export async function POST(
 
     const originUrl =
       typeof body.originUrl === "string" ? body.originUrl : null;
-    const person = await ensurePersonForUser(userId);
-    const vote = await prisma.referendumVote.upsert({
-      where: {
-        referendumId_personId: {
-          referendumId: referendum.id,
-          personId: person.id,
+    const vote = await prisma.$transaction(async (tx) => {
+      const person = await ensurePersonForUser(userId, {}, tx);
+      const savedVote = await tx.referendumVote.upsert({
+        where: {
+          referendumId_personId: {
+            referendumId: referendum.id,
+            personId: person.id,
+          },
         },
-      },
-      // Referrer attribution is first-referrer-wins, matching the monolith:
-      // it is set on create only and never overwritten by later revotes.
-      update: {
-        answer,
-        deletedAt: null,
-        isPublic: makePublic,
-        userId,
-        voteSource: ReferendumVoteSource.SELF,
-      },
-      create: {
-        userId,
-        personId: person.id,
-        referendumId: referendum.id,
-        answer,
-        voteSource: ReferendumVoteSource.SELF,
-        referredByUserId,
-        isPublic: makePublic,
-        originUrl,
-      },
-    });
-
-    // Person owns the public-profile and display-name fields used by signer
-    // lists. The vote keeps its own public flag so users can hide a specific
-    // signature without changing old private votes into public signatories.
-    const personUpdateData: { displayName?: string; isPublic?: boolean } = {};
-    if (submittedDisplayName && submittedDisplayName !== person.displayName) {
-      personUpdateData.displayName = submittedDisplayName;
-    }
-    if (
-      typeof body.makePublic === "boolean" &&
-      person.isPublic !== makePublic
-    ) {
-      personUpdateData.isPublic = makePublic;
-    }
-    if (Object.keys(personUpdateData).length > 0) {
-      await prisma.person.update({
-        where: { id: person.id },
-        data: personUpdateData,
+        // Referrer attribution is first-referrer-wins, matching the monolith:
+        // it is set on create only and never overwritten by later revotes.
+        update: {
+          answer,
+          deletedAt: null,
+          isPublic: makePublic,
+          userId,
+          voteSource: ReferendumVoteSource.SELF,
+        },
+        create: {
+          userId,
+          personId: person.id,
+          referendumId: referendum.id,
+          answer,
+          voteSource: ReferendumVoteSource.SELF,
+          referredByUserId,
+          isPublic: makePublic,
+          originUrl,
+        },
       });
-    }
+
+      // Person owns the public-profile and display-name fields used by signer
+      // lists. The vote keeps its own public flag so users can hide a specific
+      // signature without changing old private votes into public signatories.
+      const personUpdateData: { displayName?: string; isPublic?: boolean } = {};
+      const updatesProfile =
+        referendum.slug === COURT_OF_HUMANITY_SLUG ||
+        referendum.slug === HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG;
+      if (
+        updatesProfile &&
+        submittedDisplayName &&
+        submittedDisplayName !== person.displayName
+      ) {
+        personUpdateData.displayName = submittedDisplayName;
+      }
+      if (
+        updatesProfile &&
+        typeof body.makePublic === "boolean" &&
+        person.isPublic !== makePublic
+      ) {
+        personUpdateData.isPublic = makePublic;
+      }
+      if (Object.keys(personUpdateData).length > 0) {
+        await tx.person.update({
+          where: { id: person.id },
+          data: personUpdateData,
+        });
+      }
+
+      if (
+        answer === "YES" &&
+        referendum.slug === HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG
+      ) {
+        const displayName = personUpdateData.displayName ?? person.displayName;
+        const subject = await ensureSubjectForPerson(tx, {
+          id: person.id,
+          displayName,
+        });
+        await ensureHumanityVGovernmentPlaintiffParty(tx, {
+          createdByUserId: userId,
+          displayName,
+          isPublic:
+            (personUpdateData.isPublic ?? person.isPublic) &&
+            savedVote.isPublic,
+          subjectId: subject.id,
+        });
+      }
+      return savedVote;
+    });
 
     try {
       await prisma.activity.create({
@@ -176,35 +193,6 @@ export async function POST(
       });
     } catch (activityError) {
       log.error("Activity log error", { error: activityError });
-    }
-
-    // Auto-register YES verdict voters as plaintiffs on Humanity v.
-    // Government, matching the monolith. Skipped for NO/ABSTAIN since
-    // dissenting or undecided voters do not register a plaintiff claim.
-    if (
-      answer === "YES" &&
-      referendum.slug === HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG
-    ) {
-      try {
-        const refreshedPerson = await prisma.person.findUnique({
-          where: { id: person.id },
-          select: { displayName: true, isPublic: true },
-        });
-        await prisma.$transaction(async (tx) => {
-          const subject = await ensureSubjectForPerson(tx, {
-            id: person.id,
-            displayName: refreshedPerson?.displayName ?? person.displayName,
-          });
-          await ensureHumanityVGovernmentPlaintiffParty(tx, {
-            createdByUserId: userId,
-            displayName: refreshedPerson?.displayName ?? person.displayName,
-            isPublic: refreshedPerson?.isPublic ?? false,
-            subjectId: subject.id,
-          });
-        });
-      } catch (plaintiffError) {
-        log.error("Plaintiff registration error", { error: plaintiffError });
-      }
     }
 
     return NextResponse.json({ vote });
@@ -231,17 +219,7 @@ export async function GET(
     const { userId } = await requireAuth();
     const { slug } = await params;
 
-    if (!SERVED_REFERENDUM_SLUGS.has(slug)) {
-      return NextResponse.json(
-        { error: "Referendum not found" },
-        { status: 404 },
-      );
-    }
-
-    const referendum = await prisma.referendum.findUnique({
-      where: { slug, deletedAt: null },
-      select: { id: true },
-    });
+    const referendum = await getPublicCourtVotingReferendum(slug);
     if (!referendum) {
       return NextResponse.json(
         { error: "Referendum not found" },
@@ -267,14 +245,15 @@ export async function GET(
     });
 
     return NextResponse.json({
-      vote: vote && !vote.deletedAt
-        ? {
-            answer: vote.answer,
-            createdAt: vote.createdAt,
-            displayName: vote.person.displayName,
-            isPublic: vote.isPublic,
-          }
-        : null,
+      vote:
+        vote && !vote.deletedAt
+          ? {
+              answer: vote.answer,
+              createdAt: vote.createdAt,
+              displayName: vote.person.displayName,
+              isPublic: vote.isPublic,
+            }
+          : null,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes("Unauthorized")) {

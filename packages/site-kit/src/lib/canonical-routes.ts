@@ -149,9 +149,11 @@ function matchingRouteForVariant(path: string, variant: SiteVariant) {
   if (!first) return undefined
   // Apps can own different content at the same path (for example /mcp).
   // Preserve pattern precedence, but prefer that app's entry over list order.
-  return canonicalRoutes.find((route) =>
-    route.pattern === first.pattern && route.allowedVariants.includes(variant)
-  ) ?? first
+  const matches = canonicalRoutes.filter((route) => route.pattern === first.pattern)
+  const owned = matches.find((route) => route.allowedVariants.includes(variant))
+  // Multiple apps can own /mcp. A new specialized owner
+  // must not change the default public destination for unrelated apps.
+  return owned ?? matches.find((route) => route.canonical === VARIANTS.WAR_ON_DISEASE) ?? first
 }
 
 /**

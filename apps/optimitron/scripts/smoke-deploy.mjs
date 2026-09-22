@@ -19,6 +19,12 @@ const NEXT_AUTH_COOKIE_NAMES = [
   "__Secure-next-auth.session-token",
 ];
 
+export const PLAINTIFFS_REDIRECT_SMOKE_ROUTE = {
+  path: "/plaintiffs?ref=smoke-deploy&country=US",
+  expectedRedirect: "https://courtofhumanity.org/plaintiffs",
+  source: "permanent Court plaintiffs redirect",
+};
+
 // Route paths mirror ROUTES in apps/optimitron/src/lib/routes.ts. Expected h1s
 // use route metadata where the nav label is the page heading; otherwise they
 // use the existing page/component h1 text.
@@ -40,11 +46,7 @@ const ROUTES_TO_SMOKE = [
     expectedH1: "Please quickly skim and sign to end war and disease.",
     source: "treaty page heading",
   },
-  {
-    path: "/plaintiffs",
-    expectedH1: "Register plaintiffs for Humanity v Government.",
-    source: "plaintiffs page heading",
-  },
+  PLAINTIFFS_REDIRECT_SMOKE_ROUTE,
   {
     path: "/tasks",
     expectedH1: "Earth Optimization Tasks",
@@ -186,9 +188,7 @@ async function main() {
   // Demo login is not variant-specific, so run it once per distinct host
   // rather than once per variant target.
   const demoLoginTargets = [
-    ...new Map(
-      targets.map((target) => [target.baseUrl.href, target]),
-    ).values(),
+    ...new Map(targets.map((target) => [target.baseUrl.href, target])).values(),
   ];
   const demoLoginResults =
     environment === "Preview"
@@ -437,13 +437,14 @@ async function smokeRoute({ route, target, bypassSecret }) {
   });
 }
 
-async function fetchAndAssert({
+export async function fetchAndAssert({
   route,
   url,
   expectedH1,
   bypassSecret,
   attempt,
   overrideSiteKey = null,
+  fetchImpl = fetch,
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -468,12 +469,35 @@ async function fetchAndAssert({
   }
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchImpl(url, {
       cache: "no-store",
       headers,
-      redirect: "follow",
+      // Verify retired-route ownership at this response boundary. Following
+      // Court would also forward the preview bypass header to another origin.
+      redirect: route.expectedRedirect ? "manual" : "follow",
       signal: controller.signal,
     });
+    if (route.expectedRedirect) {
+      const expected = new URL(route.expectedRedirect);
+      expected.search = url.search;
+      const location = response.headers.get("location");
+      const ok = response.status === 308 && location === expected.href;
+      await response.body?.cancel();
+      return {
+        ok,
+        attempt,
+        durationMs: Date.now() - attemptStartedAt,
+        status: response.status,
+        finalUrl: response.url || url.href,
+        expectedH1: null,
+        h1Texts: [],
+        missingExpectedH1: false,
+        matchedErrorMarker: null,
+        error: ok
+          ? null
+          : `Expected HTTP 308 redirect to ${expected.href}; got HTTP ${response.status} with Location ${location ?? "missing"}`,
+      };
+    }
     const body = await response.text();
     const h1Texts = extractH1Texts(body);
     const matchedErrorMarker = findErrorMarker(body);

@@ -10774,7 +10774,6 @@ model OAuthGrant {
   user              User               @relation("UserOAuthGrants", fields: [userId], references: [id], onDelete: Cascade)
   mcpToolCallAudits McpToolCallAudit[] @relation("OAuthGrantMcpToolCallAudits")
 
-  @@unique([clientId, userId])
   @@unique([clientId, userId, resource])
   @@index([clientId])
   @@index([userId])

@@ -2,6 +2,14 @@
 
 The Optimitron MCP server lets AI agents operate the live task graph instead of guessing from stale docs or chat history.
 
+Court case tools are hosted exclusively at `https://courtofhumanity.org/api/mcp`.
+Connect to Court and authorize again through Optimitron; existing Optimitron or
+dFDA tokens do not authorize Court. The eight Court tools are absent from this
+server's HTTP and stdio registries. See [Court connection instructions](https://courtofhumanity.org/mcp)
+and the [Court tool reference](https://courtofhumanity.org/developers/tools).
+Generic people, organizations, subjects, memorials, provenance, tasks, and
+referendum tools remain here. `/declaration` remains an Optimitron page.
+
 The goal is direct: help agents take the highest-value next action to increase median health-adjusted life expectancy and median after-tax inflation-adjusted income.
 
 It does that by pointing labor and money at the highest-value bottlenecks, making the evidence easy to inspect, letting agents coordinate without collisions, and leaving an audit trail of what happened.
@@ -104,7 +112,7 @@ The full scope vocabulary (live-rendered on `/developers` and in `/api/mcp/tools
 | `tasks:organization` | The same for organizations where the user is an explicit member; org planning roots. |
 | `tasks:admin` | Public Earth-level task management. Admin users only. |
 | `actions:approve` | Approve proposed external actions. Human approval clients only; agent tokens may not hold it. |
-| `earthdata:write` | Public Earth-data writes — court cases, memorials, evidence, corrections, measurements/tracking. Gates roughly a third of all tools. |
+| `earthdata:write` | Earth-data writes — memorials, evidence, corrections, measurements/tracking. Court uses the same scope on its separate resource-bound connection. |
 | `earthdata:admin` | Administrative Earth-data operations. |
 | `agent:run` | Agent run logging and lease coordination. |
 | `github` | Repo search/read and GitHub API passthrough. |

@@ -1,13 +1,5 @@
 import { createHash } from "node:crypto";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { POST } from "./route";
 
@@ -88,8 +80,8 @@ describe("OAuth code transactions in PostgreSQL", () => {
     ).toMatchObject({ used: true, resource: "legacy" });
   });
 
-  it("rolls back consumption if the retained phase-one unique constraint blocks the grant", async () => {
-    await prisma.oAuthGrant.create({
+  it("keeps Court and legacy grants independent after the final constraint migration", async () => {
+    const courtGrant = await prisma.oAuthGrant.create({
       data: {
         clientId,
         userId,
@@ -97,15 +89,13 @@ describe("OAuth code transactions in PostgreSQL", () => {
         scopes: ["EARTHDATA_WRITE"],
       },
     });
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    try {
-      expect((await POST(request())).status).toBe(500);
-      expect(
-        await prisma.oAuthAuthCode.findUnique({ where: { code } }),
-      ).toMatchObject({ used: false, resource: "legacy" });
-      expect(await prisma.oAuthGrant.count({ where: { clientId } })).toBe(1);
-    } finally {
-      log.mockRestore();
-    }
+    expect((await POST(request())).status).toBe(200);
+    expect(
+      await prisma.oAuthAuthCode.findUnique({ where: { code } }),
+    ).toMatchObject({ used: true, resource: "legacy" });
+    expect(await prisma.oAuthGrant.count({ where: { clientId } })).toBe(2);
+    expect(
+      await prisma.oAuthGrant.findUnique({ where: { id: courtGrant.id } }),
+    ).toEqual(courtGrant);
   });
 });
