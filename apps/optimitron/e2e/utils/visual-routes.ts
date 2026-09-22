@@ -381,6 +381,10 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.fixAi, "#next-hour"],
   [ROUTES.game, "#vote"],
+  // The home route covers every shared landing section, so without a selector
+  // the coverage gate cannot prove any of them rendered. #vote is the last
+  // section on the page, the same anchor /game asserts.
+  [ROUTES.home, "#vote"],
   [ROUTES.methodology, "#methodology"],
   [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
