@@ -665,11 +665,21 @@ export const publicSiteAppRoutes = Object.freeze({
     },
     {
       covers: [
+        "apps/courtofhumanity/app/referendums/[slug]/page.tsx",
+        "apps/courtofhumanity/app/referendums/[slug]/jury-vote.tsx",
+      ],
+      label: "Public jury verdict",
+      routeName: "jury-verdict",
+      routePath: "/referendums/court-visual-jury-verdict",
+      sourcePage: "apps/courtofhumanity/app/referendums/[slug]/page.tsx",
+    },
+    {
+      covers: [
         "apps/courtofhumanity/app/plaintiffs/page.tsx",
         "apps/courtofhumanity/app/plaintiffs/people-filter-bar.tsx",
         "apps/courtofhumanity/app/plaintiffs/person-face-tile.tsx",
         "apps/courtofhumanity/app/plaintiffs/register-plaintiff-form.tsx",
-        "packages/site-kit/src/lib/represented-people.server.ts",
+        "apps/courtofhumanity/lib/represented-people.server.ts",
       ],
       label: "Register a plaintiff",
       routeName: "plaintiffs",

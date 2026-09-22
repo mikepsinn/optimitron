@@ -12,6 +12,7 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_VARIANT: "courtofhumanity.org",
   },
   transpilePackages: [
+    "@optimitron/mcp",
     "@optimitron/neobrutalist-ui",
     "@optimitron/data",
     "@optimitron/site-kit",

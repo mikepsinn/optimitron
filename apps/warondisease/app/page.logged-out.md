@@ -63,8 +63,9 @@
 - GOVERNMENTS SPEND
 ### 604X MORE ON WEAPONS AND MILITARY
 - THAN PUBLICLY FUNDED CLINICAL TRIALS
-- $2.72T FOR WEAPONS AND MILITARY
-- $4.5B FOR PUBLICLY FUNDED CLINICAL TRIALS
+- WEAPONS AND MILITARY$2.72T
+- $2.72T FORWEAPONS AND MILITARY
+- PUBLICLY FUNDED CLINICAL TRIALS$4.5B
 ### WE CAN SOLVE BOTH OF THESE PROBLEMS SIMULTANEOUSLY
 ### OXFORD RECOVERY TRIAL PROVED RESEARCH CAN BE DONE FOR
 ### WHY THE BOTTLENECK IS CLINICAL TRIALS, NOT BASIC SCIENCE
@@ -100,6 +101,8 @@
 - This timeline shows how soon we could find a first treatment for all 6,650 untreated diseases. Under the status quo (~15 new treatments/year), it takes 443 years. With increased pragmatic trial funding, we can accelerate discovery dramatically.
 - Your age:
 - years old
+- 22.5B deaths
+- 461B yrs suffering
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
 - 1% REDUCTION 👉
@@ -327,24 +330,24 @@
 ### 💀 DEATH CLOCK
 - [ANSWER THE QUESTION](/#vote)
 - MAKING SUFFERING OPTIONAL
-- [REGISTER A PLAINTIFF](https://optimitron.com/plaintiffs)
+- [REGISTER A PLAINTIFF](https://courtofhumanity.org/plaintiffs)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
 - [TELL TWO PEOPLE](/send)
 - [MANAGE HUMANITY](/dashboard)
 - [GET THE SHIRT](/shirt)
 - [THE JOKE](/joke)
-- [REMIND PRESIDENTS](/employees)
+- [PRESIDENT MANAGEMENT SYSTEM](/employees)
 - [HUMANS WHO CAN END WAR AND DISEASE](https://optimitron.com/people)
 - [EARTH OPTIMIZATION TASKS](https://optimitron.com/tasks)
 - [TREATY SIGNATORIES](/signatories)
 #### LEARN SOMETHING
 - [SIGN THE TREATY](/treaty)
-- [HUMANITY V. GOVERNMENT](https://optimitron.com/humanity-v-government)
+- [HUMANITY V. GOVERNMENT](https://courtofhumanity.org/humanity-v-government)
 - [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
-- [COURT OF HUMANITY](https://optimitron.com/court)
+- [COURT OF HUMANITY](https://courtofhumanity.org/court)
 - [MCP](/mcp)
 - [DEVELOPERS](/developers)
 - [THE PLAN](/the-plan)

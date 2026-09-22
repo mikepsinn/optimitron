@@ -48,7 +48,7 @@ const nextConfig = {
       "@radix-ui/react-icons",
     ],
   },
-  transpilePackages: ["@optimitron/data", "@optimitron/tracking"],
+  transpilePackages: ["@optimitron/data", "@optimitron/tracking", "@optimitron/mcp", "@optimitron/site-kit"],
   serverExternalPackages: ["@optimitron/storage", "@storacha/client", "pinata"],
   // Next.js matches dev origins against the request hostname, not a full URL.
   allowedDevOrigins: ["127.0.0.1", "localhost", "warondisease.local"],

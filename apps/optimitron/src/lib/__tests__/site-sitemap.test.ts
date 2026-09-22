@@ -18,8 +18,6 @@ describe("site sitemap routing", () => {
     expect(paths).toEqual(
       expect.arrayContaining([
         "/",
-        ROUTES.court,
-        ROUTES.humanityVGovernment,
         ROUTES.signatories,
         ROUTES.treaty,
         ROUTES.vote,
@@ -28,19 +26,17 @@ describe("site sitemap routing", () => {
         "/llms.txt",
         "/llms-full.txt",
         "/treaty.md",
-        "/court.md",
-        "/humanity-v-government.md",
-        "/plaintiffs.md",
         "/faq",
         "/faq.md",
         "/api/agent/manifest",
         "/api/agent/campaign-state",
         "/api/agent/signatories",
-        "/api/agent/plaintiffs",
         "/api/agent/parameters",
       ]),
     );
     expect(paths).not.toContain(ROUTES.scoreboard);
+    expect(paths).not.toContain("/court.md");
+    expect(paths).not.toContain("/api/agent/plaintiffs");
   });
 
   it("keeps the medical routes that moved to dfda.earth out of the sitemap", () => {

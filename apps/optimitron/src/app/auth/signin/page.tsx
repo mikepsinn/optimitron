@@ -1,6 +1,23 @@
+import type { Metadata } from "next";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { getConfiguredProviders } from "@/lib/auth";
-import { DEFAULT_POST_LOGIN_ROUTE } from "@/lib/routes";
+import {
+  isOAuthConsentFlowRequest,
+  oauthConsentFlowMetadata,
+} from "@/lib/oauth-consent-flow";
+import { DEFAULT_POST_LOGIN_ROUTE, ROUTES } from "@/lib/routes";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const callbackUrl =
+    typeof params.callbackUrl === "string" ? params.callbackUrl : null;
+  if (!isOAuthConsentFlowRequest(ROUTES.signIn, callbackUrl)) return {};
+  return oauthConsentFlowMetadata("Sign in", "Sign in to continue.");
+}
 
 function getAuthErrorMessage(error: string | null) {
   switch (error) {

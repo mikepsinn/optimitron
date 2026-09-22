@@ -158,6 +158,7 @@ export const ROUTES = {
   // Meta
   declaration: "/declaration",
   mcp: "/mcp",
+  mcpAuthorize: "/mcp/authorize",
   methodology: "/methodology",
   developers: "/developers",
   developersTools: "/developers/tools",

@@ -20,7 +20,7 @@ export const appNavigation: AppNavigation = {
     {
       "id": "plaintiffs",
       "label": "Register a Plaintiff",
-      "path": "https://optimitron.com/plaintiffs",
+      "path": "https://courtofhumanity.org/plaintiffs",
       "description": "Put your name on the record in Humanity v. Government.",
       "emoji": "⚖️",
       "isExternal": true
@@ -94,7 +94,7 @@ export const appNavigation: AppNavigation = {
         {
           "id": "plaintiffs",
           "label": "Register a Plaintiff",
-          "path": "https://optimitron.com/plaintiffs",
+          "path": "https://courtofhumanity.org/plaintiffs",
           "description": "Put your name on the record in Humanity v. Government.",
           "emoji": "⚖️",
           "isExternal": true
@@ -194,7 +194,7 @@ export const appNavigation: AppNavigation = {
         {
           "id": "humanityVGovernmentCase",
           "label": "Humanity v. Government",
-          "path": "https://optimitron.com/humanity-v-government",
+          "path": "https://courtofhumanity.org/humanity-v-government",
           "description": "The public case for redirecting 1% of military spending from weapons to cures.",
           "emoji": "📜",
           "isExternal": true
@@ -226,7 +226,7 @@ export const appNavigation: AppNavigation = {
         {
           "id": "courtOfHumanity",
           "label": "Court of Humanity",
-          "path": "https://optimitron.com/court",
+          "path": "https://courtofhumanity.org/court",
           "description": "Where humanity tries its governments.",
           "emoji": "🏛️",
           "isExternal": true

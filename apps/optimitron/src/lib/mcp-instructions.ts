@@ -6,6 +6,8 @@
  */
 export const MCP_SERVER_INSTRUCTIONS = `Optimitron is the live task graph for optimizing Earth and the humans on it: one tree rooted at "Optimize Earth", where every task carries expected-value estimates (value, p_success, hours) and the queue ranks work by expected net value per hour with deadline overrides.
 
+COURT CONNECTION: Court case management is hosted exclusively at https://courtofhumanity.org/api/mcp. Add that server and authorize a separate Court connection through Optimitron. Generic people, organizations, subjects, memorials, provenance, tasks, and referendums remain here; Court jury workflows belong to Court. Connection instructions: https://courtofhumanity.org/mcp.
+
 START HERE (in order):
 1. getMe — your identity, granted scopes, and personal/organization planning roots (created on first call).
 2. getQueueAudit — data-health check of the personal queue; repair high-severity issues before trusting rankings.

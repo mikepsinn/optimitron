@@ -950,7 +950,7 @@ async function main() {
       `\n📊 Destination after: ${after.users} users (+${after.users - before.users}), ${after.treatyVotes} treaty votes (+${after.treatyVotes - before.treatyVotes}), ${after.referralInvitations} invitations (+${after.referralInvitations - before.referralInvitations}), ${after.wishocraticAllocations} allocations (+${after.wishocraticAllocations - before.wishocraticAllocations}), ${after.wishocraticItemInclusions} inclusions (+${after.wishocraticItemInclusions - before.wishocraticItemInclusions}).`,
     );
     console.log(
-      "\n✅ Import complete. Run `scripts/backfill-court-plaintiffs.ts` next to register imported YES voters as plaintiffs.",
+      "\n✅ Import complete. Court owns plaintiff backfills: review `apps/courtofhumanity/scripts/backfill-court-plaintiffs.ts` before running it separately.",
     );
   }
 

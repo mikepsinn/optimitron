@@ -34,9 +34,6 @@ export const VERCEL_APP_PROJECTS = Object.freeze([
     "acceleratedmedicine",
     "acceleratedmedicine.org",
   ),
-  // previewPending: the Vercel project is created only after this scaffold
-  // merges (`pnpm vercel:projects -- --apply`), so PR CI must not wait for a
-  // preview deployment. Remove the flag once the project exists.
   project(
     "courtofhumanity",
     "courtofhumanity",
@@ -45,9 +42,8 @@ export const VERCEL_APP_PROJECTS = Object.freeze([
     // The two case surfaces moved here from the monolith. Optimitron now
     // answers both paths with a permanent redirect to this domain, so it can
     // no longer smoke them itself -- following that redirect only proves this
-    // app is up. Inert until the project exists (see previewPending).
+    // app is up.
     ["/", "/court", "/humanity-v-government"],
-    { previewPending: true },
   ),
 ]);
 

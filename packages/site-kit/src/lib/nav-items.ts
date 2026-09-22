@@ -11,6 +11,7 @@
  */
 
 import { ROUTES, HASH_LINKS } from "./routes";
+import { courtUrl } from "./court-links";
 import { MANUAL_URLS, SOCIAL_URLS } from "./manual-links";
 import { optimitronUrl } from "./optimitron-links";
 import type { Metadata } from "next";
@@ -265,7 +266,7 @@ export const NAV_ITEMS_MAP = {
   plaintiffs: {
     id: "plaintiffs",
     label: "Register a Plaintiff",
-    path: optimitronUrl("/plaintiffs"),
+    path: courtUrl("/plaintiffs"),
     description: "Put your name on the record in Humanity v. Government.",
     emoji: "⚖️",
     isExternal: true,
@@ -322,7 +323,7 @@ export const NAV_ITEMS_MAP = {
   humanityVGovernmentCase: {
     id: "humanityVGovernmentCase",
     label: "Humanity v. Government",
-    path: optimitronUrl("/humanity-v-government"),
+    path: courtUrl("/humanity-v-government"),
     description: "The public case for redirecting 1% of military spending from weapons to cures.",
     emoji: "📜",
     isExternal: true,
@@ -340,11 +341,31 @@ export const NAV_ITEMS_MAP = {
   courtOfHumanity: {
     id: "courtOfHumanity",
     label: "Court of Humanity",
-    path: optimitronUrl(ROUTES.court),
+    path: courtUrl(ROUTES.court),
     description: "Where humanity tries its governments.",
     emoji: "🏛️",
     isExternal: true,
     keywords: ["court", "jury", "verdict"],
+  },
+  courtMcp: {
+    id: "courtMcp",
+    label: "Connect an AI Agent",
+    path: ROUTES.mcp,
+    description: "Draft Court cases and organize public evidence with an AI agent.",
+    emoji: "🔌",
+    canonicalVariant: VARIANTS.COURT_OF_HUMANITY,
+    allowedVariants: [VARIANTS.COURT_OF_HUMANITY],
+    keywords: ["court", "mcp", "agents", "api"],
+  },
+  courtMcpTools: {
+    id: "courtMcpTools",
+    label: "Court Tool Reference",
+    path: ROUTES.developersTools,
+    description: "Court MCP tools, parameters, and permissions.",
+    emoji: "🛠️",
+    canonicalVariant: VARIANTS.COURT_OF_HUMANITY,
+    allowedVariants: [VARIANTS.COURT_OF_HUMANITY],
+    keywords: ["court", "mcp", "tools", "developers"],
   },
   campaignMcp: {
     id: "campaignMcp",
