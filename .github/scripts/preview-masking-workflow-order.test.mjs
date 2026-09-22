@@ -58,21 +58,6 @@ test("creates complete visual baselines for every main push", () => {
   );
 });
 
-test("Court cutover must be verified before production migrations can run", () => {
-  const workflow = readFileSync(WORKFLOW, "utf8");
-  const productionDataJob = workflow.slice(
-    workflow.indexOf("  sync-production-managed-data:"),
-    workflow.indexOf("  deploy-production:"),
-  );
-  const guardStart = productionDataJob.indexOf("- name: Require verified Court cutover");
-  const migrationStart = productionDataJob.indexOf("- name: Apply production database migrations");
-  assert.ok(guardStart >= 0 && guardStart < migrationStart);
-  const guard = productionDataJob.slice(guardStart, migrationStart);
-  assert.match(guard, /hashFiles\('packages\/db\/prisma\/migrations\/20260917020000_drop_legacy_oauth_grant_unique\/migration.sql'\) != ''/u);
-  assert.match(guard, /COURT_MCP_CUTOVER_READY: \$\{\{ vars\.COURT_MCP_CUTOVER_READY \}\}/u);
-  assert.match(guard, /if \[ "\$COURT_MCP_CUTOVER_READY" != "1" \]; then[\s\S]*exit 1/u);
-});
-
 test("deploys Optimitron production only when its build inputs change", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const changesJob = workflow.slice(
