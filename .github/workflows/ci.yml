@@ -642,6 +642,13 @@ jobs:
       - name: Run web unit tests
         run: pnpm --filter @optimitron/web run test
 
+      # A page.tsx at a redirect source never runs: next.config redirects are
+      # served before routing, so the page is dead code that looks live. This
+      # check existed but nothing ran it, and /about had been shadowed that
+      # way on main.
+      - name: Check redirect conflicts
+        run: pnpm --dir apps/optimitron exec tsx scripts/check-redirect-conflicts.ts
+
   web-e2e-validate:
     name: web-e2e-validate
     if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
