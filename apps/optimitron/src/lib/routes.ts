@@ -94,8 +94,6 @@ export const ROUTES = {
   legislation: "/legislation",
   dgao: "/agencies/dgao",
   dih: "/agencies/dih",
-  conditions: "/agencies/dfda/conditions",
-  treatments: "/agencies/dfda/treatments",
   ddod: "/agencies/ddod",
   dcensus: "/agencies/dcensus",
   // discoveries route deleted — use dfdaLink (external) instead
@@ -332,24 +330,25 @@ export const dfdaLink: NavItem = {
 };
 
 export const conditionsLink: NavItem = {
-  href: ROUTES.conditions,
+  // The pages live on dfda.earth; this app only redirects the old paths.
+  href: "https://dfda.earth/conditions",
+  external: true,
   label: "Conditions",
   emoji: "🩺",
   description:
     "Pick a disease and see the evidence. If there is almost none, that is the problem, helpfully labeled.",
   tagline: "Find disease evidence",
-  matchPrefixes: [ROUTES.conditions, "/conditions"],
   cta: "Browse Conditions",
 };
 
 export const treatmentsLink: NavItem = {
-  href: ROUTES.treatments,
+  href: "https://dfda.earth/treatments",
+  external: true,
   label: "Treatments",
   emoji: "💊",
   description:
     "See which treatments have trial evidence, how many humans were tested, and whether they helped or merely had a confident name.",
   tagline: "Compare treatment evidence",
-  matchPrefixes: [ROUTES.treatments, "/treatments"],
   cta: "Browse Treatments",
 };
 

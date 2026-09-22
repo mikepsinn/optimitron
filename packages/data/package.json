@@ -15,6 +15,7 @@
     "./parameters/compact-format": "./src/parameters/compact-format.ts",
     "./referendums": "./src/referendums/index.ts",
     "./fetchers": "./src/fetchers/index.ts",
+    "./fetchers/clinical-trials-gov": "./src/fetchers/clinical-trials-gov.ts",
     "./fetchers/congress": "./src/fetchers/congress.ts",
     "./wishocratic-items-registry": "./src/wishocratic-items-registry.ts",
     "./datasets/agency-historical-trends": "./src/datasets/agency-historical-trends.ts",

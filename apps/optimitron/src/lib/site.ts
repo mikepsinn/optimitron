@@ -139,13 +139,7 @@ export interface SiteRoutePolicy {
   restrictToAllowlist: boolean;
 }
 
-export type SiteSitemapDynamicRouteGroup =
-  | "conditions"
-  | "treatments"
-  | "conditionTreatments";
-
 export interface SiteSitemapConfig {
-  dynamicRouteGroups?: readonly SiteSitemapDynamicRouteGroup[];
   includeAllStaticRoutes?: boolean;
   includePublicRoutes?: boolean;
   landingPageOnly?: boolean;
@@ -723,13 +717,14 @@ const DFDA_CONFIG: SiteConfig = {
     description:
       "Treatments ranked by what happened to actual humans, not by which drug rep brought the best donuts in 2003.",
     eyebrow: "Medical Evidence",
-    primaryPath: "/agencies/dfda/conditions",
+    primaryPath: ROUTES.dfda,
     parentKey: "optimizeEarth",
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.conditions, label: "Browse Conditions", variant: "primary" },
-    { href: ROUTES.treatments, label: "Browse Treatments", variant: "outline" },
+    // The condition and treatment pages live on dfda.earth (apps/dfda).
+    { href: "https://dfda.earth/conditions", label: "Browse Conditions", variant: "primary" },
+    { href: "https://dfda.earth/treatments", label: "Browse Treatments", variant: "outline" },
   ],
   primaryReferendumSlug: null,
   primaryTaskKey: null,
@@ -760,16 +755,12 @@ const DFDA_CONFIG: SiteConfig = {
   },
   routePolicy: {
     canonicalPrefixes: [
-      "/conditions",
-      "/treatments",
       "/outcome-labels",
       "/find-trials",
       ROUTES.dfda,
     ],
     restrictToAllowlist: true,
     publicPrefixes: [
-      "/conditions",
-      "/treatments",
       "/outcome-labels",
       "/find-trials",
       ROUTES.dfda,
@@ -784,9 +775,7 @@ const DFDA_CONFIG: SiteConfig = {
     minimalChromePrefixes: [],
   },
   assets: DFDA_ASSETS,
-  sitemap: {
-    dynamicRouteGroups: ["conditions", "treatments", "conditionTreatments"],
-  },
+  sitemap: {},
   ui: DFDA_UI,
   pageVariants: {
     home: "initiativeLanding",
@@ -882,10 +871,6 @@ const DIH_CONFIG: SiteConfig = {
       "/institutes",
       ROUTES.survey,
       ROUTES.organizations,
-      "/conditions",
-      "/treatments",
-      ROUTES.conditions,
-      ROUTES.treatments,
       ROUTES.wishocracy,
       ROUTES.donate,
     ],
@@ -1050,10 +1035,6 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.impact,
       ROUTES.organizations,
       ROUTES.survey,
-      "/conditions",
-      "/treatments",
-      ROUTES.conditions,
-      ROUTES.treatments,
       ROUTES.dih,
       ROUTES.wishocracy,
       ROUTES.donate,
