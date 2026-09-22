@@ -14,8 +14,7 @@
 ## Visible Page Copy
 
 - [DFDA](/)
-## LET'S CREATE THE FDA OF THE FUTURE
-- Universal pragmatic clinical trials could make clinical trials 82x cheaper, 7.0 years faster, and save millions of lives
+## A Decentralized Framework for Drug Assessment
 - EXPLORE CONDITIONS:
 - [😞DEPRESSION 332M affected · 10,000 trials](/conditions/depression)
 - [🩺DIABETES 506M affected · 300 trials](/conditions/diabetes-mellitus-type-2)
@@ -103,7 +102,7 @@
 - [METFORMIN Treats 5 conditions 2,898 trials · 7,453,500 participants HIGH EFFECTIVENESS](/treatments/metformin)
 - [LEVOTHYROXINE Treats 2 conditions 143 trials · 6,000,000 participants VERY HIGH EFFECTIVENESS](/treatments/levothyroxine)
 - [SURGICAL RESECTION Treats 4 conditions 872 trials · 5,137,000 participants VERY HIGH EFFECTIVENESS](/treatments/surgical-resection)
-### A Decentralized Framework for Drug Assessment
+### How It Works
 - See what the platonic ideal of healthcare and clinical trials will look like when dFDA frameworks are widely adopted.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition

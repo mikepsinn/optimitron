@@ -1,5 +1,11 @@
 'use server';
 
+import {
+  CLINICAL_TRIALS_MAX_STUDIES,
+  buildClinicalTrialsSearchUrl,
+  toClinicalTrialsOffsetPage,
+} from '@optimitron/data/fetchers/clinical-trials-gov';
+
 import { logger } from '@/lib/logger';
 import {
   ClinicalTrialsIntApiResponseSchema,
@@ -27,58 +33,6 @@ interface GetClinicalTrialsParams {
   distance?: number;
 }
 
-const studyStatusToApiCode: Record<StudyStatusKey, string> = {
-  "not yet recruiting": "not",
-  recruiting: "rec",
-  enrolling: "enr", // Assuming 'enr' for "Enrolling by Invitation"
-  active: "act", // "Active, Not Recruiting"
-  suspended: "sus",
-  terminated: "ter",
-  completed: "com",
-  "withdrawn": "wit",
-  unknown: "unk",
-  "available": "ava", 
-  "no longer available": "nla",
-  "approved for marketing": "afm",
-};
-
-const studyTypeToApiCode: Record<StudyTypeKey, string> = {
-  int: "int",
-  obs: "obs",
-  pat: "exp", // Expanded Access seems to be 'exp' in some contexts, or might need specific handling
-  all: "all", // 'all' is not typically sent as a filter value, but kept for consistency
-};
-
-const ageGroupToApiCode: Record<AgeGroupKey, string> = {
-  child: "child",
-  adult: "adult",
-  older_adult: "older",
-};
-
-const sexToApiCode: Record<SexKey, string> = {
-  all: "all", // 'all' is not typically sent as a filter value
-  female: "f",
-  male: "m",
-};
-
-const DEFAULT_FIELDS = [
-  "NCTId", "BriefTitle", "OverallStatus", "LastKnownStatus", "StatusVerifiedDate", "HasResults",
-  "Condition", "InterventionType", "InterventionName",
-  "LocationFacility", "LocationCity", "LocationState", "LocationCountry", "LocationStatus",
-  "LocationZip", "LocationGeoPoint", "LocationContactName", "LocationContactRole", "LocationContactPhone",
-  "LocationContactPhoneExt", "LocationContactEMail", "CentralContactName", "CentralContactRole",
-  "CentralContactPhone", "CentralContactPhoneExt", "CentralContactEMail",
-  "Gender", "MinimumAge", "MaximumAge", "StdAge", "StudyType", "LeadSponsorName", "Acronym",
-  "EnrollmentCount", "StartDate", "PrimaryCompletionDate", "CompletionDate", "StudyFirstPostDate",
-  "ResultsFirstPostDate", "LastUpdatePostDate", "OrgStudyId", "SecondaryId", "Phase",
-  "LargeDocLabel", "LargeDocFilename", "PrimaryOutcomeMeasure", "SecondaryOutcomeMeasure",
-  "DesignAllocation", "DesignInterventionModel", "DesignMasking", "DesignWhoMasked",
-  "DesignPrimaryPurpose", "DesignObservationalModel", "DesignTimePerspective",
-  "LeadSponsorClass", "CollaboratorClass",
-].join(",");
-
-const DEFAULT_COLUMNS = ["conditions", "interventions", "collaborators"].join(",");
-
 export async function getClinicalTrialsAction(
   params: GetClinicalTrialsParams,
 ): Promise<ClinicalTrialsIntApiResponse | ActionError> {
@@ -101,62 +55,28 @@ export async function getClinicalTrialsAction(
     // Allowing empty for now, but might be too slow or rate limited if no search terms or location provided.
   }
 
+  if (from >= CLINICAL_TRIALS_MAX_STUDIES) {
+    return {
+      error: `Results past the first ${CLINICAL_TRIALS_MAX_STUDIES} studies are not available. Narrow the search to see more.`,
+    };
+  }
+
   try {
-    const queryParams = new URLSearchParams();
-    if (condition) queryParams.set("cond", condition);
-    if (intervention) queryParams.set("intr", intervention);
-
-    // Location parameters for /api/int/studies
-    if (lat !== undefined && lng !== undefined) {
-      queryParams.set("lat", lat.toString());
-      queryParams.set("lng", lng.toString());
-      if (distance !== undefined) {
-        queryParams.set("distance", distance.toString());
-      }
-      // locStr can be "Current Location" or user-entered text if lat/lng are also present
-      if (locStr) {
-        queryParams.set("locStr", locStr);
-      }
-    } else if (locStr) {
-      // If only locStr is provided (e.g. user typed "New York" but didn't use current location)
-      // The API might handle this as a general location search without specific radius.
-      // This branch ensures locStr is passed if lat/lng are not available.
-      queryParams.set("locStr", locStr);
-    }
-
-    const aggFilters: string[] = [];
-    if (studyStatus && studyStatusToApiCode[studyStatus]) {
-      aggFilters.push(`status:${studyStatusToApiCode[studyStatus]}`);
-    }
-    if (studyType && studyType !== "all" && studyTypeToApiCode[studyType]) {
-      aggFilters.push(`studyType:${studyTypeToApiCode[studyType]}`);
-    }
-    if (ageGroups && ageGroups.length > 0) {
-      const apiAgeGroups = ageGroups.map(ag => ageGroupToApiCode[ag]).filter(Boolean);
-      if (apiAgeGroups.length > 0) {
-        aggFilters.push(`ages:${apiAgeGroups.join(" ")}`);
-      }
-    }
-    if (sex && sex !== "all" && sexToApiCode[sex]) {
-      aggFilters.push(`sex:${sexToApiCode[sex]}`);
-    }
-    
-    if (aggFilters.length > 0) {
-      queryParams.set("aggFilters", aggFilters.join(","));
-    }
-
-    queryParams.set("from", from.toString());
-    queryParams.set("limit", limit.toString());
-    queryParams.set("fields", DEFAULT_FIELDS);
-    queryParams.set("columns", DEFAULT_COLUMNS);
-    queryParams.set("agg.synonyms", "true");
-    queryParams.set("checkSpell", "true");
-    queryParams.set("highlight", "true");
-    queryParams.set("sort", "@relevance");
-    // queryParams.set("api_key", "YOUR_API_KEY"); // If an API key becomes necessary
-
-    const apiUrl = `https://clinicaltrials.gov/api/int/studies?${queryParams.toString()}`;
-    logger.info(`Fetching clinical trials from: ${apiUrl}`);
+    const apiUrl = buildClinicalTrialsSearchUrl({
+      ageGroups,
+      condition,
+      distance,
+      from,
+      intervention,
+      lat,
+      limit,
+      lng,
+      locStr,
+      sex,
+      studyStatus,
+      studyType,
+    });
+    logger.info(`Fetching clinical trials from: ${apiUrl.toString()}`);
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -169,7 +89,7 @@ export async function getClinicalTrialsAction(
     if (!response.ok) {
       const errorText = await response.text();
       logger.error(
-        `API error fetching clinical trials for query "${queryParams.toString()}": ${response.status} ${response.statusText} - ${errorText}`,
+        `API error fetching clinical trials for "${apiUrl.search}": ${response.status} ${response.statusText} - ${errorText}`,
       );
       return {
         error: `Failed to fetch clinical trials. API returned ${response.status}: ${errorText.substring(0, 200)}`,
@@ -177,11 +97,13 @@ export async function getClinicalTrialsAction(
     }
 
     const data = await response.json();
-    const validationResult = ClinicalTrialsIntApiResponseSchema.safeParse(data);
+    const validationResult = ClinicalTrialsIntApiResponseSchema.safeParse(
+      toClinicalTrialsOffsetPage(data, { from, limit }),
+    );
 
     if (!validationResult.success) {
       logger.error(
-        `Invalid API response structure for clinical trials query "${queryParams.toString()}": ${JSON.stringify(validationResult.error.flatten(), null, 2)}`,
+        `Invalid API response structure for clinical trials query "${apiUrl.search}": ${JSON.stringify(validationResult.error.flatten(), null, 2)}`,
       );
       // Log a snippet of the received data for debugging
       logger.debug(`Received data snippet: ${JSON.stringify(data).substring(0, 500)}`);

@@ -5,6 +5,7 @@ export * from './oecd';
 export * from './world-bank';
 export * from './who';
 export * from './fred';
+export * from './clinical-trials-gov';
 export * from './congress';
 export * from './usaspending';
 export * from './world-bank-pip';

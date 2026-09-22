@@ -11,6 +11,18 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+/** One study in the shape the public v2 API returns. */
+function v2Study(nctId: string, briefTitle: string) {
+  return {
+    protocolSection: {
+      identificationModule: { nctId, briefTitle },
+      statusModule: { overallStatus: "RECRUITING" },
+      conditionsModule: { conditions: ["Asthma"] },
+    },
+    hasResults: false,
+  };
+}
+
 describe("clinical trials fetch helpers", () => {
   it("builds ClinicalTrials.gov URLs from condition and intervention filters", () => {
     const url = buildClinicalTrialsGovUrl({
@@ -21,32 +33,42 @@ describe("clinical trials fetch helpers", () => {
     });
 
     expect(url.origin).toBe("https://clinicaltrials.gov");
-    expect(url.pathname).toBe("/api/int/studies");
-    expect(url.searchParams.get("cond")).toBe("Asthma");
-    expect(url.searchParams.get("intr")).toBe("Metformin");
-    expect(url.searchParams.get("limit")).toBe("25");
-    expect(url.searchParams.get("aggFilters")).toContain("status:rec");
+    // The site's internal /api/int/studies endpoint answers 403 to everyone.
+    expect(url.pathname).toBe("/api/v2/studies");
+    expect(url.searchParams.get("query.cond")).toBe("Asthma");
+    expect(url.searchParams.get("query.intr")).toBe("Metformin");
+    expect(url.searchParams.get("filter.overallStatus")).toBe("RECRUITING");
+    expect(url.searchParams.get("pageSize")).toBe("25");
   });
 
-  it("fetches and parses ClinicalTrials.gov responses", async () => {
+  it("asks for enough studies to reach the requested offset", () => {
+    const url = buildClinicalTrialsGovUrl({ condition: "Asthma", from: 40, limit: 10 });
+
+    // v2 pages by token, so the offset window is read from the first 50.
+    expect(url.searchParams.get("pageSize")).toBe("50");
+  });
+
+  it("combines study type, sex, and age filters into one advanced expression", () => {
+    const url = buildClinicalTrialsGovUrl({
+      condition: "Asthma",
+      studyType: "int",
+      sex: "female",
+      ageGroups: ["child", "adult"],
+    });
+
+    expect(url.searchParams.get("filter.advanced")).toBe(
+      "AREA[StudyType]INTERVENTIONAL AND AREA[Sex]FEMALE AND AREA[StdAge](CHILD OR ADULT)",
+    );
+  });
+
+  it("maps v2 studies onto the offset-paged shape the pages render", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        from: 0,
-        limit: 1,
-        total: 1,
-        terms: ["asthma"],
-        hits: [
-          {
-            id: "NCT00000001",
-            study: {
-              NCTId: ["NCT00000001"],
-              BriefTitle: ["A very tiny trial fixture"],
-              OverallStatus: ["RECRUITING"],
-              Condition: ["Asthma"],
-              InterventionName: ["Albuterol"],
-            },
-          },
+        totalCount: 42,
+        studies: [
+          v2Study("NCT00000001", "First page fixture"),
+          v2Study("NCT00000002", "Second page fixture"),
         ],
       }),
     }) as unknown as typeof fetch;
@@ -54,23 +76,16 @@ describe("clinical trials fetch helpers", () => {
 
     const result = await fetchClinicalTrials({
       condition: "Asthma",
-      intervention: "Albuterol",
+      from: 1,
       limit: 1,
     });
 
-    expect(result.total).toBe(1);
-    expect(result.hits[0]?.id).toBe("NCT00000001");
-    expect(result.hits[0]?.study.BriefTitle).toEqual([
-      "A very tiny trial fixture",
-    ]);
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.any(URL),
-      expect.objectContaining({
-        headers: { Accept: "application/json" },
-        method: "GET",
-        signal: expect.any(AbortSignal),
-      }),
-    );
+    expect(result.total).toBe(42);
+    expect(result.hits).toHaveLength(1);
+    expect(result.hits[0]?.id).toBe("NCT00000002");
+    expect(
+      result.hits[0]?.study.protocolSection?.identificationModule?.briefTitle,
+    ).toBe("Second page fixture");
   });
 
   it("throws when ClinicalTrials.gov returns a non-OK response", async () => {
