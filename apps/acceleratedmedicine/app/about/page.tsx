@@ -1,5 +1,8 @@
-import { permanentRedirect } from "next/navigation";
+import type { Metadata } from "next"
 
-export default function AboutPage() {
-  permanentRedirect("/the-plan");
-}
+import { AboutPage } from "@/components/about-page"
+import { getPageMetadata } from "@optimitron/site-kit/lib/nav-items"
+
+export const metadata: Metadata = getPageMetadata("aboutUs")
+
+export default AboutPage

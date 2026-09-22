@@ -113,6 +113,24 @@ export const NAV_ITEMS_MAP = {
       "health economics",
     ],
   },
+  aboutUs: {
+    id: "aboutUs",
+    label: "About us",
+    path: ROUTES.about,
+    description:
+      "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit.",
+    emoji: "ℹ️",
+    pageTitle: "About us",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    useSiteDefaultOg: true,
+    keywords: [
+      "Institute for Accelerated Medicine",
+      "Accelerated Medicine Foundation",
+      "board of directors",
+      "Right to Trial",
+      "501c3",
+    ],
+  },
   // Take Action items (CTAs)
   vote: {
     id: "vote",
