@@ -45,7 +45,7 @@ export const appNavigation: AppNavigation = {
       "id": "aboutUs",
       "label": "About us",
       "path": "/about",
-      "description": "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit.",
+      "description": "About the Institute for Accelerated Medicine",
       "emoji": "ℹ️"
     }
   ],
@@ -117,7 +117,7 @@ export const appNavigation: AppNavigation = {
           "id": "aboutUs",
           "label": "About us",
           "path": "/about",
-          "description": "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit.",
+          "description": "About the Institute for Accelerated Medicine",
           "emoji": "ℹ️"
         }
       ]

@@ -117,8 +117,7 @@ export const NAV_ITEMS_MAP = {
     id: "aboutUs",
     label: "About us",
     path: ROUTES.about,
-    description:
-      "Meet the Institute for Accelerated Medicine, the 501(c)(3) behind Right to Trial, and the board that stewards the nonprofit.",
+    description: "About the Institute for Accelerated Medicine",
     emoji: "ℹ️",
     pageTitle: "About us",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
