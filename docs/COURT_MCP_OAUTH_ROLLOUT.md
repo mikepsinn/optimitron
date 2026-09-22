@@ -40,9 +40,6 @@ public-only JWKS, unique IDs, and active public/private key agreement. It prints
 no keys, IDs, tokens, or supplied values, loads no `.env` files, and makes no
 network or database calls.
 
-A planned follow-up derives the signing key from `NEXTAUTH_SECRET` and removes
-every variable in this table.
-
 ## Disabling Court
 
 Setting `MCP_COURT_RESOURCE_ENABLED` to `0` stops new Court authorizations and

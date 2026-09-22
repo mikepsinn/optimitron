@@ -23,10 +23,9 @@
 
 Merge and deploy. The migration runs in the production workflow like any other.
 
-Court token issuance stays off until the issuer has the signing configuration in
-`COURT_MCP_OAUTH_ROLLOUT.md`; until then Court's MCP endpoint answers `401`.
-A follow-up derives the signing key from `NEXTAUTH_SECRET` and removes that
-configuration.
+Court token issuance needs the signing configuration in
+`COURT_MCP_OAUTH_ROLLOUT.md` on the issuer; without it, Court's MCP endpoint
+answers `401`.
 
 ## Client change
 
