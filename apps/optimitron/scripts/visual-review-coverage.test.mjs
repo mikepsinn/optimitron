@@ -115,6 +115,10 @@ test("excludes tests, stories, email renderers, and server-only JSX", () => {
     "apps/optimitron/src/app/icon.tsx",
     "apps/optimitron/src/app/tasks/[id]/opengraph-image.tsx",
     "apps/optimitron/src/lib/black-white-text-og-image-response.tsx",
+    // Static social-preview images are never drawn on a page.
+    "apps/optimitron/public/og-image.jpg",
+    "apps/optimitron/public/twitter-image.jpg",
+    "apps/optimitron/public/site-assets/dfda/dfda-og-1200x630.png",
   ];
   for (const filePath of excluded) {
     assert.equal(isVisualUiSourceFile(filePath), false, filePath);
@@ -149,6 +153,7 @@ test("classifies site-app UI sources with their server-only exclusions", () => {
     "apps/warondisease/app/api/og/route.tsx",
     "apps/warondisease/emails/referral-invitation.tsx",
     "apps/warondisease/app/opengraph-image.tsx",
+    "apps/warondisease/public/assets/warondisease/war-on-disease-og-1200x630-legacy.png",
     "apps/warondisease/app/global-error.tsx",
     "apps/warondisease/app/soldiers/loading.tsx",
     "apps/warondisease/lib/treaty-votes.server.ts",

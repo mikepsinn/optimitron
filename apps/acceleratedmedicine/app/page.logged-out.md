@@ -457,6 +457,7 @@
 - [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
+- [ABOUT US](/about)
 #### SUPPORT
 - [VOLUNTEER](/contact)
 - [GET EMAIL UPDATES](/survey)

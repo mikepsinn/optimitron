@@ -5,11 +5,18 @@ import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAllSiteConfigs, getSiteFromHeaders } from "@/lib/site";
+import { ROUTES } from "@/lib/routes";
+import { OAUTH_CONSENT_FLOW_HEADER } from "@/lib/oauth-consent-flow";
 import { isLocalSiteVariantOverrideEnabled } from "@/lib/site-dev-override";
 import { DevSiteVariantSwitcher } from "@/components/site/DevSiteVariantSwitcher";
 import { SiteChromeFrame } from "@/components/site/SiteChromeFrame";
 import { CampaignActionFab } from "@/components/site/CampaignActionFab";
 import { MicrosoftClarity } from "@/components/site/MicrosoftClarity";
+
+// The OAuth consent screen is reached from whichever site the user is
+// connecting, so it must not wear this app's navbar, footer, or campaign
+// prompts. It stays chrome-free on every site variant.
+const GLOBAL_MINIMAL_CHROME_PREFIXES = [ROUTES.mcpAuthorize] as const;
 
 export async function SiteChrome({
   children,
@@ -26,6 +33,11 @@ export async function SiteChrome({
         label: config.shortName,
       }))
     : [];
+  const inOAuthConsentFlow = hdrs.get(OAUTH_CONSENT_FLOW_HEADER) === "1";
+  const minimalRoutePrefixes = [
+    ...site.routePolicy.minimalChromePrefixes,
+    ...GLOBAL_MINIMAL_CHROME_PREFIXES,
+  ];
 
   if (site.chromeVariant === "referendum") {
     return (
@@ -33,7 +45,8 @@ export async function SiteChrome({
         <SiteChromeFrame
           navbar={<Navbar config={ui.nav} />}
           footer={<Footer siteKey={site.key} />}
-          minimalRoutePrefixes={site.routePolicy.minimalChromePrefixes}
+          minimalRoutePrefixes={minimalRoutePrefixes}
+          forceMinimal={inOAuthConsentFlow}
         >
           {children}
         </SiteChromeFrame>
@@ -55,7 +68,8 @@ export async function SiteChrome({
       <SiteChromeFrame
         navbar={<Navbar config={ui.nav} />}
         footer={<Footer siteKey={site.key} />}
-        minimalRoutePrefixes={site.routePolicy.minimalChromePrefixes}
+        minimalRoutePrefixes={minimalRoutePrefixes}
+        forceMinimal={inOAuthConsentFlow}
       >
         {children}
       </SiteChromeFrame>
