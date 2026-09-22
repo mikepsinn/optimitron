@@ -109,6 +109,21 @@ const STUDY_FIELDS = [
   "hasResults",
 ].join(",");
 
+/**
+ * Filter keys arrive from a URL query string and are only cast to these unions
+ * by the callers, so an unknown value can reach a map. v2 rejects the whole
+ * request for a bad filter value, so drop what does not map instead.
+ */
+function lookUp<Key extends string>(
+  map: Record<Key, string>,
+  key: string | undefined,
+): string | undefined {
+  if (!key) return undefined;
+  return Object.prototype.hasOwnProperty.call(map, key)
+    ? map[key as Key]
+    : undefined;
+}
+
 /** How many studies must be read to serve the window that starts at `from`. */
 export function getRequiredPageSize(from: number, limit: number): number {
   return Math.min(Math.max(from, 0) + Math.max(limit, 1), CLINICAL_TRIALS_MAX_STUDIES);
@@ -137,26 +152,35 @@ export function buildClinicalTrialsSearchUrl(
 
   if (condition) query.set("query.cond", condition);
   if (intervention) query.set("query.intr", intervention);
-  if (locStr) query.set("query.locn", locStr);
+
+  // Coordinates win over the text location. The search form fills locStr with
+  // "Current Location" or "Coordinates Provided" whenever it sends
+  // coordinates, and v2 reads query.locn as a place name: sending both matched
+  // nothing at all.
   if (lat !== undefined && lng !== undefined) {
     query.set(
       "filter.geo",
       `distance(${lat},${lng},${distance ?? DEFAULT_DISTANCE_MILES}mi)`,
     );
+  } else if (locStr) {
+    query.set("query.locn", locStr);
   }
 
-  if (studyStatus) query.set("filter.overallStatus", STATUS_TO_V2[studyStatus]);
+  const status = lookUp(STATUS_TO_V2, studyStatus);
+  if (status) query.set("filter.overallStatus", status);
 
   // Everything else filters on a study field, which v2 takes as one expression.
   const advanced: string[] = [];
-  if (studyType && studyType !== "all") {
-    advanced.push(`AREA[StudyType]${STUDY_TYPE_TO_V2[studyType]}`);
-  }
-  if (sex && sex !== "all") {
-    advanced.push(`AREA[Sex]${SEX_TO_V2[sex]}`);
-  }
+  const type = studyType === "all" ? undefined : lookUp(STUDY_TYPE_TO_V2, studyType);
+  if (type) advanced.push(`AREA[StudyType]${type}`);
+
+  const sexValue = sex === "all" ? undefined : lookUp(SEX_TO_V2, sex);
+  if (sexValue) advanced.push(`AREA[Sex]${sexValue}`);
+
   if (ageGroups?.length) {
-    const ages = ageGroups.map((group) => AGE_GROUP_TO_V2[group]).filter(Boolean);
+    const ages = ageGroups
+      .map((group) => lookUp(AGE_GROUP_TO_V2, group))
+      .filter((age): age is string => Boolean(age));
     if (ages.length > 0) {
       advanced.push(`AREA[StdAge](${ages.join(" OR ")})`);
     }
@@ -204,13 +228,15 @@ export function toClinicalTrialsOffsetPage(
   payload: unknown,
   { from = 0, limit = 10 }: { from?: number; limit?: number },
 ): ClinicalTrialsOffsetPage {
-  const { studies = [], totalCount } = (payload ?? {}) as ClinicalTrialsV2Payload;
-  const window = studies.slice(from, from + limit);
+  const { studies, totalCount } = (payload ?? {}) as ClinicalTrialsV2Payload;
+  // A null or malformed `studies` must not crash the page that renders it.
+  const found = Array.isArray(studies) ? studies : [];
+  const window = found.slice(from, from + limit);
 
   return {
     from,
     limit,
-    total: typeof totalCount === "number" ? totalCount : studies.length,
+    total: typeof totalCount === "number" ? totalCount : found.length,
     hits: window.map((study) => ({
       id: readNctId(study),
       study: study as Record<string, unknown>,

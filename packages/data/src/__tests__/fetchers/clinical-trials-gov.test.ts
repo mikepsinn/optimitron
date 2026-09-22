@@ -1,0 +1,109 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  buildClinicalTrialsSearchUrl,
+  toClinicalTrialsOffsetPage,
+} from "../../fetchers/clinical-trials-gov";
+
+describe("buildClinicalTrialsSearchUrl", () => {
+  it("searches the public v2 API", () => {
+    // The site's own /api/int/studies endpoint answers 403 to every caller.
+    const url = buildClinicalTrialsSearchUrl({ condition: "Asthma" });
+
+    expect(url.origin).toBe("https://clinicaltrials.gov");
+    expect(url.pathname).toBe("/api/v2/studies");
+    expect(url.searchParams.get("query.cond")).toBe("Asthma");
+  });
+
+  it("drops the text location when the search carries coordinates", () => {
+    // The form fills locStr with "Current Location" whenever it sends
+    // coordinates, and v2 reads query.locn as a place name, so sending both
+    // matched no studies at all.
+    const url = buildClinicalTrialsSearchUrl({
+      condition: "Asthma",
+      lat: 40.7,
+      lng: -74,
+      distance: 25,
+      locStr: "Current Location",
+    });
+
+    expect(url.searchParams.get("filter.geo")).toBe("distance(40.7,-74,25mi)");
+    expect(url.searchParams.has("query.locn")).toBe(false);
+  });
+
+  it("keeps a typed place name when there are no coordinates", () => {
+    const url = buildClinicalTrialsSearchUrl({
+      condition: "Asthma",
+      locStr: "New York",
+    });
+
+    expect(url.searchParams.get("query.locn")).toBe("New York");
+    expect(url.searchParams.has("filter.geo")).toBe(false);
+  });
+
+  it("drops filter values that are not in the API's enums", () => {
+    // These arrive from the query string, and v2 rejects the whole request
+    // for one bad filter value.
+    const url = buildClinicalTrialsSearchUrl({
+      condition: "Asthma",
+      studyStatus: "bogus" as never,
+      studyType: "bogus" as never,
+      sex: "bogus" as never,
+      ageGroups: ["bogus" as never, "child"],
+    });
+
+    expect(url.searchParams.has("filter.overallStatus")).toBe(false);
+    expect(url.searchParams.get("filter.advanced")).toBe("AREA[StdAge](CHILD)");
+  });
+
+  it("leaves the 'all' selections unfiltered", () => {
+    const url = buildClinicalTrialsSearchUrl({
+      condition: "Asthma",
+      studyType: "all",
+      sex: "all",
+    });
+
+    expect(url.searchParams.has("filter.advanced")).toBe(false);
+  });
+
+  it("reads enough studies to reach the requested offset, up to the API cap", () => {
+    expect(
+      buildClinicalTrialsSearchUrl({ from: 40, limit: 10 }).searchParams.get("pageSize"),
+    ).toBe("50");
+    expect(
+      buildClinicalTrialsSearchUrl({ from: 5000, limit: 10 }).searchParams.get("pageSize"),
+    ).toBe("1000");
+  });
+});
+
+describe("toClinicalTrialsOffsetPage", () => {
+  const payload = {
+    totalCount: 42,
+    studies: [
+      { protocolSection: { identificationModule: { nctId: "NCT00000001" } } },
+      { protocolSection: { identificationModule: { nctId: "NCT00000002" } } },
+      { protocolSection: { identificationModule: { nctId: "NCT00000003" } } },
+    ],
+  };
+
+  it("returns the window that starts at the offset", () => {
+    const page = toClinicalTrialsOffsetPage(payload, { from: 1, limit: 2 });
+
+    expect(page.total).toBe(42);
+    expect(page.hits.map((hit) => hit.id)).toEqual(["NCT00000002", "NCT00000003"]);
+  });
+
+  it("returns no hits past the end of the results", () => {
+    expect(toClinicalTrialsOffsetPage(payload, { from: 10, limit: 10 }).hits).toEqual([]);
+  });
+});
+
+describe("toClinicalTrialsOffsetPage with a malformed payload", () => {
+  it("returns an empty page instead of throwing", () => {
+    // A null studies field would otherwise crash the page that renders it.
+    const page = toClinicalTrialsOffsetPage({ studies: null, totalCount: 0 }, { from: 0, limit: 10 });
+
+    expect(page.hits).toEqual([]);
+    expect(page.total).toBe(0);
+  });
+});
