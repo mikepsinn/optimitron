@@ -7,7 +7,7 @@ import {
 import { ROUTES } from "@/lib/routes";
 
 /**
- * Metadata for /humanity-v-government, ported from the monolith's
+ * Metadata for the Court homepage, ported from the monolith's
  * `humanityVGovernmentLink` nav-item definition. Titles and descriptions are
  * unchanged; the canonical URL and OG footer now belong to
  * courtofhumanity.org.
@@ -31,7 +31,7 @@ export const HUMANITY_V_GOVERNMENT_OG_IMAGE_COPY = {
 } satisfies BlackWhiteTextOgImageCopy;
 
 export const HUMANITY_V_GOVERNMENT_OG_IMAGE_PATH =
-  `${ROUTES.humanityVGovernment}/opengraph-image`;
+  "/humanity-v-government/opengraph-image";
 
 export const HUMANITY_V_GOVERNMENT_OG_ALT = buildBlackWhiteTextOgAltText(
   HUMANITY_V_GOVERNMENT_OG_IMAGE_COPY,
@@ -42,6 +42,7 @@ export const HUMANITY_V_GOVERNMENT_METADATA_TITLE = `You May Be Owed ${humanityV
 export const HUMANITY_V_GOVERNMENT_METADATA_DESCRIPTION = `Render your verdict in the Court of Humanity class action against the governments of Earth. The claim says each living human may be owed ${HUMANITY_V_GOVERNMENT_FULL_DAMAGES_PER_CAPITA_LABEL} in full damages.`;
 
 export const HUMANITY_V_GOVERNMENT_METADATA: Metadata = {
+  metadataBase: new URL("https://courtofhumanity.org"),
   title: HUMANITY_V_GOVERNMENT_METADATA_TITLE,
   description: HUMANITY_V_GOVERNMENT_METADATA_DESCRIPTION,
   alternates: {

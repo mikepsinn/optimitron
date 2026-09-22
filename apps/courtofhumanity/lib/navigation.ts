@@ -6,7 +6,7 @@ export const appNavigation: AppNavigation = {
     {
       "id": "humanityVGovernment",
       "label": "Humanity v. Government",
-      "path": "/humanity-v-government",
+      "path": "/",
       "description": "The damages case against the governments of Earth: war deaths, regulatory delay, and misallocation of public money. Read the case and render your verdict.",
       "emoji": "⚖️"
     },
@@ -40,7 +40,7 @@ export const appNavigation: AppNavigation = {
         {
           "id": "humanityVGovernment",
           "label": "Humanity v. Government",
-          "path": "/humanity-v-government",
+          "path": "/",
           "description": "The damages case against the governments of Earth: war deaths, regulatory delay, and misallocation of public money. Read the case and render your verdict.",
           "emoji": "⚖️"
         },

@@ -33,6 +33,7 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/auth/signup", destination: "/auth/signin", permanent: false },
+      { source: "/humanity-v-government", destination: "/", permanent: true },
       { source: "/about", destination: "/", permanent: true },
       { source: "/faq", destination: "/", permanent: true },
     ];
