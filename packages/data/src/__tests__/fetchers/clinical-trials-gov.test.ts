@@ -31,6 +31,12 @@ describe("buildClinicalTrialsSearchUrl", () => {
     expect(url.searchParams.has("query.locn")).toBe(false);
   });
 
+  it("falls back to a 50 mile radius when the search sends no distance", () => {
+    const url = buildClinicalTrialsSearchUrl({ condition: "Asthma", lat: 40.7, lng: -74 });
+
+    expect(url.searchParams.get("filter.geo")).toBe("distance(40.7,-74,50mi)");
+  });
+
   it("keeps a typed place name when there are no coordinates", () => {
     const url = buildClinicalTrialsSearchUrl({
       condition: "Asthma",
@@ -66,6 +72,19 @@ describe("buildClinicalTrialsSearchUrl", () => {
     expect(url.searchParams.has("filter.advanced")).toBe(false);
   });
 
+  // `from` is parseInt'd straight off the query string, so ?from=abc arrives
+  // as NaN and the API rejects "pageSize=NaN" outright.
+  it("ignores offsets that are not usable numbers", () => {
+    for (const from of [Number.NaN, -5, undefined]) {
+      const pageSize = buildClinicalTrialsSearchUrl({
+        condition: "Asthma",
+        from: from as number,
+        limit: 10,
+      }).searchParams.get("pageSize");
+      expect(pageSize).toBe("10");
+    }
+  });
+
   it("reads enough studies to reach the requested offset, up to the API cap", () => {
     expect(
       buildClinicalTrialsSearchUrl({ from: 40, limit: 10 }).searchParams.get("pageSize"),
@@ -91,6 +110,15 @@ describe("toClinicalTrialsOffsetPage", () => {
 
     expect(page.total).toBe(42);
     expect(page.hits.map((hit) => hit.id)).toEqual(["NCT00000002", "NCT00000003"]);
+  });
+
+  // A negative offset would otherwise slice from the end and return nothing.
+  it("reads from the start when the offset is not a usable number", () => {
+    for (const from of [Number.NaN, -5]) {
+      const page = toClinicalTrialsOffsetPage(payload, { from, limit: 2 });
+      expect(page.from).toBe(0);
+      expect(page.hits.map((hit) => hit.id)).toEqual(["NCT00000001", "NCT00000002"]);
+    }
   });
 
   it("returns no hits past the end of the results", () => {

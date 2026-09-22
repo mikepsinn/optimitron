@@ -124,9 +124,27 @@ function lookUp<Key extends string>(
     : undefined;
 }
 
+/**
+ * Page values come from a query string, so `?from=abc` arrives as NaN and
+ * `?from=-5` as a negative. NaN reaches the API as `pageSize=NaN`, which it
+ * rejects outright, and a negative offset slices from the end and silently
+ * returns nothing.
+ */
+function toPageValue(
+  value: number | undefined,
+  fallback: number,
+  minimum: number,
+): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.max(Math.floor(value), minimum);
+}
+
 /** How many studies must be read to serve the window that starts at `from`. */
 export function getRequiredPageSize(from: number, limit: number): number {
-  return Math.min(Math.max(from, 0) + Math.max(limit, 1), CLINICAL_TRIALS_MAX_STUDIES);
+  return Math.min(
+    toPageValue(from, 0, 0) + toPageValue(limit, 10, 1),
+    CLINICAL_TRIALS_MAX_STUDIES,
+  );
 }
 
 export function buildClinicalTrialsSearchUrl(
@@ -226,16 +244,18 @@ function readNctId(study: unknown): string {
  */
 export function toClinicalTrialsOffsetPage(
   payload: unknown,
-  { from = 0, limit = 10 }: { from?: number; limit?: number },
+  { from, limit }: { from?: number; limit?: number },
 ): ClinicalTrialsOffsetPage {
+  const start = toPageValue(from, 0, 0);
+  const size = toPageValue(limit, 10, 1);
   const { studies, totalCount } = (payload ?? {}) as ClinicalTrialsV2Payload;
   // A null or malformed `studies` must not crash the page that renders it.
   const found = Array.isArray(studies) ? studies : [];
-  const window = found.slice(from, from + limit);
+  const window = found.slice(start, start + size);
 
   return {
-    from,
-    limit,
+    from: start,
+    limit: size,
     total: typeof totalCount === "number" ? totalCount : found.length,
     hits: window.map((study) => ({
       id: readNctId(study),
