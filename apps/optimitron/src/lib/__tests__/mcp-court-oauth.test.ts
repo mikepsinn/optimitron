@@ -26,6 +26,7 @@ import {
 import {
   getCourtPublicJwks,
   resolveOAuthResource,
+  resolveOAuthResourceName,
   signCourtMcpToken,
   verifyCourtMcpRefreshToken,
 } from "../mcp-court-oauth";
@@ -311,5 +312,24 @@ describe("Court resource credentials", () => {
         resolveIdentity: async () => ({ ...identity, resource: "legacy" }),
       }),
     ).rejects.toThrow();
+  });
+});
+
+describe("resolveOAuthResourceName", () => {
+  it("names no site for the shared legacy resource", () => {
+    // Legacy is one grant spanning Optimitron and every legacy site, so naming
+    // any single one of them would tell the user the grant is narrower.
+    expect(resolveOAuthResourceName(resolveOAuthResource(undefined))).toBeNull();
+    expect(
+      resolveOAuthResourceName(
+        resolveOAuthResource("https://dfda.earth/api/mcp"),
+      ),
+    ).toBeNull();
+  });
+
+  it("names Court for its own isolated resource", () => {
+    expect(
+      resolveOAuthResourceName(resolveOAuthResource(COURT_MCP_RESOURCE)),
+    ).toBe("Court of Humanity");
   });
 });

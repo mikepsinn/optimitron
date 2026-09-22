@@ -8,6 +8,7 @@ import {
 } from "jose";
 import {
   COURT_MCP_RESOURCE,
+  COURT_MCP_RESOURCE_NAME,
   COURT_MCP_SCOPES,
   courtMcpResource,
   LEGACY_MCP_RESOURCE,
@@ -66,6 +67,18 @@ export function resolveOAuthResource(
   }
   if (legacyResources.has(value)) return LEGACY_MCP_RESOURCE;
   throw new Error("Unknown OAuth resource");
+}
+
+/**
+ * Site name to show on the consent screen, given a resolved OAuth resource.
+ *
+ * Only an isolated resource gets a name. The legacy resource is one shared
+ * grant across Optimitron and every legacy site, so naming a single site would
+ * tell the user the grant is narrower than it is.
+ */
+export function resolveOAuthResourceName(resource: string): string | null {
+  // resolveOAuthResource returns either the legacy sentinel or Court's resource.
+  return resource === LEGACY_MCP_RESOURCE ? null : COURT_MCP_RESOURCE_NAME;
 }
 
 export function filterCourtMcpScopes(

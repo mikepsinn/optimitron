@@ -121,6 +121,17 @@ function isSiteAppServerOnlyJsx(appRelative) {
   );
 }
 
+/**
+ * Static social-preview images reach link scrapers through `<meta>` tags and
+ * are never drawn on a page, so no screenshot state can cover them -- the same
+ * reason the generated `opengraph-image` routes are excluded above. Matches
+ * `og-image.jpg`, `twitter-image.jpg`, and `<site>-og-1200x630.png`.
+ */
+function isSocialPreviewImage(publicRelative) {
+  const baseName = publicRelative.slice(publicRelative.lastIndexOf("/") + 1);
+  return /(?:^|-)og-|^twitter-image/i.test(baseName);
+}
+
 /** Rendered web source that requires a registered screenshot state when changed. */
 export function isVisualUiSourceFile(filePath) {
   const normalized = normalizeRepoPath(filePath);
@@ -142,7 +153,7 @@ export function isVisualUiSourceFile(filePath) {
     if (
       /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(webRelative)
     ) {
-      return true;
+      return !isSocialPreviewImage(webRelative);
     }
     return /^(?:postcss|tailwind)\.config\.[cm]?[jt]s$/.test(webRelative);
   }
@@ -160,7 +171,10 @@ export function isVisualUiSourceFile(filePath) {
   if (/^(?:app|components)\/.*\.css$/.test(appRelative)) {
     return true;
   }
-  return /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(appRelative);
+  return (
+    /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(appRelative) &&
+    !isSocialPreviewImage(appRelative)
+  );
 }
 
 /**

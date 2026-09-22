@@ -114,6 +114,23 @@ export const NAV_ITEMS_MAP = {
       "health economics",
     ],
   },
+  aboutUs: {
+    id: "aboutUs",
+    label: "About us",
+    path: ROUTES.about,
+    description: "About the Institute for Accelerated Medicine",
+    emoji: "ℹ️",
+    pageTitle: "About us",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    useSiteDefaultOg: true,
+    keywords: [
+      "Institute for Accelerated Medicine",
+      "Accelerated Medicine Foundation",
+      "board of directors",
+      "Right to Trial",
+      "501c3",
+    ],
+  },
   // Take Action items (CTAs)
   vote: {
     id: "vote",

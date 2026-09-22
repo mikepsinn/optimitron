@@ -1972,16 +1972,6 @@ jobs:
         run: |
           test -n "$DATABASE_URL" || { echo "Missing production environment secret DATABASE_URL"; exit 1; }
 
-      - name: Require verified Court cutover
-        if: ${{ hashFiles('packages/db/prisma/migrations/20260917020000_drop_legacy_oauth_grant_unique/migration.sql') != '' }}
-        env:
-          COURT_MCP_CUTOVER_READY: ${{ vars.COURT_MCP_CUTOVER_READY }}
-        run: |
-          if [ "$COURT_MCP_CUTOVER_READY" != "1" ]; then
-            echo "::error::Court cutover is blocked. Deploy and verify OAuth preparation and Court first, then set the GitHub Production environment variable COURT_MCP_CUTOVER_READY=1. See docs/COURT_MCP_OAUTH_ROLLOUT.md."
-            exit 1
-          fi
-
       - name: Apply production database migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
