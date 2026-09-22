@@ -61,14 +61,27 @@ const REDIRECTS = [
   { source: "/campaign", destination: "/signatories", permanent: true },
   { source: "/coalition", destination: "/signatories", permanent: true },
 
-  // /find-trials belongs to the dfda.earth site (see site.ts canonicalPrefixes
-  // for the dfda site object). InterventionCard generates relative
-  // /find-trials links via generatePatientTrialSearchPath; when rendered on
-  // warondisease.org pages they land here. 301 to the canonical surface,
-  // preserving any path tail + query string (Next preserves the query
-  // automatically for redirect responses).
+  // /find-trials belongs to the dfda.earth site. Nothing in this app links
+  // there any more, but older pages and outside links still do, so the path
+  // keeps redirecting to the canonical surface, preserving any path tail and
+  // query string (Next preserves the query automatically).
   { source: "/find-trials", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials", permanent: true },
   { source: "/find-trials/:path*", has: [{ type: "host", value: "warondisease.org" }], destination: "https://dfda.earth/find-trials/:path*", permanent: true },
+
+  // Conditions and treatments belong to the dfda.earth app (apps/dfda), which
+  // serves the same slugs. This app carried a second copy of every page, so
+  // the two sites competed for the same searches and the same fixes had to be
+  // made twice. The pages are deleted here and the paths 308 to the canonical
+  // surface. Both the short paths and the /agencies/dfda/* ones are covered,
+  // because both were live.
+  { source: "/conditions", destination: "https://dfda.earth/conditions", permanent: true },
+  { source: "/conditions/:path*", destination: "https://dfda.earth/conditions/:path*", permanent: true },
+  { source: "/treatments", destination: "https://dfda.earth/treatments", permanent: true },
+  { source: "/treatments/:path*", destination: "https://dfda.earth/treatments/:path*", permanent: true },
+  { source: "/agencies/dfda/conditions", destination: "https://dfda.earth/conditions", permanent: true },
+  { source: "/agencies/dfda/conditions/:path*", destination: "https://dfda.earth/conditions/:path*", permanent: true },
+  { source: "/agencies/dfda/treatments", destination: "https://dfda.earth/treatments", permanent: true },
+  { source: "/agencies/dfda/treatments/:path*", destination: "https://dfda.earth/treatments/:path*", permanent: true },
 
   // The Humanity v. Government case and Court of Humanity join surfaces
   // moved to the dedicated courtofhumanity.org app (apps/courtofhumanity),

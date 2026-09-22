@@ -43,7 +43,7 @@ describe("site sitemap routing", () => {
     expect(paths).not.toContain(ROUTES.scoreboard);
   });
 
-  it("adds DFDA medical index and detail routes to the DFDA sitemap", () => {
+  it("keeps the medical routes that moved to dfda.earth out of the sitemap", () => {
     const site = getSiteConfig("dfda");
     const sitemap = getSitemapForSite(site);
     const urls = sitemap.map((entry) => entry.url);
@@ -52,12 +52,14 @@ describe("site sitemap routing", () => {
     expect(urls.every((url) => url.startsWith("https://dfda.earth/"))).toBe(
       true,
     );
-    expect(paths).toContain("/conditions");
-    expect(paths).toContain("/treatments");
+    // apps/dfda publishes these; listing them here would advertise pages
+    // this app only redirects.
+    expect(paths).not.toContain("/conditions");
+    expect(paths).not.toContain("/treatments");
     expect(paths).not.toContain(`${ROUTES.agencies}/dfda/conditions`);
     expect(paths).not.toContain(`${ROUTES.agencies}/dfda/treatments`);
-    expect(paths.some((path) => path.startsWith("/conditions/"))).toBe(true);
-    expect(paths.some((path) => path.startsWith("/treatments/"))).toBe(true);
+    expect(paths.some((path) => path.startsWith("/conditions/"))).toBe(false);
+    expect(paths.some((path) => path.startsWith("/treatments/"))).toBe(false);
     expect(paths).not.toContain("/llms.txt");
     expect(paths).not.toContain("/api/agent/campaign-state");
   });
