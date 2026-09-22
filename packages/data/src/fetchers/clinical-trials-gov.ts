@@ -139,6 +139,17 @@ function toPageValue(
   return Math.max(Math.floor(value), minimum);
 }
 
+/**
+ * Coordinates come from the same query string, so `?lat=abc` arrives as NaN,
+ * which is still a `number`. A NaN or out-of-range coordinate would produce
+ * `distance(NaN,-74,50mi)`, which the API rejects, and would also hide the
+ * text-location fallback. Treat it as no coordinate.
+ */
+function toCoordinate(value: number | undefined, limit: number): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.abs(value) <= limit ? value : undefined;
+}
+
 /** How many studies must be read to serve the window that starts at `from`. */
 export function getRequiredPageSize(from: number, limit: number): number {
   return Math.min(
@@ -175,11 +186,11 @@ export function buildClinicalTrialsSearchUrl(
   // "Current Location" or "Coordinates Provided" whenever it sends
   // coordinates, and v2 reads query.locn as a place name: sending both matched
   // nothing at all.
-  if (lat !== undefined && lng !== undefined) {
-    query.set(
-      "filter.geo",
-      `distance(${lat},${lng},${distance ?? DEFAULT_DISTANCE_MILES}mi)`,
-    );
+  const latitude = toCoordinate(lat, 90);
+  const longitude = toCoordinate(lng, 180);
+  if (latitude !== undefined && longitude !== undefined) {
+    const radius = toPageValue(distance, DEFAULT_DISTANCE_MILES, 1);
+    query.set("filter.geo", `distance(${latitude},${longitude},${radius}mi)`);
   } else if (locStr) {
     query.set("query.locn", locStr);
   }

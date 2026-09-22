@@ -37,6 +37,20 @@ describe("buildClinicalTrialsSearchUrl", () => {
     expect(url.searchParams.get("filter.geo")).toBe("distance(40.7,-74,50mi)");
   });
 
+  it("ignores unusable coordinates and falls back to the place name", () => {
+    // The page parses lat/lng with parseFloat, so a hand-edited link can carry
+    // NaN or an out-of-range value; both used to reach the API as filter.geo.
+    const nan = buildClinicalTrialsSearchUrl({ condition: "x", lat: Number.NaN, lng: -74, locStr: "Boston" });
+    expect(nan.searchParams.get("filter.geo")).toBeNull();
+    expect(nan.searchParams.get("query.locn")).toBe("Boston");
+
+    const outOfRange = buildClinicalTrialsSearchUrl({ condition: "x", lat: 91, lng: -74, locStr: "Boston" });
+    expect(outOfRange.searchParams.get("filter.geo")).toBeNull();
+
+    const badRadius = buildClinicalTrialsSearchUrl({ condition: "x", lat: 42.4, lng: -71.1, distance: Number.NaN });
+    expect(badRadius.searchParams.get("filter.geo")).toBe("distance(42.4,-71.1,50mi)");
+  });
+
   it("keeps a typed place name when there are no coordinates", () => {
     const url = buildClinicalTrialsSearchUrl({
       condition: "Asthma",
