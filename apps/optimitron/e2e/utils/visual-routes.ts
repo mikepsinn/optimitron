@@ -229,8 +229,6 @@ const TASK_LIST_CONTROLS_FILE =
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "apps/optimitron/src/components/tasks/task-impact-trace-disclosure.tsx";
 const OBG_CATEGORY_PAGE_FILE = "apps/optimitron/src/app/obg/[slug]/page.tsx";
-const HEALTH_ECONOMICS_DISPLAY_FILE =
-  "apps/optimitron/src/components/treatment/HealthEconomicsDisplay.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
   "apps/optimitron/src/components/dashboard/PersonalQueueSection.tsx";
 const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
@@ -383,6 +381,10 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.fixAi, "#next-hour"],
   [ROUTES.game, "#vote"],
+  // The home route covers every shared landing section, so without a selector
+  // the coverage gate cannot prove any of them rendered. #vote is the last
+  // section on the page, the same anchor /game asserts.
+  [ROUTES.home, "#vote"],
   [ROUTES.methodology, "#methodology"],
   [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
@@ -633,13 +635,6 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     requiredText: /^EPA \/ Environment$/,
   },
   {
-    covers: [HEALTH_ECONOMICS_DISPLAY_FILE],
-    name: "treatment-health-economics",
-    path: "/agencies/dfda/conditions/endometriosis/treatments/laparoscopic-excision-surgery",
-    required: true,
-    requiredSelector: '[data-visual-section="health-economics"]',
-  },
-  {
     // Required, and asserted on #also-serves rather than something always
     // present: this is the state that proves a task renders under every goal
     // it serves, so a capture without that section would be worthless.
@@ -735,15 +730,6 @@ const LEGACY_HOST_ROUTES: VisualRouteSpec[] = [
     captureKind: "legacy-host",
     name: "variant-dfda-home",
     path: ROUTES.home,
-    required: true,
-    siteVariant: "dfda",
-  },
-  {
-    appId: "dfda",
-    appLabel: VISUAL_APP_LABELS.dfda,
-    captureKind: "legacy-host",
-    name: "variant-dfda-conditions",
-    path: ROUTES.conditions,
     required: true,
     siteVariant: "dfda",
   },

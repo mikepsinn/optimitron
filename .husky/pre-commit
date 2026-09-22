@@ -16,5 +16,5 @@ if git diff --cached --name-only -- apps/optimitron/src/app 'apps/optimitron/src
   echo "    pnpm copy web --routes=/treaty                   # one site, some routes"
   echo "    pnpm --filter @optimitron/web copy:preview       # web only, affected routes"
   echo "    pnpm --filter @optimitron/web email:preview-md"
-  echo "  (CI fails if .md snapshots drift from rendered output.)"
+  echo "  (The PR visual review diffs rendered copy against these files.)"
 fi

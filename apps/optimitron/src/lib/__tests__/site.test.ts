@@ -330,21 +330,15 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(true);
   });
 
-  it("exposes medical pages on DFDA without exposing treaty campaign pages", () => {
+  // The condition and treatment pages moved to apps/dfda, which serves
+  // dfda.earth. This app only redirects those paths now, so serving them
+  // again would put two copies back in front of the same searches.
+  it("no longer serves medical or treaty campaign pages on DFDA", () => {
     const dfdaSite = getSiteFromHost("dfda.earth");
 
-    expect(isSiteRouteAllowed(dfdaSite, "/conditions")).toBe(true);
-    expect(isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions")).toBe(
-      true,
-    );
-    expect(isSiteRouteAllowed(dfdaSite, "/conditions/asthma")).toBe(true);
-    expect(
-      isSiteRouteAllowed(dfdaSite, "/agencies/dfda/conditions/asthma"),
-    ).toBe(true);
-    expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(true);
-    expect(
-      isSiteRouteAllowed(dfdaSite, "/agencies/dfda/treatments/metformin"),
-    ).toBe(true);
+    expect(isSiteRouteAllowed(dfdaSite, "/conditions")).toBe(false);
+    expect(isSiteRouteAllowed(dfdaSite, "/conditions/asthma")).toBe(false);
+    expect(isSiteRouteAllowed(dfdaSite, "/treatments/metformin")).toBe(false);
     expect(isSiteRouteAllowed(dfdaSite, "/treaty")).toBe(false);
   });
 
@@ -365,11 +359,6 @@ describe("site variant registry", () => {
     expect(
       getEnabledStaticPathsForSite(getSiteConfig("warOnDisease"), candidates),
     ).toEqual(expect.arrayContaining(candidates));
-  });
-
-  it("keeps Optimitron medical links canonical under DFDA", () => {
-    expect(ROUTES.conditions).toBe("/agencies/dfda/conditions");
-    expect(ROUTES.treatments).toBe("/agencies/dfda/treatments");
   });
 
   it("builds partner survey URLs on the War on Disease domain", () => {
