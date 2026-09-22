@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -10,6 +11,7 @@ import {
   isRedirectUriAllowed,
   shouldRedirectMcpAuthorizeToIssuer,
 } from "@/lib/mcp-oauth";
+import { oauthConsentFlowMetadata } from "@/lib/oauth-consent-flow";
 import {
   DEFAULT_CONSENT_SCOPES,
   allowedMcpScopesForUser,
@@ -21,9 +23,30 @@ import { prisma } from "@/lib/prisma";
 import { McpConsentForm } from "./consent-form";
 import {
   resolveOAuthResource,
+  resolveOAuthResourceName,
   LEGACY_MCP_RESOURCE,
   filterCourtMcpScopes,
 } from "@/lib/mcp-court-oauth";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  let resourceName: string | null = null;
+  try {
+    resourceName = resolveOAuthResourceName(
+      resolveOAuthResource(params.resource),
+    );
+  } catch {
+    resourceName = null;
+  }
+  return oauthConsentFlowMetadata(
+    resourceName ? `Authorize access to ${resourceName}` : "Authorize access",
+    "Review and approve an app's access to your account.",
+  );
+}
 
 function invalidRequest(message: string) {
   return (
@@ -50,6 +73,7 @@ export default async function McpAuthorizePage({
   }
   const requestedResource =
     typeof params.resource === "string" ? params.resource : undefined;
+  const resourceName = resolveOAuthResourceName(resource);
   const clientId =
     typeof params.client_id === "string" ? params.client_id : null;
   const redirectUri =
@@ -155,9 +179,10 @@ export default async function McpAuthorizePage({
           </h1>
           <p className="font-bold text-muted-foreground mb-6">
             <span className="text-foreground">{clientName}</span>{" "}
-            {resource === LEGACY_MCP_RESOURCE
-              ? "wants to access your Optimitron account. Tick the permissions you want to grant."
-              : "wants to access Court of Humanity with your Optimitron account. Tick the permissions you want to grant."}
+            {resourceName
+              ? `wants to access your ${resourceName} account.`
+              : "wants to access your account."}{" "}
+            Tick the permissions you want to grant.
           </p>
           {resource !== LEGACY_MCP_RESOURCE && (
             <p className="text-sm font-bold text-muted-foreground mb-6 break-all">

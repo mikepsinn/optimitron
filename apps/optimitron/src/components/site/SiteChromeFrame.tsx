@@ -15,16 +15,20 @@ function usesMinimalChrome(
 export function SiteChromeFrame({
   children,
   footer,
+  forceMinimal = false,
   minimalRoutePrefixes,
   navbar,
 }: {
   children: ReactNode;
   footer: ReactNode;
+  /** Server-side decision that cannot be made from the pathname alone. */
+  forceMinimal?: boolean;
   minimalRoutePrefixes: readonly string[];
   navbar: ReactNode;
 }) {
   const pathname = usePathname();
-  const minimal = usesMinimalChrome(pathname, minimalRoutePrefixes);
+  const minimal =
+    forceMinimal || usesMinimalChrome(pathname, minimalRoutePrefixes);
 
   return (
     <>
