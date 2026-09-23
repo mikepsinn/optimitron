@@ -24,8 +24,8 @@ export default function DecentralizedFDASection({
           </h2>
           <p className="mx-auto mt-6 max-w-4xl text-xl font-bold text-balance">
             Patients find trials. Clinicians compare options. Researchers learn
-            from every result. Here is how a decentralized FDA makes all three
-            easier.
+            from every result. Here is how the dFDA proposal (Decentralized
+            Framework for Drug Assessment) would make all three easier.
           </p>
         </div>
 

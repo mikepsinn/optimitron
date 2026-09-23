@@ -151,6 +151,8 @@ const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. The Accelerated Medicine Foundation Inc is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const DFDA_NON_AFFILIATION_NOTICE =
+  "dFDA (Decentralized Framework for Drug Assessment) is an independent open-source project. It is not affiliated with, endorsed by, or acting on behalf of the U.S. Food and Drug Administration.";
 
 // ===== INTERFACES =====
 
@@ -770,6 +772,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     copyrightText:
       "© 2025 International Campaign to End War and Disease | CC BY-NC 4.0",
+    footerComplianceNotice: DFDA_NON_AFFILIATION_NOTICE,
     faq: DFDA_FAQ,
 
     // Image generation prompts
