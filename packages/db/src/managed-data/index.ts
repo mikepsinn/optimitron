@@ -8,6 +8,10 @@ import {
   syncManagedDemoContent,
 } from "./managed-demo-content.js";
 import {
+  formatManagedFamousDiseaseDeathsResult,
+  syncManagedFamousDiseaseDeaths,
+} from "./managed-famous-disease-deaths.js";
+import {
   formatManagedGrandmaKayResult,
   syncManagedGrandmaKay,
 } from "./managed-grandma-kay.js";
@@ -82,6 +86,9 @@ export interface SyncManagedDataResult {
     ReturnType<typeof syncManagedHumanityVGovernmentCase>
   >;
   grandmaKay: Awaited<ReturnType<typeof syncManagedGrandmaKay>>;
+  famousDiseaseDeaths: Awaited<
+    ReturnType<typeof syncManagedFamousDiseaseDeaths>
+  >;
   demoUser: Awaited<ReturnType<typeof syncManagedDemoUser>>;
   demoContent: Awaited<ReturnType<typeof syncManagedDemoContent>>;
   iamOrganization: Awaited<ReturnType<typeof syncManagedIamOrganization>>;
@@ -170,6 +177,11 @@ export async function syncManagedData(
     syncManagedGrandmaKay(prisma, { apply: options.apply }),
   );
 
+  // Famous disease deaths attach evidence to the Humanity v Government case.
+  const famousDiseaseDeaths = await timeStep("famous-disease-deaths", () =>
+    syncManagedFamousDiseaseDeaths(prisma, { apply: options.apply }),
+  );
+
   // Demo user is independent.
   const demoUser = await timeStep("demo-user", () =>
     syncManagedDemoUser(prisma, { apply: options.apply }),
@@ -202,6 +214,7 @@ export async function syncManagedData(
     referendums,
     humanityVGovernmentCase,
     grandmaKay,
+    famousDiseaseDeaths,
     demoUser,
     demoContent,
     iamOrganization,
@@ -222,6 +235,7 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
     ),
     formatManagedTaskTriggersResult(result.taskTriggers),
     formatManagedGrandmaKayResult(result.grandmaKay),
+    formatManagedFamousDiseaseDeathsResult(result.famousDiseaseDeaths),
     formatManagedDemoUserResult(result.demoUser),
     formatManagedDemoContentResult(result.demoContent),
     formatManagedIamOrganizationResult(result.iamOrganization),
@@ -266,6 +280,7 @@ export {
   syncManagedTreatyAccountabilityData,
 };
 export { DEMO_EMAIL } from "./managed-demo-user.js";
+export { FAMOUS_DISEASE_DEATHS } from "./managed-famous-disease-deaths.js";
 export {
   GRANDMA_KAY_SOURCE_REF,
   GRANDMA_KAY_PERSON_CONDITION_ID,

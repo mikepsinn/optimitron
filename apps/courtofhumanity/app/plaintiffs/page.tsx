@@ -7,6 +7,7 @@ import { PersonDeathCauseCategory } from "@optimitron/db/enums"
 import Link from "next/link"
 import Layout from "@/components/layout"
 import { ParameterValue } from "@/components/shared/ParameterValue"
+import { getFamousDiseaseDeaths } from "@/lib/famous-disease-deaths.server"
 import { formatCount } from "@/lib/format-count"
 import {
   getRepresentedPeopleGalleryData,
@@ -103,6 +104,7 @@ export default async function PlaintiffsPage({
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1
 
   const referendumSlug = TREATY_REFERENDUM_SLUG
+  const famousDiseaseDeathsPromise = getFamousDiseaseDeaths()
   const data = await getRepresentedPeopleGalleryData(referendumSlug, {
     filters: {
       causeCategory,
@@ -115,6 +117,7 @@ export default async function PlaintiffsPage({
     pageSize: PLAINTIFFS_PAGE_SIZE,
     sort,
   })
+  const famousDiseaseDeaths = await famousDiseaseDeathsPromise
   const people = data?.people ?? []
   const filteredCount = data?.filteredCount ?? 0
   const totalPages = data?.totalPages ?? 1
@@ -250,6 +253,47 @@ export default async function PlaintiffsPage({
             </nav>
           ) : null}
         </section>
+
+        {famousDiseaseDeaths.length > 0 ? (
+          <section
+            aria-labelledby="famous-disease-deaths-heading"
+            className="space-y-5 border-t-2 border-foreground pt-8"
+          >
+            <h2
+              className="text-3xl font-black uppercase leading-tight"
+              id="famous-disease-deaths-heading"
+            >
+              Killed by diseases we funded less than missiles
+            </h2>
+            <ul className="grid gap-2 grid-cols-2 lg:grid-cols-4">
+              {famousDiseaseDeaths.map((death) => (
+                <li
+                  className="border-2 border-foreground bg-background p-3 text-foreground sm:p-4"
+                  key={death.id}
+                >
+                  <p className="text-base font-black uppercase leading-tight sm:text-lg">
+                    {death.sourceUrl ? (
+                      <a
+                        className="underline-offset-4 hover:underline"
+                        href={death.sourceUrl}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {death.displayName}
+                      </a>
+                    ) : (
+                      death.displayName
+                    )}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-muted-foreground">
+                    {death.conditionName}
+                    {death.deathYear ? `, ${death.deathYear}` : null}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className="space-y-3 border-t-2 border-foreground pt-8">
           <details className="border-2 border-foreground bg-background p-4 text-foreground">

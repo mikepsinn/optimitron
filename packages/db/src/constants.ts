@@ -17,6 +17,8 @@ export const TRIAL_ABUNDANCE_SELF_FUNDED_ACCESS_REFERENDUM_QUESTION =
 export const DECLARATION_REFERENDUM_SLUG = "declaration-of-optimization";
 export const COURT_OF_HUMANITY_REFERENDUM_SLUG = "court-of-humanity";
 export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";
+/** CourtCaseEvidence.evidenceType for famous people who died of disease. */
+export const FAMOUS_DISEASE_DEATH_EVIDENCE_TYPE = "famous-disease-death";
 export const HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG =
   "court-humanity-v-government-verdict";
 
