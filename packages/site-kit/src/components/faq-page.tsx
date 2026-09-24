@@ -6,9 +6,33 @@ import {
   getResolvedNavItem,
   getSiteConfig,
   SHOW_DONATE_LINKS,
+  type FaqConfig,
 } from "../lib/site-config";
 import { ROUTES } from "../lib/routes";
 import { Layout } from "./layout";
+
+type FaqItem = FaqConfig["sections"][number]["questions"][number];
+
+/** The answer text, with `link.text` rendered as a link where it appears. */
+function FaqAnswer({ answer, link }: { answer: string; link: FaqItem["link"] }) {
+  const start = link ? answer.indexOf(link.text) : -1;
+  if (!link || start < 0) return <>{answer}</>;
+
+  return (
+    <>
+      {answer.slice(0, start)}
+      <a
+        className="font-black underline"
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {link.text}
+      </a>
+      {answer.slice(start + link.text.length)}
+    </>
+  );
+}
 
 export function FaqPage() {
   const faq = getSiteConfig().faq;
@@ -52,7 +76,9 @@ export function FaqPage() {
                       <h3 className="mb-4 text-xl font-black uppercase text-brutal-pink md:text-2xl">
                         {item.q}
                       </h3>
-                      <p className="text-lg leading-relaxed">{item.a}</p>
+                      <p className="text-lg leading-relaxed break-words">
+                        <FaqAnswer answer={item.a} link={item.link} />
+                      </p>
                     </Card>
                   ))}
                 </div>

@@ -1,4 +1,5 @@
 import { CAMPAIGN_NAME } from "@optimitron/data/campaign";
+import { OPTIMITRON_REPOSITORY_URL } from "@optimitron/site-kit/lib/optimitron-links";
 import {
   WAR_ON_DISEASE_CANONICAL_DOMAIN,
   WAR_ON_DISEASE_CANONICAL_ORIGIN,
@@ -224,7 +225,7 @@ const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
 const PUBLIC_CONTACT_EMAIL = EARTH_OPTIMIZATION_SERVICES.publicContactEmail;
 const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
-const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
+const ORGANIZATION_SAME_AS = [OPTIMITRON_REPOSITORY_URL];
 const EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME =
   EARTH_OPTIMIZATION_SERVICES.legalName;
 /// Public-facing campaign brand, used in the Optimitron footer attribution.

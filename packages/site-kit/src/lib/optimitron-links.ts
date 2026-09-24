@@ -14,6 +14,9 @@
 
 export const OPTIMITRON_ORIGIN = "https://optimitron.com"
 
+/** Public source repository; organization structured data lists it in `sameAs`. */
+export const OPTIMITRON_REPOSITORY_URL = "https://github.com/mikepsinn/optimitron"
+
 /** Absolute URL for a path that stays on optimitron.com. */
 export function optimitronUrl(path: string): string {
   return `${OPTIMITRON_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`
