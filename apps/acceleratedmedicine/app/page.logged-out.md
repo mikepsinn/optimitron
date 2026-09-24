@@ -246,7 +246,7 @@
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [$58.6B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
-- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
 - Search for trials based on your condition, location, and preferences.
@@ -379,9 +379,9 @@
 - P12345: Mild ARIA reported
 - P67890: Headache (resolved)
 #### How it Works For Researchers
-- The new and improved FDA.gov would make it effortless for researchers to create a trial and invite patients to join.
+- The dFDA proposal would make it effortless for researchers to create a trial and invite patients to join.
 ##### Create a Trial
-- Upload protocols, pre/post-clinical data, and register your supply chain through the FDA.gov V2's intuitive interface.
+- Upload protocols, pre/post-clinical data, and register your supply chain in one place.
 - Simple protocol builder with templates
 - Automated regulatory compliance checks
 - Secure data storage and management

@@ -50,6 +50,12 @@ describe.each(apps)("%s admin navigation", (variant) => {
   })
 })
 
+it("shows the dFDA non-affiliation notice in the dFDA footer", () => {
+  vi.stubEnv("NEXT_PUBLIC_SITE_VARIANT", VARIANTS.DFDA)
+  render(<SessionProvider session={null}><Layout><main>Page</main></Layout></SessionProvider>)
+  expect(screen.getByText(/not affiliated with, endorsed by, or acting on behalf of the U\.S\. Food and Drug Administration/)).toBeInTheDocument()
+})
+
 it("does not expose admin navigation while the session is loading", () => {
   render(
     <SessionContext.Provider value={{ data: admin, status: "loading", update: vi.fn() }}>

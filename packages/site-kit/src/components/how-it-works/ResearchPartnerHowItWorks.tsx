@@ -20,8 +20,8 @@ export function ResearchPartnerHowItWorks({
           How it Works For Researchers
         </h3>
         <p className="text-center mb-8">
-          The new and improved FDA.gov would make it effortless for researchers
-          to create a trial and invite patients to join.
+          The dFDA proposal would make it effortless for researchers to create
+          a trial and invite patients to join.
         </p>
 
         <ResearchPartnerSteps />

@@ -110,7 +110,7 @@
 - 👈+$27.2B INCREASE FROM 1% TREATY
 ### WHAT $27.2B COULD BUY
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
-- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 - These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
@@ -244,9 +244,9 @@
 - P12345: Mild ARIA reported
 - P67890: Headache (resolved)
 #### How it Works For Researchers
-- The new and improved FDA.gov would make it effortless for researchers to create a trial and invite patients to join.
+- The dFDA proposal would make it effortless for researchers to create a trial and invite patients to join.
 ##### Create a Trial
-- Upload protocols, pre/post-clinical data, and register your supply chain through the FDA.gov V2's intuitive interface.
+- Upload protocols, pre/post-clinical data, and register your supply chain in one place.
 - Simple protocol builder with templates
 - Automated regulatory compliance checks
 - Secure data storage and management
