@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Tasks
-- Meta description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
-- Canonical: https://warondisease.org/tasks
+- Page title: Earth Optimization Tasks | Optimitron
+- Meta description: The to-do list humanity must finish to optimize Earth. Each task names who is responsible and what waiting costs.
+- Canonical: https://optimitron.com/tasks
 - Open Graph title: Earth Optimization Tasks
-- Open Graph description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftasks
+- Open Graph description: The to-do list humanity must finish to optimize Earth. Each task names who is responsible and what waiting costs.
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Ftasks
 - Twitter title: Earth Optimization Tasks
-- Twitter description: The to-do list humanity has to finish to optimize Earth. Each task names who is responsible and what waiting costs.
+- Twitter description: The to-do list humanity must finish to optimize Earth. Each task names who is responsible and what waiting costs.
 
 ## Visible Page Copy
 
@@ -29,4 +29,4 @@
 - [count]
 - [money]
 ### YOUR TASKS
-- [VOTE ON THE 1% TREATY Redirect 1% of military spending to clinical trials. 30 seconds. One vote. The only task that matters until you cast it.→](/vote)
+- [VOTE ON THE 1% TREATY Redirect 1% of military spending to clinical trials. 30 seconds. One vote. The only task that matters until you cast it.→](https://warondisease.org/vote)

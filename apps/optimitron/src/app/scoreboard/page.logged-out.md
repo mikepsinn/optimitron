@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Humanity's Scoreboard | International Campaign to End War and Disease
+- Page title: Humanity's Scoreboard | Optimitron
 - Meta description: The governments and politicians spending the most on weapons instead of medicine, plus the humans collecting signatures to stop them.
-- Canonical: https://warondisease.org/scoreboard
+- Canonical: https://optimitron.com/scoreboard
 - Open Graph title: Humanity's Scoreboard
 - Open Graph description: The governments and politicians spending the most on weapons instead of medicine, plus the humans collecting signatures to stop them.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fscoreboard
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fscoreboard
 - Twitter title: Humanity's Scoreboard
 - Twitter description: The governments and politicians spending the most on weapons instead of medicine, plus the humans collecting signatures to stop them.
 

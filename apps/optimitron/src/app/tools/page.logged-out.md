@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Tools | International Campaign to End War and Disease
-- Meta description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
-- Canonical: https://warondisease.org/tools
+- Page title: Earth Optimization Tools | Optimitron
+- Meta description: [missing]
+- Canonical: [missing]
 - Open Graph title: Earth Optimization Tools
-- Open Graph description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Ftools
+- Open Graph description: [missing]
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Ftools
 - Twitter title: Earth Optimization Tools
 - Twitter description: Free tools for voting, evidence, budgets, policy, outreach, and task tracking.
 
@@ -25,8 +25,8 @@
 ### HEALTH
 - [🧬DECENTRALIZED INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH](/agencies/dih)
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](/agencies/dfda)
-- [🩺CONDITIONS Find disease evidence](/agencies/dfda/conditions)
-- [💊TREATMENTS Compare treatment evidence](/agencies/dfda/treatments)
+- [🩺EXTERNAL CONDITIONS Find disease evidence](https://dfda.earth/conditions)
+- [💊EXTERNAL TREATMENTS Compare treatment evidence](https://dfda.earth/treatments)
 ### DEMOCRACY
 - [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](/agencies/dcongress/wishocracy)
 - [🏛️POLITICIAN ALIGNMENT Find out which politicians accidentally agree with you](/agencies/dfec/alignment)
@@ -43,10 +43,10 @@
 ### PLAYER
 - [🎯EARTH OPTIMIZATION TASKS What waiting costs](/tasks)
 - [📅CALENDAR Know what to do and when](/calendar)
-- [❤️EARTH OPTIMIZATION MISSIONS Find someone to optimize Earth with](/missions)
+- [❤️EXTERNAL EARTH OPTIMIZATION MISSIONS Find someone to optimize Earth with](https://warondisease.org/missions)
 - [🛍️STORE Buy useful campaign things.](/store)
 - [👕GET THE SHIRT Wear your campaign QR code.](/shirt)
-- [🪪REMIND PRESIDENTS Remind presidents to promote the general welfare](/employees)
+- [🪪EXTERNAL REMIND PRESIDENTS Remind presidents to promote the general welfare](https://warondisease.org/employees)
 - [📡TRANSMIT Thirty seconds — what you ate, how you slept, how you feel](/transmit)
 - [📊MANAGE HUMANITY Get humanity to agree](/dashboard)
 - [🔌MCP Connect your AI agent to the live task graph](/mcp)

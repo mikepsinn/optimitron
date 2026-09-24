@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Wishonia | International Campaign to End War and Disease
+- Page title: Wishonia | Optimitron
 - Meta description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
-- Canonical: https://warondisease.org/wishonia
+- Canonical: https://optimitron.com/wishonia
 - Open Graph title: Wishonia
 - Open Graph description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fwishonia
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fwishonia
 - Twitter title: Wishonia
 - Twitter description: A planet that ended war in year 12 and disease in year 340. This is what 4,297 years of not being idiots looks like.
 

@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
+- Page title: Prevent 2 yrs of suffering for $1 | Optimitron
 - Meta description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
-- Canonical: https://warondisease.org/donate
-- Open Graph title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
+- Canonical: https://optimitron.com/donate
+- Open Graph title: Prevent 2 yrs of suffering for $1 | Optimitron
 - Open Graph description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdonate
-- Twitter title: Prevent 2 yrs of suffering for $1 | International Campaign to End War and Disease
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdonate
+- Twitter title: Prevent 2 yrs of suffering for $1 | Optimitron
 - Twitter description: Fund survey outreach for the trade: one of humanity's 122 apocalypses for disease eradication in 36 years instead of 443.
 
 ## Visible Page Copy
@@ -128,4 +128,4 @@
 - Powered by Endaoment (a 501(c)(3); custodial; auto-receipt).
 - Anything unusual (wire transfer, in-kind goods, complex assets)? Email [donations@warondisease.org](mailto:donations@warondisease.org).
 - [Watch Chaplin's closing speech from The Great Dictator (1940)](https://www.youtube.com/results?search_query=charlie+chaplin+the+great+dictator+speech)
-- Foundations: putting the shirt on every human on Earth costs about 3% of the global annual philanthropy budget. The other 97% is also welcome to end war and disease. [See the case →](/foundations)
+- Foundations: putting the shirt on every human on Earth costs about 3% of the global annual philanthropy budget. The other 97% is also welcome to end war and disease. [See the case →](https://warondisease.org/foundations)

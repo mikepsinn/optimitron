@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Store | International Campaign to End War and Disease
+- Page title: Store | Optimitron
 - Meta description: Buy useful campaign things: shirts, flyer runs, and other distribution fuel.
-- Canonical: https://warondisease.org/store
+- Canonical: https://optimitron.com/store
 - Open Graph title: Store
 - Open Graph description: Buy useful campaign things: shirts, flyer runs, and other distribution fuel.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fstore
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fstore
 - Twitter title: Store
 - Twitter description: Buy useful campaign things: shirts, flyer runs, and other distribution fuel.
 

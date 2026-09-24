@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Mission Value and Task Expected Value | International Campaign to End War and Disease
+- Page title: Mission Value and Task Expected Value | Optimitron
 - Meta description: See how mission outcome values differ from probability-weighted task estimates.
-- Canonical: https://warondisease.org/methodology
+- Canonical: https://optimitron.com/methodology
 - Open Graph title: Mission Value and Task Expected Value
 - Open Graph description: See how mission outcome values differ from probability-weighted task estimates.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fmethodology
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fmethodology
 - Twitter title: Mission Value and Task Expected Value
 - Twitter description: See how mission outcome values differ from probability-weighted task estimates.
 

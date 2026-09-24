@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Feedback | International Campaign to End War and Disease
+- Page title: Feedback | Optimitron
 - Meta description: Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.
-- Canonical: https://warondisease.org/feedback
+- Canonical: https://optimitron.com/feedback
 - Open Graph title: Feedback
 - Open Graph description: Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
+- Open Graph image: https://optimitron.com/site-assets/warondisease/war-on-disease-og-1200x630.png
 - Twitter title: Feedback
 - Twitter description: Tell us what is confusing, irritating, broken, or missing so this becomes a better to-do list for humanity.
 
