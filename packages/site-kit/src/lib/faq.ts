@@ -12,13 +12,10 @@ import {
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   GLOBAL_REGISTERED_VOTERS,
   TREATY_ANNUAL_FUNDING,
-  TREATY_REDUCTION_PCT,
   DFDA_BENEFIT_RD_ONLY_ANNUAL,
-  fmtParamValueOnly,
 } from "@optimitron/data/parameters"
 import { optimitronUrl } from "./optimitron-links"
 
-const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1)
 // The parameter export is served by optimitron.com, not by the campaign sites.
 const AGENT_PARAMETERS_URL = optimitronUrl("/api/agent/parameters")
 
@@ -29,10 +26,7 @@ const AGENT_PARAMETERS_URL = optimitronUrl("/api/agent/parameters")
 export const FAQ_ITEMS = {
   // Campaign Questions: the optimitron.com Campaign FAQ, word for word. Only
   // the parameter export link is absolute, because that path lives there.
-  campaignTreaty: {
-    q: "What is the 1% Treaty?",
-    a: `The 1% Treaty asks governments to redirect ${TREATY_REDUCTION_TEXT} of military spending to clinical trials, with incentives that make keeping the treaty more profitable than canceling it.`,
-  },
+  // "What is the 1% Treaty?" is answered once, in the treaty section.
   humanityVGovernment: {
     q: "What is Humanity v Government?",
     a: "Humanity v Government is the Court of Humanity damages case arguing that governments accepted payment to promote public welfare, then spent the money on war and delayed medicine. The settlement is the 1% Treaty.",
@@ -150,7 +144,6 @@ export const FAQ_SECTIONS = {
   campaign: {
     category: "THE CAMPAIGN",
     questions: [
-      FAQ_ITEMS.campaignTreaty,
       FAQ_ITEMS.humanityVGovernment,
       FAQ_ITEMS.registerPlaintiff,
       FAQ_ITEMS.healthWealthMath,

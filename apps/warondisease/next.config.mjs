@@ -94,6 +94,14 @@ const nextConfig = {
         destination: "https://impact.warondisease.org",
         permanent: false,
       },
+      // The Earth Optimization Game pages live on optimitron.com. This domain
+      // served them while it was an Optimitron site variant, so old links still
+      // arrive here.
+      ...["/demo", "/video", "/game", "/prize"].map((source) => ({
+        source,
+        destination: `https://optimitron.com${source}`,
+        permanent: true,
+      })),
       {
         source: "/stupid-questions",
         destination:

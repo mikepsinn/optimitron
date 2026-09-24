@@ -35,6 +35,10 @@ interface AuthFormProps {
   emailSuccessTitle?: string
   emailSuccessMessage?: string
   emailSuccessFooter?: string
+  /** Optional heading above the sign-in buttons. */
+  title?: string
+  subtitle?: string
+  googleButtonLabel?: string
 }
 
 export function AuthForm({
@@ -55,7 +59,10 @@ export function AuthForm({
   preSubmitContent,
   emailSuccessTitle = "Check your email!",
   emailSuccessMessage = "We've sent you a magic link to continue.",
-  emailSuccessFooter
+  emailSuccessFooter,
+  title,
+  subtitle,
+  googleButtonLabel = "Continue with Google",
 }: AuthFormProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -159,6 +166,12 @@ export function AuthForm({
 
   return (
     <div className="w-full">
+      {title || subtitle ? (
+        <div className={compact ? "mb-3 text-center" : "mb-4 text-center"}>
+          {title ? <h3 className="text-2xl font-black uppercase">{title}</h3> : null}
+          {subtitle ? <p className="mt-2 text-sm font-bold text-muted-foreground">{subtitle}</p> : null}
+        </div>
+      ) : null}
 
       {/* Iframe-specific tip */}
       {isInIframe === true && compact && !emailOnly && (
@@ -226,7 +239,7 @@ export function AuthForm({
                 className={`w-full border-4 border-black font-bold ${buttonHeight} ${textSize}`}
               >
                 {FaGoogle({ className: "w-5 h-5 mr-2" })}
-                Continue with Google
+                {googleButtonLabel}
               </Button>
             </div>
           )}
