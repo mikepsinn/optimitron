@@ -25,7 +25,7 @@ export async function sendMagicLinkEmail({
     select: { id: true },
   });
 
-  const copy = getMagicLinkCopy(host);
+  const copy = getMagicLinkCopy();
   const result = await sendReactEmail({
     // The recipient just typed this address into the sign-in form.
     authorization: transactionalSend("magic_link"),

@@ -37,7 +37,7 @@ import { OptimizedDayTimeline } from "@/components/eos-retro/OptimizedDayTimelin
 import { PolicyGradeTable } from "@/components/eos-retro/PolicyGradeTable";
 import { Starfield } from "@/components/eos-retro/Starfield";
 import { WishocracyBooth } from "@/components/eos-retro/WishocracyBooth";
-import { agenciesLink, ROUTES, wishocracyLink } from "@/lib/routes";
+import { agenciesLink, ROUTES, wishocracyLink, warOnDiseaseUrl } from "@/lib/routes";
 import "./eos-retro.css";
 
 const righteous = Righteous({
@@ -298,7 +298,7 @@ export function EosRetroLandingPage() {
           id="system-wishocracy"
           intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it."
           letter="C"
-          stepInsideHref={ROUTES.vote}
+          stepInsideHref={warOnDiseaseUrl(ROUTES.vote)}
           stepInsideLabel="Use Wishocracy"
           title="The ninety-second legislature"
         >
@@ -748,7 +748,7 @@ export function EosRetroLandingPage() {
               You have a phone. Every person who sees this page brings the
               timeline forward.
             </p>
-            <Link className="er-btn mt-6" href={ROUTES.vote}>
+            <Link className="er-btn mt-6" href={warOnDiseaseUrl(ROUTES.vote)}>
               Vote, then share it
             </Link>
           </div>

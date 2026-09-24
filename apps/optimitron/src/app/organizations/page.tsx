@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { getManageableOrganizationsForUser } from "@/lib/organization.server";
-import { getOrganizationPath, getSignInPath, ROUTES } from "@/lib/routes";
+import { getOrganizationPath, getSignInPath, ROUTES, warOnDiseaseUrl } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export default async function OrganizationsPage() {
         </p>
         {organizations.length > 0 ? (
           <Link
-            href={ROUTES.join}
+            href={warOnDiseaseUrl(ROUTES.join)}
             className="mt-6 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
             Create Organization
@@ -42,7 +42,7 @@ export default async function OrganizationsPage() {
             No organizations yet. Add yours and bring your people to the vote.
           </p>
           <Link
-            href={ROUTES.join}
+            href={warOnDiseaseUrl(ROUTES.join)}
             className="mt-4 inline-block border-2 border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
           >
             Create Organization

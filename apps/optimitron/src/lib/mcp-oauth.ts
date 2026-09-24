@@ -9,9 +9,9 @@ import { createHash, randomBytes } from "crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { ALL_WIRE_SCOPES, type McpScope } from "./mcp-scopes";
 import {
-  getAllSiteConfigs,
+  getMcpResourceDomains,
   getRequestSiteOrigin,
-  isSiteVariantOverrideHost,
+  isLocalOrPreviewHost,
 } from "./site";
 
 // ---------------------------------------------------------------------------
@@ -324,8 +324,9 @@ export function getOAuthMetadata() {
   };
 }
 
-// One Vercel project serves every site variant (optimitron.com,
-// warondisease.org, dfda.earth, dih.earth). RFC 9728 requires the advertised
+// One Vercel project used to serve every site variant (optimitron.com,
+// warondisease.org, dfda.earth, dih.earth), and those hosts stay accepted so
+// existing grants keep working. RFC 9728 requires the advertised
 // `resource` to equal the URL the client actually dialed, so a single
 // env-derived value made every host claim to be NEXTAUTH_URL and spec-compliant
 // clients refused it ("Protected resource ... does not match expected").
@@ -334,9 +335,7 @@ export function getOAuthMetadata() {
 // only exist on one origin, and RFC 9728 explicitly allows the resource and
 // its authorization server to differ.
 const SERVED_MCP_HOSTS = new Set(
-  getAllSiteConfigs().flatMap((site) =>
-    site.domains.map((domain) => domain.toLowerCase()),
-  ),
+  getMcpResourceDomains().map((domain) => domain.toLowerCase()),
 );
 
 // Reflecting an unrecognized Host header would let a caller mint metadata
@@ -357,7 +356,7 @@ export function resolveMcpResourceOrigin(
 
   if (
     SERVED_MCP_HOSTS.has(parsed.hostname.toLowerCase()) ||
-    isSiteVariantOverrideHost(parsed.host)
+    isLocalOrPreviewHost(parsed.host)
   ) {
     return parsed.origin;
   }

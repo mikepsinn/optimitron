@@ -16,7 +16,7 @@ import {
   getUserTreatyTaskKey,
 } from "@optimitron/db/task-keys";
 import { prisma } from "@/lib/prisma";
-import { ROUTES, getTaskPath } from "@/lib/routes";
+import { ROUTES, getTaskPath, warOnDiseaseUrl } from "@/lib/routes";
 import {
   FLYER_HANG_GRID_SLOTS,
   FLYER_HANG_NEARBY_LIMIT,
@@ -80,7 +80,7 @@ function descriptionForPlace(place: FlyerHangPlaceCandidate) {
     if (slot) return slot.description;
   }
   return [
-    `Print your referral poster from ${ROUTES.poster}.`,
+    `Print your referral poster from ${warOnDiseaseUrl(ROUTES.poster)}.`,
     `Ask before you tape anything at ${place.name}.`,
     "Photograph the hung flyer.",
     "Mark this hang done so nearby humans know the board is covered.",

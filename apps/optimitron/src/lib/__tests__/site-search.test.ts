@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ROUTES, SHOW_DONATE_LINKS } from "../routes";
-import { getSiteConfig } from "../site";
+import { ROUTES, SHOW_DONATE_LINKS, warOnDiseaseUrl } from "../routes";
 import {
   scoreSearchRecord,
   searchSiteDocuments,
@@ -24,58 +23,22 @@ describe("site search helpers", () => {
     );
   });
 
-  it("scopes static page results to the War on Disease site", () => {
-    const results = searchStaticSiteDocuments("scoreboard game prize", {
-      site: getSiteConfig("warOnDisease"),
-    });
-    const hrefs = results.map((result) => result.href);
+  it("sends the obvious vote query to the War on Disease vote page", () => {
+    const results = searchStaticSiteDocuments("vote");
 
-    expect(hrefs).not.toContain(ROUTES.scoreboard);
-    expect(hrefs).not.toContain(ROUTES.game);
-    expect(hrefs).not.toContain(ROUTES.prize);
+    expect(results[0]?.href).toBe(warOnDiseaseUrl(ROUTES.vote));
   });
 
-  it("keeps War on Disease nav pages searchable", () => {
-    const results = searchStaticSiteDocuments("tasks", {
-      site: getSiteConfig("warOnDisease"),
-    });
+  it("lists the donate destination only while donate links are shown", () => {
+    const results = searchStaticSiteDocuments("donate");
 
-    expect(results.map((result) => result.href)).toContain(ROUTES.tasks);
+    expect(
+      results.map((result) => result.href).includes(ROUTES.donate),
+    ).toBe(SHOW_DONATE_LINKS);
   });
-
-  it("keeps the obvious vote destination searchable on Optimitron", () => {
-    const results = searchStaticSiteDocuments("vote", {
-      site: getSiteConfig("optimitron"),
-    });
-
-    expect(results[0]?.href).toBe(ROUTES.vote);
-  });
-
-  it("includes campaign footer destinations in variant search", () => {
-    const results = searchStaticSiteDocuments("feedback", {
-      site: getSiteConfig("warOnDisease"),
-    });
-
-    expect(results[0]?.href).toBe(ROUTES.feedback);
-  });
-
-  it.each(["optimitron", "warOnDisease"] as const)(
-    "lists the donate destination in %s search only while donate links are shown",
-    (siteKey) => {
-      const results = searchStaticSiteDocuments("donate", {
-        site: getSiteConfig(siteKey),
-      });
-
-      expect(
-        results.map((result) => result.href).includes(ROUTES.donate),
-      ).toBe(SHOW_DONATE_LINKS);
-    },
-  );
 
   it("finds the Earth Repair Manual by its new name", () => {
-    const results = searchStaticSiteDocuments("earth repair manual", {
-      site: getSiteConfig("optimitron"),
-    });
+    const results = searchStaticSiteDocuments("earth repair manual");
 
     expect(results[0]?.title).toBe("Earth Repair Manual");
   });
@@ -102,7 +65,7 @@ describe("site search helpers", () => {
 
     expect(results.length).toBeGreaterThan(0);
     expect(results.length).toBeLessThanOrEqual(5);
-    expect(results[0]?.href).toBe(ROUTES.treaty);
+    expect(results[0]?.href).toBe(warOnDiseaseUrl(ROUTES.treaty));
     expect(results.every((result) => result.score > 0)).toBe(true);
   });
 });

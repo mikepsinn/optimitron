@@ -1,69 +1,21 @@
-import {
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  NUCLEAR_WINTER_OVERKILL_FACTOR,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/data/parameters";
 import { CAMPAIGN_NAME } from "@optimitron/data/campaign";
 import {
   WAR_ON_DISEASE_CANONICAL_DOMAIN,
   WAR_ON_DISEASE_CANONICAL_ORIGIN,
 } from "@/lib/domains";
 import { EARTH_OPTIMIZATION_SERVICES } from "@/lib/corporate-identity";
-import { NONPROFIT } from "@/lib/nonprofit-identity";
-import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
-  SHOW_DONATE_LINKS,
-  conditionsLink,
   communityLinks,
-  courtLink,
-  dashboardLink,
-  developersLink,
-  dfdaLink,
-  dihLink,
-  donateLink,
   exploreLinks,
-  feedbackLink,
   footerAppLinks,
-  fullManualPaperLink,
-  podcastLink,
-  humanityVGovernmentLink,
-  doorToDoorLink,
-  inviteVoterLink,
-  joinLink,
-  jokeLink,
-  mcpLink,
-  missionsLink,
   navSections,
-  onePercentTreatyPaperLink,
   paperLinks,
-  peopleLink,
-  plaintiffsLink,
-  posterLink,
-  privacyLink,
-  signatoriesLink,
-  shirtLink,
-  termsLink,
-  tasksLink,
-  treatmentsLink,
-  presidentManagementLink,
-  treatyLink,
-  trialEmbedLink,
-  voteLink,
   type NavItem,
   type NavSection,
 } from "@/lib/routes";
 import { OPTIMITRON_CANONICAL_ORIGIN } from "@optimitron/db/system-identities";
-
-// Campaign-copy numbers sourced from the parameter manifest so marketing
-// strings stay synced when sources update (FAS warhead count, DFDA queue
-// math, etc.). The manifest holds the precise figure plus citation; we
-// round for prose.
-const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
-const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
-const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
-export const WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION = `Let's trade one apocalypse out of humanity's ${apocalypseCount}-apocalypse mass-murder capacity for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`;
 
 export { OPTIMITRON_CANONICAL_ORIGIN };
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
@@ -73,28 +25,38 @@ export {
   WAR_ON_DISEASE_REPLY_DOMAIN,
   WAR_ON_DISEASE_UPDATES_DOMAIN,
 } from "@/lib/domains";
-export const SITE_VARIANT_OVERRIDE_COOKIE = "optimitron_site_key";
-export const SITE_VARIANT_OVERRIDE_QUERY_PARAM = "site";
 
 // ---------------------------------------------------------------------------
-// Per-host site configuration (generic Site* / referendum-microsite layer)
+// Site configuration
 // ---------------------------------------------------------------------------
 
-export type SiteKey = "optimitron" | "dfda" | "dih" | "warOnDisease";
+// This app serves optimitron.com only. War on Disease, dFDA, and DIH used to
+// be host variants of this app; each brand now runs its own app under apps/*
+// and owns its own domain, so the host no longer selects a configuration.
+export type SiteKey = "optimitron";
 
-export const SITE_VARIANT_OVERRIDE_HEADER = "x-optimitron-site-key";
-const DEFAULT_SITE_KEY: SiteKey = "warOnDisease";
-const LOCAL_DEFAULT_SITE_KEY: SiteKey = DEFAULT_SITE_KEY;
+// Domains this deployment answered for while it hosted those variants. OAuth
+// still accepts their /api/mcp resource identifiers so older grants keep
+// refreshing, and dfda.earth/api/mcp (a resource server that trusts this
+// issuer) keeps authorizing.
+export const LEGACY_VARIANT_DOMAINS = [
+  "dfda.earth",
+  "www.dfda.earth",
+  "dfda.local",
+  "dih.earth",
+  "www.dih.earth",
+  "dih.local",
+  WAR_ON_DISEASE_CANONICAL_DOMAIN,
+  `www.${WAR_ON_DISEASE_CANONICAL_DOMAIN}`,
+  "warondisease.local",
+  "1percenttreaty.org",
+  "www.1percenttreaty.org",
+  "trialabundancesurvey.org",
+  "www.trialabundancesurvey.org",
+  "acceleratedmedicine.org",
+  "www.acceleratedmedicine.org",
+] as const;
 
-export type SiteChromeVariant = "platform" | "referendum";
-export type SiteHomeVariant =
-  | "eosLanding"
-  | "optimitronLanding"
-  | "onePercentTreatyLanding"
-  | "initiativeLanding";
-export type SiteDashboardVariant =
-  | "optimitronDashboard"
-  | "treatyTaskDashboard";
 export type SiteInitiativeKey = SiteKey | "optimizeEarth";
 
 export interface SiteInitiativeConfig {
@@ -134,15 +96,6 @@ export interface SiteRootMetadata {
 export interface SiteRoutePolicy {
   canonicalPrefixes: readonly string[];
   minimalChromePrefixes: readonly string[];
-  operationalPrefixes: readonly string[];
-  publicPrefixes: readonly string[];
-  restrictToAllowlist: boolean;
-}
-
-export interface SiteSitemapConfig {
-  includeAllStaticRoutes?: boolean;
-  includePublicRoutes?: boolean;
-  landingPageOnly?: boolean;
 }
 
 export interface SiteAssetsConfig {
@@ -216,11 +169,6 @@ export interface SiteVariantUiConfig {
   nav: SiteNavConfig;
 }
 
-export interface SitePageVariants {
-  dashboard: SiteDashboardVariant;
-  home: SiteHomeVariant;
-}
-
 /**
  * Recruitment / chain narrative frame for a site variant:
  * - "manager": Earth Optimization Services Inc. is hiring humanity managers,
@@ -236,7 +184,6 @@ export type SiteUserFraming = "manager" | "voter";
 
 export interface SiteConfig {
   key: SiteKey;
-  chromeVariant: SiteChromeVariant;
   canonicalOrigin: string;
   domains: readonly string[];
   name: string;
@@ -269,9 +216,7 @@ export interface SiteConfig {
   rootMetadata: SiteRootMetadata;
   routePolicy: SiteRoutePolicy;
   assets: SiteAssetsConfig;
-  sitemap: SiteSitemapConfig;
   ui: SiteVariantUiConfig;
-  pageVariants: SitePageVariants;
 }
 
 const ORGANIZATION_NAME = EARTH_OPTIMIZATION_SERVICES.legalName;
@@ -282,46 +227,8 @@ const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME =
   EARTH_OPTIMIZATION_SERVICES.legalName;
-/// Public-facing campaign brand for sites operated by the campaign.
-/// Distinct from `EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME` (the legal entity, used
-/// in compliance surfaces). Legacy campaign domains redirect into the War on
-/// Disease site; SEO + footer attribution should carry the campaign brand
-/// instead of the corporation name.
+/// Public-facing campaign brand, used in the Optimitron footer attribution.
 const INTERNATIONAL_CAMPAIGN_ORG_NAME = CAMPAIGN_NAME;
-const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
-const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease";
-const INTERNATIONAL_CAMPAIGN_LEGAL_ENTITY_NAME = `${NONPROFIT.legalName}, dba ${INTERNATIONAL_CAMPAIGN_ORG_NAME}`;
-
-function siteAssetPath(directory: string, filename: string) {
-  return `/site-assets/${directory}/${filename}`;
-}
-
-function copiedSiteAssets(input: {
-  appleTouchIcon?: string;
-  backgroundColor?: string;
-  directory: string;
-  favicon?: string;
-  icon16?: string;
-  icon32?: string;
-  icon192?: string;
-  icon512?: string;
-  maskableIcon?: string;
-  themeColor: string;
-}): SiteAssetsConfig {
-  const path = (filename: string) => siteAssetPath(input.directory, filename);
-
-  return {
-    appleTouchIcon: path(input.appleTouchIcon ?? "apple-touch-icon.png"),
-    backgroundColor: input.backgroundColor ?? "#ffffff",
-    favicon: path(input.favicon ?? "favicon.ico"),
-    icon16: input.icon16 ? path(input.icon16) : undefined,
-    icon32: path(input.icon32 ?? "favicon-32x32.png"),
-    icon192: path(input.icon192 ?? "android-chrome-192x192.png"),
-    icon512: path(input.icon512 ?? "android-chrome-512x512.png"),
-    maskableIcon: input.maskableIcon ? path(input.maskableIcon) : undefined,
-    themeColor: input.themeColor,
-  };
-}
 
 const OPTIMITRON_ASSETS: SiteAssetsConfig = {
   appleTouchIcon: "/apple-touch-icon.png",
@@ -334,85 +241,6 @@ const OPTIMITRON_ASSETS: SiteAssetsConfig = {
   maskableIcon: "/icons/icon-maskable-512.png",
   themeColor: "#3b82f6",
 };
-
-const DFDA_ASSETS = copiedSiteAssets({
-  directory: "dfda",
-  icon16: "favicon-16x16.png",
-  themeColor: "#2563eb",
-});
-
-const DIH_ASSETS = copiedSiteAssets({
-  directory: "dih",
-  icon16: "favicon-16x16.png",
-  themeColor: "#ff6b9d",
-});
-
-const WAR_ON_DISEASE_ASSETS = copiedSiteAssets({
-  appleTouchIcon: "warondisease-apple-touch-icon.png",
-  directory: "warondisease",
-  favicon: "warondisease-favicon.png",
-  icon32: "warondisease-favicon-32x32.png",
-  icon192: "warondisease-android-chrome-192x192.png",
-  icon512: "warondisease-android-chrome-512x512.png",
-  maskableIcon: "warondisease-android-chrome-512x512.png",
-  themeColor: "#ff6b9d",
-});
-
-// Hidden until the public signatory list has enough real organizations to be
-// useful. Keep the route and route object alive so restoring the link is one
-// flag flip, not archaeology.
-const SHOW_ORGANIZATIONAL_SIGNATORIES_LINK = false;
-const organizationalSignatoryLinks: NavItem[] =
-  SHOW_ORGANIZATIONAL_SIGNATORIES_LINK ? [signatoriesLink] : [];
-const donateLinks: NavItem[] = SHOW_DONATE_LINKS ? [donateLink] : [];
-
-const warOnDiseaseNavSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [
-      treatyLink,
-      dashboardLink,
-      plaintiffsLink,
-      presidentManagementLink,
-      shirtLink,
-      posterLink,
-      doorToDoorLink,
-      jokeLink,
-      missionsLink,
-      tasksLink,
-    ],
-  },
-];
-
-const dfdaNavSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [conditionsLink, treatmentsLink],
-  },
-  {
-    id: "system",
-    label: "System",
-    items: [dfdaLink, dihLink],
-  },
-];
-
-const dihNavSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [dihLink, trialEmbedLink],
-  },
-  {
-    id: "allocation",
-    label: "Allocation",
-    items: [conditionsLink, treatmentsLink],
-  },
-];
 
 const OPTIMITRON_UI: SiteVariantUiConfig = {
   nav: {
@@ -439,108 +267,6 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
       { title: "Analysis", items: exploreLinks },
       { title: "Papers", items: paperLinks },
       { title: "Open Source", items: communityLinks },
-    ],
-  },
-};
-
-const DFDA_UI: SiteVariantUiConfig = {
-  nav: {
-    brandHref: ROUTES.home,
-    brandLabel: "DFDA",
-    desktopBrandLabel: "DFDA",
-    menuEnabled: true,
-    menuTitle: "DFDA",
-    searchEnabled: false,
-    sections: dfdaNavSections,
-    signInCallbackUrl: ROUTES.dashboard,
-  },
-  footer: {
-    brandHref: ROUTES.home,
-    brandLabel: "DFDA",
-    brandDescription:
-      "Every condition, every treatment, ranked by what actually happened to real humans.",
-    bottomText:
-      "Your FDA waits 8.2 years to let dying humans take drugs already proven safe. This is your safety system.",
-    columns: [
-      { title: "Medical", items: [conditionsLink, treatmentsLink] },
-      { title: "System", items: [dfdaLink, dihLink] },
-    ],
-  },
-};
-
-const DIH_UI: SiteVariantUiConfig = {
-  nav: {
-    brandHref: ROUTES.home,
-    brandLabel: "DIH",
-    desktopBrandLabel: "DIH",
-    menuEnabled: true,
-    menuTitle: "DIH",
-    searchEnabled: false,
-    sections: dihNavSections,
-    signInCallbackUrl: ROUTES.dashboard,
-  },
-  footer: {
-    brandHref: ROUTES.home,
-    brandLabel: "DIH",
-    brandDescription: "Create and fund disease-focused research institutes.",
-    bottomText:
-      "Your NIH spends 3.3% of its budget on actual clinical trials. It's like a fire department that spends 3% of its budget on water.",
-    columns: [
-      { title: "Institutes", items: [dihLink, trialEmbedLink] },
-      { title: "Evidence", items: [conditionsLink, treatmentsLink] },
-    ],
-  },
-};
-
-const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
-  nav: {
-    brandHref: ROUTES.home,
-    brandLabel: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
-    desktopBrandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    menuEnabled: true,
-    menuTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    searchEnabled: true,
-    sections: warOnDiseaseNavSections,
-    signInCallbackUrl: ROUTES.dashboard,
-  },
-  footer: {
-    brandHref: ROUTES.home,
-    brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    brandDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
-    columns: [
-      {
-        title: "Do Something",
-        items: [voteLink, plaintiffsLink, ...donateLinks, feedbackLink],
-      },
-      {
-        title: "Tell Someone Else",
-        items: [
-          dashboardLink,
-          shirtLink,
-          jokeLink,
-          presidentManagementLink,
-          peopleLink,
-          tasksLink,
-        ],
-      },
-      {
-        title: "Learn Something",
-        items: [
-          treatyLink,
-          humanityVGovernmentLink,
-          onePercentTreatyPaperLink,
-          fullManualPaperLink,
-          podcastLink,
-          courtLink,
-          mcpLink,
-          developersLink,
-        ],
-      },
-      {
-        title: "Your Organization",
-        items: [joinLink, ...organizationalSignatoryLinks],
-      },
     ],
   },
 };
@@ -575,7 +301,6 @@ const OPTIMITRON_PLATFORM_PREFIXES = [
 
 const OPTIMITRON_CONFIG: SiteConfig = {
   key: "optimitron",
-  chromeVariant: "platform",
   userFraming: "manager",
   canonicalOrigin: OPTIMITRON_CANONICAL_ORIGIN,
   domains: [
@@ -662,482 +387,28 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   },
   routePolicy: {
     canonicalPrefixes: OPTIMITRON_PLATFORM_PREFIXES,
-    restrictToAllowlist: false,
-    publicPrefixes: [],
-    operationalPrefixes: [],
-    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions],
+    minimalChromePrefixes: [ROUTES.questions],
   },
   assets: OPTIMITRON_ASSETS,
-  sitemap: {
-    includeAllStaticRoutes: true,
-    includePublicRoutes: true,
-  },
   ui: OPTIMITRON_UI,
-  pageVariants: {
-    home: "optimitronLanding",
-    dashboard: "optimitronDashboard",
-  },
-};
-
-const DFDA_CONFIG: SiteConfig = {
-  key: "dfda",
-  chromeVariant: "platform",
-  userFraming: "voter",
-  canonicalOrigin: "https://dfda.earth",
-  domains: ["dfda.earth", "www.dfda.earth", "dfda.local"],
-  name: "DFDA",
-  shortName: "DFDA",
-  alternateSiteNames: ["Decentralized FDA", "dFDA"],
-  description:
-    "Find conditions, treatments, outcomes, and clinical trials in one evidence system.",
-  ogImage: "/site-assets/dfda/dfda-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
-  contentKey: null,
-  organizationName: ORGANIZATION_NAME,
-  organizationUrl: ORGANIZATION_URL,
-  organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: PUBLIC_CONTACT_EMAIL,
-  publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
-  legalEntityType: EARTH_OPTIMIZATION_SERVICES.legalForm,
-  businessDescription: EARTH_OPTIMIZATION_SERVICES.businessDescription,
-  mailingAddress: EARTH_OPTIMIZATION_SERVICES.mailingAddress,
-  emailBranding: {
-    fromName: "DFDA",
-    primaryColor: "#2563eb",
-    secondaryColor: "#ffffff",
-    orgName: "DFDA",
-  },
-  footerComplianceNotice: null,
-  sameAs: ORGANIZATION_SAME_AS,
-  initiative: {
-    key: "dfda",
-    name: "Decentralized FDA",
-    shortName: "DFDA",
-    description:
-      "Treatments ranked by what happened to actual humans, not by which drug rep brought the best donuts in 2003.",
-    eyebrow: "Medical Evidence",
-    primaryPath: ROUTES.dfda,
-    parentKey: "optimizeEarth",
-    rootTaskKey: null,
-  },
-  homeActions: [
-    // The condition and treatment pages live on dfda.earth (apps/dfda).
-    { href: "https://dfda.earth/conditions", label: "Browse Conditions", variant: "primary" },
-    { href: "https://dfda.earth/treatments", label: "Browse Treatments", variant: "outline" },
-  ],
-  primaryReferendumSlug: null,
-  primaryTaskKey: null,
-  rootMetadata: {
-    title: "DFDA — Decentralized FDA",
-    description:
-      "Every condition, every treatment, ranked by what actually happened to real humans. Your current method is donuts and vibes.",
-    openGraphTitle: "DFDA — Decentralized FDA",
-    openGraphDescription:
-      "Treatments ranked by what happened to actual humans, not by what a marketing department hoped happened.",
-    openGraphImage: {
-      url: "/site-assets/dfda/dfda-og-1200x630.png",
-      width: 1200,
-      height: 630,
-      alt: "DFDA — Decentralized FDA",
-    },
-    twitterTitle: "DFDA — Decentralized FDA",
-    twitterDescription:
-      "Treatments ranked by what happened to real humans. Like a leaderboard for not dying.",
-    twitterImage: "/site-assets/dfda/dfda-og-1200x630.png",
-    keywords: [
-      "DFDA",
-      "Decentralized FDA",
-      "clinical trials",
-      "treatment rankings",
-      "outcome labels",
-    ],
-  },
-  routePolicy: {
-    canonicalPrefixes: [
-      "/outcome-labels",
-      "/find-trials",
-      ROUTES.dfda,
-    ],
-    restrictToAllowlist: true,
-    publicPrefixes: [
-      "/outcome-labels",
-      "/find-trials",
-      ROUTES.dfda,
-      ROUTES.donate,
-    ],
-    operationalPrefixes: [
-      "/auth",
-      ROUTES.dashboard,
-      ROUTES.profile,
-      ROUTES.settings,
-    ],
-    minimalChromePrefixes: [],
-  },
-  assets: DFDA_ASSETS,
-  sitemap: {},
-  ui: DFDA_UI,
-  pageVariants: {
-    home: "initiativeLanding",
-    dashboard: "optimitronDashboard",
-  },
-};
-
-const DIH_CONFIG: SiteConfig = {
-  key: "dih",
-  chromeVariant: "platform",
-  userFraming: "voter",
-  canonicalOrigin: "https://dih.earth",
-  domains: ["dih.earth", "www.dih.earth", "dih.local"],
-  name: "DIH",
-  shortName: "DIH",
-  alternateSiteNames: [
-    "Decentralized Institutes of Health",
-    "Institute for Accelerated Medicine",
-  ],
-  description:
-    "Create and fund disease-focused research institutes, then allocate resources by verified public priorities.",
-  ogImage: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
-  contentKey: null,
-  organizationName: ORGANIZATION_NAME,
-  organizationUrl: ORGANIZATION_URL,
-  organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: PUBLIC_CONTACT_EMAIL,
-  publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
-  legalEntityType: EARTH_OPTIMIZATION_SERVICES.legalForm,
-  businessDescription: EARTH_OPTIMIZATION_SERVICES.businessDescription,
-  mailingAddress: EARTH_OPTIMIZATION_SERVICES.mailingAddress,
-  emailBranding: {
-    fromName: "DIH",
-    primaryColor: "#ff6b9d",
-    secondaryColor: "#00d4ff",
-    orgName: "Decentralized Institutes of Health",
-  },
-  footerComplianceNotice: null,
-  sameAs: ORGANIZATION_SAME_AS,
-  initiative: {
-    key: "dih",
-    name: "Decentralized Institutes of Health",
-    shortName: "DIH",
-    description:
-      "Pick the disease that's killing you. Fund the institute working on it. Skip the part where a committee decides which diseases are fashionable.",
-    eyebrow: "Research Funding",
-    primaryPath: "/agencies/dih",
-    parentKey: "optimizeEarth",
-    rootTaskKey: null,
-  },
-  homeActions: [
-    { href: "/agencies/dih", label: "Fund a disease", variant: "primary" },
-    {
-      href: "/agencies/dcongress/wishocracy",
-      label: "Open Wishocracy",
-      variant: "outline",
-    },
-  ],
-  primaryReferendumSlug: null,
-  primaryTaskKey: null,
-  rootMetadata: {
-    title: "DIH — Decentralized Institutes of Health",
-    description:
-      "Pick a disease. Spin up an institute for it. Fund it by what humans actually want, not by what a grant committee thinks is fashionable this year.",
-    openGraphTitle: "DIH — Decentralized Institutes of Health",
-    openGraphDescription:
-      "An institute for whatever's killing you, funded by people who would rather not die of it.",
-    openGraphImage: {
-      url: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
-      width: 1280,
-      height: 640,
-      alt: "DIH — Decentralized Institutes of Health",
-    },
-    twitterTitle: "DIH — Decentralized Institutes of Health",
-    twitterDescription:
-      "An institute for whatever's killing you, funded by people who would rather not die of it.",
-    twitterImage: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
-    keywords: [
-      "DIH",
-      "Decentralized Institutes of Health",
-      "medical research funding",
-      "Wishocracy",
-      "disease eradication",
-    ],
-  },
-  routePolicy: {
-    canonicalPrefixes: [ROUTES.dih, "/institutes", ROUTES.wishocracy],
-    restrictToAllowlist: true,
-    publicPrefixes: [
-      ROUTES.dih,
-      "/institutes",
-      ROUTES.survey,
-      ROUTES.organizations,
-      ROUTES.wishocracy,
-      ROUTES.donate,
-    ],
-    operationalPrefixes: [
-      "/auth",
-      ROUTES.dashboard,
-      ROUTES.profile,
-      ROUTES.settings,
-    ],
-    minimalChromePrefixes: [],
-  },
-  assets: DIH_ASSETS,
-  sitemap: {
-    includePublicRoutes: false,
-  },
-  ui: DIH_UI,
-  pageVariants: {
-    home: "initiativeLanding",
-    dashboard: "optimitronDashboard",
-  },
-};
-
-const WAR_ON_DISEASE_CONFIG: SiteConfig = {
-  key: "warOnDisease",
-  chromeVariant: "referendum",
-  userFraming: "manager",
-  canonicalOrigin: WAR_ON_DISEASE_CANONICAL_ORIGIN,
-  domains: [
-    WAR_ON_DISEASE_CANONICAL_DOMAIN,
-    `www.${WAR_ON_DISEASE_CANONICAL_DOMAIN}`,
-    "warondisease.local",
-    "1percenttreaty.org",
-    "www.1percenttreaty.org",
-    "trialabundancesurvey.org",
-    "www.trialabundancesurvey.org",
-    "acceleratedmedicine.org",
-    "www.acceleratedmedicine.org",
-  ],
-  name: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
-  alternateSiteNames: [
-    WAR_ON_DISEASE_LEGACY_NAME,
-    INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  ],
-  description: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-  ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
-  contentKey: "onePercentTreaty",
-  // Public-facing campaign brand on WoD; compliance surfaces name the
-  // nonprofit legal entity and campaign DBA.
-  organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  organizationUrl: WAR_ON_DISEASE_CANONICAL_ORIGIN,
-  organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: NONPROFIT.publicContactEmail,
-  publicContactUrl: WAR_ON_DISEASE_CANONICAL_ORIGIN,
-  legalEntityName: INTERNATIONAL_CAMPAIGN_LEGAL_ENTITY_NAME,
-  legalEntityType:
-    "Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3)",
-  businessDescription:
-    "Operates the International Campaign to End War and Disease and related public education and advocacy programs.",
-  mailingAddress: NONPROFIT.mailingAddress,
-  emailBranding: {
-    fromName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
-    primaryColor: "#ff6b9d",
-    secondaryColor: "#00d4ff",
-    orgName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  },
-  footerComplianceNotice: null,
-  sameAs: ORGANIZATION_SAME_AS,
-  initiative: {
-    key: "warOnDisease",
-    name: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    shortName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
-    description:
-      "Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. The budget does not reflect this.",
-    eyebrow: "Disease Eradication",
-    primaryPath: "/",
-    parentKey: "optimizeEarth",
-    rootTaskKey: null,
-  },
-  homeActions: [
-    { href: ROUTES.treaty, label: treatyLink.label, variant: "primary" },
-    { href: ROUTES.dashboard, label: dashboardLink.label, variant: "outline" },
-  ],
-  primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
-  primaryTaskKey: null,
-  rootMetadata: {
-    title: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    description: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    openGraphTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    openGraphDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    openGraphImage: {
-      url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
-      width: 1200,
-      height: 630,
-      alt: `${INTERNATIONAL_CAMPAIGN_ORG_NAME} social image`,
-    },
-    twitterTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    twitterDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    twitterImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
-    keywords: [
-      WAR_ON_DISEASE_LEGACY_NAME,
-      INTERNATIONAL_CAMPAIGN_ORG_NAME,
-      "1% Treaty",
-      "disease eradication",
-      "clinical trials",
-    ],
-  },
-  routePolicy: {
-    canonicalPrefixes: [
-      ROUTES.treaty,
-      ROUTES.court,
-      ROUTES.humanityVGovernment,
-      ROUTES.tasks,
-      ROUTES.people,
-      ROUTES.plaintiffs,
-      ROUTES.employees,
-      ROUTES.governments,
-      ROUTES.declaration,
-      ROUTES.join,
-      ROUTES.signatories,
-      ROUTES.campaign,
-      ROUTES.missions,
-      ROUTES.love,
-      ROUTES.poster,
-      ROUTES.shirt,
-      ROUTES.joke,
-      ROUTES.coalition,
-      ROUTES.privacy,
-      ROUTES.terms,
-      ROUTES.impact,
-      ROUTES.organizations,
-      ROUTES.survey,
-      ROUTES.donate,
-      ROUTES.vote,
-      ROUTES.questions,
-      ROUTES.feedback,
-      ROUTES.search,
-    ],
-    restrictToAllowlist: false,
-    publicPrefixes: [
-      ROUTES.treaty,
-      ROUTES.court,
-      ROUTES.humanityVGovernment,
-      ROUTES.tasks,
-      ROUTES.people,
-      ROUTES.plaintiffs,
-      ROUTES.employees,
-      ROUTES.governments,
-      ROUTES.declaration,
-      ROUTES.join,
-      ROUTES.signatories,
-      ROUTES.campaign,
-      ROUTES.missions,
-      ROUTES.love,
-      ROUTES.poster,
-      ROUTES.shirt,
-      ROUTES.joke,
-      ROUTES.coalition,
-      ROUTES.privacy,
-      ROUTES.terms,
-      ROUTES.impact,
-      ROUTES.organizations,
-      ROUTES.survey,
-      ROUTES.dih,
-      ROUTES.wishocracy,
-      ROUTES.donate,
-      ROUTES.feedback,
-      ROUTES.search,
-    ],
-    operationalPrefixes: [
-      "/r",
-      ROUTES.vote,
-      ROUTES.questions,
-      "/auth",
-      ROUTES.dashboard,
-      ROUTES.profile,
-      ROUTES.settings,
-    ],
-    minimalChromePrefixes: [ROUTES.vote, ROUTES.questions, ROUTES.survey],
-  },
-  assets: WAR_ON_DISEASE_ASSETS,
-  sitemap: {
-    includePublicRoutes: true,
-  },
-  ui: WAR_ON_DISEASE_UI,
-  pageVariants: {
-    home: "onePercentTreatyLanding",
-    dashboard: "treatyTaskDashboard",
-  },
 };
 
 const SITE_CONFIGS: Record<SiteKey, SiteConfig> = {
   optimitron: OPTIMITRON_CONFIG,
-  dfda: DFDA_CONFIG,
-  dih: DIH_CONFIG,
-  warOnDisease: WAR_ON_DISEASE_CONFIG,
 };
-
-const SITE_CONFIG_ORDER: readonly SiteKey[] = [
-  "dfda",
-  "dih",
-  "warOnDisease",
-  "optimitron",
-];
-
-const HOST_TO_SITE_KEY = Object.fromEntries(
-  Object.entries(SITE_CONFIGS).flatMap(([key, site]) =>
-    site.domains.map((domain) => [domain.toLowerCase(), key as SiteKey]),
-  ),
-) as Record<string, SiteKey>;
-
-const PUBLIC_FILE_PATH_REGEX = /\.[^/]+$/;
 
 function normalizeHost(host: string | null | undefined) {
   return host?.split(":")[0]?.toLowerCase() ?? "";
 }
 
-export function getCanonicalHostForSiteKey(key: SiteKey): string {
-  return new URL(SITE_CONFIGS[key].canonicalOrigin).host;
-}
-
-const TREATY_SIGN_PATH = ROUTES.treaty;
-const TREATY_SIGN_FALLBACK_URL = `${WAR_ON_DISEASE_CANONICAL_ORIGIN}${ROUTES.treaty}`;
-
-// Returns the URL where the user should publicly sign the 1% Treaty from the
-// given site. Stays on-domain when the site allows /treaty, falls through to
-// the canonical War on Disease host otherwise. Send the user across domains
-// as a last resort; most who leave do not come back.
-export function getTreatySignUrl(site: SiteConfig): string {
-  if (!site.routePolicy.restrictToAllowlist) return TREATY_SIGN_PATH;
-  const matches = (prefix: string) =>
-    prefix === TREATY_SIGN_PATH || prefix.startsWith(`${TREATY_SIGN_PATH}/`);
-  const allowed =
-    site.routePolicy.publicPrefixes.some(matches) ||
-    site.routePolicy.operationalPrefixes.some(matches) ||
-    site.routePolicy.canonicalPrefixes.some(matches);
-  return allowed ? TREATY_SIGN_PATH : TREATY_SIGN_FALLBACK_URL;
-}
-
-export function getSiteFromHost(host: string | null | undefined): SiteConfig {
-  if (!host) return SITE_CONFIGS[DEFAULT_SITE_KEY];
-  return SITE_CONFIGS[
-    HOST_TO_SITE_KEY[normalizeHost(host)] ?? DEFAULT_SITE_KEY
-  ];
+// This app serves one site, so every host resolves to it. The host parameter
+// stays so callers keep passing the request host they already have.
+export function getSiteFromHost(_host?: string | null): SiteConfig {
+  return OPTIMITRON_CONFIG;
 }
 
 export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
-  const host = headers.get("host");
-  const override = headers.get(SITE_VARIANT_OVERRIDE_HEADER);
-  if (isSiteVariantOverrideHost(host) && isSiteKey(override)) {
-    return SITE_CONFIGS[override];
-  }
-
-  const cookieOverride = getCookieValue(
-    headers.get("cookie"),
-    SITE_VARIANT_OVERRIDE_COOKIE,
-  );
-  if (isSiteVariantOverrideHost(host) && isSiteKey(cookieOverride)) {
-    return SITE_CONFIGS[cookieOverride];
-  }
-
-  if (host && isLocalHost(host)) {
-    return SITE_CONFIGS[LOCAL_DEFAULT_SITE_KEY];
-  }
-
-  return getSiteFromHost(host);
+  return getSiteFromHost(headers.get("host"));
 }
 
 export function getSiteConfig(key: SiteKey): SiteConfig {
@@ -1148,171 +419,12 @@ export function getAllSiteConfigs(): SiteConfig[] {
   return Object.values(SITE_CONFIGS);
 }
 
-export function isSiteKey(value: string | null | undefined): value is SiteKey {
-  return typeof value === "string" && value in SITE_CONFIGS;
-}
-
-function getCookieValue(cookieHeader: string | null | undefined, name: string) {
-  if (!cookieHeader) return null;
-
-  for (const part of cookieHeader.split(";")) {
-    const [rawKey, ...rawValue] = part.trim().split("=");
-    if (rawKey === name) {
-      try {
-        return decodeURIComponent(rawValue.join("="));
-      } catch {
-        return rawValue.join("=");
-      }
-    }
-  }
-
-  return null;
-}
-
-export function isOnePercentTreatyHost(
-  host: string | null | undefined,
-): boolean {
-  const normalized = normalizeHost(host);
-  return (
-    normalized === "1percenttreaty.org" ||
-    normalized === "www.1percenttreaty.org"
-  );
-}
-
-function matchesPrefix(pathname: string, prefix: string) {
-  return pathname === prefix || pathname.startsWith(`${prefix}/`);
-}
-
-export function isSiteRouteAllowed(
-  site: SiteConfig,
-  pathname: string,
-): boolean {
-  if (!site.routePolicy.restrictToAllowlist) {
-    return true;
-  }
-
-  if (pathname === "/") {
-    return true;
-  }
-
-  if (PUBLIC_FILE_PATH_REGEX.test(pathname)) {
-    return true;
-  }
-
-  // RFC 8615 well-known URIs (OAuth discovery documents among them) are
-  // standardized per-host discovery paths; a restricted variant's content
-  // allowlist must not block them, or spec-compliant clients can never
-  // discover OAuth on that host.
-  if (matchesPrefix(pathname, "/.well-known")) {
-    return true;
-  }
-
-  return (
-    site.routePolicy.publicPrefixes.some((prefix) =>
-      matchesPrefix(pathname, prefix),
-    ) ||
-    site.routePolicy.operationalPrefixes.some((prefix) =>
-      matchesPrefix(pathname, prefix),
-    )
-  );
-}
-
-function getCanonicalSiteForPath(pathname: string): SiteConfig | null {
-  if (pathname === "/" || PUBLIC_FILE_PATH_REGEX.test(pathname)) {
-    return null;
-  }
-
-  const siteKey = SITE_CONFIG_ORDER.find((key) =>
-    SITE_CONFIGS[key].routePolicy.canonicalPrefixes.some((prefix) =>
-      matchesPrefix(pathname, prefix),
-    ),
-  );
-
-  return siteKey ? SITE_CONFIGS[siteKey] : null;
-}
-
-export function getSiteRouteRedirect(
-  site: SiteConfig,
-  pathname: string,
-): string | null {
-  if (isSiteRouteAllowed(site, pathname)) {
-    return null;
-  }
-
-  const canonicalSite = getCanonicalSiteForPath(pathname);
-  if (!canonicalSite || canonicalSite.key === site.key) {
-    return null;
-  }
-
-  return `${canonicalSite.canonicalOrigin}${pathname}`;
-}
-
-export type SiteRouteDisposition =
-  | { type: "allow" }
-  | { type: "redirect"; url: string }
-  | { type: "notFound" };
-
-export function getSiteRouteDisposition(
-  site: SiteConfig,
-  pathname: string,
-): SiteRouteDisposition {
-  if (isSiteRouteAllowed(site, pathname)) {
-    return { type: "allow" };
-  }
-
-  const redirectUrl = getSiteRouteRedirect(site, pathname);
-  if (redirectUrl) {
-    return { type: "redirect", url: redirectUrl };
-  }
-
-  return { type: "notFound" };
-}
-
-const REFERENDUM_SITE_CONTENT_PATH_PREFIXES = [
-  ROUTES.signatories,
-  ROUTES.campaign,
-  ROUTES.coalition,
-  ROUTES.join,
-  ROUTES.impact,
-] as const;
-
-export function requiresReferendumSiteContent(pathname: string): boolean {
-  return REFERENDUM_SITE_CONTENT_PATH_PREFIXES.some((prefix) =>
-    matchesPrefix(pathname, prefix),
-  );
-}
-
-export function isStaticPathEnabledForSite(
-  site: SiteConfig,
-  pathname: string,
-): boolean {
-  if (getSiteRouteDisposition(site, pathname).type !== "allow") {
-    return false;
-  }
-
-  if (requiresReferendumSiteContent(pathname) && !site.contentKey) {
-    return false;
-  }
-
-  return true;
-}
-
-export function getEnabledStaticPathsForSite(
-  site: SiteConfig,
-  candidatePaths: Iterable<string>,
-): string[] {
-  const enabled = new Set<string>();
-
-  for (const candidatePath of candidatePaths) {
-    const pathname = normalizePath(
-      candidatePath.trim().split(/[?#]/, 1)[0] ?? "",
-    );
-    if (isStaticPathEnabledForSite(site, pathname)) {
-      enabled.add(pathname);
-    }
-  }
-
-  return [...enabled].sort((left, right) => left.localeCompare(right));
+/** Every domain whose /api/mcp resource identifier OAuth accepts. */
+export function getMcpResourceDomains(): string[] {
+  return [
+    ...getAllSiteConfigs().flatMap((site) => site.domains),
+    ...LEGACY_VARIANT_DOMAINS,
+  ];
 }
 
 function normalizeOrigin(origin: string) {
@@ -1358,7 +470,7 @@ export function getConfiguredSiteOrigin(options?: {
     return OPTIMITRON_LOCAL_ORIGIN;
   }
 
-  return WAR_ON_DISEASE_CANONICAL_ORIGIN;
+  return OPTIMITRON_CANONICAL_ORIGIN;
 }
 
 export function isLocalHost(host: string) {
@@ -1373,7 +485,7 @@ export function isLocalHost(host: string) {
   );
 }
 
-export function isSiteVariantOverrideHost(host: string | null | undefined) {
+export function isLocalOrPreviewHost(host: string | null | undefined) {
   if (!host) return false;
 
   const hostname = normalizeHost(host).replace(/\.$/u, "");
@@ -1414,7 +526,7 @@ export function buildOrganizationSurveyUrl(
 ) {
   const url = new URL(
     `/survey/${encodeURIComponent(organizationSlug)}`,
-    WAR_ON_DISEASE_CONFIG.canonicalOrigin,
+    WAR_ON_DISEASE_CANONICAL_ORIGIN,
   );
 
   const referralCode = options?.referralCode?.trim();

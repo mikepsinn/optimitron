@@ -5,7 +5,6 @@ import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import {
   getAllSiteConfigs,
   getSiteFromHost,
-  isStaticPathEnabledForSite,
   type SiteConfig,
 } from "@/lib/site";
 
@@ -112,15 +111,12 @@ function pagePathsForSite(site: SiteConfig) {
   const paths = new Set<string>(["/"]);
   for (const item of navItemsForSite(site)) {
     if (item.external || !item.href.startsWith("/")) continue;
-    if (isStaticPathEnabledForSite(site, item.href)) paths.add(item.href);
+    paths.add(item.href);
   }
 
-  for (const prefix of [
-    ...site.routePolicy.canonicalPrefixes,
-    ...site.routePolicy.publicPrefixes,
-  ]) {
+  for (const prefix of site.routePolicy.canonicalPrefixes) {
     if (prefix.includes("[") || prefix.includes(":")) continue;
-    if (isStaticPathEnabledForSite(site, prefix)) paths.add(prefix);
+    paths.add(prefix);
   }
 
   return [...paths]
@@ -237,8 +233,7 @@ export async function listSitePages(input: ListSitePagesInput = {}) {
 function isAllowedPropertyUrl(url: URL) {
   const host = url.hostname.toLowerCase();
   if (host === MANUAL_HOST) return true;
-  const site = getKnownSite(host);
-  return !!site && isStaticPathEnabledForSite(site, url.pathname);
+  return !!getKnownSite(host) && !isRedirectOnlyRoutePath(url.pathname);
 }
 
 function htmlEntityDecode(value: string) {
@@ -354,7 +349,6 @@ function visibleCopyFromSnapshot(snapshot: string) {
 
 async function readLoggedOutPageSnapshot(url: URL) {
   if (url.hostname.toLowerCase() === MANUAL_HOST) return null;
-  const requestedSite = getKnownSite(url.hostname.toLowerCase());
 
   for (const snapshotPath of snapshotPaths(url.pathname)) {
     try {
@@ -368,26 +362,6 @@ async function readLoggedOutPageSnapshot(url: URL) {
       const metadataTitle = snapshot
         .match(/^- Page title:\s*(.+)$/m)?.[1]
         ?.trim();
-      const canonicalUrl = snapshot
-        .match(/^- Canonical:\s*(.+)$/m)?.[1]
-        ?.trim();
-      let snapshotSite: ReturnType<typeof getKnownSite> = null;
-      if (canonicalUrl && canonicalUrl !== "[missing]") {
-        try {
-          snapshotSite = getKnownSite(
-            new URL(canonicalUrl).hostname.toLowerCase(),
-          );
-        } catch {
-          snapshotSite = null;
-        }
-      }
-      if (
-        requestedSite &&
-        snapshotSite &&
-        requestedSite.key !== snapshotSite.key
-      ) {
-        continue;
-      }
       return {
         content,
         lastModified: fileStats.mtime.toUTCString(),

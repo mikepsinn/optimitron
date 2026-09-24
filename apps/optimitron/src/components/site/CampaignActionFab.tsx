@@ -20,7 +20,6 @@ const HIDDEN_PATH_PREFIXES = [
   // The OAuth consent screen belongs to the site being connected, not to us.
   ROUTES.mcpAuthorize,
   "/survey",
-  "/vote",
 ] as const;
 
 function shouldHideForPath(pathname: string | null) {

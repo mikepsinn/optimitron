@@ -15,7 +15,7 @@ import {
 } from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
 import {
-  getStaticSiteSearchDocuments,
+  staticSiteSearchDocuments,
   type StaticSiteSearchDocument,
 } from "@/lib/site-search";
 import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
@@ -364,11 +364,10 @@ export default async function SearchPage({
       : "all";
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const pageDocuments = getStaticSiteSearchDocuments(site);
+  const pageDocuments = staticSiteSearchDocuments;
   const results = await searchSiteContent(query, {
     contentLimit: 24,
     pageLimit: 24,
-    site,
     taskLimit: 24,
     userId,
   });

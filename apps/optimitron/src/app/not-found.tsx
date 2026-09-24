@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ROUTES, SHOW_DONATE_LINKS } from "@/lib/routes";
+import { ROUTES, SHOW_DONATE_LINKS, warOnDiseaseUrl } from "@/lib/routes";
 
 const recoveryLinks = [
   { href: ROUTES.search, label: "Search" },
-  { href: ROUTES.vote, label: "Vote" },
+  { href: warOnDiseaseUrl(ROUTES.vote), label: "Vote" },
   ...(SHOW_DONATE_LINKS ? [{ href: ROUTES.donate, label: "Donate" }] : []),
-  { href: ROUTES.join, label: "Organizations" },
+  { href: warOnDiseaseUrl(ROUTES.join), label: "Organizations" },
 ];
 
 export default function NotFound() {

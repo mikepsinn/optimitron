@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
-import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -9,11 +8,6 @@ import {
   type SiteFooterColumn,
   type SiteKey,
 } from "@/lib/site";
-import {
-  DFDA_QUEUE_CLEARANCE_YEARS,
-  NUCLEAR_WINTER_OVERKILL_FACTOR,
-  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/data/parameters";
 
 interface FooterProps {
   siteKey?: SiteKey;
@@ -30,42 +24,6 @@ function FooterColumnLinks({ column }: { column: SiteFooterColumn }) {
         </li>
       ))}
     </ul>
-  );
-}
-
-function FooterBrandDescription({
-  description,
-  siteKey,
-}: {
-  description: string;
-  siteKey: SiteKey;
-}) {
-  if (siteKey !== "warOnDisease") {
-    return <>{description}</>;
-  }
-
-  return (
-    <>
-      Let&apos;s trade one apocalypse out of humanity&apos;s{" "}
-      <ParameterValue
-        className="font-black text-foreground"
-        display="integer"
-        param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-      />
-      -apocalypse mass-murder capacity for disease eradication in{" "}
-      <ParameterValue
-        className="font-black text-foreground"
-        display="integer"
-        param={DFDA_QUEUE_CLEARANCE_YEARS}
-      />{" "}
-      years instead of{" "}
-      <ParameterValue
-        className="font-black text-foreground"
-        display="integer"
-        param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-      />
-      .
-    </>
   );
 }
 
@@ -91,10 +49,7 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
               {config.brandLabel}
             </Link>
             <div className="mt-3 text-sm font-bold leading-relaxed text-muted-foreground">
-              <FooterBrandDescription
-                description={config.brandDescription}
-                siteKey={siteKey}
-              />
+              {config.brandDescription}
             </div>
           </div>
 

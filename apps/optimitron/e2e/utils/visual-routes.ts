@@ -5,7 +5,6 @@ import {
 } from "@optimitron/db/constants";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -40,8 +39,6 @@ export type VisualRoute = {
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
-  /** Capture under a non-default site variant via the review-only query override. */
-  siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
 
@@ -60,7 +57,7 @@ export type VisualCaptureKind = "app" | "legacy-host";
 type VisualRouteOwnership = Pick<
   VisualRoute,
   "appId" | "appLabel" | "captureKind"
-> & { siteVariant: SiteKey };
+>;
 
 type VisualRouteSpec = Omit<
   VisualRoute,
@@ -79,46 +76,11 @@ const VISUAL_APP_LABELS: Record<VisualAppId, string> = {
   wishocracy: "Wishocracy",
 };
 
-const WAR_ON_DISEASE_ROUTE_PREFIXES = [
-  ROUTES.treaty,
-  ROUTES.vote,
-  ROUTES.questions,
-  "/r",
-  ROUTES.declaration,
-  ROUTES.joke,
-  ROUTES.shirt,
-  ROUTES.poster,
-  ROUTES.doorToDoor,
-  ROUTES.love,
-  ROUTES.missions,
-  ROUTES.fixAi,
-  ROUTES.foundations,
-  ROUTES.plaintiffs,
-  ROUTES.court,
-  ROUTES.humanityVGovernment,
-  ROUTES.join,
-  ROUTES.signatories,
-  ROUTES.organizations,
-  ROUTES.feedback,
-  ROUTES.employees,
-] as const;
-
-export function getVisualRouteOwnership(
-  pathname: string,
-): VisualRouteOwnership {
-  const path = pathname.split(/[?#]/u, 1)[0];
-  const isWarOnDiseaseRoute = WAR_ON_DISEASE_ROUTE_PREFIXES.some(
-    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
-  );
-  const appId: VisualAppId = isWarOnDiseaseRoute
-    ? "warondisease"
-    : "optimitron";
-
+export function getVisualRouteOwnership(): VisualRouteOwnership {
   return {
-    appId,
-    appLabel: VISUAL_APP_LABELS[appId],
-    captureKind: isWarOnDiseaseRoute ? "legacy-host" : "app",
-    siteVariant: isWarOnDiseaseRoute ? "warOnDisease" : "optimitron",
+    appId: "optimitron",
+    appLabel: VISUAL_APP_LABELS.optimitron,
+    captureKind: "app",
   };
 }
 
@@ -234,7 +196,6 @@ const PERSONAL_QUEUE_SECTION_FILE =
 const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
 const SEARCH_DISCOVERY_FILE =
   "apps/optimitron/src/app/search/search-discovery.tsx";
-const FOUNDATIONS_PAGE_FILE = "apps/optimitron/src/app/foundations/page.tsx";
 const PEOPLE_DIRECTORY_PAGE_FILE = "apps/optimitron/src/app/people/page.tsx";
 const NOT_FOUND_PAGE_FILE = "apps/optimitron/src/app/not-found.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
@@ -335,27 +296,12 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/components/eos-retro/MachineDiagram.tsx",
     ],
   ],
-  [
-    ROUTES.fixAi,
-    [
-      "apps/optimitron/src/app/fix-ai/content.ts",
-      "apps/optimitron/src/app/fix-ai/corpus.server.ts",
-      "apps/optimitron/src/app/fix-ai/page.tsx",
-    ],
-  ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [
     ROUTES.methodology,
     [
       "packages/data/src/parameters/expected-value-methodology.ts",
       "apps/optimitron/src/app/methodology/page.tsx",
-    ],
-  ],
-  [
-    ROUTES.poster,
-    [
-      "apps/optimitron/src/app/poster/page.tsx",
-      "apps/optimitron/src/app/poster/poster-client.tsx",
     ],
   ],
   [ROUTES.invest, INVEST_LANDING_FILES],
@@ -373,21 +319,15 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
 ]);
 
-const PRESIDENT_TASK_LIST_SELECTOR =
-  '[data-visual-section="president-task-list"]';
-
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
-  [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
-  [ROUTES.fixAi, "#next-hour"],
   [ROUTES.game, "#vote"],
   // The home route covers every shared landing section, so without a selector
   // the coverage gate cannot prove any of them rendered. #vote is the last
   // section on the page, the same anchor /game asserts.
   [ROUTES.home, "#vote"],
   [ROUTES.methodology, "#methodology"],
-  [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -399,10 +339,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.tasksTree, "#task-tree"],
 ]);
 
-const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
-  ROUTES.employees,
-  ROUTES.profile,
-]);
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.profile]);
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
@@ -438,15 +375,6 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredText: /Find the human who should do something/i,
   },
   {
-    covers: [FOUNDATIONS_PAGE_FILE],
-    name: "foundations-links",
-    path: ROUTES.foundations,
-    required: true,
-    requiredSelector: 'section:has(h1) a:has-text("Open email draft")',
-    requiredText: /Give an organization one share and a letter/i,
-    siteVariant: "warOnDisease",
-  },
-  {
     covers: [NOT_FOUND_PAGE_FILE],
     expectNotFound: true,
     name: "not-found",
@@ -454,7 +382,6 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: 'nav[aria-label="Page recovery"] a[href="/search"]',
     requiredText: /Page Not Found/i,
-    siteVariant: "warOnDisease",
   },
   {
     covers: [SEARCH_PAGE_FILE, SEARCH_DISCOVERY_FILE],
@@ -463,15 +390,14 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: '[data-search-popular] a[href="/tasks"]',
     requiredText: /Popular pages/i,
-    siteVariant: "optimitron",
   },
   {
     covers: [SEARCH_DISCOVERY_FILE],
     name: "search-typeahead",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[data-search-suggestions] a[href="/vote"]',
-    siteVariant: "optimitron",
+    requiredSelector:
+      '[data-search-suggestions] a[href="https://warondisease.org/vote"]',
     typeSearchQuery: "vote",
   },
   {
@@ -481,7 +407,6 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: 'form[aria-busy="true"] button:disabled',
     requiredText: /^Searching…$/i,
-    siteVariant: "optimitron",
     submitSearch: true,
     typeSearchQuery: "vote",
   },
@@ -490,8 +415,7 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     name: "search-results",
     path: `${ROUTES.search}?q=vote`,
     required: true,
-    requiredSelector: 'a[href="/vote"]',
-    siteVariant: "optimitron",
+    requiredSelector: 'a[href="https://warondisease.org/vote"]',
   },
   {
     covers: [STANDALONE_VIDEO_PAGE_FILE],
@@ -711,64 +635,11 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRouteSpec[] = filterRedirectOnlyRou
     waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
-// Preserve the old host-rendered pages while their routes move into peer apps.
-// These checks are compatibility evidence, not peer-app captures.
-const LEGACY_HOST_ROUTES: VisualRouteSpec[] = [
-  {
-    appId: "warondisease",
-    appLabel: VISUAL_APP_LABELS.warondisease,
-    captureKind: "legacy-host",
-    name: "legacy-warondisease-home",
-    path: ROUTES.home,
-    required: true,
-    requiredSelector: "#sign",
-    siteVariant: "warOnDisease",
-  },
-  {
-    appId: "warondisease",
-    appLabel: VISUAL_APP_LABELS.warondisease,
-    authenticated: true,
-    captureKind: "legacy-host",
-    name: "legacy-warondisease-dashboard-auth",
-    path: ROUTES.dashboard,
-    required: true,
-    siteVariant: "warOnDisease",
-  },
-  {
-    appId: "dfda",
-    appLabel: VISUAL_APP_LABELS.dfda,
-    captureKind: "legacy-host",
-    name: "variant-dfda-home",
-    path: ROUTES.home,
-    required: true,
-    siteVariant: "dfda",
-  },
-  {
-    appId: "dih",
-    appLabel: VISUAL_APP_LABELS.dih,
-    captureKind: "legacy-host",
-    name: "variant-dih-home",
-    path: ROUTES.home,
-    required: true,
-    siteVariant: "dih",
-  },
-  {
-    appId: "dih",
-    appLabel: VISUAL_APP_LABELS.dih,
-    captureKind: "legacy-host",
-    name: "variant-dih-fund-a-disease",
-    path: ROUTES.dih,
-    required: true,
-    siteVariant: "dih",
-  },
-];
-
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([
   ...PUBLIC_SCREENSHOT_ROUTES,
   ...AUTHENTICATED_SCREENSHOT_ROUTES,
   ...SPECIAL_STATE_ROUTES,
   ...SEEDED_DYNAMIC_ROUTES,
-  ...LEGACY_HOST_ROUTES,
 ]);
 
 function publicRouteHasScreenshot(path: string): boolean {
@@ -786,13 +657,12 @@ function dedupeRoutes(routes: VisualRouteSpec[]): VisualRoute[] {
       throw new Error(`Duplicate visual route name: ${route.name}`);
     }
     seen.add(route.name);
-    const ownership = getVisualRouteOwnership(route.path);
+    const ownership = getVisualRouteOwnership();
     deduped.push({
       ...route,
       appId: route.appId ?? ownership.appId,
       appLabel: route.appLabel ?? ownership.appLabel,
       captureKind: route.captureKind ?? ownership.captureKind,
-      siteVariant: route.siteVariant ?? ownership.siteVariant,
     });
   }
   return deduped;

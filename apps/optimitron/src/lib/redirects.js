@@ -97,7 +97,7 @@ const REDIRECTS = [
   },
   // /money is now a standalone page — no redirect needed
   // /why folded into the treaty page — the WHEREAS clauses ARE the case.
-  { source: "/why", destination: "/treaty", permanent: true },
+  { source: "/why", destination: "https://warondisease.org/treaty", permanent: true },
   { source: "/budget", destination: "/agencies/domb", permanent: true },
   {
     source: "/budget/:slug",
@@ -168,8 +168,8 @@ const REDIRECTS = [
   // /about was a Server Component redirect — Next.js was statically pre-rendering it
   // and converting the server redirect into a meta-refresh + client hop (200 OK), not a real 307.
   { source: "/about", destination: "/eos", permanent: true },
-  { source: "/campaign", destination: "/signatories", permanent: true },
-  { source: "/coalition", destination: "/signatories", permanent: true },
+  { source: "/campaign", destination: "https://warondisease.org/signatories", permanent: true },
+  { source: "/coalition", destination: "https://warondisease.org/signatories", permanent: true },
 
   // /find-trials belongs to the dfda.earth site. Nothing in this app links
   // there any more, but older pages and outside links still do, so the path
@@ -192,6 +192,34 @@ const REDIRECTS = [
   { source: "/agencies/dfda/conditions/:path*", destination: "https://dfda.earth/conditions/:path*", permanent: true },
   { source: "/agencies/dfda/treatments", destination: "https://dfda.earth/treatments", permanent: true },
   { source: "/agencies/dfda/treatments/:path*", destination: "https://dfda.earth/treatments/:path*", permanent: true },
+
+  // The War on Disease campaign pages belong to apps/warondisease, which
+  // serves warondisease.org with the same paths. This app kept a second copy
+  // of each page after the split. The copies are deleted here and the paths
+  // 308 to the campaign site, so old links and search results keep working.
+  // /shirt and /donate stay: they hold the pledge and Stripe checkout flows
+  // that warondisease.org links back to.
+  ...[
+    "/vote",
+    "/vote/:code",
+    "/r/:code",
+    "/treaty",
+    "/signatories",
+    "/employees",
+    "/join",
+    "/door-to-door",
+    "/poster",
+    "/missions",
+    "/joke",
+    "/love",
+    "/fix-ai",
+    "/foundations",
+    "/faq",
+  ].map((source) => ({
+    source,
+    destination: `https://warondisease.org${source}`,
+    permanent: true,
+  })),
 ];
 
 const EXTRA_REDIRECT_ONLY_ROUTE_SOURCES = [

@@ -6,54 +6,22 @@ afterEach(() => {
 });
 
 describe("site inventory", () => {
-  it("lists configured pages for one site without fetching the manual sitemap", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
-
-    const result = await listSitePages({ site: "warondisease.org" });
-
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(result.count).toBeGreaterThan(0);
-    expect(
-      result.pages.every((page) =>
-        page.url.startsWith("https://warondisease.org/"),
-      ),
-    ).toBe(true);
-    expect(
-      result.pages.some((page) => page.url === "https://warondisease.org/vote"),
-    ).toBe(true);
-    expect(
-      result.pages.some(
-        (page) => page.url === "https://warondisease.org/campaign",
-      ),
-    ).toBe(false);
-    expect(
-      result.pages.some(
-        (page) => page.url === "https://warondisease.org/coalition",
-      ),
-    ).toBe(false);
-    expect(
-      result.pages.some(
-        (page) => page.url === "https://warondisease.org/impact",
-      ),
-    ).toBe(false);
-  });
-
-  it("does not list referendum-content pages on contentless hosts", async () => {
+  it("lists this app's pages without fetching the manual sitemap", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await listSitePages({ site: "optimitron.com" });
+    const urls = result.pages.map((page) => page.url);
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(
-      result.pages.some(
-        (page) => page.url === "https://optimitron.com/campaign",
-      ),
-    ).toBe(false);
-    expect(
-      result.pages.some((page) => page.url === "https://optimitron.com/donate"),
-    ).toBe(true);
+    expect(urls.every((url) => url.startsWith("https://optimitron.com/"))).toBe(
+      true,
+    );
+    expect(urls).toContain("https://optimitron.com/donate");
+    // These paths only redirect, so the inventory must not offer them.
+    for (const path of ["/vote", "/campaign", "/coalition", "/impact"]) {
+      expect(urls).not.toContain(`https://optimitron.com${path}`);
+    }
   });
 
   it("extracts clean markdown from an allowed manual URL", async () => {
@@ -93,7 +61,7 @@ describe("site inventory", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await getPageContent({
-      url: "https://warondisease.org/invest",
+      url: "https://optimitron.com/invest",
     });
 
     expect(fetchMock).not.toHaveBeenCalled();
@@ -102,41 +70,6 @@ describe("site inventory", () => {
       "YOUR PLANET MAY BE ELIGIBLE FOR OPTIMIZATION",
     );
     expect(result.content).not.toContain("Booting Earth Optimization System");
-  });
-
-  it("does not serve the War on Disease home snapshot for another site variant", async () => {
-    const fetchMock = vi.fn(
-      async () =>
-        new Response(
-          "<html><head><title>Optimitron</title></head><body><main><h1>Optimize Earth</h1><p>Every job required to optimize it.</p></main></body></html>",
-        ),
-    );
-    vi.stubGlobal("fetch", fetchMock);
-
-    const result = await getPageContent({ url: "https://optimitron.com/" });
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(result.title).toBe("Optimitron");
-    expect(result.content).toContain("Optimize Earth");
-    expect(result.content).not.toContain("TAKE 30 SECONDS");
-  });
-
-  it("does not serve a non-root snapshot captured for another site variant", async () => {
-    const fetchMock = vi.fn(
-      async () =>
-        new Response(
-          "<html><head><title>Compute</title></head><body><main><h1>Optimitron compute</h1></main></body></html>",
-        ),
-    );
-    vi.stubGlobal("fetch", fetchMock);
-
-    const result = await getPageContent({
-      url: "https://optimitron.com/invest",
-    });
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(result.content).toContain("Optimitron compute");
-    expect(result.content).not.toContain("QUANTIFY ANYTHING");
   });
 
   it("rejects a loading shell when no rendered snapshot exists", async () => {

@@ -1,5 +1,5 @@
 /**
- * New-user funnel screenshot audit, per site variant.
+ * New-user funnel screenshot audit for optimitron.com.
  *
  * Run:
  *   pnpm --filter @optimitron/web run e2e -- new-user-flow-screenshots --reporter=list
@@ -17,11 +17,6 @@ import {
 import * as fs from "fs";
 import path from "path";
 import { buildMagicLinkHtml } from "@/lib/email/magic-link-render";
-import {
-  SITE_VARIANT_OVERRIDE_COOKIE,
-  SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-  type SiteKey,
-} from "@/lib/site";
 import { freezeClock } from "./helpers/freeze-clock.mjs";
 import { DEMO_PASSWORD } from "./utils/auth";
 
@@ -29,38 +24,17 @@ interface VariantConfig {
   slug: string;
   label: string;
   host: string;
-  siteKey: SiteKey;
   treatyFlow: boolean;
 }
 
+// War on Disease, dFDA, and DIH run their own apps now; this app serves
+// optimitron.com only.
 const VARIANTS: readonly VariantConfig[] = [
-  {
-    slug: "warondisease",
-    label: "warondisease.org",
-    host: "warondisease.org",
-    siteKey: "warOnDisease",
-    treatyFlow: true,
-  },
   {
     slug: "optimitron",
     label: "optimitron.com",
     host: "optimitron.com",
-    siteKey: "optimitron",
     treatyFlow: true,
-  },
-  {
-    slug: "dfda",
-    label: "dfda.earth",
-    host: "dfda.earth",
-    siteKey: "dfda",
-    treatyFlow: false,
-  },
-  {
-    slug: "dih",
-    label: "dih.earth",
-    host: "dih.earth",
-    siteKey: "dih",
-    treatyFlow: false,
   },
 ];
 
@@ -334,7 +308,7 @@ async function renderEmailPreviewDocument(input: {
   label: string;
   url: string;
 }) {
-  const html = await buildMagicLinkHtml(input.url, input.host, {});
+  const html = await buildMagicLinkHtml(input.url, {});
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -372,7 +346,7 @@ async function captureEmailPreview(
     { waitUntil: "domcontentloaded" },
   );
   await expect(page.getByTestId("magic-link-email-preview")).toContainText(
-    "Click the button below to verify your email and save your vote.",
+    "Your sign-in link is below.",
   );
   await captureStep(outcome, dir, stepState, "magic-link-email", (filePath) =>
     captureElement(page.getByTestId("magic-link-email-preview"), filePath),
@@ -489,25 +463,15 @@ async function captureVariant(
   await page.setViewportSize(viewport.viewport);
 
   try {
-    const landingResponse = await page.goto(
-      `/?${SITE_VARIANT_OVERRIDE_QUERY_PARAM}=${encodeURIComponent(variant.siteKey)}`,
-      {
-        timeout: 30_000,
-        waitUntil: "domcontentloaded",
-      },
-    );
+    const landingResponse = await page.goto("/", {
+      timeout: 30_000,
+      waitUntil: "domcontentloaded",
+    });
     const landingStatus = landingResponse?.status() ?? 0;
     if (landingStatus >= 500) {
       outcome.error = `Landing returned ${landingStatus}`;
       return outcome;
     }
-    const siteOverrideCookie = (await page.context().cookies()).find(
-      (cookie) => cookie.name === SITE_VARIANT_OVERRIDE_COOKIE,
-    );
-    expect(
-      siteOverrideCookie?.value,
-      `${variant.slug} should persist its site variant before capture`,
-    ).toBe(variant.siteKey);
     await stabilizeVisuals(page);
     await page.waitForTimeout(300);
     await captureStep(outcome, dir, stepState, "landing", (filePath) =>

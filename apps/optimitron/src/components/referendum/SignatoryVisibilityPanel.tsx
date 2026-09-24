@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { PublicSignatoryUserStatus } from "@/lib/referendum-site.server";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES, warOnDiseaseUrl } from "@/lib/routes";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 
 interface SignatoryVisibilityPanelProps {
@@ -94,7 +94,7 @@ export function SignatoryVisibilityPanel({
           {!status.hasYesVote ? (
             <Link
               className={`${defaultButtonClassName} min-h-10 px-4 py-2 text-xs tracking-[0.12em]`}
-              href={ROUTES.vote}
+              href={warOnDiseaseUrl(ROUTES.vote)}
             >
               Sign Treaty
             </Link>

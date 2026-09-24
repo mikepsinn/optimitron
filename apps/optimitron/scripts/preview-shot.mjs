@@ -8,16 +8,15 @@
  * Local dev often can't run here (no root .env / DB), so previews are the only
  * way to render a branch. A preview is (a) protected by Vercel deployment
  * protection — pass the `_vercel_share` token from
- * `get_access_to_vercel_url` / the Vercel dashboard; (b) served as the
- * warondisease variant by default — the `optimitron_site_key` cookie forces the
- * optimitron variant; (c) gated by auth — `?login=demo` signs in the demo user.
+ * `get_access_to_vercel_url` / the Vercel dashboard; (b) gated by auth —
+ * `?login=demo` signs in the demo user.
  *
  * Usage:
  *   node scripts/preview-shot.mjs \
  *     --origin https://optimitron-web-git-<branch>-<team>.vercel.app \
  *     --route /dashboard --route /collections \
  *     --share <vercel-share-token> \
- *     [--login demo] [--site optimitron] [--viewports desktop,mobile] [--out <dir>]
+ *     [--login demo] [--viewports desktop,mobile] [--out <dir>]
  *
  * Screenshots land in output/playwright/review/<out> (out defaults to "preview").
  * Requires @playwright/test (already a dev dependency; run from apps/optimitron).
@@ -33,7 +32,7 @@ const VIEWPORTS = {
 };
 
 function parseArgs(argv) {
-  const opts = { routes: [], viewports: ["desktop", "mobile"], login: null, share: null, site: "optimitron", out: "preview", origin: null };
+  const opts = { routes: [], viewports: ["desktop", "mobile"], login: null, share: null, out: "preview", origin: null };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     const next = () => {
@@ -48,7 +47,6 @@ function parseArgs(argv) {
     else if (arg === "--route") opts.routes.push(next());
     else if (arg === "--share") opts.share = next();
     else if (arg === "--login") opts.login = next();
-    else if (arg === "--site") opts.site = next();
     else if (arg === "--out") opts.out = next();
     else if (arg === "--viewports") opts.viewports = next().split(",").map((v) => v.trim()).filter(Boolean);
   }
@@ -57,7 +55,7 @@ function parseArgs(argv) {
 
 const opts = parseArgs(process.argv.slice(2));
 if (!opts.origin || opts.routes.length === 0) {
-  console.error("usage: node scripts/preview-shot.mjs --origin <url> --route <path> [--route ...] [--share TOKEN] [--login demo] [--site optimitron] [--viewports desktop,mobile] [--out <dir>]");
+  console.error("usage: node scripts/preview-shot.mjs --origin <url> --route <path> [--route ...] [--share TOKEN] [--login demo] [--viewports desktop,mobile] [--out <dir>]");
   process.exit(1);
 }
 
@@ -80,7 +78,6 @@ function targetUrl(route) {
 }
 
 (async () => {
-  const hostname = new URL(opts.origin).hostname;
   const browser = await chromium.launch();
   try {
     for (const vpName of opts.viewports) {
@@ -90,11 +87,6 @@ function targetUrl(route) {
         continue;
       }
       const context = await browser.newContext({ viewport });
-      if (opts.site) {
-        await context.addCookies([
-          { domain: hostname, name: "optimitron_site_key", path: "/", value: opts.site },
-        ]);
-      }
       const page = await context.newPage();
       // Visiting with the share token sets the deployment-protection cookie.
       if (opts.share) {

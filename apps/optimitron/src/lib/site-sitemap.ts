@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ROUTES } from "@/lib/routes";
-import { isSiteRouteAllowed, type SiteConfig } from "@/lib/site";
+import type { SiteConfig } from "@/lib/site";
 import { getAgentReadableSitemapRoutes } from "@/lib/agent-readable/agent-sitemap";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -14,22 +14,12 @@ interface SiteSitemapRoute {
 
 const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.home, priority: 1.0, changeFrequency: "daily" },
-  { path: ROUTES.treaty, priority: 0.95, changeFrequency: "weekly" },
-  { path: ROUTES.fixAi, priority: 0.9, changeFrequency: "weekly" },
-  { path: ROUTES.vote, priority: 0.95, changeFrequency: "daily" },
   { path: ROUTES.questions, priority: 0.75, changeFrequency: "monthly" },
   { path: ROUTES.donate, priority: 0.9, changeFrequency: "weekly" },
-  { path: ROUTES.employees, priority: 0.8, changeFrequency: "daily" },
   { path: ROUTES.survey, priority: 0.95, changeFrequency: "weekly" },
-  { path: ROUTES.missions, priority: 0.8, changeFrequency: "weekly" },
-  { path: ROUTES.poster, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.organizations, priority: 0.75, changeFrequency: "weekly" },
-  { path: ROUTES.impact, priority: 0.75, changeFrequency: "weekly" },
-  { path: ROUTES.join, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.feedback, priority: 0.5, changeFrequency: "monthly" },
-  { path: ROUTES.signatories, priority: 0.65, changeFrequency: "weekly" },
   { path: ROUTES.people, priority: 0.65, changeFrequency: "weekly" },
-  { path: ROUTES.plaintiffs, priority: 0.75, changeFrequency: "weekly" },
   { path: ROUTES.governments, priority: 0.8, changeFrequency: "weekly" },
   { path: ROUTES.declaration, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.dfda, priority: 0.7, changeFrequency: "weekly" },
@@ -65,35 +55,6 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.fund, priority: 0.6, changeFrequency: "weekly" },
 ];
 
-function matchesAnyPrefix(pathname: string, prefixes: readonly string[]) {
-  return prefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-}
-
-function shouldIncludeStaticRoute(site: SiteConfig, path: string) {
-  if (!isSiteRouteAllowed(site, path)) {
-    return false;
-  }
-
-  if (path === ROUTES.home || site.sitemap.includeAllStaticRoutes) {
-    return true;
-  }
-
-  if (site.key === "warOnDisease" && path === ROUTES.fixAi) {
-    return true;
-  }
-
-  if (matchesAnyPrefix(path, site.routePolicy.canonicalPrefixes)) {
-    return true;
-  }
-
-  return Boolean(
-    site.sitemap.includePublicRoutes &&
-    matchesAnyPrefix(path, site.routePolicy.publicPrefixes),
-  );
-}
-
 function makeEntry(
   site: SiteConfig,
   route: SiteSitemapRoute,
@@ -111,18 +72,12 @@ export function getSitemapForSite(
   site: SiteConfig,
   lastModified = new Date(),
 ): MetadataRoute.Sitemap {
-  if (site.sitemap.landingPageOnly) {
-    return [makeEntry(site, STATIC_SITEMAP_ROUTES[0], lastModified)];
-  }
-
   const routesByPath = new Map<string, SiteSitemapRoute>();
   for (const route of STATIC_SITEMAP_ROUTES) {
-    if (shouldIncludeStaticRoute(site, route.path)) {
-      routesByPath.set(route.path, route);
-    }
+    routesByPath.set(route.path, route);
   }
 
-  for (const route of getAgentReadableSitemapRoutes(site)) {
+  for (const route of getAgentReadableSitemapRoutes()) {
     routesByPath.set(route.path, route);
   }
 

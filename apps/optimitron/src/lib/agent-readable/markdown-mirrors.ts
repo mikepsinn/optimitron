@@ -1,5 +1,5 @@
 import { shareableSnippets } from "@optimitron/data/parameters";
-import type { SiteConfig } from "@/lib/site";
+import { absoluteCanonicalSiteUrl } from "@/lib/site";
 import { ROUTES } from "@/lib/routes";
 import {
   CAMPAIGN_FAQ_ITEMS,
@@ -17,27 +17,24 @@ interface MarkdownMirrorContentInput {
   treatyMarkdown?: string | null;
 }
 
-function canonicalLine(site: SiteConfig, path: string) {
-  return `Canonical HTML: ${absoluteCampaignUrl(site, path)}`;
+function canonicalLine(path: string) {
+  return `Canonical HTML: ${absoluteCampaignUrl(path)}`;
 }
 
-function apiLine(site: SiteConfig, path: string) {
-  return `Machine-readable JSON: ${absoluteCampaignUrl(site, path)}`;
+function apiLine(path: string) {
+  return `Machine-readable JSON: ${absoluteCanonicalSiteUrl(path)}`;
 }
 
 function section(title: string, body: string) {
   return [`## ${title}`, "", body.trim(), ""].join("\n");
 }
 
-function buildTreatyMirror(
-  site: SiteConfig,
-  input: MarkdownMirrorContentInput,
-) {
+function buildTreatyMirror(input: MarkdownMirrorContentInput) {
   return [
     "# 1% Treaty",
     "",
-    canonicalLine(site, ROUTES.treaty),
-    apiLine(site, "/api/agent/campaign-state"),
+    canonicalLine(ROUTES.treaty),
+    apiLine("/api/agent/campaign-state"),
     "",
     getCampaignSummary(),
     "",
@@ -52,11 +49,11 @@ function buildTreatyMirror(
   ].join("\n");
 }
 
-function buildFaqMirror(site: SiteConfig) {
+function buildFaqMirror() {
   return [
     "# Campaign FAQ",
     "",
-    canonicalLine(site, ROUTES.faq),
+    canonicalLine(ROUTES.faq),
     "",
     ...CAMPAIGN_FAQ_ITEMS.flatMap((item) => [
       `## ${item.question}`,
@@ -69,13 +66,12 @@ function buildFaqMirror(site: SiteConfig) {
 
 export function buildMarkdownMirror(
   key: MarkdownMirrorKey,
-  site: SiteConfig,
   input: MarkdownMirrorContentInput = {},
 ) {
   switch (key) {
     case "treaty":
-      return buildTreatyMirror(site, input);
+      return buildTreatyMirror(input);
     case "faq":
-      return buildFaqMirror(site);
+      return buildFaqMirror();
   }
 }

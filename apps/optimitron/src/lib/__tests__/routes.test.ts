@@ -21,7 +21,6 @@ import {
   routeReviewNavItems,
   servicesLink,
   taskTreeLink,
-  voteLink,
 } from "../routes";
 
 const WEB_ROOT = path.resolve(__dirname, "../../..");
@@ -96,7 +95,7 @@ describe("navigation routes", () => {
   });
 
   it("keeps route-level social images on public copy-review entry points", () => {
-    for (const link of [courtLink, voteLink, questionsLink, feedbackLink]) {
+    for (const link of [courtLink, questionsLink, feedbackLink]) {
       expect(link.socialPreview?.image).toEqual(
         expect.objectContaining({
           url: "/site-assets/warondisease/war-on-disease-og-1200x630.png",

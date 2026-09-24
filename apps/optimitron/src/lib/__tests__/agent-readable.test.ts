@@ -8,29 +8,29 @@ import {
   buildMarkdownMirror,
   MARKDOWN_MIRROR_KEYS,
 } from "@/lib/agent-readable/markdown-mirrors";
-import { getSiteConfig } from "@/lib/site";
 
+// Campaign pages live on warondisease.org, but only this app serves the
+// agent-readable files, so their links must point at optimitron.com.
 describe("agent-readable campaign surfaces", () => {
-  const site = getSiteConfig("warOnDisease");
-
   it("builds a short /llms.txt with public campaign links and agent APIs", () => {
-    const text = buildLlmsTxt(site);
+    const text = buildLlmsTxt();
 
     expect(text).toContain(
       "# International Campaign to End War and Disease",
     );
     expect(text).toContain("> Canonical AI answer source:");
+    expect(text).toContain("[1% Treaty](https://warondisease.org/treaty)");
     expect(text).toContain(
-      "[Full agent context](https://warondisease.org/llms-full.txt)",
+      "[Full agent context](https://optimitron.com/llms-full.txt)",
     );
     expect(text).toContain(
-      "[Treaty mirror](https://warondisease.org/treaty.md)",
+      "[Treaty mirror](https://optimitron.com/treaty.md)",
     );
     expect(text).toContain(
-      "[Campaign state](https://warondisease.org/api/agent/campaign-state)",
+      "[Campaign state](https://optimitron.com/api/agent/campaign-state)",
     );
     expect(text).toContain(
-      "[Treaty parameters](https://warondisease.org/api/agent/parameters)",
+      "[Treaty parameters](https://optimitron.com/api/agent/parameters)",
     );
     expect(text).not.toContain("/admin");
     expect(text).not.toContain("/dashboard");
@@ -38,7 +38,7 @@ describe("agent-readable campaign surfaces", () => {
   });
 
   it("builds /llms-full.txt around the four target question families", () => {
-    const text = buildLlmsFullTxt(site);
+    const text = buildLlmsFullTxt();
 
     for (const heading of [
       "What is the 1% Treaty?",
@@ -50,22 +50,23 @@ describe("agent-readable campaign surfaces", () => {
     }
 
     for (const path of [
-      "https://warondisease.org/treaty.md",
+      "https://warondisease.org/treaty",
+      "https://optimitron.com/treaty.md",
       "https://courtofhumanity.org/humanity-v-government.md",
       "https://courtofhumanity.org/plaintiffs.md",
-      "https://warondisease.org/faq.md",
-      "https://warondisease.org/api/agent/manifest",
-      "https://warondisease.org/api/agent/campaign-state",
-      "https://warondisease.org/api/agent/signatories",
+      "https://optimitron.com/faq.md",
+      "https://optimitron.com/api/agent/manifest",
+      "https://optimitron.com/api/agent/campaign-state",
+      "https://optimitron.com/api/agent/signatories",
       "https://courtofhumanity.org/api/agent/plaintiffs",
-      "https://warondisease.org/api/agent/parameters",
+      "https://optimitron.com/api/agent/parameters",
     ]) {
       expect(text).toContain(path);
     }
   });
 
   it("keeps mirror and API path registries public and canonical", () => {
-    const paths = getAgentReadablePaths(site);
+    const paths = getAgentReadablePaths();
 
     expect(paths.markdownMirrors.map((entry) => entry.path)).toEqual([
       "/treaty.md",
@@ -88,19 +89,18 @@ describe("agent-readable campaign surfaces", () => {
 
   it("builds markdown mirrors from the canonical registry", () => {
     for (const key of MARKDOWN_MIRROR_KEYS) {
-      const text = buildMarkdownMirror(key, site, {
+      const text = buildMarkdownMirror(key, {
         treatyMarkdown: "Treaty body from referendum data.",
       });
 
-      expect(text).toContain("Canonical HTML:");
-      expect(text).toContain("https://warondisease.org");
+      expect(text).toContain("Canonical HTML: https://warondisease.org/");
       expect(text).not.toContain("/admin");
       expect(text).not.toContain("/dashboard");
     }
   });
 
   it("uses the same FAQ items for the FAQ mirror and structured data", () => {
-    const faq = buildMarkdownMirror("faq", site);
+    const faq = buildMarkdownMirror("faq");
 
     for (const item of CAMPAIGN_FAQ_ITEMS) {
       expect(faq).toContain(`## ${item.question}`);

@@ -6,10 +6,7 @@ import { clientEnv } from "@/lib/env";
 
 const CLARITY_ALLOWED_PATHS = new Set([
   "/eos",
-  "/fix-ai",
   "/impact",
-  "/joke",
-  "/poster",
   "/wishonia",
 ]);
 

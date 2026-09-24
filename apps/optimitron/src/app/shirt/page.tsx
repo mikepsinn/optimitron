@@ -15,7 +15,7 @@ import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
 import { serverEnv } from "@/lib/env";
 import { CAMPAIGN_PRINT_COPY, SHIRT_BACK_COPY_LINES } from "@/lib/messaging";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getSignInPath, ROUTES, shirtLink } from "@/lib/routes";
+import { getSignInPath, ROUTES, shirtLink, warOnDiseaseUrl } from "@/lib/routes";
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import {
   FLOW_VOTER_LIVES_SAVED_ROUNDED,
@@ -511,7 +511,7 @@ export default async function ShirtPage() {
               </p>
               <Link
                 className="mt-4 inline-flex border border-foreground bg-background px-3 py-2 text-sm font-black text-foreground hover:bg-muted"
-                href={ROUTES.foundations}
+                href={warOnDiseaseUrl(ROUTES.foundations)}
               >
                 Foundations: see the bulk math → /foundations
               </Link>
@@ -609,7 +609,7 @@ export default async function ShirtPage() {
           Want to coordinate with another human? Go on an{" "}
           <Link
             className="underline decoration-dotted underline-offset-4"
-            href={ROUTES.missions}
+            href={warOnDiseaseUrl(ROUTES.missions)}
           >
             Earth Optimization Mission
           </Link>

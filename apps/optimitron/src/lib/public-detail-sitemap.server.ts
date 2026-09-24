@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
-import { ContentVisibility, OrgStatus } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { getPersonHref } from "@/lib/person-href";
-import { getOrganizationSurveyPath, getTaskPath, ROUTES } from "@/lib/routes";
-import { isSiteRouteAllowed, type SiteConfig } from "@/lib/site";
+import { getTaskPath } from "@/lib/routes";
+import type { SiteConfig } from "@/lib/site";
 
 const PUBLIC_DETAIL_SITEMAP_LIMIT = 500;
 const PUBLIC_DETAIL_SITEMAP_REVALIDATE_SECONDS = 3600;
@@ -28,17 +27,7 @@ function makeEntry(
 
 const getCachedPublicDetailSitemapRows = unstable_cache(
   async () => {
-    const [organizations, people, tasks] = await Promise.all([
-      prisma.organization.findMany({
-        where: {
-          deletedAt: null,
-          status: OrgStatus.APPROVED,
-          visibility: ContentVisibility.PUBLIC,
-        },
-        orderBy: [{ updatedAt: "desc" }],
-        select: { slug: true, updatedAt: true },
-        take: PUBLIC_DETAIL_SITEMAP_LIMIT,
-      }),
+    const [people, tasks] = await Promise.all([
       prisma.person.findMany({
         where: {
           deletedAt: null,
@@ -59,7 +48,7 @@ const getCachedPublicDetailSitemapRows = unstable_cache(
       }),
     ]);
 
-    return { organizations, people, tasks };
+    return { people, tasks };
   },
   ["public-detail-sitemap"],
   { revalidate: PUBLIC_DETAIL_SITEMAP_REVALIDATE_SECONDS },
@@ -68,42 +57,14 @@ const getCachedPublicDetailSitemapRows = unstable_cache(
 export async function getPublicDetailSitemapEntries(
   site: SiteConfig,
 ): Promise<SitemapEntry[]> {
-  if (site.sitemap.landingPageOnly) {
-    return [];
-  }
-
-  const includePeople = isSiteRouteAllowed(site, ROUTES.people);
-  const includeOrganizations = Boolean(site.primaryReferendumSlug) &&
-    isSiteRouteAllowed(site, ROUTES.survey);
-  const includeTasks = isSiteRouteAllowed(site, ROUTES.tasks);
-
-  if (!includeOrganizations && !includePeople && !includeTasks) {
-    return [];
-  }
-
-  const { organizations, people, tasks } =
-    await getCachedPublicDetailSitemapRows();
+  const { people, tasks } = await getCachedPublicDetailSitemapRows();
 
   return [
-    ...(includeOrganizations
-      ? organizations.map((organization) =>
-          makeEntry(
-            site,
-            getOrganizationSurveyPath(organization.slug),
-            organization.updatedAt,
-            0.65,
-          ),
-        )
-      : []),
-    ...(includePeople
-      ? people.map((person) =>
-          makeEntry(site, getPersonHref(person), person.updatedAt, 0.55),
-        )
-      : []),
-    ...(includeTasks
-      ? tasks.map((task) =>
-          makeEntry(site, getTaskPath(task.id), task.updatedAt, 0.6),
-        )
-      : []),
+    ...people.map((person) =>
+      makeEntry(site, getPersonHref(person), person.updatedAt, 0.55),
+    ),
+    ...tasks.map((task) =>
+      makeEntry(site, getTaskPath(task.id), task.updatedAt, 0.6),
+    ),
   ];
 }

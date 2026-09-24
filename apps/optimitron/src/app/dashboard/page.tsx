@@ -11,30 +11,11 @@ import {
   loadPersonalQueueAudit,
 } from "@/lib/tasks/personal-planning.server";
 import { toPersonalQueueDisplayData } from "@/components/dashboard/personal-queue-display";
-import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationDashboardClient } from "@/components/dashboard/EarthOptimizationDashboardClient";
-import { TreatyTaskDashboardClient } from "@/components/site/TreatyTaskDashboardClient";
-import { loadHumanityManagerStatus } from "@/lib/humanity-manager-status.server";
 import { dashboardLink, getSignInPath, ROUTES } from "@/lib/routes";
-import { getRouteMetadata, getSiteMetadata } from "@/lib/metadata";
-import { getRequestSiteOrigin, getSiteFromHeaders } from "@/lib/site";
-import { ensurePersonForUser } from "@/lib/person.server";
-import { ensureUserTreatyTask } from "@/lib/tasks/user-treaty-task.server";
-import { getProfileIdentityData } from "@/lib/profile-identity.server";
+import { getRouteMetadata } from "@/lib/metadata";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const hdrs = await headers();
-  const site = getSiteFromHeaders(hdrs);
-
-  if (site.contentKey) {
-    const content = getOptionalReferendumSiteContent(site.contentKey);
-    if (content) {
-      return getSiteMetadata(site, content.metadata.dashboard, ROUTES.dashboard);
-    }
-  }
-
-  return getRouteMetadata(dashboardLink);
-}
+export const metadata: Metadata = getRouteMetadata(dashboardLink);
 
 interface DashboardPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -45,7 +26,6 @@ export default async function DashboardPage({
 }: DashboardPageProps) {
   const params = await searchParams;
   const hdrs = await headers();
-  const site = getSiteFromHeaders(hdrs);
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
 
@@ -65,45 +45,6 @@ export default async function DashboardPage({
   }
 
   void backfillUserLocationFromHeaders(userId, hdrs);
-
-  if (
-    site.pageVariants.dashboard === "treatyTaskDashboard" &&
-    site.contentKey &&
-    site.primaryReferendumSlug
-  ) {
-    const person = await ensurePersonForUser(userId);
-    // Still ensure the per-user HMT root task exists — it's the parent the
-    // referral-invitation tasks attach to.
-    await ensureUserTreatyTask({ personId: person.id, userId });
-
-    // The user is needed to render the referral link for Assignment 1.
-    const profileData = await getProfileIdentityData(userId);
-    if (!profileData) {
-      redirect(getSignInPath(ROUTES.dashboard));
-    }
-
-    const humanityManagerStatus = await loadHumanityManagerStatus({
-      baseUrl: getRequestSiteOrigin({
-        forwardedHost: hdrs.get("x-forwarded-host"),
-        forwardedProto: hdrs.get("x-forwarded-proto"),
-        host: hdrs.get("host"),
-      }),
-      user: {
-        downstreamConversionCount:
-          profileData.user.downstreamConversionCount ?? 0,
-        handle: profileData.user.handle,
-        referralCode: profileData.user.referralCode,
-      },
-      userId,
-    });
-
-    return (
-      <TreatyTaskDashboardClient
-        humanityManagerStatus={humanityManagerStatus}
-        user={profileData.user}
-      />
-    );
-  }
 
   const [initialData, leaderboard, taskData, personalQueue, queueAudit] =
     await Promise.all([
