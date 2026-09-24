@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, Award } from 'lucide-react';
 import { TreatmentMetricsGrid } from '@/components/treatment/TreatmentMetricsGrid';
 import { HealthEconomicsDisplay } from '@/components/treatment/HealthEconomicsDisplay';
+import { AiEstimateNotice } from '@/components/shared/AiEstimateNotice';
 
 interface TreatmentReportProps {
   treatment: TreatmentForCondition;
@@ -71,6 +72,8 @@ export function TreatmentReport({ treatment, conditionName }: TreatmentReportPro
 
   return (
     <div className="space-y-6">
+      <AiEstimateNotice />
+
       {/* Key Metrics Grid */}
       <TreatmentMetricsGrid
         effectiveness={treatment.effectiveness}

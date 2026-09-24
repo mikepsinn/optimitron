@@ -7,6 +7,7 @@ import { getTreatmentBySlug } from '@/lib/treatments';
 import { generateConditionTreatmentPagePath } from '@/lib/path-helpers';
 import { ChevronRight, Activity, Shield, Users, FlaskConical } from 'lucide-react';
 import { getPrimaryDomain } from '@/lib/site-config';
+import { AiEstimateNotice } from '@/components/shared/AiEstimateNotice';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -49,6 +50,8 @@ export default async function TreatmentPage({ params: paramsProp }: TreatmentPag
     <Layout>
       <main className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="space-y-8">
+          <AiEstimateNotice />
+
           {/* Treatment Header */}
           <div className="border-b pb-6">
             <div className="flex items-start gap-4">

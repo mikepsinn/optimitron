@@ -16,6 +16,7 @@
 - [DFDA](/)
 ## Browse Treatments
 - Explore treatments and interventions across multiple conditions. View comprehensive clinical trial data and effectiveness metrics.
+- Most numbers on this page are AI-generated estimates from clinical trial records and published literature, not measured outcomes, and have not been verified. Use them as a starting point for questions, not as evidence or medical advice.
 - [Yellow Fever Vaccine (Live Attenuated) 9.8/10 EFFECTIVE 7.8/10 SAFE CONDITIONS 1 TRIALS 14 PEOPLE 100M](/treatments/yellow-fever-vaccine-live-attenuated)
 - [Vaccinations (Influenza & Pneumococcal) 8.0/10 EFFECTIVE 8.5/10 SAFE CONDITIONS 2 TRIALS 1,300 PEOPLE 10.5M](/treatments/vaccinations-influenza-and-pneumococcal)
 - [Measles, Mumps, and Rubella (MMR) Vaccine 9.7/10 EFFECTIVE 7.5/10 SAFE CONDITIONS 1 TRIALS 69 PEOPLE 10M](/treatments/measles-mumps-and-rubella-mmr-vaccine)

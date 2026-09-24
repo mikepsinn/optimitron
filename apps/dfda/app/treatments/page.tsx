@@ -1,4 +1,5 @@
 import Layout from "@/components/layout";
+import { AiEstimateNotice } from "@/components/shared/AiEstimateNotice";
 import { TreatmentsList } from "./treatments-list";
 import { TreatmentsListSkeleton } from "./treatments-list";
 import { Suspense } from "react";
@@ -23,6 +24,7 @@ export default function TreatmentsPage() {
         <p className="text-muted-foreground mb-6">
           Explore treatments and interventions across multiple conditions. View comprehensive clinical trial data and effectiveness metrics.
         </p>
+        <AiEstimateNotice className="mb-6" />
         {/* Use Suspense for better loading UX while data fetches */}
         <Suspense fallback={<TreatmentsListSkeleton />}>
           <TreatmentsList />

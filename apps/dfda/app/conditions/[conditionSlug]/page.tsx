@@ -5,6 +5,7 @@ import Layout from '@/components/layout';
 import { TreatmentRankings } from '@/components/condition/TreatmentRankings';
 import { getConditionBySlug } from '@/lib/conditions';
 import { getPrimaryDomain } from '@/lib/site-config';
+import { AiEstimateNotice } from '@/components/shared/AiEstimateNotice';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -94,9 +95,11 @@ export default async function ConditionPage({ params: paramsProp }: ConditionPag
           {/* Treatment Rankings */}
           <div>
             <h2 className="text-3xl font-bold mb-4">Treatment Rankings</h2>
-            <p className="text-muted-foreground mb-6">
-              Treatments are ranked by the number of clinical trials conducted.
+            <p className="text-muted-foreground mb-4">
+              Treatments are listed in the order of the underlying dataset,
+              which is mostly sorted by an AI-estimated effectiveness score.
             </p>
+            <AiEstimateNotice className="mb-6" />
             <TreatmentRankings conditionName={conditionName} />
           </div>
         </div>
