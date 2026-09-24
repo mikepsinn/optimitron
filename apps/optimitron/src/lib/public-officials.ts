@@ -1,4 +1,4 @@
-const PUBLIC_OFFICIAL_SOURCE_REF_PREFIXES = ["wikidata:", "bioguide:"] as const;
+export const PUBLIC_OFFICIAL_SOURCE_REF_PREFIXES = ["wikidata:", "bioguide:"] as const;
 
 interface PublicFigureLike {
   isPublicFigure?: boolean | null;

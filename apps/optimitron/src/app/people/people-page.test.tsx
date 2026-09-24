@@ -30,7 +30,7 @@ describe("PeoplePage", () => {
           href: "/people/alice-organizer",
           id: "person-1",
           image: null,
-          isPublicFigure: false,
+          isPublicOfficial: false,
           openTaskPreview: [
             {
               category: TaskCategory.OUTREACH,

@@ -14,4 +14,3 @@
 ## Visible Page Copy
 
 - Adjust slider to show how you'd split your country's finite resources between the weapons and military vs pragmatic clinical trials to cure diseases.
-- 👇 SLIDE ME!

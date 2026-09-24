@@ -11,11 +11,11 @@ export const appNavigation: AppNavigation = {
       "emoji": "📜"
     },
     {
-      "id": "manageHumanity",
-      "label": "Manage Humanity",
-      "path": "/dashboard",
-      "description": "Your campaign dashboard: share your voting link and see who you brought in.",
-      "emoji": "🌍"
+      "id": "send",
+      "label": "Tell Two People",
+      "path": "/send",
+      "description": "Send a 1% Treaty invitation to someone who has not voted",
+      "emoji": "📨"
     },
     {
       "id": "plaintiffs",
@@ -33,47 +33,11 @@ export const appNavigation: AppNavigation = {
       "emoji": "🏛️"
     },
     {
-      "id": "shirt",
-      "label": "Get the Shirt",
-      "path": "/shirt",
-      "description": "Wear the treaty. Every shirt is a walking ballot.",
-      "emoji": "👕"
-    },
-    {
-      "id": "poster",
-      "label": "Hang Up Flyers",
-      "path": "/poster",
-      "description": "Print flyers with your referral code and hang them where people walk",
-      "emoji": "📄"
-    },
-    {
-      "id": "doorToDoor",
-      "label": "Go Door to Door",
-      "path": "/door-to-door",
-      "description": "Print the YES sheet and register the neighbors the internet missed",
-      "emoji": "🚪"
-    },
-    {
-      "id": "joke",
-      "label": "The Joke",
-      "path": "/joke",
-      "description": "The one-line version of the campaign, ready to repeat.",
-      "emoji": "🃏"
-    },
-    {
-      "id": "missions",
-      "label": "Earth Optimization Missions",
-      "path": "/missions",
-      "description": "Pick a mission and bring people with you.",
-      "emoji": "🎯"
-    },
-    {
-      "id": "tasks",
-      "label": "Earth Optimization Tasks",
-      "path": "https://optimitron.com/tasks",
-      "description": "The ranked to-do list for ending war and disease.",
-      "emoji": "✅",
-      "isExternal": true
+      "id": "manageHumanity",
+      "label": "Manage Humanity",
+      "path": "/dashboard",
+      "description": "Your campaign dashboard: share your voting link and see who you brought in.",
+      "emoji": "🌍"
     }
   ],
   "sidebarSections": [],
@@ -98,6 +62,13 @@ export const appNavigation: AppNavigation = {
           "description": "Put your name on the record in Humanity v. Government.",
           "emoji": "⚖️",
           "isExternal": true
+        },
+        {
+          "id": "employees",
+          "label": "President Management System",
+          "path": "/employees",
+          "description": "See which presidents are late and remind them to sign the 1% Treaty",
+          "emoji": "🏛️"
         },
         {
           "id": "donate",
@@ -128,13 +99,6 @@ export const appNavigation: AppNavigation = {
           "emoji": "📨"
         },
         {
-          "id": "manageHumanity",
-          "label": "Manage Humanity",
-          "path": "/dashboard",
-          "description": "Your campaign dashboard: share your voting link and see who you brought in.",
-          "emoji": "🌍"
-        },
-        {
           "id": "shirt",
           "label": "Get the Shirt",
           "path": "/shirt",
@@ -142,34 +106,18 @@ export const appNavigation: AppNavigation = {
           "emoji": "👕"
         },
         {
-          "id": "joke",
-          "label": "The Joke",
-          "path": "/joke",
-          "description": "The one-line version of the campaign, ready to repeat.",
-          "emoji": "🃏"
+          "id": "poster",
+          "label": "Hang Up Flyers",
+          "path": "/poster",
+          "description": "Print flyers with your referral code and hang them where people walk",
+          "emoji": "📄"
         },
         {
-          "id": "employees",
-          "label": "President Management System",
-          "path": "/employees",
-          "description": "See which presidents are late and remind them to sign the 1% Treaty",
-          "emoji": "🏛️"
-        },
-        {
-          "id": "people",
-          "label": "Humans Who Can End War and Disease",
-          "path": "https://optimitron.com/people",
-          "description": "The people directory: signers, leaders, and the humans who can move them.",
-          "emoji": "🧑‍🤝‍🧑",
-          "isExternal": true
-        },
-        {
-          "id": "tasks",
-          "label": "Earth Optimization Tasks",
-          "path": "https://optimitron.com/tasks",
-          "description": "The ranked to-do list for ending war and disease.",
-          "emoji": "✅",
-          "isExternal": true
+          "id": "doorToDoor",
+          "label": "Go Door to Door",
+          "path": "/door-to-door",
+          "description": "Print the YES sheet and register the neighbors the internet missed",
+          "emoji": "🚪"
         },
         {
           "id": "signatories",
@@ -184,13 +132,6 @@ export const appNavigation: AppNavigation = {
       "id": "learn-something",
       "label": "LEARN SOMETHING",
       "resolvedItems": [
-        {
-          "id": "treaty",
-          "label": "Sign the Treaty",
-          "path": "/treaty",
-          "description": "Read the 1% Treaty and add your signature at the bottom",
-          "emoji": "📜"
-        },
         {
           "id": "humanityVGovernmentCase",
           "label": "Humanity v. Government",
@@ -216,36 +157,6 @@ export const appNavigation: AppNavigation = {
           "isExternal": true
         },
         {
-          "id": "listenPodcast",
-          "label": "Podcast",
-          "path": "https://manual.warondisease.org/listen",
-          "description": "Every chapter narrated by an alien who finds your species confusing. Free on Spotify, Apple Podcasts, and all major apps",
-          "emoji": "🎧",
-          "isExternal": true
-        },
-        {
-          "id": "courtOfHumanity",
-          "label": "Court of Humanity",
-          "path": "https://courtofhumanity.org/court",
-          "description": "Where humanity tries its governments.",
-          "emoji": "🏛️",
-          "isExternal": true
-        },
-        {
-          "id": "campaignMcp",
-          "label": "MCP",
-          "path": "/mcp",
-          "description": "Connect your AI agent to Optimitron.",
-          "emoji": "🔌"
-        },
-        {
-          "id": "developers",
-          "label": "Developers",
-          "path": "/developers",
-          "description": "Build on Optimitron.",
-          "emoji": "🛠️"
-        },
-        {
           "id": "thePlan",
           "label": "The Plan",
           "path": "/the-plan",
@@ -263,22 +174,8 @@ export const appNavigation: AppNavigation = {
           "id": "about",
           "label": "About",
           "path": "/about",
-          "description": "Discover how the Decentralized Institutes of Health accelerates medical breakthroughs with pragmatic trials, delivering 82x efficiency gains and making suffering optional",
+          "description": "Who runs the International Campaign to End War and Disease, and what it is trying to do.",
           "emoji": "ℹ️"
-        },
-        {
-          "id": "institutes",
-          "label": "Institutes",
-          "path": "/institutes",
-          "description": "Become a Partner Institute: healthcare organizations and nonprofits conducting 1% Treaty surveys, accessing grants, sharing data, and accelerating medical research",
-          "emoji": "🔬"
-        },
-        {
-          "id": "search",
-          "label": "Search",
-          "path": "/search",
-          "description": "Find campaign pages, people who signed, and organizations that endorsed",
-          "emoji": "🔎"
         }
       ]
     },
@@ -292,6 +189,13 @@ export const appNavigation: AppNavigation = {
           "path": "/join",
           "description": "Endorse the 1% Treaty on behalf of an organization",
           "emoji": "🤝"
+        },
+        {
+          "id": "institutes",
+          "label": "Institutes",
+          "path": "/institutes",
+          "description": "Become a Partner Institute: healthcare organizations and nonprofits conducting 1% Treaty surveys, accessing grants, sharing data, and accelerating medical research",
+          "emoji": "🔬"
         },
         {
           "id": "volunteer",
