@@ -192,7 +192,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     estimated to have saved over <span className="font-black">1 million lives</span>.
                   </p>
                   <p>
-                    RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
+                    RECOVERY cost about <ParameterValue param={{ ...RECOVERY_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per
                     patient, compared with a $41,413 median for pivotal drug trials—about{" "}
                     <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" className="font-black" />.
                     A separate review of 64 embedded trials found a $97 median.
@@ -260,7 +260,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     </div>
                   </div>
                   <p className="text-base font-bold text-center">
-                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                    <ParameterValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} /> per year funds{" "}
                     <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
                     patient trial slots.
                   </p>
@@ -286,7 +286,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     label: "PATIENT TRIAL CAPACITY",
                     detail: (
                       <>
-                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                        <ParameterValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} /> per year funds{" "}
                         <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
                         patient trial slots, cutting the disease eradication timeline from{" "}
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
@@ -526,7 +526,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 more clinical trials
               </h1>
               <p className="mx-auto max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-                The 1% Treaty redirects <ResearchValue param={TREATY_ANNUAL_FUNDING} /> a year from weapons and military budgets. After incentives and operating costs, <ResearchValue param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL} /> funds <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> pragmatic-trial participants a year.
+                The 1% Treaty redirects <ResearchValue param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }} /> a year from weapons and military budgets. After incentives and operating costs, <ResearchValue param={{ ...DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL, unit: "USD" }} /> funds <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> pragmatic-trial participants a year.
               </p>
             </div>
           </Container>
@@ -539,7 +539,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
             <div className="mx-auto mb-10 max-w-4xl text-center">
               <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Where the money goes</h2>
               <p className="text-base font-bold sm:text-lg">
-                One percent produces <ResearchValue param={TREATY_ANNUAL_FUNDING} /> in annual treaty funding.
+                One percent produces <ResearchValue param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }} /> in annual treaty funding.
               </p>
             </div>
 
@@ -601,7 +601,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
             <div className="mx-auto mb-10 max-w-4xl text-center">
               <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Why pragmatic trials cost less</h2>
               <p className="text-base font-bold sm:text-lg">
-                Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about <ResearchValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per participant. The capacity model uses <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />.
+                Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about <ResearchValue param={{ ...RECOVERY_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per participant. The capacity model uses <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />.
               </p>
             </div>
 

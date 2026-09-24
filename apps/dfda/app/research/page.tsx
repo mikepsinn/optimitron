@@ -123,7 +123,7 @@ const mathSteps = [
     ),
     detail: (
       <>
-        <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> per patient funds roughly{" "}
+        <ParameterValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per patient funds roughly{" "}
         <ParameterValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> annual slots.
       </>
     ),
@@ -392,8 +392,8 @@ export default function ResearchPage() {
                 The research page only needs six numbers
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl font-bold max-w-4xl">
-                In the current model, pragmatic trials at <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> per patient turn{" "}
-                <ParameterValue param={TREATY_REDUCTION_PCT} /> of global military spending into{" "}
+                In the current model, pragmatic trials at <ParameterValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per patient turn{" "}
+                <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> of global military spending into{" "}
                 <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more clinical-trial
                 capacity, raise first treatments from{" "}
                 <ParameterValue param={NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR} />/year to{" "}
@@ -417,7 +417,7 @@ export default function ResearchPage() {
               <Card className="p-6 sm:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-background gap-8">
                 <div>
                   <h2 className="text-3xl md:text-4xl font-black uppercase mb-3">
-                    How <ParameterValue param={TREATY_REDUCTION_PCT} /> becomes{" "}
+                    How <ParameterValue param={TREATY_REDUCTION_PCT} figures={1} /> becomes{" "}
                     <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> more trial
                     capacity
                   </h2>
