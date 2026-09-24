@@ -28,6 +28,13 @@ export function buildMagicLinkSubject(host: string) {
   return `Sign in to ${host}`;
 }
 
+// Only optimitron.com sends sign-in links from this app.
+export function buildMagicLinkFromHeader() {
+  return formatSystemEmailFromHeader(
+    getSiteConfig("optimitron").emailBranding.fromName,
+  );
+}
+
 export function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -63,9 +70,10 @@ export function buildMagicLinkText(url: string) {
   ].join("\n");
 }
 
-import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
+import { formatSystemEmailFromHeader } from "@/lib/email/from-address";
 import { MagicLinkReactEmail } from "@/lib/email/magic-link-react-email";
 import type { EmailPreview } from "@/lib/email/preview-envelope";
+import { getSiteConfig } from "@/lib/site";
 
 const SAMPLE_MAGIC_LINK_HOST = "optimitron.local";
 const SAMPLE_MAGIC_LINK_URL =
@@ -77,7 +85,7 @@ export const MAGIC_LINK_PREVIEW: EmailPreview = {
   trigger:
     "Fires when a user submits the sign-in email form. Auth provider (NextAuth) dispatches a single-use callback URL signed with the auth secret; clicking it completes the sign-in flow.",
   scope: "auth",
-  from: () => formatDefaultSystemEmailFromHeader(),
+  from: () => buildMagicLinkFromHeader(),
   subject: () => buildMagicLinkSubject(SAMPLE_MAGIC_LINK_HOST),
   skipWishoniaSignature: true,
   renderReact: () => {
