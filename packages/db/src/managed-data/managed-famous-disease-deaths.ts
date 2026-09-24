@@ -12,10 +12,9 @@ import { upsertWishoniaUser } from "../system-users.js";
 
 // Famous people who died of disease since 1976, attached to Humanity v
 // Government as public evidence of harm to the class. They are NOT parties:
-// no represented vote, no memorial submission, no consent flag. The Person
-// rows stay out of public people lookups (isPublic and isPublicFigure both
-// false, since those lookups treat either flag as public); the memorial and
-// evidence rows carry the public facts and source link.
+// no represented vote, no memorial submission, no consent flag. They are
+// public figures with public records; "official" status comes from an
+// officeholder source key, not from isPublicFigure.
 
 export interface FamousDiseaseDeath {
   key: string;
@@ -80,8 +79,8 @@ export async function syncManagedFamousDiseaseDeaths(
       deathDate,
       deletedAt: null,
       displayName: death.displayName,
-      isPublic: false,
-      isPublicFigure: false,
+      isPublic: true,
+      isPublicFigure: true,
       lifeStatus: PersonLifeStatus.DECEASED,
       sourceUrl: death.sourceUrl,
     };

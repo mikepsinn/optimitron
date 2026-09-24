@@ -6,6 +6,10 @@ import {
 } from "@optimitron/db";
 import { getPersonHref } from "@/lib/person-href";
 import { prisma } from "@/lib/prisma";
+import {
+  isPublicOfficialPerson,
+  PUBLIC_OFFICIAL_SOURCE_REF_PREFIXES,
+} from "@/lib/public-officials";
 
 export type PeopleDirectoryRole =
   | "all"
@@ -24,7 +28,7 @@ export interface PeopleDirectoryPerson {
   href: string;
   id: string;
   image: string | null;
-  isPublicFigure: boolean;
+  isPublicOfficial: boolean;
   publicTaskCount: number;
   sourceUrl: string | null;
 }
@@ -69,7 +73,14 @@ function buildRoleWhere(
 ): Prisma.PersonWhereInput | null {
   if (role === "all") return null;
   if (role === "officials") {
-    return { isPublicFigure: true };
+    // Public figures are not all officials; officeholders carry a
+    // Wikidata or Bioguide source key.
+    return {
+      isPublicFigure: true,
+      OR: PUBLIC_OFFICIAL_SOURCE_REF_PREFIXES.map((prefix) => ({
+        sourceRef: { startsWith: prefix, mode: "insensitive" as const },
+      })),
+    };
   }
 
   const categories = ROLE_FILTERS[role];
@@ -176,6 +187,7 @@ export async function getPeopleDirectoryData({
       id: true,
       image: true,
       isPublicFigure: true,
+      sourceRef: true,
       sourceUrl: true,
     },
     skip: (currentPage - 1) * take,
@@ -193,7 +205,7 @@ export async function getPeopleDirectoryData({
       href: getPersonHref(person),
       id: person.id,
       image: person.image,
-      isPublicFigure: person.isPublicFigure,
+      isPublicOfficial: isPublicOfficialPerson(person),
       publicTaskCount: person._count.assignedTasks,
       sourceUrl: person.sourceUrl,
     })),

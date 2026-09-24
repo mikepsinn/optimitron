@@ -124,7 +124,7 @@ export async function generateMetadata() {
 
 function PersonDirectoryRow({ person }: { person: PeopleDirectoryPerson }) {
   const roleText = [
-    person.isPublicFigure ? "Public official" : null,
+    person.isPublicOfficial ? "Public official" : null,
     person.countryCode,
   ]
     .filter(Boolean)
