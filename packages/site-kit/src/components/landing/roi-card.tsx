@@ -38,7 +38,7 @@ export function ROICard() {
       {/* Main ROI Number */}
       <div className="bg-brutal-pink border-4 border-primary p-8 mb-8 text-center">
         <div className="text-6xl sm:text-7xl md:text-8xl font-black text-brutal-pink-foreground mb-2">
-          <ParameterValue param={DFDA_ROI_RD_ONLY} />
+          <ParameterValue param={DFDA_ROI_RD_ONLY} display="withUnit" />
         </div>
         <div className="text-xl sm:text-2xl font-black uppercase text-brutal-pink-foreground">
           RETURN ON INVESTMENT

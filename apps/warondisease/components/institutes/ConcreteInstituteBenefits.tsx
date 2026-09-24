@@ -16,7 +16,7 @@ export function ConcreteInstituteBenefits() {
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           <Card className="border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 bg-background text-center">
             <div className="text-5xl sm:text-6xl font-black mb-4 text-brutal-cyan">
-              <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} showPopover={false} />
+              <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="withUnit" showPopover={false} />
             </div>
             <div className="text-xl font-black mb-2 text-foreground">MORE TRIALS</div>
             <div className="font-bold text-foreground">For YOUR disease</div>

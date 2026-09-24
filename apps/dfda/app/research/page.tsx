@@ -235,7 +235,7 @@ export default function ResearchPage() {
                     University demonstrated this approach at scale: it enrolled 40,000+ patients across
                     176 NHS hospitals, identified effective COVID-19 treatments months ahead of
                     traditional trials, and did so at{" "}
-                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />{" "}
+                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" className="font-black" />{" "}
                     <span className="font-black">lower cost</span> per patient.
                   </p>
                   <p>
@@ -286,7 +286,7 @@ export default function ResearchPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
-                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" />,
                     label: "COST REDUCTION",
                     detail:
                       "Pragmatic trials cost a fraction of traditional trials by using existing healthcare infrastructure.",

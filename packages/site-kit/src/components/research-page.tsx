@@ -194,7 +194,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                   <p>
                     RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
                     patient, compared with a $41,413 median for pivotal drug trials—about{" "}
-                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />.
+                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" className="font-black" />.
                     A separate review of 64 embedded trials found a $97 median.
                   </p>
                 </div>
@@ -273,7 +273,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
-                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" />,
                     label: "RECOVERY COST COMPARISON",
                     detail:
                       "About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.",

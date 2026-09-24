@@ -64,7 +64,7 @@ export default function YourImpactSection() {
           {/* Mechanism explanation */}
           <div className="max-w-3xl mx-auto space-y-4">
             <p className="text-lg sm:text-xl font-bold">
-              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-brutal-pink font-black" />/year scales trial capacity <span className="text-brutal-pink font-black">{trialCapacityMultiplier}X</span>, achieving <span className="text-brutal-pink font-black">{cumulativeYears} years</span> of progress in <span className="text-brutal-pink font-black">{lifeExtensionYears}</span>
+              <ParameterValue param={TREATY_ANNUAL_FUNDING} className="text-brutal-pink font-black" /> scales trial capacity <span className="text-brutal-pink font-black">{trialCapacityMultiplier}X</span>, achieving <span className="text-brutal-pink font-black">{cumulativeYears} years</span> of progress in <span className="text-brutal-pink font-black">{lifeExtensionYears}</span>
             </p>
             <p className="text-base sm:text-lg font-bold opacity-80">
               Through a {timelineShift}-year average timeline shift: {trialCapacityMultiplier}× trial capacity + eliminating {efficacyLag}-year regulatory delays

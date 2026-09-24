@@ -110,7 +110,7 @@ export default function DonatePage() {
                 color: "yellow",
               },
               {
-                value: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                value: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" />,
                 label: "Lower cost per patient in the RECOVERY trial",
                 color: "pink",
               },
