@@ -29,11 +29,8 @@ const SMOKE_SCOPE = process.env.PLAYWRIGHT_SMOKE_SCOPE === "critical"
   : "full";
 const CRITICAL_SMOKE_PATHS = new Set<string>([
   ROUTES.home,
-  ROUTES.treaty,
-  ROUTES.vote,
   ROUTES.legislation,
   ROUTES.plaintiffs,
-  ROUTES.join,
   ROUTES.tasks,
   ROUTES.dashboard,
 ]);

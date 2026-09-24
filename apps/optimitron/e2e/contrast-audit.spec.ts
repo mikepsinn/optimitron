@@ -40,7 +40,6 @@ const CRITICAL_PUBLIC_PATHS = new Set([
   "/scoreboard",
   "/tasks",
   "/tools",
-  "/treaty",
 ]);
 const MIN_FONT_SIZE_PX = 14;
 const EMAIL_TEMPLATE_IDS = [

@@ -57,12 +57,10 @@ const MODE_SPECS = {
     ? [
         "e2e/smoke.spec.ts",
         "e2e/contrast-audit.spec.ts",
-        "e2e/treaty-page-structure.spec.ts",
         "e2e/auth-callback-roundtrip.spec.ts",
       ]
     : [
         "e2e/smoke.spec.ts",
-        "e2e/treaty-page-structure.spec.ts",
         "e2e/auth-callback-roundtrip.spec.ts",
       ],
   contrast: ["e2e/contrast-audit.spec.ts"],

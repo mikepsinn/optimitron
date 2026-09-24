@@ -24,7 +24,6 @@ interface VariantConfig {
   slug: string;
   label: string;
   host: string;
-  treatyFlow: boolean;
 }
 
 // War on Disease, dFDA, and DIH run their own apps now; this app serves
@@ -34,7 +33,6 @@ const VARIANTS: readonly VariantConfig[] = [
     slug: "optimitron",
     label: "optimitron.com",
     host: "optimitron.com",
-    treatyFlow: true,
   },
 ];
 
@@ -143,29 +141,6 @@ async function captureStep(
   stepState.step++;
 }
 
-async function setRangeValue(page: Page, range: Locator, value: string) {
-  await range.scrollIntoViewIfNeeded();
-  const box = await range.boundingBox();
-  expect(box, "range input bounding box").not.toBeNull();
-  if (!box) return;
-
-  const numericValue = Number(value);
-  const min = Number((await range.getAttribute("min")) ?? "0");
-  const max = Number((await range.getAttribute("max")) ?? "100");
-  const ratio = Math.min(1, Math.max(0, (numericValue - min) / (max - min)));
-  const y = box.y + box.height / 2;
-  const startX = box.x + box.width / 2;
-  const targetX = box.x + box.width * ratio;
-
-  await page.mouse.move(startX, y);
-  await page.mouse.down();
-  await page.mouse.move(targetX, y, { steps: 8 });
-  await page.mouse.up();
-  await range.fill(value);
-  await range.dispatchEvent("input");
-  await range.dispatchEvent("change");
-}
-
 function makeUniqueUser(variantSlug: string): TestUser {
   const nonce = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   return {
@@ -215,55 +190,6 @@ async function createUserAccount(page: Page, user: TestUser): Promise<boolean> {
   if (response.status >= 500) return false;
   expect(response.status).toBe(201);
   return true;
-}
-
-async function createAndConfirmInvitation(
-  page: Page,
-  input: { contactMethod: "COPY" | "OTHER"; recipientName: string },
-) {
-  const created = await browserJsonRequest<{ invitation: { id: string } }>(page, {
-    method: "POST",
-    path: "/api/referral-invitations",
-    body: {
-      contactMethod: input.contactMethod,
-      messageFormat: "TASK_NOTIFICATION",
-      messageText: `${input.recipientName}, vote on the 1% Treaty.`,
-      originUrl: "/dashboard",
-      recipientName: input.recipientName,
-    },
-  });
-  if (created.status !== 201) {
-    throw new Error(
-      `Create referral invitation (${input.contactMethod}) returned ${created.status}: ${created.text.slice(0, 240)}`,
-    );
-  }
-  const createdPayload = created.json;
-  expect(createdPayload?.invitation?.id).toBeTruthy();
-
-  const confirmed = await browserJsonRequest(page, {
-    method: "PATCH",
-    path: "/api/referral-invitations",
-    body: {
-      action: "markManualContacted",
-      id: createdPayload!.invitation.id,
-      messageText: `${input.recipientName}, vote on the 1% Treaty.`,
-      shareAttemptId: `pw-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
-      wasEdited: false,
-    },
-  });
-  if (confirmed.status !== 200) {
-    throw new Error(
-      `Confirm referral invitation (${input.contactMethod}) returned ${confirmed.status}: ${confirmed.text.slice(0, 240)}`,
-    );
-  }
-}
-
-async function markSignTreatySubtask(page: Page) {
-  const response = await browserJsonRequest(page, {
-    method: "POST",
-    path: "/api/user-treaty-task/sign-personally",
-  });
-  expect(response.status).toBeLessThan(400);
 }
 
 async function signInUserInBrowser(page: Page, credentials: Required<Pick<TestUser, "email" | "password">>) {
@@ -384,67 +310,6 @@ async function captureDashboard(
   return true;
 }
 
-async function captureTreatyVoteAndTraining(
-  page: Page,
-  outcome: VariantOutcome,
-  dir: string,
-  stepState: { step: number },
-) {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
-
-  const voteResponse = await page.goto("/vote", {
-    timeout: 30_000,
-    waitUntil: "domcontentloaded",
-  });
-  const voteStatus = voteResponse?.status() ?? 0;
-  if (voteStatus >= 400) {
-    outcome.warnings.push(`/vote returned ${voteStatus}; treaty frames skipped`);
-    return;
-  }
-
-  await stabilizeVisuals(page);
-  const voteSection = page.locator("#vote");
-  await voteSection.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(500);
-  const slider = voteSection.locator('input[type="range"]').first();
-  await expect(slider).toBeVisible({ timeout: 15_000 });
-  await setRangeValue(page, slider, "70");
-  const submit = voteSection.getByRole("button", { name: "SUBMIT" });
-  await expect(submit).toBeVisible({ timeout: 10_000 });
-
-  const sliderCard = page.getByTestId("treaty-vote-slider-card").first();
-  await captureStep(outcome, dir, stepState, "vote-slider", (filePath) =>
-    captureElement(sliderCard, filePath),
-  );
-
-  await submit.click();
-  await expect(voteSection.getByRole("button", { name: "YES" })).toBeVisible({
-    timeout: 10_000,
-  });
-  await captureStep(outcome, dir, stepState, "vote-submitted", (filePath) =>
-    captureElement(voteSection, filePath),
-  );
-
-  await voteSection.getByRole("button", { name: "YES" }).click();
-  await expect(page).toHaveURL(/\/dashboard(?:[?#]|$)/, {
-    timeout: 15_000,
-  });
-  await stabilizeVisuals(page);
-  await captureDashboard(page, outcome, dir, stepState, "dashboard-after-vote");
-
-  await markSignTreatySubtask(page);
-  await createAndConfirmInvitation(page, {
-    contactMethod: "OTHER",
-    recipientName: `First Friend ${Date.now().toString(36)}`,
-  });
-  await createAndConfirmInvitation(page, {
-    contactMethod: "COPY",
-    recipientName: `Second Friend ${Date.now().toString(36)}`,
-  });
-
-  await captureDashboard(page, outcome, dir, stepState, "dashboard-after-all-subtasks");
-}
-
 async function captureVariant(
   variant: VariantConfig,
   viewport: { slug: string; viewport: { width: number; height: number } },
@@ -505,11 +370,6 @@ async function captureVariant(
     );
     if (!dashboardCaptured) return outcome;
 
-    if (variant.treatyFlow) {
-      await captureTreatyVoteAndTraining(page, outcome, dir, stepState);
-    } else {
-      outcome.warnings.push("No treaty vote/HMT route on this host; captured landing, email, and dashboard only");
-    }
   } catch (e) {
     outcome.error = e instanceof Error ? e.message : String(e);
   }

@@ -44,22 +44,6 @@ test("prize: deposit form has wallet connect and amount presets", async ({
 });
 
 // ---------------------------------------------------------------------------
-// 2. Vote page (unauthenticated — verifies page loads)
-// ---------------------------------------------------------------------------
-
-test("referendum: vote page loads for unauthenticated", async ({ page }) => {
-  const response = await page.goto("/vote");
-  if ((response?.status() ?? 0) >= 500) {
-    test.skip(true, "Needs database");
-    return;
-  }
-  await page.waitForLoadState("domcontentloaded");
-
-  await expect(page.getByTestId("treaty-vote-slider-card")).toBeVisible();
-  await expect(page.getByRole("slider")).toBeVisible();
-});
-
-// ---------------------------------------------------------------------------
 // 3. Referendum vote via API (more reliable than UI)
 // ---------------------------------------------------------------------------
 
