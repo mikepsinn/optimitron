@@ -253,7 +253,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Personhood-verified referendum voting on the 1% Treaty; UX spec in questions.md.
-- **Evidence:** apps/optimitron/src/app/vote/page.tsx; `castReferendumVote` in apps/optimitron/src/lib/earth-data.server.ts and mcp-server.ts
+- **Evidence:** apps/warondisease/app/vote/page.tsx; `castReferendumVote` in apps/optimitron/src/lib/earth-data.server.ts and mcp-server.ts
 - **Acceptance:** A verified human casts exactly one countable vote; duplicates rejected.
 - **Roadmap:** now — campaign track
 

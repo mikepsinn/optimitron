@@ -31,7 +31,7 @@
 - Treat `optimitron.com` as the operating system and proof engine: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let generic platform breadth compete with the Now tracks for attention.
 - Optimitron owns durable tasks, EV, provenance, permissions, approval, verification, and audit. Codex/Claude own chat, coding, connectors, and browser control; the extension owns explicit local capture and approval.
 - Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce friction on a Now track or protect an already-shipping path.
-- For development and visual review, make the War on Disease variant the primary surface. Keep secondary variant screenshots/links available for regression checks, but put the campaign gallery first so PR review load stays low.
+- For development and visual review, make the War on Disease app (`apps/warondisease`) the primary surface. Keep other apps' screenshots and links available for regression checks, but put the campaign gallery first so PR review load stays low.
 
 ## Local Dev Safety
 

@@ -2,8 +2,8 @@
 
 Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 **`apps/warondisease` is the canonical War on Disease campaign app.**
-`apps/optimitron` owns Optimitron and remains a temporary multi-host fallback until
-each standalone app passes preview checks and its domain moves.
+`apps/optimitron` serves only optimitron.com. Its old campaign paths and
+1percenttreaty.org redirect to warondisease.org.
 
 **Landing this work:** one tip branch/PR into `main` (not a stack of per-app PRs). Shared shell lives in `@optimitron/site-kit`; apps stay thin wrappers.
 
