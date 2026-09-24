@@ -58,17 +58,18 @@
 - We haven't cured a major disease in 44 years. But don't worry, we're very busy.
 ### REASON 2.
 - GOVERNMENTS SPEND
-### 604X MORE ON WAR
-- THAN CLINICAL TRIALS TO DISCOVER NEW TREATMENTS FOR DISEASES
-- $2.72T FOR MASS MURDER CAPACITY
-- $4.5B FOR CLINICAL TRIALS
+### 604X MORE ON WEAPONS AND MILITARY
+- THAN PUBLICLY FUNDED CLINICAL TRIALS
+- WEAPONS AND MILITARY$2.72T
+- $2.72T FORWEAPONS AND MILITARY
+- PUBLICLY FUNDED CLINICAL TRIALS$4.5B
 ### WE CAN SOLVE BOTH OF THESE PROBLEMS SIMULTANEOUSLY
 ### OXFORD RECOVERY TRIAL PROVED RESEARCH CAN BE DONE FOR
 ### WHY THE BOTTLENECK IS CLINICAL TRIALS, NOT BASIC SCIENCE
 #### THE VAST UNEXPLORED THERAPEUTIC FRONTIER
-- 10K
-- 10M
-- 33K
+- [10K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [10M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [33K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - Exploration Ratio=32.5K tested 9.5M possible=0.34%Exploration Ratio=9.5M possible 32.5K tested​=0.34%
 - TESTED (0.34%)
 - UNEXPLORED (99.7%)
@@ -76,8 +77,8 @@
 - You cannot have "diminishing returns" when you haven't even started.
 - Wait, it gets worse: The FULL therapeutic frontier
 - The 9.5M figure above only counts single drugs against diseases. Modern medicine increasingly uses combination therapies (standard in oncology, HIV, cardiology).
-- 45B
-- 42M
+- [45B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [42M](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - 45.1B
 - Note: We use the conservative 9.5M figure in our main calculations because single-drug trials are more straightforward. But the combination therapy space shows the true scale of unexplored medicine.
 #### YEARS TO UNIVERSAL TREATMENT COVERAGE
@@ -97,6 +98,8 @@
 - This timeline shows how soon we could find a first treatment for all 6,650 untreated diseases. Under the status quo (~15 new treatments/year), it takes 443 years. With increased pragmatic trial funding, we can accelerate discovery dramatically.
 - Your age:
 - years old
+- 22.5B deaths
+- 461B yrs suffering
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
 - 1% REDUCTION 👉
@@ -104,7 +107,7 @@
 - 👈+$27.2B INCREASE FROM 1% TREATY
 ### WHAT $27.2B COULD BUY
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
-- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 - These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
@@ -238,9 +241,9 @@
 - P12345: Mild ARIA reported
 - P67890: Headache (resolved)
 #### How it Works For Researchers
-- The new and improved FDA.gov would make it effortless for researchers to create a trial and invite patients to join.
+- The dFDA proposal would make it effortless for researchers to create a trial and invite patients to join.
 ##### Create a Trial
-- Upload protocols, pre/post-clinical data, and register your supply chain through the FDA.gov V2's intuitive interface.
+- Upload protocols, pre/post-clinical data, and register your supply chain in one place.
 - Simple protocol builder with templates
 - Automated regulatory compliance checks
 - Secure data storage and management
@@ -294,27 +297,27 @@
 ### 💰 THE MATH
 #### THE RETURNS ON NOT DYING
 - When you stop making people fill out paperwork and start letting them not die, something magical happens:
-- 637:1
+- [637:1](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - $637 returned for every $1 invested
 - Not a typo. Not a fever dream. Actual math.
 - This beats humanity's previous greatest hits in the "not dying" genre:
 - WHERE THE VALUE COMES FROM:
-- $59B
-- 86K
+- [$59B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [86K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Value comes from faster drug approvals (14 years → 2 years), better treatment matching through real-world data, and addressing neglected diseases that companies ignore.
 #### ♾️ THE MATH THAT BROKE EXCEL
 - A 84.8M:1 Return on Investment
 - A $1B campaign yields $84.8 Quadrillion in health value.
 - ROI=Health Value Created Campaign Cost=$84.8 Q u a d r i l l i o n$1 B=84.8 M: 1 ROI​=Campaign Cost Health Value Created​=$1 B$84.8 Q u a d r i l l i o n​=84.8 M: 1​
-- $1B
-- $85 Quadrillion
-- 11B
+- [$1B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$85 Quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Math says this is the best possible use of a billion dollars.
 - Math is rarely wrong about money. People are frequently wrong about money.
 - [SEE THE FULL MATH →](https://warondisease.org/research)
 - Charts, breakdowns, and all the nerdy details
 ### YOUR VOTE'S IMPACT
-- $27B/year scales trial capacity 12X, achieving 247 years of progress in 20
+- [$27B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/year scales trial capacity 12X, achieving 247 years of progress in 20
 - Through a 212-year average timeline shift: 12× trial capacity + eliminating 8.2-year regulatory delays
 - HIGHEST ROI ACTION IN HISTORY
 - In 30 seconds, you can save more lives than most people save in a lifetime.

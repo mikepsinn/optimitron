@@ -236,9 +236,9 @@
 - P12345: Mild ARIA reported
 - P67890: Headache (resolved)
 #### How it Works For Researchers
-- The new and improved FDA.gov would make it effortless for researchers to create a trial and invite patients to join.
+- The dFDA proposal would make it effortless for researchers to create a trial and invite patients to join.
 ##### Create a Trial
-- Upload protocols, pre/post-clinical data, and register your supply chain through the FDA.gov V2's intuitive interface.
+- Upload protocols, pre/post-clinical data, and register your supply chain in one place.
 - Simple protocol builder with templates
 - Automated regulatory compliance checks
 - Secure data storage and management
