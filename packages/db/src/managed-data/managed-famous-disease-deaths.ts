@@ -13,8 +13,9 @@ import { upsertWishoniaUser } from "../system-users.js";
 // Famous people who died of disease since 1976, attached to Humanity v
 // Government as public evidence of harm to the class. They are NOT parties:
 // no represented vote, no memorial submission, no consent flag. The Person
-// rows stay out of the public people directory (isPublic: false); the
-// memorial and evidence rows carry the public facts and source link.
+// rows stay out of public people lookups (isPublic and isPublicFigure both
+// false, since those lookups treat either flag as public); the memorial and
+// evidence rows carry the public facts and source link.
 
 export interface FamousDiseaseDeath {
   key: string;
@@ -35,6 +36,7 @@ export const FAMOUS_DISEASE_DEATHS: readonly FamousDiseaseDeath[] = [
   { key: "arthur-ashe", displayName: "Arthur Ashe", conditionName: "AIDS", deathDate: "1993-02-06", sourceUrl: "https://en.wikipedia.org/wiki/Arthur_Ashe" },
   { key: "frank-zappa", displayName: "Frank Zappa", conditionName: "Prostate cancer", deathDate: "1993-12-04", sourceUrl: "https://en.wikipedia.org/wiki/Frank_Zappa" },
   { key: "carl-sagan", displayName: "Carl Sagan", conditionName: "Bone marrow disease", deathDate: "1996-12-20", sourceUrl: "https://en.wikipedia.org/wiki/Carl_Sagan" },
+  { key: "linda-mccartney", displayName: "Linda McCartney", conditionName: "Breast cancer", deathDate: "1998-04-17", sourceUrl: "https://en.wikipedia.org/wiki/Linda_McCartney" },
   { key: "walter-payton", displayName: "Walter Payton", conditionName: "Bile duct cancer", deathDate: "1999-11-01", sourceUrl: "https://en.wikipedia.org/wiki/Walter_Payton" },
   { key: "george-harrison", displayName: "George Harrison", conditionName: "Lung cancer", deathDate: "2001-11-29", sourceUrl: "https://en.wikipedia.org/wiki/George_Harrison" },
   { key: "farrah-fawcett", displayName: "Farrah Fawcett", conditionName: "Anal cancer", deathDate: "2009-06-25", sourceUrl: "https://en.wikipedia.org/wiki/Farrah_Fawcett" },
@@ -44,8 +46,12 @@ export const FAMOUS_DISEASE_DEATHS: readonly FamousDiseaseDeath[] = [
   { key: "stephen-hawking", displayName: "Stephen Hawking", conditionName: "ALS", deathDate: "2018-03-14", sourceUrl: "https://en.wikipedia.org/wiki/Stephen_Hawking" },
   { key: "aretha-franklin", displayName: "Aretha Franklin", conditionName: "Pancreatic cancer", deathDate: "2018-08-16", sourceUrl: "https://en.wikipedia.org/wiki/Aretha_Franklin" },
   { key: "chadwick-boseman", displayName: "Chadwick Boseman", conditionName: "Colon cancer", deathDate: "2020-08-28", sourceUrl: "https://en.wikipedia.org/wiki/Chadwick_Boseman" },
-  { key: "eddie-van-halen", displayName: "Eddie Van Halen", conditionName: "Throat cancer", deathDate: "2020-10-06", sourceUrl: "https://en.wikipedia.org/wiki/Eddie_Van_Halen" },
 ];
+
+// Keys removed from the list above. Sync soft-deletes their evidence rows,
+// because absence from the list is not permission to delete.
+// Eddie Van Halen: his immediate cause of death was a stroke, not cancer.
+const RETIRED_FAMOUS_DISEASE_DEATH_KEYS: readonly string[] = ["eddie-van-halen"];
 
 function famousDiseaseDeathSourceRef(key: string): string {
   return `${FAMOUS_DISEASE_DEATH_EVIDENCE_TYPE}:${key}`;
@@ -75,7 +81,7 @@ export async function syncManagedFamousDiseaseDeaths(
       deletedAt: null,
       displayName: death.displayName,
       isPublic: false,
-      isPublicFigure: true,
+      isPublicFigure: false,
       lifeStatus: PersonLifeStatus.DECEASED,
       sourceUrl: death.sourceUrl,
     };
@@ -124,6 +130,27 @@ export async function syncManagedFamousDiseaseDeaths(
       },
     });
   }
+
+  const retiredRefs = RETIRED_FAMOUS_DISEASE_DEATH_KEYS.map(
+    famousDiseaseDeathSourceRef,
+  );
+  const retiredAt = new Date();
+  await prisma.courtCaseEvidence.updateMany({
+    where: {
+      caseId: courtCase.id,
+      deletedAt: null,
+      evidenceKey: { in: retiredRefs },
+    },
+    data: { deletedAt: retiredAt },
+  });
+  await prisma.personMemorial.updateMany({
+    where: { deletedAt: null, person: { sourceRef: { in: retiredRefs } } },
+    data: { deletedAt: retiredAt, isPublic: false },
+  });
+  await prisma.person.updateMany({
+    where: { sourceRef: { in: retiredRefs } },
+    data: { isPublic: false, isPublicFigure: false },
+  });
 
   return { total, dryRun: false };
 }

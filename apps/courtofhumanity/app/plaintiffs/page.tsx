@@ -104,20 +104,21 @@ export default async function PlaintiffsPage({
   const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1
 
   const referendumSlug = TREATY_REFERENDUM_SLUG
-  const famousDiseaseDeathsPromise = getFamousDiseaseDeaths()
-  const data = await getRepresentedPeopleGalleryData(referendumSlug, {
-    filters: {
-      causeCategory,
-      conditionGlobalVariableId,
-      conflictId,
-      countryCode,
-      efficacyLagOnly,
-    },
-    page,
-    pageSize: PLAINTIFFS_PAGE_SIZE,
-    sort,
-  })
-  const famousDiseaseDeaths = await famousDiseaseDeathsPromise
+  const [famousDiseaseDeaths, data] = await Promise.all([
+    getFamousDiseaseDeaths(),
+    getRepresentedPeopleGalleryData(referendumSlug, {
+      filters: {
+        causeCategory,
+        conditionGlobalVariableId,
+        conflictId,
+        countryCode,
+        efficacyLagOnly,
+      },
+      page,
+      pageSize: PLAINTIFFS_PAGE_SIZE,
+      sort,
+    }),
+  ])
   const people = data?.people ?? []
   const filteredCount = data?.filteredCount ?? 0
   const totalPages = data?.totalPages ?? 1
