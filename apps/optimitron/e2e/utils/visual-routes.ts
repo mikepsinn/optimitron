@@ -235,6 +235,7 @@ const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
 const SEARCH_DISCOVERY_FILE =
   "apps/optimitron/src/app/search/search-discovery.tsx";
 const FOUNDATIONS_PAGE_FILE = "apps/optimitron/src/app/foundations/page.tsx";
+const PEOPLE_DIRECTORY_PAGE_FILE = "apps/optimitron/src/app/people/page.tsx";
 const NOT_FOUND_PAGE_FILE = "apps/optimitron/src/app/not-found.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
 const DEMO_PLAYER_FILE =
@@ -426,6 +427,15 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredText: /^Task payouts$/,
+  },
+  {
+    // The Officials filter and "Public official" label use the officeholder rule.
+    covers: [PEOPLE_DIRECTORY_PAGE_FILE],
+    name: "people-officials",
+    path: "/people?role=officials",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /Find the human who should do something/i,
   },
   {
     covers: [FOUNDATIONS_PAGE_FILE],
