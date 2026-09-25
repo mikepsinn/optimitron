@@ -118,7 +118,7 @@ export function ParameterValue({
           type="button"
           data-copy-preview-href={referenceUrl}
           className={cn(
-            "inline cursor-help text-left underline decoration-dotted decoration-foreground/30 underline-offset-2",
+            "inline cursor-help [text-align:inherit] underline decoration-dotted decoration-foreground/30 underline-offset-2",
             className
           )}
         >

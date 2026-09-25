@@ -321,7 +321,7 @@ export default async function PlaintiffsPage({
             <div className="flex flex-col gap-1">
               <span className="text-4xl font-black uppercase leading-none sm:text-5xl">
                 <ParameterValue
-                  param={CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA}
+                  param={{ ...CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA, unit: "USD" }}
                   figures={2}
                 />
               </span>
@@ -332,7 +332,7 @@ export default async function PlaintiffsPage({
             <div className="flex flex-col gap-1">
               <span className="text-4xl font-black uppercase leading-none sm:text-5xl">
                 <ParameterValue
-                  param={LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA}
+                  param={{ ...LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA, unit: "USD" }}
                   figures={2}
                 />
               </span>

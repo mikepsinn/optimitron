@@ -305,7 +305,7 @@
 - Not a typo. Not a fever dream. Actual math.
 - This beats humanity's previous greatest hits in the "not dying" genre:
 - WHERE THE VALUE COMES FROM:
-- [$58.6 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$58.6 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [85,600](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Value comes from faster drug approvals (14 years → 2 years), better treatment matching through real-world data, and addressing neglected diseases that companies ignore.
 #### ♾️ THE MATH THAT BROKE EXCEL

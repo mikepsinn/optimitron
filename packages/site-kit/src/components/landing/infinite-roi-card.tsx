@@ -82,7 +82,7 @@ export function InfiniteROICard() {
           {/* Annual R&D Savings */}
           <Card className="bg-background border-2 border-primary p-4 text-center">
             <div className="text-2xl sm:text-3xl font-black mb-2">
-              <ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} />/yr
+              <ParameterValue param={{ ...DFDA_NET_SAVINGS_RD_ONLY_ANNUAL, unit: "USD" }} />/yr
             </div>
             <div className="text-xs sm:text-sm font-black uppercase mb-1">R&D Savings</div>
             <div className="text-xs font-bold">Per year, forever</div>

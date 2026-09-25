@@ -193,11 +193,11 @@
 - De-identified results show which treatments helped, which failed, and for whom.
 ### GIVE PATIENTS ACCESS. MEASURE EVERY OUTCOME.
 ### OXFORD'S RECOVERY TRIAL PROVED RESEARCH CAN COST DRAMATICALLY LESS
-- [$500/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Per patient in a real pragmatic trial.
-- [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Reference cost per participant.
-- [$41,000/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Median cost per participant.
 - [82x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [44.1x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
@@ -244,7 +244,7 @@
 ### WHAT HAPPENS WHEN EVERY PATIENT CAN PARTICIPATE
 - [23.4 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$58.6 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$58.6 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
 - Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 #### How it Works For Patients

@@ -94,7 +94,7 @@ export function ROICard() {
           {/* R&D Savings Card */}
           <Card className="bg-brutal-cyan border-4 border-primary p-6 text-center">
             <div className="text-4xl sm:text-5xl font-black mb-2">
-              <ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} />
+              <ParameterValue param={{ ...DFDA_NET_SAVINGS_RD_ONLY_ANNUAL, unit: "USD" }} />
             </div>
             <div className="font-black uppercase text-sm mb-2">ANNUAL RESEARCH SAVINGS</div>
             <div className="text-xs sm:text-sm font-bold">Drug trials cost {costReduction} less</div>

@@ -28,26 +28,25 @@
 - One percent produces [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) in annual treaty funding.
 - [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$21.8 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$21.8 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Pragmatic clinical trials
-- [$2.72 billion/year](https://manual.WarOnDisease.org/knowledge/economics/treaty-financial-plan.html)
+- [$2.72 billion](https://manual.WarOnDisease.org/knowledge/economics/treaty-financial-plan.html)
 - Treaty success rewards
-- [$2.72 billion/year](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html)
+- [$2.72 billion](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html)
 - Political incentives for adoption
 #### TRIAL FUNDING TO PARTICIPANTS
-- [$21.7 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$40 MILLION/YEAR](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$21.7 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$40 MILLION](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [23.4 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
 ### WHY PRAGMATIC TRIALS COST LESS
-- Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per participant. The capacity model uses [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per participant. The capacity model uses [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 - TRADITIONAL PHASE 3
-- [$41,000/PATIENT](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - PRAGMATIC-TRIAL MODEL
-- [$929/PATIENT](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - PER PARTICIPANT
-- The [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure drives the capacity model. The [$41,000/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure shows the cost difference.
+- The [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure drives the capacity model. The [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) figure shows the cost difference.
 ### DISEASE ERADICATION TIMELINE
 - About [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have no effective treatment. At [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments a year, the backlog lasts [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
 - [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
