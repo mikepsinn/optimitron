@@ -275,7 +275,7 @@ export default function FoundationsPage() {
               <Stat label="Conditional on success">
                 <ParameterValue
                   className="font-bold"
-                  param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                  param={{ ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG, unit: "USD" }}
                   display="withUnit"
                 />
                 <span className="block text-sm font-bold leading-6">
@@ -295,7 +295,7 @@ export default function FoundationsPage() {
               <Stat label="Risk-adjusted">
                 <ParameterValue
                   className="font-bold"
-                  param={TREATY_EXPECTED_COST_PER_DALY}
+                  param={{ ...TREATY_EXPECTED_COST_PER_DALY, unit: "USD" }}
                   display="withUnit"
                 />
                 <span className="block text-sm font-bold leading-6">
@@ -313,7 +313,7 @@ export default function FoundationsPage() {
               <Stat label="If the treaty never passes">
                 <ParameterValue
                   className="font-bold"
-                  param={DFDA_DIRECT_FUNDING_COST_PER_DALY}
+                  param={{ ...DFDA_DIRECT_FUNDING_COST_PER_DALY, unit: "USD" }}
                   display="withUnit"
                 />
                 <span className="block text-sm font-bold leading-6">
@@ -334,13 +334,13 @@ export default function FoundationsPage() {
                 separate sanity check. One treaty year puts{" "}
                 <ParameterValue
                   className="font-bold"
-                  param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL}
+                  param={{ ...DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL, unit: "USD" }}
                   display="auto"
                 />{" "}
                 into trials at{" "}
                 <ParameterValue
                   className="font-bold"
-                  param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+                  param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }}
                   display="auto"
                 />
                 /patient, roughly 23 million patient-slots. The useful foundation
