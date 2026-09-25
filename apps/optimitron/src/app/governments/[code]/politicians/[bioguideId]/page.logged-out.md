@@ -7,7 +7,7 @@
 - Canonical: [missing]
 - Open Graph title: Politician | %5Bcode%5D
 - Open Graph description: Politician budget allocation data
-- Open Graph image: http://localhost:3001/governments/%255Bcode%255D/politicians/%255BbioguideId%255D/opengraph-image?2766fa5d0e060a1e
+- Open Graph image: http://localhost:3001/governments/%255Bcode%255D/politicians/%255BbioguideId%255D/opengraph-image?fa08f4c9296fe125
 - Twitter title: Politician | %5Bcode%5D
 - Twitter description: Politician budget allocation data
 

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import {
   getGovernmentMetrics,
   GOVERNMENTS,
 } from "@optimitron/data/datasets/government-report-cards";
 import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
+import { getPoliticianScorecardData } from "@/lib/politician-scorecards";
 import { PoliticianAlignmentDashboard } from "@/components/scoreboard/PoliticianAlignmentDashboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { SectionContainer } from "@/components/ui/section-container";
@@ -38,48 +37,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-/** Load generated scorecard data (if it exists) */
-function loadScorecardData(): {
-  scorecards: Array<{
-    bioguideId: string;
-    name: string;
-    party: string;
-    state: string;
-    chamber: string;
-    militaryDollarsVotedFor: number;
-    clinicalTrialDollarsVotedFor: number;
-    ratio: number;
-  }>;
-  presidents: Array<{
-    name: string;
-    term: string;
-    totalMilitarySigned: number;
-    clinicalTrialPortion: number;
-    ratio: number;
-    keyActions: string[];
-  }>;
-  systemWideRatio: number;
-} | null {
-  try {
-    // Try generated data first
-    const generatedPath = join(
-      process.cwd(),
-      "..",
-      "data",
-      "src",
-      "datasets",
-      "generated",
-      "politician-scorecards.json",
-    );
-    if (existsSync(generatedPath)) {
-      return JSON.parse(readFileSync(generatedPath, "utf8"));
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 function formatDollars(value: number): string {
   if (value >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
   if (value >= 1e9) return `$${(value / 1e9).toFixed(0)}B`;
@@ -93,7 +50,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
   if (!gov) notFound();
 
   const alignmentData = await getLatestAggregateScores(upperCode);
-  const scorecardData = upperCode === "US" ? loadScorecardData() : null;
+  const scorecardData = upperCode === "US" ? getPoliticianScorecardData() : null;
 
   return (
     <div>

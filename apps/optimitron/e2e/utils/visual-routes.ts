@@ -36,6 +36,12 @@ export type VisualRoute = {
   submitSearch?: boolean;
   typeSearchQuery?: string;
   path: string;
+  /**
+   * Image origins the capture answers with a blank placeholder. The capture
+   * loads every lazy image, and a page with hundreds of remote photos can
+   * outlast the image-settle timeout.
+   */
+  placeholderImageOrigins?: string[];
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
@@ -366,6 +372,8 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
 
 const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.profile]);
 
+const BIOGUIDE_PHOTO_ORIGIN = "https://bioguide.congress.gov";
+
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
   [ROUTES.methodology, /Task scenario: probability-weighted expected value/],
@@ -469,8 +477,22 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     covers: ["apps/optimitron/src/app/governments/[code]/politicians/page.tsx"],
     name: "government-politicians",
     path: "/governments/US/politicians",
+    // One congress.gov photo per member: 554 remote images.
+    placeholderImageOrigins: [BIOGUIDE_PHOTO_ORIGIN],
+    required: true,
+    // The page's only h1 belongs to its no-data state; a member row and the
+    // presidents section render only when the generated scorecards load.
+    requiredSelector: 'table a[href="/governments/US/politicians/S001208"]',
+    requiredText: /^Presidential Scorecards$/i,
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx"],
+    name: "politician-scorecard",
+    path: "/governments/US/politicians/S001208",
+    placeholderImageOrigins: [BIOGUIDE_PHOTO_ORIGIN],
     required: true,
     requiredSelector: "h1",
+    requiredText: /^Slotkin, Elissa$/,
   },
   {
     // An unknown bioguide ID renders the page's not-found state. The page

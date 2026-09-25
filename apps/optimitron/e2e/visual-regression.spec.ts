@@ -22,6 +22,12 @@ import {
 } from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock.mjs";
 
+// 1x1 light-gray PNG for image origins a route replaces with a placeholder.
+const PLACEHOLDER_IMAGE_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAADElEQVR4nGO4cuUKAAT8An1D0+G7AAAAAElFTkSuQmCC",
+  "base64",
+);
+
 const VISUAL_REVIEW_CSS = `
   *, *::before, *::after {
     animation: none !important;
@@ -179,6 +185,12 @@ test.describe("route visual regression", () => {
           signedIn,
           "demo user should sign in before dashboard screenshot",
         ).toBe(true);
+      }
+
+      for (const origin of route.placeholderImageOrigins ?? []) {
+        await page.route(`${origin}/**`, (request) =>
+          request.fulfill({ body: PLACEHOLDER_IMAGE_PNG, contentType: "image/png" }),
+        );
       }
 
       const response = await openVisualRoute(page, route.path);
