@@ -33,12 +33,30 @@
 ### SPENDING VS OUTCOMES
 ##### 🏦 FEDERAL RESERVE SYSTEM
 - Promote maximum employment, stable prices, and moderate long-term interest rates
-- Fed Operating Expenses + Interest on Reserves (USD)
-- 💵 Dollar Purchasing Power (1913 = $1.00)
-- 🖨️ Fed Balance Sheet (trillions USD)
+- Fed Operating Expenses + Interest on Reserves (USD) · left axis
+- 💵 Dollar Purchasing Power (1913 = $1.00) · right axis
+- 🖨️ Fed Balance Sheet (trillions USD) · right axis
 - 2008 [$700B TARP + $16.1T in Fed emergency lending (GAO audit). Citigroup gets $45B, pays $5.33B in exec bonuses. 10M families lose homes. Zero bankers jailed. ↗](https://www.gao.gov/products/gao-11-696)
 - 2020 [COVID: $4.6T created in 2 years. Top 1% gains $4T in net worth. Bottom 50% gets $1,200 stimulus checks. ↗](https://fred.stlouisfed.org/series/WALCL)
 - 2022 [Inflation hits 9.1% — highest since 1981. Grocery prices up 25% in 3 years. ↗](https://www.bls.gov/cpi/)
+- SHOW THE NUMBERS
+
+| Year | Fed Operating Expenses + Interest on Reserves (USD) | Dollar Purchasing Power (1913 = $1.00) | Fed Balance Sheet (trillions USD) |
+| --- | --- | --- | --- |
+| 2000 | $2.6B | 0.058 | 0.6 |
+| 2002 | $2.8B | 0.056 | 0.7 |
+| 2004 | $3B | 0.053 | 0.7 |
+| 2006 | $3.3B | 0.05 | 0.8 |
+| 2008 | $3.6B | 0.047 | 0.9 |
+| 2010 | $4.1B | 0.045 | 2.3 |
+| 2012 | $4.5B | 0.043 | 2.9 |
+| 2014 | $4.8B | 0.042 | 4.5 |
+| 2016 | $5B | 0.041 | 4.5 |
+| 2018 | $5.2B | 0.039 | 4.1 |
+| 2020 | $5.3B | 0.037 | 7.4 |
+| 2022 | $5.4B | 0.032 | 8.9 |
+| 2024 | $5.5B | 0.03 | 7 |
+
 ### WHAT THEY COST YOU
 - Unelected humans controlling money for 330 million people
 - Staff across 12 regional Federal Reserve Banks

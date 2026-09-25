@@ -38,12 +38,30 @@
 - 🎖️ DEPARTMENT OF VETERANS AFFAIRS — D
 ##### 🔬 NATIONAL INSTITUTES OF HEALTH
 - Seek fundamental knowledge and apply it to enhance health
-- NIH Annual Budget (USD)
-- 💊 FDA Novel Drug Approvals (NMEs)
+- NIH Annual Budget (USD) · left axis
+- 💊 FDA Novel Drug Approvals (NMEs) · right axis
 - 2003 [Doubling complete ($27.2B) — then budget flatlines for a decade ↗](https://www.nih.gov/about-nih/what-we-do/budget)
 - 2013 [Sequestration cuts $1.7B from NIH — 640 fewer grants funded ↗](https://www.gao.gov/products/gao-14-750r)
 - 2020 [$4.9B emergency COVID supplemental — suddenly money is available when Congress is scared ↗](https://www.nih.gov/coronavirus)
 - Budget increased 164% while drug approvals remained volatile and flat on trend. Only 3.3% of the budget reaches actual clinical trials.
+- SHOW THE NUMBERS
+
+| Year | NIH Annual Budget (USD) | FDA Novel Drug Approvals (NMEs) |
+| --- | --- | --- |
+| 2000 | $17.9B | 27 |
+| 2002 | $23.3B | 17 |
+| 2004 | $28B | 31 |
+| 2006 | $28.6B | 18 |
+| 2008 | $29.5B | 21 |
+| 2010 | $31B | 21 |
+| 2012 | $30.9B | 33 |
+| 2014 | $30.1B | 41 |
+| 2016 | $32.3B | 22 |
+| 2018 | $37.3B | 59 |
+| 2020 | $41.7B | 53 |
+| 2022 | $45B | 37 |
+| 2024 | $47.3B | 50 |
+
 ### WHAT THEY COST YOU
 - Total annual funding for the National Institutes of Health
 - Share of NIH budget that actually funds clinical trials — ~$1.55B of $47B
