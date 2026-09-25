@@ -46,7 +46,7 @@ function formatEffect(value: number, unit: string): string {
 }
 
 function effectColor(value: number): string {
-  if (value > 0) return "text-brutal-green";
+  if (value > 0) return "text-brutal-green-text";
   if (value < 0) return "text-brutal-red";
   return "text-muted-foreground";
 }

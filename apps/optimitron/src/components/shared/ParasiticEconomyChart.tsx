@@ -90,7 +90,7 @@ export function ParasiticEconomyChart() {
     <div className="flex flex-col items-center gap-4 sm:gap-6 w-full bg-black p-4 sm:p-6 md:p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       {/* Countdown */}
       <div className="text-center">
-        <h3 className="font-pixel text-xl sm:text-2xl md:text-4xl text-brutal-red uppercase">
+        <h3 className="font-pixel text-xl sm:text-2xl md:text-4xl text-destructive uppercase">
           Countdown to Collapse
         </h3>
         <div
@@ -104,7 +104,7 @@ export function ParasiticEconomyChart() {
       {/* Explainer */}
       <p className="text-xs sm:text-sm md:text-base font-bold text-center max-w-2xl" style={{ color: "rgb(161,161,170)" }}>
         The parasitic economy — military, cybercrime, fraud, and regulatory overhead — is currently{" "}
-        <span className="text-brutal-red font-black">{currentParasiticPct}%</span> of global GDP
+        <span className="text-destructive font-black">{currentParasiticPct}%</span> of global GDP
         and growing exponentially. Every civilisation that crossed 35–45% collapsed.
         At current rates, productive and parasitic lines cross in{" "}
         <span className="text-background font-black">{COLLAPSE_YEAR}</span>.
