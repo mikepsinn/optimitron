@@ -89,48 +89,19 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $2052/cap, ranks 27/28. 5.3x overspend.",
+      "rationale": "Cheapest-high-performer analysis of military spending: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Military, Homeland Security.",
+      "currentStatus": "United States spends $2052/cap on military spending, ranks 27/28. 5.3x overspend.",
       "recommendedTarget": "Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
-      ]
+      ],
+      "oecdSpendingField": "militarySpendingPerCapitaPpp"
     },
     {
-      "name": "Homeland Security: Adopt Switzerland's Approach",
+      "name": "National Health Spending: Adopt South Korea's Approach",
       "type": "budget_allocation",
-      "category": "homeland_security",
-      "description": "Reduce homeland security spending to the cheapest high-performer floor. Switzerland achieves Life Expectancy 83.37 at $389/cap; United States gets 76.93 at $2052/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.739,
-      "policyImpactScore": 0.596,
-      "welfareScore": 38,
-      "incomeEffect": 0.408,
-      "healthEffect": 0.049,
-      "bradfordHillScores": {
-        "strength": 0.971,
-        "consistency": 0.939,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.996,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $2052/cap, ranks 27/28. 5.3x overspend.",
-      "recommendedTarget": "Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Veterans Affairs: Adopt South Korea's Approach",
-      "type": "budget_allocation",
-      "category": "veterans_affairs",
-      "description": "Reduce veterans affairs spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $3588/cap; United States gets 76.93 at $10333/cap.",
+      "category": "health",
+      "description": "Reduce total health spending (public and private) to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $3588/cap; United States gets 76.93 at $10333/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.722,
@@ -149,102 +120,13 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $10333/cap, ranks 28/28. 2.9x overspend.",
+      "rationale": "Cheapest-high-performer analysis of total health spending (public and private): South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Veterans Affairs, Health (non-Medicare/Medicaid).",
+      "currentStatus": "United States spends $10333/cap on total health spending (public and private), ranks 28/28. 2.9x overspend.",
       "recommendedTarget": "South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
-      ]
-    },
-    {
-      "name": "Health (non-Medicare/Medicaid): Adopt South Korea's Approach",
-      "type": "budget_allocation",
-      "category": "health_non_medicare_medicaid_",
-      "description": "Reduce health (non-medicare/medicaid) spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $3588/cap; United States gets 76.93 at $10333/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.722,
-      "policyImpactScore": 0.591,
-      "welfareScore": 39,
-      "incomeEffect": 1.656,
-      "healthEffect": 0.05,
-      "bradfordHillScores": {
-        "strength": 0.855,
-        "consistency": 0.939,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.996,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $10333/cap, ranks 28/28. 2.9x overspend.",
-      "recommendedTarget": "South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Justice / Law Enforcement: Adopt South Korea's Approach",
-      "type": "budget_allocation",
-      "category": "justice_law_enforcement",
-      "description": "Reduce justice / law enforcement spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $6037/cap; United States gets 76.93 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.704,
-      "policyImpactScore": 0.58,
-      "welfareScore": 39,
-      "incomeEffect": 1.672,
-      "healthEffect": 0.05,
-      "bradfordHillScores": {
-        "strength": 0.753,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $6037/cap. United States at $12848/cap (2.1x overspend). Top 3: South Korea ($6037), Singapore ($7868), Australia ($8330). Savings: $2309B/yr → $17,361/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 25/26. 2.1x overspend.",
-      "recommendedTarget": "South Korea model ($6037/cap floor). $2309B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "EPA / Environment: Adopt South Korea's Approach",
-      "type": "budget_allocation",
-      "category": "epa_environment",
-      "description": "Reduce epa / environment spending to the cheapest high-performer floor. South Korea achieves Life Expectancy 83.57 at $6037/cap; United States gets 76.93 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.704,
-      "policyImpactScore": 0.58,
-      "welfareScore": 39,
-      "incomeEffect": 1.672,
-      "healthEffect": 0.05,
-      "bradfordHillScores": {
-        "strength": 0.753,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: South Korea achieves Life Expectancy 83.57 at $6037/cap. United States at $12848/cap (2.1x overspend). Top 3: South Korea ($6037), Singapore ($7868), Australia ($8330). Savings: $2309B/yr → $17,361/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 25/26. 2.1x overspend.",
-      "recommendedTarget": "South Korea model ($6037/cap floor). $2309B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
+      ],
+      "oecdSpendingField": "healthSpendingPerCapitaPpp"
     },
     {
       "name": "Shift Drug Policy from Criminal to Health Approach",
@@ -307,10 +189,10 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     },
     {
-      "name": "Energy: Adopt Netherlands's Approach",
+      "name": "National R&D Spending: Adopt Netherlands's Approach",
       "type": "budget_allocation",
-      "category": "energy",
-      "description": "Reduce energy spending to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 16287.22 at $1991/cap.",
+      "category": "research_and_development",
+      "description": "Reduce total R&D spending (business and government) to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 16287.22 at $1991/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.652,
@@ -329,78 +211,19 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $1991/cap, ranks 25/28. 1.9x overspend.",
+      "rationale": "Cheapest-high-performer analysis of total R&D spending (business and government): Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Energy, Science / NASA, Commerce / Economic Development.",
+      "currentStatus": "United States spends $1991/cap on total R&D spending (business and government), ranks 25/28. 1.9x overspend.",
       "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
-      ]
+      ],
+      "oecdSpendingField": "rdSpendingPerCapitaPpp"
     },
     {
-      "name": "Science / NASA: Adopt Netherlands's Approach",
-      "type": "budget_allocation",
-      "category": "science_nasa",
-      "description": "Reduce science / nasa spending to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 16287.22 at $1991/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.652,
-      "policyImpactScore": 0.542,
-      "welfareScore": 38,
-      "incomeEffect": 0.228,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.718,
-        "consistency": 0.939,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.996,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $1991/cap, ranks 25/28. 1.9x overspend.",
-      "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Commerce / Economic Development: Adopt Netherlands's Approach",
-      "type": "budget_allocation",
-      "category": "commerce_economic_development",
-      "description": "Reduce commerce / economic development spending to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 16287.22 at $1991/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.652,
-      "policyImpactScore": 0.542,
-      "welfareScore": 38,
-      "incomeEffect": 0.228,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.718,
-        "consistency": 0.939,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.996,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $1991/cap, ranks 25/28. 1.9x overspend.",
-      "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Education: Adopt Japan's Approach",
+      "name": "Public Education Spending: Adopt Japan's Approach",
       "type": "budget_allocation",
       "category": "education",
-      "description": "Reduce education spending to the cheapest high-performer floor. Japan achieves PISA Math Score 536 at $1288/cap; United States gets 465 at $2996/cap.",
+      "description": "Reduce government education spending (all levels) to the cheapest high-performer floor. Japan achieves PISA Math Score 536 at $1288/cap; United States gets 465 at $2996/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.649,
@@ -419,18 +242,19 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $2996/cap, ranks 11/11. 2.3x overspend.",
+      "rationale": "Cheapest-high-performer analysis of government education spending (all levels): Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Education.",
+      "currentStatus": "United States spends $2996/cap on government education spending (all levels), ranks 11/11. 2.3x overspend.",
       "recommendedTarget": "Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
-      ]
+      ],
+      "oecdSpendingField": "educationSpendingPerCapitaPpp"
     },
     {
-      "name": "Transportation: Adopt Singapore's Approach",
+      "name": "Public Social Spending: Adopt Singapore's Approach",
       "type": "budget_allocation",
-      "category": "transportation",
-      "description": "Reduce transportation spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
+      "category": "social_spending",
+      "description": "Reduce public social spending (pensions, health, income support) to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.639,
@@ -449,222 +273,13 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
+      "rationale": "Cheapest-high-performer analysis of public social spending (pensions, health, income support): Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Transportation, HUD / Housing, Foreign Aid / International Affairs, Justice / Law Enforcement, Agriculture, EPA / Environment, Labor, Interior / Natural Resources, Treasury / General Government, State Department / Diplomacy.",
+      "currentStatus": "United States spends $12848/cap on public social spending (pensions, health, income support), ranks 23/26. 1.6x overspend.",
       "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
-      ]
-    },
-    {
-      "name": "HUD / Housing: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "hud_housing",
-      "description": "Reduce hud / housing spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Foreign Aid / International Affairs: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "foreign_aid_international_affairs",
-      "description": "Reduce foreign aid / international affairs spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Labor: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "labor",
-      "description": "Reduce labor spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Agriculture: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "agriculture",
-      "description": "Reduce agriculture spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Treasury / General Government: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "treasury_general_government",
-      "description": "Reduce treasury / general government spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "State Department / Diplomacy: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "state_department_diplomacy",
-      "description": "Reduce state department / diplomacy spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
-    },
-    {
-      "name": "Interior / Natural Resources: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "interior_natural_resources",
-      "description": "Reduce interior / natural resources spending to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis: Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend.",
-      "currentStatus": "United States spends $12848/cap, ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ]
+      ],
+      "oecdSpendingField": "socialSpendingPerCapitaPpp"
     },
     {
       "name": "Right to Trial & FDA Upgrade Act",
@@ -698,7 +313,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     }
   ],
-  "generatedAt": "2026-07-12T07:26:48.637Z",
+  "generatedAt": "2026-09-25T17:18:15.916Z",
   "generatedBy": "@optimitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 };

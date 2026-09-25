@@ -19,6 +19,11 @@ function fmt(n: number | undefined | null): string {
   return `$${n.toFixed(0)}`;
 }
 
+/** "Total R&D spending" → "total R&D spending" */
+function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
+
 function pct(n: number): string {
   return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 }
@@ -44,6 +49,7 @@ function actionLabel(action: string): string {
     case "maintain": return "Maintain";
     case "decrease": return "Decrease";
     case "major_decrease": return "Major Decrease";
+    case "no_line_benchmark": return "No Line Benchmark";
     default: return action;
   }
 }
@@ -54,7 +60,11 @@ export default function BudgetPage() {
   );
 
   const totalCurrent = data.categories.reduce((s, c) => s + c.currentSpending, 0);
-  const totalOptimal = data.categories.reduce((s, c) => s + (c.optimalSpendingNominal ?? 0), 0);
+  // Only lines with a line-specific benchmark have an optimal. The rest are
+  // compared with whole national systems, which says nothing about the line.
+  const benchmarked = data.categories.filter(c => c.optimalSpendingNominal != null);
+  const benchmarkedCurrent = benchmarked.reduce((s, c) => s + c.currentSpending, 0);
+  const benchmarkedOptimal = benchmarked.reduce((s, c) => s + (c.optimalSpendingNominal ?? 0), 0);
 
   const maxSpending = Math.max(
     ...data.categories.flatMap(c => [c.currentSpending, c.optimalSpendingNominal ?? 0])
@@ -67,16 +77,16 @@ export default function BudgetPage() {
           The US Federal Budget, Diagnosed
         </h1>
         <p className="text-muted-foreground font-bold">
-          Your government&apos;s {fmt(data.totalSpendingNominal)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. Most of them wrong.
+          Your government&apos;s {fmt(data.totalSpendingNominal)} shopping list, reviewed by someone who&apos;s actually done the maths. {data.categories.length} categories. {benchmarked.length} of them can be compared line for line with other countries. The rest only have whole-country comparisons, so they get no line-item target.
         </p>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <SummaryCard label="Total Current" value={fmt(totalCurrent)} />
-        <SummaryCard label="Total Optimal" value={fmt(totalOptimal)} />
-        <SummaryCard label="Net Reallocation" value={fmt(totalOptimal - totalCurrent)} color={totalOptimal > totalCurrent ? "text-background" : "text-brutal-red"} />
-        <SummaryCard label="Categories Analyzed" value={String(data.categories.length)} />
+        <SummaryCard label="Line-Specific Benchmarks" value={`${benchmarked.length} of ${data.categories.length}`} />
+        <SummaryCard label="Optimal, Benchmarked Lines" value={fmt(benchmarkedOptimal)} />
+        <SummaryCard label="Net Reallocation, Benchmarked Lines" value={fmt(benchmarkedOptimal - benchmarkedCurrent)} color={benchmarkedOptimal > benchmarkedCurrent ? "text-background" : "text-brutal-red"} />
       </div>
 
       <section className="mb-10">
@@ -131,13 +141,14 @@ export default function BudgetPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                 <h3 className="text-sm font-black text-foreground">{cat.name}</h3>
                 <div className="flex items-center gap-2">
-                  {cat.efficiency && (
+                  {cat.optimalSpendingNominal != null && cat.efficiency && (
                     <span className="text-xs font-black px-2 py-0.5 border-4 border-primary bg-background text-foreground">
                       {cat.efficiency.overspendRatio.toFixed(1)}× overspend
                     </span>
                   )}
                   <span className={`text-xs font-black px-2 py-0.5 border-4 border-primary ${actionBadgeStyle(cat.recommendation)}`}>
-                    {actionLabel(cat.recommendation)} {pct(cat.gapPercent)}
+                    {actionLabel(cat.recommendation)}
+                    {cat.optimalSpendingNominal != null && ` ${pct(-cat.gapPercent)}`}
                   </span>
                 </div>
               </div>
@@ -151,10 +162,18 @@ export default function BudgetPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground w-16 font-bold">Optimal</span>
-                  <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
-                    <div className="h-full bg-brutal-green" style={{ width: `${((cat.optimalSpendingNominal ?? 0) / maxSpending) * 100}%` }} />
-                  </div>
-                  <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.optimalSpendingNominal)}</span>
+                  {cat.optimalSpendingNominal != null ? (
+                    <>
+                      <div className="flex-1 h-5 bg-muted border border-primary overflow-hidden">
+                        <div className="h-full bg-brutal-green" style={{ width: `${(cat.optimalSpendingNominal / maxSpending) * 100}%` }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-20 text-right font-bold">{fmt(cat.optimalSpendingNominal)}</span>
+                    </>
+                  ) : (
+                    <span className="flex-1 text-xs text-muted-foreground font-bold">
+                      No line-specific benchmark. Only comparison: {cat.oecdBenchmark ? lowerFirst(cat.oecdBenchmark.fieldLabel) : "a national total"}.
+                    </span>
+                  )}
                 </div>
               </div>
             </Link>
@@ -186,12 +205,12 @@ export default function BudgetPage() {
                     </Link>
                   </td>
                   <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.currentSpending)}</td>
-                  <td className="py-3 px-2 text-right text-foreground font-bold">{fmt(cat.optimalSpendingNominal)}</td>
-                  <td className={`py-3 px-2 text-right font-bold ${cat.gap >= 0 ? "text-background" : "text-brutal-red"}`}>
-                    {pct(cat.gapPercent)}
+                  <td className="py-3 px-2 text-right text-foreground font-bold">{cat.optimalSpendingNominal != null ? fmt(cat.optimalSpendingNominal) : "—"}</td>
+                  <td className={`py-3 px-2 text-right font-bold ${cat.optimalSpendingNominal == null ? "text-muted-foreground" : cat.gap >= 0 ? "text-background" : "text-brutal-red"}`}>
+                    {cat.optimalSpendingNominal != null ? pct(-cat.gapPercent) : "—"}
                   </td>
                   <td className="py-3 px-2 text-right font-bold text-foreground">
-                    {cat.efficiency ? `${cat.efficiency.overspendRatio.toFixed(1)}×` : "—"}
+                    {cat.optimalSpendingNominal != null && cat.efficiency ? `${cat.efficiency.overspendRatio.toFixed(1)}×` : "—"}
                   </td>
                   <td className="py-3 px-2 text-center">
                     <span className={`inline-block px-2 py-0.5 text-xs font-black border-4 border-primary ${actionBadgeStyle(cat.recommendation)}`}>
@@ -203,6 +222,11 @@ export default function BudgetPage() {
             </tbody>
           </table>
         </div>
+        <p className="text-xs text-muted-foreground mt-3 font-bold">
+          No line benchmark: the only international comparison for this line covers a whole
+          national system, such as all health spending, public and private. That system&apos;s
+          overspend is not this line&apos;s, so no line-item target is shown.
+        </p>
       </section>
 
       <p className="text-xs text-muted-foreground mt-8 font-bold">

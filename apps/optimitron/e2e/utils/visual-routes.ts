@@ -213,8 +213,7 @@ const GLOBAL_FAILED_STATE_SLIDE_FILE =
   "apps/optimitron/src/components/demo/slides/sierra/slide-global-failed-state.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "apps/optimitron/src/components/shared/PoliticianScorecardTable.tsx";
-// Sections rendered by both optimitron.com/ and /game. Either capture proves
-// they render, so both cover lists include them.
+// Shared landing sections that /game renders.
 const SHARED_LANDING_SECTION_FILES = [
   "apps/optimitron/src/components/animations/CollapseCountdownTimer.tsx",
   "apps/optimitron/src/components/animations/LiveDeathTicker.tsx",
@@ -241,13 +240,27 @@ const OPTIMITRON_HOME_FILES = [
   "apps/optimitron/src/app/globals.css",
   "apps/optimitron/src/components/Footer.tsx",
   "apps/optimitron/src/components/site/MicrosoftClarity.tsx",
-  "apps/optimitron/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
-  "apps/optimitron/src/components/landing/LovingTakeoverSection.tsx",
-  "apps/optimitron/src/components/landing/TheBillSection.tsx",
-  "apps/optimitron/src/components/invest/GiantNumber.tsx",
   "apps/optimitron/src/components/invest/WarheadGrid.tsx",
+  "apps/optimitron/src/components/landing/TreatyVoteFlow.tsx",
+  "apps/optimitron/src/components/shared/GovernmentLeaderboard.tsx",
   "apps/optimitron/src/components/site/OptimitronLandingPage.tsx",
-  ...SHARED_LANDING_SECTION_FILES,
+  "apps/optimitron/src/components/optimitron-landing/CallTodaySection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ControlLoopDiagrams.tsx",
+  "apps/optimitron/src/components/optimitron-landing/DataOrb.tsx",
+  "apps/optimitron/src/components/optimitron-landing/FeaturedProducts.tsx",
+  "apps/optimitron/src/components/optimitron-landing/format.ts",
+  "apps/optimitron/src/components/optimitron-landing/income-futures.ts",
+  "apps/optimitron/src/components/optimitron-landing/IncomeFutures.tsx",
+  "apps/optimitron/src/components/optimitron-landing/landing-data.ts",
+  "apps/optimitron/src/components/optimitron-landing/LandingSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/LiveBillTickers.tsx",
+  "apps/optimitron/src/components/optimitron-landing/LoopDot.tsx",
+  "apps/optimitron/src/components/optimitron-landing/PolicyGeneratorTile.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ProviderRatedSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ReplacementSuiteSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/StatementSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/TaskTreeTile.tsx",
+  "apps/optimitron/src/components/optimitron-landing/use-live-motion.ts",
 ];
 
 // /game keeps the original game ordering and its game-only sections.

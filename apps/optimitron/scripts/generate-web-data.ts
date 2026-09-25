@@ -33,8 +33,13 @@ import {
   fitLogModel,
   fitSaturationModel,
   analyzeEfficiency,
+  attributeFieldsToLines,
+  summarizeEfficiencyByField,
+  type BudgetReportOecdBenchmark,
   type DiminishingReturnsModel,
   type EfficiencyAnalysis,
+  type FieldBenchmarkedLine,
+  type FieldEfficiencyFinding,
 } from '@optimitron/obg';
 
 // Data imports
@@ -47,6 +52,7 @@ import {
   NON_DISCRETIONARY_CATEGORIES,
   COUNTRY_NAMES,
   type OECDCategoryMapping,
+  type OECDSpendingField,
 } from '@optimitron/data';
 import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
 import { getBestAvailableMedianIncomeSeries } from '@optimitron/data/datasets/median-income-series';
@@ -77,16 +83,53 @@ const OECD_MAPPINGS = OECD_CATEGORY_MAPPINGS;
 const NON_DISCRETIONARY = NON_DISCRETIONARY_CATEGORIES;
 type OECDMapping = OECDCategoryMapping;
 
-// ─── Efficiency Analysis Helpers ─────────────────────────────────────
+// ─── OECD Field Descriptions ─────────────────────────────────────────
+
+/**
+ * What each OECD spending field measures. Several budget lines borrow the
+ * same field, so field-level figures (spending per capita, overspend,
+ * savings, policy effects) are named for the field, never for a line that
+ * only borrows it.
+ */
+const OECD_FIELDS: Record<OECDSpendingField, { label: string; policySubject: string; policyCategory: string }> = {
+  militarySpendingPerCapitaPpp: {
+    label: 'Military spending',
+    policySubject: 'Military',
+    policyCategory: 'military',
+  },
+  healthSpendingPerCapitaPpp: {
+    label: 'Total health spending (public and private)',
+    policySubject: 'National Health Spending',
+    policyCategory: 'health',
+  },
+  educationSpendingPerCapitaPpp: {
+    label: 'Government education spending (all levels)',
+    policySubject: 'Public Education Spending',
+    policyCategory: 'education',
+  },
+  socialSpendingPerCapitaPpp: {
+    label: 'Public social spending (pensions, health, income support)',
+    policySubject: 'Public Social Spending',
+    policyCategory: 'social_spending',
+  },
+  rdSpendingPerCapitaPpp: {
+    label: 'Total R&D spending (business and government)',
+    policySubject: 'National R&D Spending',
+    policyCategory: 'research_and_development',
+  },
+};
 
 // ─── Budget Analysis (OBG) ──────────────────────────────────────────
 
 import {
-  hasEfficiency,
   type BudgetAnalysisOutput,
   type BudgetCategoryOutput,
   type PolicyAnalysisOutput,
+  type PolicyOutput,
 } from '../src/lib/generated-analysis-schemas.js';
+
+type GeneratedBudgetCategory = BudgetCategoryOutput & { oecdBenchmark: BudgetReportOecdBenchmark };
+type GeneratedBudgetAnalysis = Omit<BudgetAnalysisOutput, 'categories'> & { categories: GeneratedBudgetCategory[] };
 
 /** Convert OECD panel data to SpendingOutcomePoint[], run OBG efficiency analysis. */
 function runEfficiencyAnalysis(mapping: OECDMapping): EfficiencyAnalysis | null {
@@ -126,46 +169,122 @@ function fitModelInfo(
   return { model, n: data.length };
 }
 
-function generateBudgetAnalysis(): BudgetAnalysisOutput {
-  const totalSpendingNominal = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions * 1e9, 0);
-  const categories: BudgetCategoryOutput[] = [];
+function recommendationFromOverspend(overspendRatio: number): string {
+  if (overspendRatio >= 3) return 'major_decrease';
+  if (overspendRatio >= 1.5) return 'decrease';
+  if (overspendRatio <= 0.8) return 'increase';
+  return 'maintain';
+}
 
+function formatUsd(value: number): string {
+  return value >= 1e12 ? `$${(value / 1e12).toFixed(1)}T` : `$${(value / 1e9).toFixed(0)}B`;
+}
+
+/** 'Total R&D spending' → 'total R&D spending' (keeps acronyms intact). */
+function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
+
+function formatShare(share: number): string {
+  const percent = share * 100;
+  return `${percent < 1 ? percent.toFixed(1) : percent.toFixed(0)}%`;
+}
+
+/**
+ * One sentence per finding. A category-specific finding speaks for its
+ * budget line and states that line's gap from the category table. Every
+ * other finding is labeled as a national comparison, so its national
+ * savings never read as a federal line's.
+ */
+function describeFinding(
+  finding: FieldEfficiencyFinding,
+  categoriesById: ReadonlyMap<string, GeneratedBudgetCategory>,
+): string {
+  const e = finding.efficiency;
+  const field = OECD_FIELDS[finding.spendingField as OECDSpendingField];
+  const line = finding.categorySpecificLineId ? categoriesById.get(finding.categorySpecificLineId) : undefined;
+  const subject = line ? line.name : `National comparison, ${lowerFirst(field.label)}`;
+
+  if (e.overspendRatio > 1.2) {
+    const savings = line
+      ? `Cutting the ${formatUsd(line.currentSpending)} line to ${e.bestCountry.name}'s ratio saves ${formatUsd(line.gap)}/yr`
+      : `Potential national savings: ${formatUsd(e.potentialSavingsTotal)}/yr`;
+    return `${subject}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spendingPerCapita}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. ${savings}`;
+  }
+  if (e.overspendRatio < 0.8) {
+    return `${subject}: ${JURISDICTION.name} underspends at $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Floor: $${e.floorSpendingPerCapita}/cap.`;
+  }
+  return `${subject}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Near floor ($${e.floorSpendingPerCapita}/cap). ${e.outcomeName}: ${e.outcome}`;
+}
+
+function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: FieldEfficiencyFinding[] } {
+  const totalSpendingNominal = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions * 1e9, 0);
+
+  // Only include categories with actual OECD efficient frontier data.
+  // No guesses, no defaults — every number must be backed by cross-country evidence.
+  const benchmarked: Array<{
+    cat: (typeof US_FEDERAL_BUDGET.categories)[number];
+    mapping: OECDMapping;
+    efficiency: EfficiencyAnalysis;
+    currentUsd: number;
+    currentRealPerCapita: number;
+  }> = [];
   for (const cat of US_FEDERAL_BUDGET.categories) {
+    const mapping = OECD_MAPPINGS[cat.id];
+    if (!mapping || NON_DISCRETIONARY.has(cat.id)) continue;
+
+    const efficiency = runEfficiencyAnalysis(mapping);
+    if (!efficiency) continue;
+
     const latestSpending = cat.historicalSpending[cat.historicalSpending.length - 1]?.amount ?? 0;
     const latestYear = cat.historicalSpending[cat.historicalSpending.length - 1]?.year ?? 2025;
-    const currentUsd = latestSpending * 1e9;
-    const currentRealPerCapita = toRealPerCapita(latestSpending, latestYear);
-    const historicalRPC = historicalToRealPerCapita(cat.historicalSpending);
+    benchmarked.push({
+      cat,
+      mapping,
+      efficiency,
+      currentUsd: latestSpending * 1e9,
+      currentRealPerCapita: toRealPerCapita(latestSpending, latestYear),
+    });
+  }
 
-    const isNonDiscretionary = NON_DISCRETIONARY.has(cat.id);
-    const mapping = OECD_MAPPINGS[cat.id];
+  // Several lines borrow one OECD field (eight departments → public social
+  // spending), and most fields measure a whole national system. A field's
+  // figures describe a line only when the line is most of the field.
+  const fieldLines: FieldBenchmarkedLine[] = benchmarked.map(b => ({
+    id: b.cat.id,
+    spendingField: b.mapping.spendingField,
+    lineSpendingPerCapita: b.currentRealPerCapita,
+    efficiency: b.efficiency,
+  }));
+  const attributions = attributeFieldsToLines(fieldLines);
+  const findings = summarizeEfficiencyByField(fieldLines);
 
-    // Only include categories with actual OECD efficient frontier data.
-    // No guesses, no defaults — every number must be backed by cross-country evidence.
-    if (!mapping || isNonDiscretionary) continue;
+  const categories: GeneratedBudgetCategory[] = benchmarked.map((b, index) => {
+    const { cat, mapping, efficiency: e, currentUsd, currentRealPerCapita } = b;
+    const attribution = attributions[index];
+    if (!attribution) throw new Error(`Missing field attribution for ${cat.id}`);
+    const field = OECD_FIELDS[mapping.spendingField];
+    const nCountries = e.totalCountries;
 
-    const efficiencyInfo = runEfficiencyAnalysis(mapping);
-    if (!efficiencyInfo) continue;
+    let optimalNominal: number | null = null;
+    let optimalPerCapita: number | null = null;
+    let gap = 0;
+    let gapPercent = 0;
+    let recommendation = 'no_line_benchmark';
+    let evidenceSource =
+      `No line-specific benchmark. The only OECD comparison is ${lowerFirst(field.label)}, ` +
+      `where ${JURISDICTION.name} ranks ${e.rank} of ${nCountries} countries. ` +
+      `This line is ${formatShare(attribution.shareOfField)} of that total, so its overspend ratio is not applied here.`;
 
-    // Derive gap/optimal from EFFICIENCY FRONTIER.
-    // The frontier gives the overspend ratio for the OECD aggregate bucket
-    // (e.g., total social spending). Apply that ratio to this specific
-    // category's federal spending to get its individual optimal.
-    const overspendRatio = efficiencyInfo.overspendRatio;
-    const optimalNominal = Math.round(currentUsd / overspendRatio);
-    const optimalPerCapita = currentRealPerCapita / overspendRatio;
-    const gap = currentUsd - optimalNominal;
-    const gapPercent = currentUsd > 0 ? (gap / currentUsd) * 100 : 0;
-
-    const nCountries = efficiencyInfo.totalCountries;
-    const evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${efficiencyInfo.rank}/${nCountries})`;
-
-    // Recommendation from overspend ratio
-    let recommendation: string;
-    if (efficiencyInfo.overspendRatio >= 3) recommendation = 'major_decrease';
-    else if (efficiencyInfo.overspendRatio >= 1.5) recommendation = 'decrease';
-    else if (efficiencyInfo.overspendRatio <= 0.8) recommendation = 'increase';
-    else recommendation = 'maintain';
+    if (attribution.scope === 'category_specific') {
+      // The field measures this line, so the field's overspend ratio is the line's.
+      optimalNominal = Math.round(currentUsd / e.overspendRatio);
+      optimalPerCapita = Math.round((currentRealPerCapita / e.overspendRatio) * 100) / 100;
+      gap = Math.round(currentUsd - optimalNominal);
+      gapPercent = currentUsd > 0 ? Math.round((gap / currentUsd) * 1000) / 10 : 0;
+      recommendation = recommendationFromOverspend(e.overspendRatio);
+      evidenceSource = `OECD efficient frontier (${nCountries} countries, rank ${e.rank}/${nCountries})`;
+    }
 
     // Fit a diminishing returns model for informational context
     let drInfo: BudgetCategoryOutput['diminishingReturns'] = null;
@@ -181,15 +300,15 @@ function generateBudgetAnalysis(): BudgetAnalysisOutput {
       };
     }
 
-    categories.push({
+    return {
       id: cat.id,
       name: cat.name,
       currentSpending: currentUsd,
       currentSpendingRealPerCapita: Math.round(currentRealPerCapita * 100) / 100,
-      optimalSpendingPerCapita: Math.round(optimalPerCapita * 100) / 100,
+      optimalSpendingPerCapita: optimalPerCapita,
       optimalSpendingNominal: optimalNominal,
-      gap: Math.round(gap),
-      gapPercent: Math.round(gapPercent * 10) / 10,
+      gap,
+      gapPercent,
       recommendation,
       evidenceSource,
       outcomeMetrics: cat.outcomeMetrics.map(m => ({
@@ -197,51 +316,34 @@ function generateBudgetAnalysis(): BudgetAnalysisOutput {
         value: m.value,
         trend: m.trend,
       })),
-      historicalRealPerCapita: historicalRPC.map(h => ({
+      historicalRealPerCapita: historicalToRealPerCapita(cat.historicalSpending).map(h => ({
         year: h.year,
         nominalBillions: h.nominalBillions,
         realPerCapita: Math.round(h.realPerCapita * 100) / 100,
       })),
       diminishingReturns: drInfo,
-      efficiency: efficiencyInfo,
-    });
-  }
+      efficiency: e,
+      oecdBenchmark: {
+        spendingField: mapping.spendingField,
+        fieldLabel: field.label,
+        scope: attribution.scope,
+        lineShareOfField: attribution.shareOfField,
+      },
+    };
+  });
 
-  // Sort by absolute gap (biggest misallocation first)
-  categories.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
+  // Biggest line-specific misallocation first; lines without a line-specific
+  // benchmark follow, largest first.
+  categories.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap) || b.currentSpending - a.currentSpending);
 
-  // Top recommendations — prioritize categories with efficiency data showing overspend
-  // Deduplicate: multiple US budget categories may map to the same OECD spending field
-  // (e.g., Medicare, Medicaid, Health all map to healthSpendingPerCapitaPpp).
-  // Only show the most relevant one per OECD field.
-  const seenSpendingFields = new Set<string>();
-  const withEfficiency = categories
-    .filter(hasEfficiency)
+  // One recommendation per OECD field, biggest overspend first.
+  const categoriesById = new Map(categories.map(c => [c.id, c]));
+  const topRecommendations = [...findings]
     .sort((a, b) => b.efficiency.overspendRatio - a.efficiency.overspendRatio)
-    .filter(c => {
-      const mapping = OECD_MAPPINGS[c.id];
-      if (!mapping) return true;
-      if (seenSpendingFields.has(mapping.spendingField)) return false;
-      seenSpendingFields.add(mapping.spendingField);
-      return true;
-    });
-
-  const topRecommendations = withEfficiency
     .slice(0, 10)
-    .map(c => {
-      const e = c.efficiency;
-      const savings = e.potentialSavingsTotal;
-      const fmtSavings = savings >= 1e12 ? `$${(savings/1e12).toFixed(1)}T` : `$${(savings/1e9).toFixed(0)}B`;
-      if (e.overspendRatio > 1.2) {
-        return `${c.name}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). ${e.bestCountry.name} spends $${e.bestCountry.spendingPerCapita}/cap with ${e.outcomeName} ${e.bestCountry.outcome}. Overspend: ${e.overspendRatio}x. Potential savings: ${fmtSavings}/yr`;
-      } else if (e.overspendRatio < 0.8) {
-        return `${c.name}: ${JURISDICTION.name} underspends at $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Floor: $${e.floorSpendingPerCapita}/cap.`;
-      } else {
-        return `${c.name}: ${JURISDICTION.name} spends $${e.spendingPerCapita}/cap (rank ${e.rank}/${e.totalCountries}). Near floor ($${e.floorSpendingPerCapita}/cap). ${e.outcomeName}: ${e.outcome}`;
-      }
-    });
+    .map(finding => describeFinding(finding, categoriesById));
 
-  return {
+  const report: GeneratedBudgetAnalysis = {
     jurisdiction: JURISDICTION.name,
     totalSpendingNominal,
     categories,
@@ -261,16 +363,21 @@ function generateBudgetAnalysis(): BudgetAnalysisOutput {
       dataClamping: 'OSL clamped to [50% min, 150% max] of observed cross-country spending',
       lowFitGuard: 'Models with R² < 0.3 constrained to [0.5×, 2×] current spending',
       nonDiscretionary: 'Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization',
+      lineAttribution: 'An OECD field sets a line\'s optimal only when the line is at least half of the spending the field measures (oecdBenchmark.scope = category_specific). Every other line is a national_field_proxy: its optimal is null, and its efficiency block describes the national field, not the line.',
     },
     note: 'Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics.',
   };
+
+  return { report, findings };
 }
 
 // ─── Policy Analysis (OPG) ──────────────────────────────────────────
 
 import { STRUCTURAL_POLICY_REFORMS, type PolicyRecommendation } from '@optimitron/data';
 
-type PolicyInput = PolicyRecommendation;
+type PolicyInput = PolicyRecommendation & { oecdSpendingField?: string };
+type GeneratedPolicy = PolicyOutput & { oecdSpendingField?: string };
+type GeneratedPolicyAnalysis = Omit<PolicyAnalysisOutput, 'policies'> & { policies: GeneratedPolicy[] };
 
 // Structural reforms from the data package (jurisdiction-agnostic, evidence-based).
 // Efficiency-derived policies ("reduce spending to cheapest high performer") are
@@ -281,15 +388,22 @@ const STRUCTURAL_REFORMS: PolicyInput[] = [...STRUCTURAL_POLICY_REFORMS];
 // These are spending reallocations, not structural reforms — the "effect" is the
 // savings redirected as Optimization Dividend (income) and the outcome improvement
 // from matching the high performer's level (health, if the outcome is life expectancy).
-function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): PolicyInput[] {
+// One policy per OECD spending field: the policy is named for what the field
+// measures, and its effects are the field's, computed once.
+function generateEfficiencyPolicies(
+  findings: FieldEfficiencyFinding[],
+  categoryNames: ReadonlyMap<string, string>,
+): PolicyInput[] {
   const MEDIAN_INCOME = JURISDICTION.medianIncome;
   const HOUSEHOLDS = JURISDICTION.households;
 
-  return budgetCategories
-    .filter(hasEfficiency)
-    .filter(c => c.efficiency.overspendRatio >= 1.5)
-    .map(c => {
-      const e = c.efficiency;
+  return findings
+    .filter(f => f.efficiency.overspendRatio >= 1.5)
+    .map(f => {
+      const e = f.efficiency;
+      const field = OECD_FIELDS[f.spendingField as OECDSpendingField];
+      const fieldName = lowerFirst(field.label);
+      const lineNames = f.lineIds.map(id => categoryNames.get(id) ?? id).join(', ');
       const savingsPerHH = Math.round(e.potentialSavingsTotal / HOUSEHOLDS);
       const incomeEffect = savingsPerHH / MEDIAN_INCOME;
 
@@ -302,10 +416,10 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
       const healthEffect = isLifeExpOutcome ? Math.round((leGap * 0.5 / 66) * 1000) / 1000 : 0;
 
       return {
-        name: `${c.name}: Adopt ${e.bestCountry.name}'s Approach`,
+        name: `${field.policySubject}: Adopt ${e.bestCountry.name}'s Approach`,
         type: 'budget_allocation',
-        category: c.name.toLowerCase().replace(/[^a-z]+/g, '_'),
-        description: `Reduce ${c.name.toLowerCase()} spending to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap; ${JURISDICTION.name} gets ${e.outcome} at $${e.spendingPerCapita}/cap.`,
+        category: field.policyCategory,
+        description: `Reduce ${fieldName} to the cheapest high-performer floor. ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap; ${JURISDICTION.name} gets ${e.outcome} at $${e.spendingPerCapita}/cap.`,
         effectSize: Math.min(e.overspendRatio / 5, 1.5),
         studyCount: e.totalCountries,
         hasPredecessor: true, // other countries already do this
@@ -317,19 +431,23 @@ function generateEfficiencyPolicies(budgetCategories: BudgetCategoryOutput[]): P
         outcomeCount: 1,
         incomeEffect: Math.round(incomeEffect * 1000) / 1000,
         healthEffect,
-        rationale: `Cheapest-high-performer analysis: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend.`,
-        currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap, ranks ${e.rank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
+        rationale: `Cheapest-high-performer analysis of ${fieldName}: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: ${lineNames}.`,
+        currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap on ${fieldName}, ranks ${e.rank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
         recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpendingPerCapita}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Optimization Dividend.`,
         blockingFactors: ['political_opposition'],
+        oecdSpendingField: f.spendingField,
       } satisfies PolicyInput;
     });
 }
 
-function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]): PolicyAnalysisOutput {
-  const efficiencyPolicies = generateEfficiencyPolicies(budgetCategories);
+function generatePolicyAnalysis(
+  findings: FieldEfficiencyFinding[],
+  categoryNames: ReadonlyMap<string, string>,
+): GeneratedPolicyAnalysis {
+  const efficiencyPolicies = generateEfficiencyPolicies(findings, categoryNames);
   const allPolicies = [...efficiencyPolicies, ...STRUCTURAL_REFORMS];
 
-  const policies = allPolicies.map(p => {
+  const policies = allPolicies.map((p): GeneratedPolicy => {
     const method: AnalysisMethod = p.hasRCT ? 'rct' : 'cross_sectional';
     const bh = {
       strength: scoreStrength(p.effectSize),
@@ -381,6 +499,7 @@ function generatePolicyAnalysis(budgetCategories: BudgetCategoryOutput[]): Polic
       currentStatus: p.currentStatus,
       recommendedTarget: p.recommendedTarget,
       blockingFactors: p.blockingFactors,
+      ...(p.oecdSpendingField ? { oecdSpendingField: p.oecdSpendingField } : {}),
     };
   });
 
@@ -434,7 +553,7 @@ const SPENDING_CATEGORIES = SPENDING_CATEGORIES_JSON as Array<{
 // Natural experiments kept as standalone file for now — needs OPG pipeline integration
 
 console.warn('Generating budget analysis...');
-const budgetAnalysis = generateBudgetAnalysis();
+const { report: budgetAnalysis, findings: fieldFindings } = generateBudgetAnalysis();
 
 // Attach efficient frontier deciles to budget report
 const outcomeNames: Record<string, string> = {
@@ -473,14 +592,16 @@ writeTypedDataFile(
 );
 console.warn(`  ✅ ${budgetAnalysis.categories.length} categories → us-budget-analysis.ts`);
 
-const withOSL = budgetAnalysis.categories.filter(c => c.diminishingReturns !== null);
-const withRecs = budgetAnalysis.categories.filter(c => c.recommendation !== 'maintain');
-console.warn(`  📊 ${withOSL.length} with OECD-backed OSL, ${withRecs.length} with non-maintain recommendations`);
+const lineSpecific = budgetAnalysis.categories.filter(c => c.oecdBenchmark.scope === 'category_specific');
+console.warn(`  📊 ${lineSpecific.length} with a line-specific OECD benchmark, ${budgetAnalysis.categories.length - lineSpecific.length} benchmarked only against a national field`);
 
 // ── Generate policy analysis ──────────────────────────────────────
 
 console.warn('\nGenerating policy analysis...');
-const policyAnalysis = generatePolicyAnalysis(budgetAnalysis.categories);
+const policyAnalysis = generatePolicyAnalysis(
+  fieldFindings,
+  new Map(budgetAnalysis.categories.map(c => [c.id, c.name])),
+);
 
 // Natural experiments kept as standalone file — needs OPG pipeline integration to regenerate
 writeTypedDataFile(

@@ -10,6 +10,7 @@
  */
 
 import type { EfficiencyAnalysis } from './efficiency-analysis.js';
+import type { EfficiencyEvidenceScope } from './efficiency-attribution.js';
 
 export interface BudgetReportDiminishingReturns {
   modelType: string;
@@ -32,13 +33,28 @@ export interface BudgetReportHistoricalPoint {
   realPerCapita: number;
 }
 
+/** The cross-country field behind a category's `efficiency`, and whether it measures the category itself. */
+export interface BudgetReportOecdBenchmark {
+  /** OECD panel spending field, e.g. 'militarySpendingPerCapitaPpp' */
+  spendingField: string;
+  /** What the field measures, e.g. 'Total health spending, public and private' */
+  fieldLabel: string;
+  /** `national_field_proxy` means `efficiency` describes the field, not this line */
+  scope: EfficiencyEvidenceScope;
+  /** This line's real spending per capita ÷ the field's spending per capita */
+  lineShareOfField: number;
+}
+
 export interface BudgetReportCategory {
   id: string;
   name: string;
   currentSpending: number;
   currentSpendingRealPerCapita: number;
-  optimalSpendingPerCapita: number;
-  optimalSpendingNominal: number;
+  /** Null when no benchmark measures this line (see `oecdBenchmark.scope`) */
+  optimalSpendingPerCapita: number | null;
+  /** Null when no benchmark measures this line (see `oecdBenchmark.scope`) */
+  optimalSpendingNominal: number | null;
+  /** current − optimal; 0 when the optimal is null */
   gap: number;
   gapPercent: number;
   recommendation: string;
@@ -47,6 +63,7 @@ export interface BudgetReportCategory {
   historicalRealPerCapita?: BudgetReportHistoricalPoint[];
   diminishingReturns?: BudgetReportDiminishingReturns;
   efficiency?: EfficiencyAnalysis;
+  oecdBenchmark?: BudgetReportOecdBenchmark;
 }
 
 export interface EfficientFrontierDecile {

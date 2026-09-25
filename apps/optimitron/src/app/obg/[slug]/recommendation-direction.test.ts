@@ -29,6 +29,16 @@ describe("recommendationDirection", () => {
     ).toBe("decrease");
   });
 
+  it("returns neutral for a line with no line-specific optimal", () => {
+    expect(
+      recommendationDirection({
+        currentSpending: 325,
+        optimalSpendingNominal: null,
+        recommendation: "no_line_benchmark",
+      }),
+    ).toBe("neutral");
+  });
+
   it("returns neutral when current and optimal spending match", () => {
     expect(
       recommendationDirection({
