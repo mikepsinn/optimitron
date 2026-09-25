@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { ROUTES, warOnDiseaseUrl } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
 
 export function TreatyWarningBox() {
   return (
@@ -23,7 +23,7 @@ export function TreatyWarningBox() {
         </div>
         <div className="flex-shrink-0 w-full md:w-auto">
           <Link
-            href={warOnDiseaseUrl(ROUTES.vote)}
+            href={ROUTES.vote}
             className="inline-flex w-full items-center justify-center border-4 border-primary bg-foreground px-6 py-3 text-lg font-black uppercase text-background shadow-none transition-colors hover:bg-background hover:text-foreground md:w-auto"
           >
             FIX IT

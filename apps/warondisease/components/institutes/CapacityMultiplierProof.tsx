@@ -48,7 +48,7 @@ export function CapacityMultiplierProof() {
 
           <Card className="bg-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-5xl sm:text-6xl font-black mb-4 text-background">
-              <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} display="withUnit" />
+              <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} />
             </div>
             <div className="text-xl font-black mb-2 text-background">MORE CAPACITY</div>
             <div className="font-bold text-background">

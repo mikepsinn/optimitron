@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/retroui/Button";
 import { BrutalCard } from "@/components/ui/brutal-card";
-import { ROUTES, warOnDiseaseUrl } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
 
 interface TaskHowToSignCardProps {
   leaderName: string;
@@ -23,7 +23,7 @@ export function TaskHowToSignCard({ leaderName }: TaskHowToSignCardProps) {
           30 seconds. 
         </p>
         <Button asChild className="font-black uppercase" size="lg">
-          <Link href={warOnDiseaseUrl(ROUTES.treaty)}>Sign Treaty →</Link>
+          <Link href={ROUTES.treaty}>Sign Treaty →</Link>
         </Button>
       </div>
     </BrutalCard>
