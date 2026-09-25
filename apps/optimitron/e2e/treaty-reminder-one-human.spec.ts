@@ -5,6 +5,7 @@
  *   pnpm --filter @optimitron/web run e2e -- treaty-reminder-one-human --reporter=list
  */
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@optimitron/db/system-identities";
 import { DEMO_PASSWORD, signInUser } from "./utils/auth";
 
 interface TestUser {
@@ -114,8 +115,8 @@ test.describe("treaty reminder one-human mode", () => {
     const draftMessage = inviteSection.getByLabel(
       `Reminder message for ${recipientFirstName}`,
     );
-    const origin = await page.evaluate(() => window.location.origin);
-    await expect(draftMessage).toHaveValue(new RegExp(`${escapeRegex(origin)}/vote/`));
+    const voteLinkPattern = new RegExp(`${escapeRegex(WAR_ON_DISEASE_CANONICAL_ORIGIN)}/vote/`);
+    await expect(draftMessage).toHaveValue(voteLinkPattern);
     await expect(draftMessage).not.toHaveValue(/\[generated referral link\]/);
     await expect(draftMessage).not.toHaveValue(/invite=/);
 
@@ -149,7 +150,7 @@ test.describe("treaty reminder one-human mode", () => {
 
     await expect(
       inviteSection.getByLabel(`Reminder message for ${directRecipientFirstName}`),
-    ).toHaveValue(new RegExp(`${escapeRegex(origin)}/vote/`));
+    ).toHaveValue(voteLinkPattern);
     await inviteSection.getByRole("button", { name: "WhatsApp" }).click();
 
     await expect

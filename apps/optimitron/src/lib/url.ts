@@ -1,3 +1,4 @@
+import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@optimitron/db/system-identities";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { ROUTES } from "@/lib/routes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
@@ -10,9 +11,17 @@ export function getBaseUrl(): string {
   return getConfiguredSiteOrigin({ allowLocalFallback: true });
 }
 
-/** Build a referral link: /vote/identifier — clean URL, redirects to focused vote flow with ref stored */
-export function buildReferralUrl(identifier?: string | null, baseUrl: string = getBaseUrl()): string {
-  return identifier ? `${baseUrl}/vote/${identifier}` : baseUrl;
+/**
+ * Build a referral link: /vote/identifier on warondisease.org, which stores the
+ * ref and opens the vote flow. The vote flow lives only there, so every site
+ * links to it directly instead of through this site's redirect. Without an
+ * identifier there is nothing to credit, so the link is `fallbackUrl`.
+ */
+export function buildReferralUrl(
+  identifier?: string | null,
+  fallbackUrl: string = getBaseUrl(),
+): string {
+  return identifier ? `${WAR_ON_DISEASE_CANONICAL_ORIGIN}/vote/${identifier}` : fallbackUrl;
 }
 
 export function buildInviteReferralUrl(

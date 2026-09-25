@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
 import { pinAppNextAuthInstance } from "../shared-next-config.mjs";
+import { LEGACY_EXTERNAL_REDIRECTS } from "./legacy-redirects.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.join(__dirname, "../..");
@@ -94,14 +95,7 @@ const nextConfig = {
         destination: "https://impact.warondisease.org",
         permanent: false,
       },
-      // The Earth Optimization Game pages live on optimitron.com. This domain
-      // served them while it was an Optimitron site variant, so old links still
-      // arrive here.
-      ...["/demo", "/video", "/game", "/prize"].map((source) => ({
-        source,
-        destination: `https://optimitron.com${source}`,
-        permanent: true,
-      })),
+      ...LEGACY_EXTERNAL_REDIRECTS,
       {
         source: "/stupid-questions",
         destination:
