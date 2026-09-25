@@ -71,13 +71,11 @@ export default async function AgenciesIndexPage({ params }: PageProps) {
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {agencies.map((agency) => (
-              <Link
+              <AgencyGradeChart
                 key={agency.agencyId}
+                agency={agency}
                 href={`/governments/${gov.code}/agencies/${agency.agencyId}`}
-                className="block hover:translate-x-[-2px] hover:translate-y-[-2px] transition-transform"
-              >
-                <AgencyGradeChart agency={agency} linkSources={false} />
-              </Link>
+              />
             ))}
           </div>
         </section>
