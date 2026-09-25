@@ -145,8 +145,8 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         <ArcadeTag>Agency Report Card</ArcadeTag>
         <div className="flex items-start gap-4">
           <span className="text-5xl sm:text-6xl">{agency.emoji}</span>
-          <div className="flex-grow">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-foreground">
+          <div className="min-w-0 flex-grow">
+            <h1 className="break-words hyphens-auto text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-foreground">
               {agency.agencyName}
             </h1>
             <p className="text-lg font-bold text-muted-foreground mt-1">
@@ -166,7 +166,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         <h2 className="text-xl sm:text-2xl font-black uppercase text-foreground mb-4">
           Spending vs. Outcomes
         </h2>
-        <AgencyGradeChart agency={agency} showAllOutcomes />
+        <AgencyGradeChart agency={agency} variant="full" />
       </section>
 
       {/* Institutional stats — "why it's broken" data from deprecated agency analysis */}
@@ -189,7 +189,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                 <div className="text-xs font-black uppercase text-background">
                   Annual Savings If Deprecated
                 </div>
-                <div className="text-3xl sm:text-4xl font-black text-foreground mt-1">
+                <div className="text-3xl sm:text-4xl font-black text-background mt-1">
                   {institutionalData.annualSavings}
                 </div>
               </div>
@@ -243,13 +243,13 @@ export default async function AgencyDetailPage({ params }: PageProps) {
           {/* Outcome trend */}
           {outcomeTrend && outcomeSeries && (
             <BrutalCard bgColor="pink" shadowSize={8} padding="md">
-              <div className="text-xs font-black uppercase text-background mb-1">
+              <div className="text-xs font-black uppercase text-foreground mb-1">
                 {outcomeSeries.label} ({outcomeTrend.startYear}–{outcomeTrend.endYear})
               </div>
-              <div className="text-3xl font-black text-background">
+              <div className="text-3xl font-black text-foreground">
                 {outcomeTrend.direction} {outcomeTrend.changePercent}
               </div>
-              <div className="text-sm font-bold text-background mt-2">
+              <div className="text-sm font-bold text-foreground mt-2">
                 {outcomeSeries.direction === "lower_is_better"
                   ? "Lower is better"
                   : "Higher is better"}

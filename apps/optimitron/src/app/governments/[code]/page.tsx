@@ -317,7 +317,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             {gov.clinicalTrialSpending && (
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-black uppercase text-background">
+                  <span className="text-xs font-black uppercase text-foreground">
                     🧪 Clinical Trials
                   </span>
                   <span className="text-sm font-black text-foreground">
@@ -342,7 +342,7 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             {gov.govMedicalResearchSpending && (
               <div>
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-black uppercase text-background">
+                  <span className="text-xs font-black uppercase text-foreground">
                     🧬 Total Medical Research
                   </span>
                   <span className="text-sm font-black text-foreground">
@@ -545,7 +545,11 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {agencies.map((agency) => (
-                <AgencyGradeChart key={agency.agencyId} agency={agency} />
+                <AgencyGradeChart
+                  key={agency.agencyId}
+                  agency={agency}
+                  href={`/governments/${gov.code}/agencies/${agency.agencyId}`}
+                />
               ))}
             </div>
           </section>
@@ -578,10 +582,10 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       {/* Politician Alignment */}
       <section className="mb-12">
         <BrutalCard bgColor="pink" shadowSize={8} padding="lg">
-          <h2 className="mb-3 text-2xl font-black uppercase text-background">
+          <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
             🗳️ {gov.name} Politician Alignment
           </h2>
-          <p className="mb-6 text-lg font-bold text-background">
+          <p className="mb-6 text-lg font-bold text-foreground">
             Every politician&apos;s votes scored against what citizens actually want
             via pairwise comparison. The gap between what they vote for and what
             you&apos;d vote for, expressed as a single number.

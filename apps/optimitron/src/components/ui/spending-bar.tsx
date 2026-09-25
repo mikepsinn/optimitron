@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
 
+// The track is bg-background, so a fill must differ from it or the bar reads as empty.
 const colorMap = {
   red: "bg-foreground",
-  cyan: "bg-background",
+  cyan: "bg-muted-foreground",
   green: "bg-foreground",
-  yellow: "bg-background",
+  yellow: "bg-muted-foreground",
 } as const;
 
 interface SpendingBarProps {

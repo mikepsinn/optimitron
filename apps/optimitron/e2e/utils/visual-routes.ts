@@ -443,7 +443,10 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredSelector: "h1",
   },
   {
-    covers: ["apps/optimitron/src/app/agencies/dih/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/agencies/dih/page.tsx",
+      "apps/optimitron/src/components/wishonia-agency/EarthAgencyPerformanceSection.tsx",
+    ],
     name: "agency-dih",
     path: "/agencies/dih",
     required: true,
@@ -467,6 +470,17 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredText: /^Citizen Vote$/,
   },
   {
+    // Each agency card links to the agency's full report.
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/page.tsx",
+      "apps/optimitron/src/components/ui/spending-bar.tsx",
+    ],
+    name: "government-us",
+    path: "/governments/US",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
     // Each agency card links to its report, so its chart sources render as text.
     covers: [
       "apps/optimitron/src/app/governments/[code]/agencies/page.tsx",
@@ -488,10 +502,13 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredSelector: "h1",
   },
   {
-    covers: ["apps/optimitron/src/app/governments/[code]/politicians/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/politicians/page.tsx",
+      "apps/optimitron/src/components/ui/spending-bar.tsx",
+    ],
     name: "government-politicians",
     path: "/governments/US/politicians",
-    // One congress.gov photo per member: 554 remote images.
+    // One congress.gov photo per member: 546 remote images.
     placeholderImageOrigins: [BIOGUIDE_PHOTO_ORIGIN],
     required: true,
     // The page's only h1 belongs to its no-data state; a member row and the
