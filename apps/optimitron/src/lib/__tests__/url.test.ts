@@ -13,12 +13,12 @@ import {
 import { ROUTES } from "@/lib/routes";
 
 describe("url helpers", () => {
-  it("builds clean referral links at /vote/identifier", () => {
+  it("links referrals to the vote flow on warondisease.org from any site", () => {
     expect(
       buildUserReferralUrl({ handle: "jane", referralCode: "REF123" }, "https://example.com"),
-    ).toBe("https://example.com/vote/jane");
+    ).toBe("https://warondisease.org/vote/jane");
     expect(buildReferralUrl("REF123", "https://example.com")).toBe(
-      "https://example.com/vote/REF123",
+      "https://warondisease.org/vote/REF123",
     );
     expect(buildReferralUrl(null, "https://example.com")).toBe(
       "https://example.com",
@@ -32,10 +32,10 @@ describe("url helpers", () => {
         "invite_123",
         "https://example.com",
       ),
-    ).toBe("https://example.com/vote/jane?invite=invite_123");
+    ).toBe("https://warondisease.org/vote/jane?invite=invite_123");
     expect(
       buildInviteReferralUrl("REF123", "invite value", "https://example.com"),
-    ).toBe("https://example.com/vote/REF123?invite=invite%20value");
+    ).toBe("https://warondisease.org/vote/REF123?invite=invite%20value");
     expect(buildInviteReferralUrl(null, "invite_123", "https://example.com")).toBe(
       "https://example.com",
     );
