@@ -32,6 +32,7 @@
     "./datasets/us-wishocratic-items": "./src/datasets/us-wishocratic-items.ts",
     "./datasets/government-report-cards": "./src/datasets/government-report-cards.ts",
     "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts",
+    "./datasets/gpu-compute": "./src/datasets/gpu-compute.ts",
     "./datasets/us-cia-coups": "./src/datasets/us-cia-coups.ts",
     "./datasets/us-fda-approved-drug-deaths": "./src/datasets/us-fda-approved-drug-deaths.ts",
     "./datasets/us-government-lies": "./src/datasets/us-government-lies.ts",

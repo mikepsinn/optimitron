@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { GPU_FLEET_CATALOG, type GpuFleetCard } from "@optimitron/data";
+// The subpath, not the package root: the root bundles every dataset into this client component.
+import { GPU_FLEET_CATALOG, type GpuFleetCard } from "@optimitron/data/datasets/gpu-compute";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import {
   BENCHMARK_RETURNS,
