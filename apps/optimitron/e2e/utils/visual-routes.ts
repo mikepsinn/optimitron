@@ -442,17 +442,24 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     path: "/civic/votes/visual_document_review_civic_vote",
     required: true,
     requiredSelector: "h1",
-    requiredText: /Visual Review Act/,
+    requiredText: /^Citizen Vote$/,
   },
   {
-    covers: ["apps/optimitron/src/app/governments/[code]/agencies/page.tsx"],
+    // Each agency card links to its report, so its chart sources render as text.
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/agencies/page.tsx",
+      "apps/optimitron/src/components/shared/AgencyGradeChart.tsx",
+    ],
     name: "government-agencies",
     path: "/governments/US/agencies",
     required: true,
     requiredSelector: "h1",
   },
   {
-    covers: ["apps/optimitron/src/app/governments/[code]/agencies/[agencyId]/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/agencies/[agencyId]/page.tsx",
+      "apps/optimitron/src/components/shared/AgencyGradeChart.tsx",
+    ],
     name: "government-agency",
     path: "/governments/US/agencies/nih",
     required: true,
@@ -466,9 +473,9 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredSelector: "h1",
   },
   {
-    // An unknown bioguide ID renders the page's not-found state.
+    // An unknown bioguide ID renders the page's not-found state. The page
+    // streams, so the status stays 200.
     covers: ["apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx"],
-    expectNotFound: true,
     name: "politician-not-found",
     path: "/governments/US/politicians/VISUAL0000",
     required: true,
