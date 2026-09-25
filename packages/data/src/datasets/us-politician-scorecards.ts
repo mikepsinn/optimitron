@@ -88,8 +88,10 @@ export interface GeneratedPresidentScorecard {
 
 export interface GeneratedPoliticianScorecardData {
   generatedAt: string;
-  /** The Congresses whose members are scored, such as [118, 119]. */
-  congress: number[];
+  /** The latest Congress whose members are scored. */
+  congress: number;
+  /** Every Congress whose members are scored, such as [118, 119]. */
+  congresses: number[];
   memberCount: number;
   systemWideRatio: number;
   scorecards: GeneratedPoliticianScorecard[];

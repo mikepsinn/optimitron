@@ -625,7 +625,8 @@ async function main() {
   // ─── Write output ──────────────────────────────────────────────────
   const output = {
     generatedAt: new Date().toISOString(),
-    congress: [...MEMBER_CONGRESSES],
+    congress: Math.max(...MEMBER_CONGRESSES),
+    congresses: [...MEMBER_CONGRESSES],
     memberCount: scorecards.length,
     // The latest enacted NDAA (FY2026, S. 1071: $900.6B) over NIH clinical-trial
     // spending (~$810M a year, JAMA Health Forum).
