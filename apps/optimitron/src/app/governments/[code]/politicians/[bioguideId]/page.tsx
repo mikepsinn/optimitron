@@ -237,7 +237,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               {formatRatio(politician.ratio)}
             </div>
             <p className="text-xs font-bold text-muted-foreground mt-1">
-              System average: {systemRatio.toLocaleString()}:1
+              Federal budget as a whole: {systemRatio.toLocaleString()}:1
             </p>
           </BrutalCard>
         </div>
@@ -495,12 +495,12 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           </h3>
           <p className="text-base font-bold text-foreground leading-relaxed">
             {politician.militaryDollarsVotedFor === 0 && politician.clinicalTrialDollarsVotedFor === 0
-              ? `${politician.name} voted against both the military spending and the clinical-trial funding in the tracked bills.`
+              ? `${politician.name} voted for none of the tracked military spending or clinical-trial funding.`
               : politician.militaryDollarsVotedFor === 0
                 ? `${politician.name} voted for clinical-trial funding and for none of the tracked military spending.`
                 : politician.clinicalTrialDollarsVotedFor === 0
                   ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in military spending and no clinical-trial funding.`
-                  : `${politician.name} voted for $${politician.ratio.toLocaleString()} in military spending for every $1 of clinical-trial funding. The average across all members is ${systemRatio.toLocaleString()}:1.`
+                  : `${politician.name} voted for $${politician.ratio.toLocaleString()} in military spending for every $1 of clinical-trial funding. The federal budget as a whole spends ${systemRatio.toLocaleString()}:1.`
             }
           </p>
         </BrutalCard>

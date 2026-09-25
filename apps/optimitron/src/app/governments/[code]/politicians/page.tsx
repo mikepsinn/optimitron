@@ -73,7 +73,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
           <Container>
             <SectionHeader
               title="Military Spending vs Clinical-Trial Funding"
-              subtitle={`Across all members, the tracked bills they voted for hold ${scorecardData.systemWideRatio.toLocaleString()} dollars of military spending for every 1 dollar of clinical-trial funding.`}
+              subtitle={`The federal budget spends ${scorecardData.systemWideRatio.toLocaleString()} dollars on the military for every 1 dollar of government clinical-trial funding. Each member's own ratio is in the table.`}
               size="lg"
             />
             <PoliticianScorecardTable
