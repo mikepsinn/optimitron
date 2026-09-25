@@ -5,7 +5,6 @@ import {
 } from "@optimitron/db/constants";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -37,11 +36,15 @@ export type VisualRoute = {
   submitSearch?: boolean;
   typeSearchQuery?: string;
   path: string;
+  /**
+   * Image origins the capture answers with a blank placeholder. The capture
+   * loads every lazy image, and a page with hundreds of remote photos can
+   * outlast the image-settle timeout.
+   */
+  placeholderImageOrigins?: string[];
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
-  /** Capture under a non-default site variant via the review-only query override. */
-  siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
 
@@ -60,7 +63,7 @@ export type VisualCaptureKind = "app" | "legacy-host";
 type VisualRouteOwnership = Pick<
   VisualRoute,
   "appId" | "appLabel" | "captureKind"
-> & { siteVariant: SiteKey };
+>;
 
 type VisualRouteSpec = Omit<
   VisualRoute,
@@ -79,46 +82,11 @@ const VISUAL_APP_LABELS: Record<VisualAppId, string> = {
   wishocracy: "Wishocracy",
 };
 
-const WAR_ON_DISEASE_ROUTE_PREFIXES = [
-  ROUTES.treaty,
-  ROUTES.vote,
-  ROUTES.questions,
-  "/r",
-  ROUTES.declaration,
-  ROUTES.joke,
-  ROUTES.shirt,
-  ROUTES.poster,
-  ROUTES.doorToDoor,
-  ROUTES.love,
-  ROUTES.missions,
-  ROUTES.fixAi,
-  ROUTES.foundations,
-  ROUTES.plaintiffs,
-  ROUTES.court,
-  ROUTES.humanityVGovernment,
-  ROUTES.join,
-  ROUTES.signatories,
-  ROUTES.organizations,
-  ROUTES.feedback,
-  ROUTES.employees,
-] as const;
-
-export function getVisualRouteOwnership(
-  pathname: string,
-): VisualRouteOwnership {
-  const path = pathname.split(/[?#]/u, 1)[0];
-  const isWarOnDiseaseRoute = WAR_ON_DISEASE_ROUTE_PREFIXES.some(
-    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
-  );
-  const appId: VisualAppId = isWarOnDiseaseRoute
-    ? "warondisease"
-    : "optimitron";
-
+export function getVisualRouteOwnership(): VisualRouteOwnership {
   return {
-    appId,
-    appLabel: VISUAL_APP_LABELS[appId],
-    captureKind: isWarOnDiseaseRoute ? "legacy-host" : "app",
-    siteVariant: isWarOnDiseaseRoute ? "warOnDisease" : "optimitron",
+    appId: "optimitron",
+    appLabel: VISUAL_APP_LABELS.optimitron,
+    captureKind: "app",
   };
 }
 
@@ -234,7 +202,6 @@ const PERSONAL_QUEUE_SECTION_FILE =
 const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
 const SEARCH_DISCOVERY_FILE =
   "apps/optimitron/src/app/search/search-discovery.tsx";
-const FOUNDATIONS_PAGE_FILE = "apps/optimitron/src/app/foundations/page.tsx";
 const PEOPLE_DIRECTORY_PAGE_FILE = "apps/optimitron/src/app/people/page.tsx";
 const NOT_FOUND_PAGE_FILE = "apps/optimitron/src/app/not-found.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
@@ -264,11 +231,16 @@ const SHARED_LANDING_SECTION_FILES = [
   "apps/optimitron/src/components/landing/TreatyVoteSection.tsx",
   "apps/optimitron/src/components/landing/WhyPlaySection.tsx",
   "apps/optimitron/src/components/landing/WishocracyPreview.tsx",
+  "apps/optimitron/src/components/shared/ParasiticEconomyChart.tsx",
 ];
 
 // optimitron.com/ renders OptimitronLandingPage, not the game page.
 const OPTIMITRON_HOME_FILES = [
   "apps/optimitron/src/app/page.tsx",
+  // Global styles, the footer, and the analytics tag load on every page.
+  "apps/optimitron/src/app/globals.css",
+  "apps/optimitron/src/components/Footer.tsx",
+  "apps/optimitron/src/components/site/MicrosoftClarity.tsx",
   "apps/optimitron/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
   "apps/optimitron/src/components/landing/LovingTakeoverSection.tsx",
   "apps/optimitron/src/components/landing/TheBillSection.tsx",
@@ -324,6 +296,16 @@ const PRIZE_PAGE_FILES = [
 
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
+  [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
+  [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
+  [
+    ROUTES.eosShareholders,
+    ["apps/optimitron/src/components/eos-shareholder/EosShareholderLandingPage.tsx"],
+  ],
+  [ROUTES.messages, ["apps/optimitron/src/app/messages/page.tsx"]],
+  [ROUTES.organizations, ["apps/optimitron/src/app/organizations/page.tsx"]],
+  [ROUTES.shirt, ["apps/optimitron/src/app/shirt/page.tsx"]],
+  [ROUTES.tasks, ["apps/optimitron/src/app/tasks/page.tsx"]],
   [
     ROUTES.eos,
     [
@@ -335,14 +317,6 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/components/eos-retro/MachineDiagram.tsx",
     ],
   ],
-  [
-    ROUTES.fixAi,
-    [
-      "apps/optimitron/src/app/fix-ai/content.ts",
-      "apps/optimitron/src/app/fix-ai/corpus.server.ts",
-      "apps/optimitron/src/app/fix-ai/page.tsx",
-    ],
-  ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [
     ROUTES.methodology,
@@ -351,17 +325,13 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/app/methodology/page.tsx",
     ],
   ],
-  [
-    ROUTES.poster,
-    [
-      "apps/optimitron/src/app/poster/page.tsx",
-      "apps/optimitron/src/app/poster/poster-client.tsx",
-    ],
-  ],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.prize, PRIZE_PAGE_FILES],
   [ROUTES.profile, ["apps/optimitron/src/components/Providers.tsx"]],
-  [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
+  [
+    ROUTES.scoreboard,
+    [POLITICIAN_SCORECARD_TABLE_FILE, "apps/optimitron/src/app/scoreboard/page.tsx"],
+  ],
   [ROUTES.services, ["apps/optimitron/src/app/services/page.tsx"]],
   [
     ROUTES.tasksTree,
@@ -373,21 +343,22 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
 ]);
 
-const PRESIDENT_TASK_LIST_SELECTOR =
-  '[data-visual-section="president-task-list"]';
-
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
-  [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
+  [ROUTES.dashboard, "h1"],
+  [ROUTES.donate, "h1"],
+  [ROUTES.eosShareholders, "h1"],
+  [ROUTES.messages, "h1"],
+  [ROUTES.organizations, "h1"],
+  [ROUTES.shirt, "h1"],
+  [ROUTES.tasks, "h1"],
   [ROUTES.eos, "h1"],
-  [ROUTES.fixAi, "#next-hour"],
   [ROUTES.game, "#vote"],
   // The home route covers every shared landing section, so without a selector
   // the coverage gate cannot prove any of them rendered. #vote is the last
   // section on the page, the same anchor /game asserts.
   [ROUTES.home, "#vote"],
   [ROUTES.methodology, "#methodology"],
-  [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -399,10 +370,9 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.tasksTree, "#task-tree"],
 ]);
 
-const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
-  ROUTES.employees,
-  ROUTES.profile,
-]);
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.profile]);
+
+const BIOGUIDE_PHOTO_ORIGIN = "https://bioguide.congress.gov";
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
@@ -438,13 +408,111 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredText: /Find the human who should do something/i,
   },
   {
-    covers: [FOUNDATIONS_PAGE_FILE],
-    name: "foundations-links",
-    path: ROUTES.foundations,
+    covers: ["apps/optimitron/src/app/agencies/[agencyId]/page.tsx"],
+    name: "agency-dcbo",
+    path: "/agencies/dcbo",
     required: true,
-    requiredSelector: 'section:has(h1) a:has-text("Open email draft")',
-    requiredText: /Give an organization one share and a letter/i,
-    siteVariant: "warOnDisease",
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dcensus/page.tsx"],
+    name: "agency-dcensus",
+    path: "/agencies/dcensus",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dfec/page.tsx"],
+    name: "agency-dfec",
+    path: "/agencies/dfec",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dih/page.tsx"],
+    name: "agency-dih",
+    path: "/agencies/dih",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    // Managed data gives Mike's user the person handle "mike".
+    covers: ["apps/optimitron/src/app/agencies/dfec/alignment/[identifier]/page.tsx"],
+    name: "alignment-report-mike",
+    path: "/agencies/dfec/alignment/mike",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    // scripts/seed-visual-review-fixtures.ts writes this vote.
+    covers: ["apps/optimitron/src/app/civic/votes/[identifier]/page.tsx"],
+    name: "civic-vote",
+    path: "/civic/votes/visual_document_review_civic_vote",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Citizen Vote$/,
+  },
+  {
+    // Each agency card links to its report, so its chart sources render as text.
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/agencies/page.tsx",
+      "apps/optimitron/src/components/shared/AgencyGradeChart.tsx",
+    ],
+    name: "government-agencies",
+    path: "/governments/US/agencies",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/agencies/[agencyId]/page.tsx",
+      "apps/optimitron/src/components/shared/AgencyGradeChart.tsx",
+    ],
+    name: "government-agency",
+    path: "/governments/US/agencies/nih",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/page.tsx"],
+    name: "government-politicians",
+    path: "/governments/US/politicians",
+    // One congress.gov photo per member: 554 remote images.
+    placeholderImageOrigins: [BIOGUIDE_PHOTO_ORIGIN],
+    required: true,
+    // The page's only h1 belongs to its no-data state; a member row and the
+    // presidents section render only when the generated scorecards load.
+    requiredSelector: 'table a[href="/governments/US/politicians/S001208"]',
+    requiredText: /^Presidential Scorecards$/i,
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx"],
+    name: "politician-scorecard",
+    path: "/governments/US/politicians/S001208",
+    placeholderImageOrigins: [BIOGUIDE_PHOTO_ORIGIN],
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Slotkin, Elissa$/,
+  },
+  {
+    // An unknown bioguide ID renders the page's not-found state. The page
+    // streams, so the status stays 200.
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx"],
+    name: "politician-not-found",
+    path: "/governments/US/politicians/VISUAL0000",
+    required: true,
+    requiredSelector: 'nav[aria-label="Page recovery"] a[href="/search"]',
+    requiredText: /Page Not Found/i,
+  },
+  {
+    covers: [
+      "apps/optimitron/src/app/dysfunction-tax/page.tsx",
+      "apps/optimitron/src/components/landing/PoliticalDysfunctionTaxSection.tsx",
+    ],
+    name: "dysfunction-tax",
+    path: "/dysfunction-tax",
+    required: true,
+    requiredSelector: "section h2",
   },
   {
     covers: [NOT_FOUND_PAGE_FILE],
@@ -454,7 +522,6 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: 'nav[aria-label="Page recovery"] a[href="/search"]',
     requiredText: /Page Not Found/i,
-    siteVariant: "warOnDisease",
   },
   {
     covers: [SEARCH_PAGE_FILE, SEARCH_DISCOVERY_FILE],
@@ -463,15 +530,14 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: '[data-search-popular] a[href="/tasks"]',
     requiredText: /Popular pages/i,
-    siteVariant: "optimitron",
   },
   {
     covers: [SEARCH_DISCOVERY_FILE],
     name: "search-typeahead",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[data-search-suggestions] a[href="/vote"]',
-    siteVariant: "optimitron",
+    requiredSelector:
+      '[data-search-suggestions] a[href="https://warondisease.org/vote"]',
     typeSearchQuery: "vote",
   },
   {
@@ -481,7 +547,6 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: 'form[aria-busy="true"] button:disabled',
     requiredText: /^Searching…$/i,
-    siteVariant: "optimitron",
     submitSearch: true,
     typeSearchQuery: "vote",
   },
@@ -490,8 +555,7 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     name: "search-results",
     path: `${ROUTES.search}?q=vote`,
     required: true,
-    requiredSelector: 'a[href="/vote"]',
-    siteVariant: "optimitron",
+    requiredSelector: 'a[href="https://warondisease.org/vote"]',
   },
   {
     covers: [STANDALONE_VIDEO_PAGE_FILE],
@@ -711,64 +775,11 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRouteSpec[] = filterRedirectOnlyRou
     waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
-// Preserve the old host-rendered pages while their routes move into peer apps.
-// These checks are compatibility evidence, not peer-app captures.
-const LEGACY_HOST_ROUTES: VisualRouteSpec[] = [
-  {
-    appId: "warondisease",
-    appLabel: VISUAL_APP_LABELS.warondisease,
-    captureKind: "legacy-host",
-    name: "legacy-warondisease-home",
-    path: ROUTES.home,
-    required: true,
-    requiredSelector: "#sign",
-    siteVariant: "warOnDisease",
-  },
-  {
-    appId: "warondisease",
-    appLabel: VISUAL_APP_LABELS.warondisease,
-    authenticated: true,
-    captureKind: "legacy-host",
-    name: "legacy-warondisease-dashboard-auth",
-    path: ROUTES.dashboard,
-    required: true,
-    siteVariant: "warOnDisease",
-  },
-  {
-    appId: "dfda",
-    appLabel: VISUAL_APP_LABELS.dfda,
-    captureKind: "legacy-host",
-    name: "variant-dfda-home",
-    path: ROUTES.home,
-    required: true,
-    siteVariant: "dfda",
-  },
-  {
-    appId: "dih",
-    appLabel: VISUAL_APP_LABELS.dih,
-    captureKind: "legacy-host",
-    name: "variant-dih-home",
-    path: ROUTES.home,
-    required: true,
-    siteVariant: "dih",
-  },
-  {
-    appId: "dih",
-    appLabel: VISUAL_APP_LABELS.dih,
-    captureKind: "legacy-host",
-    name: "variant-dih-fund-a-disease",
-    path: ROUTES.dih,
-    required: true,
-    siteVariant: "dih",
-  },
-];
-
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([
   ...PUBLIC_SCREENSHOT_ROUTES,
   ...AUTHENTICATED_SCREENSHOT_ROUTES,
   ...SPECIAL_STATE_ROUTES,
   ...SEEDED_DYNAMIC_ROUTES,
-  ...LEGACY_HOST_ROUTES,
 ]);
 
 function publicRouteHasScreenshot(path: string): boolean {
@@ -786,13 +797,12 @@ function dedupeRoutes(routes: VisualRouteSpec[]): VisualRoute[] {
       throw new Error(`Duplicate visual route name: ${route.name}`);
     }
     seen.add(route.name);
-    const ownership = getVisualRouteOwnership(route.path);
+    const ownership = getVisualRouteOwnership();
     deduped.push({
       ...route,
       appId: route.appId ?? ownership.appId,
       appLabel: route.appLabel ?? ownership.appLabel,
       captureKind: route.captureKind ?? ownership.captureKind,
-      siteVariant: route.siteVariant ?? ownership.siteVariant,
     });
   }
   return deduped;

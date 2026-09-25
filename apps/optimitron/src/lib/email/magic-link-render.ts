@@ -1,7 +1,6 @@
 import type { SendVerificationRequestParams } from "next-auth/providers/email";
 import React from "react";
 import { renderReactEmailHtml } from "@/lib/email/render-react-email";
-import { getSiteFromHost, type SiteKey } from "@/lib/site";
 
 interface MagicLinkCopy {
   buttonLabel: string;
@@ -13,46 +12,27 @@ interface MagicLinkCopy {
 const defaultIntro = "Your sign-in link is below.";
 const defaultNotRequested = "Didn't request this? Ignore it.";
 
-const optimitronCopy: MagicLinkCopy = {
+const magicLinkCopy: MagicLinkCopy = {
   buttonLabel: "Sign in",
   intro: defaultIntro,
   notRequested: defaultNotRequested,
 };
 
-const warOnDiseaseCopy: MagicLinkCopy = {
-  buttonLabel: "Save my vote",
-  intro: "Click the button below to verify your email and save your vote.",
-  textIntro: "Use the URL below to verify your email and save your vote.",
-  notRequested: defaultNotRequested,
-};
-
-const magicLinkCopyBySite: Record<SiteKey, MagicLinkCopy> = {
-  optimitron: optimitronCopy,
-  warOnDisease: warOnDiseaseCopy,
-  dfda: {
-    buttonLabel: "Sign in",
-    intro: defaultIntro,
-    notRequested: defaultNotRequested,
-  },
-  dih: {
-    buttonLabel: "Sign in",
-    intro: defaultIntro,
-    notRequested: defaultNotRequested,
-  },
-};
-
-export function getMagicLinkCopy(host: string): MagicLinkCopy {
-  return magicLinkCopyBySite[getSiteFromHost(host).key];
+export function getMagicLinkCopy(): MagicLinkCopy {
+  return magicLinkCopy;
 }
 
 export const MAGIC_LINK_TEMPLATE_ID = "magic-link";
 
 export function buildMagicLinkSubject(host: string) {
-  if (getSiteFromHost(host).key === "warOnDisease") {
-    return "Save your 1% Treaty vote";
-  }
-
   return `Sign in to ${host}`;
+}
+
+// Only optimitron.com sends sign-in links from this app.
+export function buildMagicLinkFromHeader() {
+  return formatSystemEmailFromHeader(
+    getSiteConfig("optimitron").emailBranding.fromName,
+  );
 }
 
 export function escapeHtml(value: string) {
@@ -66,10 +46,9 @@ export function escapeHtml(value: string) {
 
 export function buildMagicLinkHtml(
   url: string,
-  host: string,
   _theme: SendVerificationRequestParams["theme"],
 ) {
-  const copy = getMagicLinkCopy(host);
+  const copy = getMagicLinkCopy();
   return renderReactEmailHtml(
     React.createElement(MagicLinkReactEmail, {
       url,
@@ -80,8 +59,8 @@ export function buildMagicLinkHtml(
   );
 }
 
-export function buildMagicLinkText(url: string, host: string) {
-  const copy = getMagicLinkCopy(host);
+export function buildMagicLinkText(url: string) {
+  const copy = getMagicLinkCopy();
   return [
     copy.textIntro ?? copy.intro,
     "",
@@ -91,13 +70,14 @@ export function buildMagicLinkText(url: string, host: string) {
   ].join("\n");
 }
 
-import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
+import { formatSystemEmailFromHeader } from "@/lib/email/from-address";
 import { MagicLinkReactEmail } from "@/lib/email/magic-link-react-email";
 import type { EmailPreview } from "@/lib/email/preview-envelope";
+import { getSiteConfig } from "@/lib/site";
 
-const SAMPLE_MAGIC_LINK_HOST = "warondisease.local";
+const SAMPLE_MAGIC_LINK_HOST = "optimitron.local";
 const SAMPLE_MAGIC_LINK_URL =
-  "https://warondisease.local/api/auth/callback/email?token=SAMPLE";
+  "https://optimitron.local/api/auth/callback/email?token=SAMPLE";
 
 export const MAGIC_LINK_PREVIEW: EmailPreview = {
   templateId: MAGIC_LINK_TEMPLATE_ID,
@@ -105,11 +85,11 @@ export const MAGIC_LINK_PREVIEW: EmailPreview = {
   trigger:
     "Fires when a user submits the sign-in email form. Auth provider (NextAuth) dispatches a single-use callback URL signed with the auth secret; clicking it completes the sign-in flow.",
   scope: "auth",
-  from: () => formatDefaultSystemEmailFromHeader(),
+  from: () => buildMagicLinkFromHeader(),
   subject: () => buildMagicLinkSubject(SAMPLE_MAGIC_LINK_HOST),
   skipWishoniaSignature: true,
   renderReact: () => {
-    const copy = getMagicLinkCopy(SAMPLE_MAGIC_LINK_HOST);
+    const copy = getMagicLinkCopy();
     return React.createElement(MagicLinkReactEmail, {
       url: SAMPLE_MAGIC_LINK_URL,
       intro: copy.intro,

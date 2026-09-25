@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Services Shareholder Thesis | International Campaign to End War and Disease
+- Page title: Earth Optimization Services Shareholder Thesis | Optimitron
 - Meta description: Why universal shareholders should treat nuclear war, preventable disease, and broken government spending as portfolio risks — and how Earth Optimization Services plans to correct them.
-- Canonical: https://warondisease.org/eos/shareholders
+- Canonical: https://optimitron.com/eos/shareholders
 - Open Graph title: Earth Optimization Services Shareholder Thesis
 - Open Graph description: Why universal shareholders should treat nuclear war, preventable disease, and broken government spending as portfolio risks — and how Earth Optimization Services plans to correct them.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Feos%2Fshareholders
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Feos%2Fshareholders
 - Twitter title: Earth Optimization Services Shareholder Thesis
 - Twitter description: Why universal shareholders should treat nuclear war, preventable disease, and broken government spending as portfolio risks — and how Earth Optimization Services plans to correct them.
 
@@ -98,7 +98,7 @@
 - It can underperform, lose value, or fail. Diversification is not a guarantee disguised as a downside case.
 - IF THE THESIS WORKS
 #### A healthier, harder-to-annihilate economy compounds.
-- [READ THE 1% TREATY MODEL](/treaty)
+- [READ THE 1% TREATY MODEL](https://warondisease.org/treaty)
 - TRY YOUR OWN NUMBER
 - YOUR NET WORTH OR ANNUAL INCOME
 - Status quo The year-20 baseline 1×

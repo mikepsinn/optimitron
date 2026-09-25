@@ -1,5 +1,5 @@
 import type { Metadata, MetadataRoute } from "next";
-import type { SiteConfig, SiteKey } from "@/lib/site";
+import type { SiteConfig } from "@/lib/site";
 import { AI_CRAWLER_USER_AGENTS } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
 
@@ -145,10 +145,3 @@ export function getSiteStaticAssetRedirectPath(
   return redirectPath && redirectPath !== pathname ? redirectPath : null;
 }
 
-export function getSiteKeyFromSearchParam(
-  value: string | null,
-  fallback: SiteKey,
-  isSiteKey: (candidate: string | null | undefined) => candidate is SiteKey,
-) {
-  return isSiteKey(value) ? value : fallback;
-}

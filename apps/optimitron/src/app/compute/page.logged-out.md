@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: The Basement Professor | International Campaign to End War and Disease
+- Page title: The Basement Professor | Optimitron
 - Meta description: The work an AI can do alone doubles every 89 days; chip-packaging capacity doubles about once a year. Price a basement rig against that gap: rental income while civilization holds, a resident professor if it wobbles.
-- Canonical: https://warondisease.org/compute
+- Canonical: https://optimitron.com/compute
 - Open Graph title: The Basement Professor
 - Open Graph description: The work an AI can do alone doubles every 89 days; chip-packaging capacity doubles about once a year. Price a basement rig against that gap: rental income while civilization holds, a resident professor if it wobbles.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fcompute
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fcompute
 - Twitter title: The Basement Professor
 - Twitter description: The work an AI can do alone doubles every 89 days; chip-packaging capacity doubles about once a year. Price a basement rig against that gap: rental income while civilization holds, a resident professor if it wobbles.
 

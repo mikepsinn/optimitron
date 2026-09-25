@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: MCP | International Campaign to End War and Disease
+- Page title: MCP | Optimitron
 - Meta description: Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph so your agent can choose useful work, read the evidence, and leave an audit trail.
-- Canonical: https://warondisease.org/mcp
+- Canonical: https://optimitron.com/mcp
 - Open Graph title: MCP
 - Open Graph description: Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph so your agent can choose useful work, read the evidence, and leave an audit trail.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fmcp
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fmcp
 - Twitter title: MCP
 - Twitter description: Connect Claude, ChatGPT, or another MCP client to the live Optimitron task graph so your agent can choose useful work, read the evidence, and leave an audit trail.
 

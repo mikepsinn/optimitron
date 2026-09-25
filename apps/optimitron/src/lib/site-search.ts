@@ -6,7 +6,6 @@ import {
   routeReviewNavItems,
   type NavItem,
 } from "@/lib/routes";
-import type { SiteConfig } from "@/lib/site";
 import {
   searchSiteDocuments,
   type StaticSiteSearchDocument,
@@ -104,50 +103,13 @@ export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
       .map((item) => buildDocumentFromNavItem("Pages", item)),
   ]);
 
-function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {
-  return {
-    href: ROUTES.home,
-    title: site.shortName,
-    description: site.rootMetadata.description,
-    emoji: "🏠",
-    section: "Primary",
-    keywords: site.rootMetadata.keywords,
-  };
-}
-
-export function getStaticSiteSearchDocuments(site?: SiteConfig) {
-  if (!site || site.key === "optimitron") {
-    return staticSiteSearchDocuments;
-  }
-
-  return dedupeByHref([
-    buildHomeDocument(site),
-    ...extraStaticDocuments.filter(
-      (document) => document.href === fullManualPaperLink.href,
-    ),
-    ...site.ui.nav.sections.flatMap((section) =>
-      section.items.map((item) =>
-        buildDocumentFromNavItem(section.label, item),
-      ),
-    ),
-    ...site.ui.footer.columns.flatMap((column) =>
-      column.items.map((item) => buildDocumentFromNavItem(column.title, item)),
-    ),
-  ]);
-}
-
 export function searchStaticSiteDocuments(
   query: string,
   options?: {
     limit?: number;
-    site?: SiteConfig;
   },
 ) {
   const limit = options?.limit ?? 12;
 
-  return searchSiteDocuments(
-    query,
-    getStaticSiteSearchDocuments(options?.site),
-    limit,
-  );
+  return searchSiteDocuments(query, staticSiteSearchDocuments, limit);
 }

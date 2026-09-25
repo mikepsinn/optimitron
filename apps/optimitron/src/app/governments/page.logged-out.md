@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Government Report Cards | International Campaign to End War and Disease
+- Page title: Government Report Cards | Optimitron
 - Meta description: Every government ranked by how many of its citizens it keeps alive versus how many it spends money on killing. The data they hope you never see.
-- Canonical: https://warondisease.org/governments
+- Canonical: https://optimitron.com/governments
 - Open Graph title: Government Report Cards
 - Open Graph description: Every government ranked by how many of its citizens it keeps alive versus how many it spends money on killing. The data they hope you never see.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fgovernments
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fgovernments
 - Twitter title: Government Report Cards
 - Twitter description: Every government ranked by how many of its citizens it keeps alive versus how many it spends money on killing. The data they hope you never see.
 
@@ -24,6 +24,7 @@
 - LEAST BAD GOVERNMENTS
 - COLUMNS
 - Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+
 | #? | COUNTRY? | MILITARY? | KILLED? | MIL/TRIALS ↓? | MEMORIAL 👻? | HALE? | LIFE EXP? | MEDIAN INCOME? | MIL/CAP PPP? | HEALTH/CAP? | MIL/RESEARCH? |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [🇵🇰Pakistan](/governments/PK) | [$10B](/governments/PK) | [1,503,000](/governments/PK) | [51,500:1](/governments/PK) | [0](/governments/PK) | [57.4](/governments/PK) | [66.5](/governments/PK) | [$1.3K](/governments/PK) | [$239.39](/governments/PK) | [$161](/governments/PK) | [3,433:1](/governments/PK) |
@@ -44,6 +45,7 @@
 | 16 | [🇯🇵Japan](/governments/JP) | [$55B](/governments/JP) | [5,964,000](/governments/JP) | [164:1](/governments/JP) | [0](/governments/JP) | [74.1](/governments/JP) | [84.5](/governments/JP) | [$16.1K](/governments/JP) | [$407.4](/governments/JP) | [$4.7K](/governments/JP) | [11.0:1](/governments/JP) |
 | 17 | [🇨🇦Canada](/governments/CA) | [$27B](/governments/CA) | [500](/governments/CA) | [160:1](/governments/CA) | [0](/governments/CA) | [71.3](/governments/CA) | [82.0](/governments/CA) | [$13.1K](/governments/CA) | [$692.211](/governments/CA) | [$5.9K](/governments/CA) | [10.8:1](/governments/CA) |
 | 18 | [🇦🇺Australia](/governments/AU) | [$32B](/governments/AU) | [3,000](/governments/AU) | [151:1](/governments/AU) | [0](/governments/AU) | [73.0](/governments/AU) | [83.3](/governments/AU) | [$24.6K](/governments/AU) | [$1.2K](/governments/AU) | [$5.6K](/governments/AU) | [10.1:1](/governments/AU) |
+
 ### CORRELATION MAP
 - Start with military spending versus clinical trials against HALE, then swap either axis to compare any tracked metric pair.
 #### METRIC CORRELATION EXPLORER

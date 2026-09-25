@@ -6,18 +6,8 @@ import { classifyAiCrawler } from "@/lib/agent-readable/ai-crawler-detection";
 import { ROUTES } from "@/lib/routes";
 import { applyOAuthConsentFlowHeader } from "@/lib/oauth-consent-flow";
 import { getSiteStaticAssetRedirectPath } from "@/lib/site-assets";
-import {
-  SITE_VARIANT_OVERRIDE_COOKIE,
-  SITE_VARIANT_OVERRIDE_HEADER,
-  SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-  getSiteFromHeaders,
-  getSiteFromHost,
-  getSiteRouteDisposition,
-  isSiteRouteAllowed,
-} from "@/lib/site";
-import { resolveReviewSiteVariantOverride } from "@/lib/site-dev-override";
+import { getSiteFromHeaders } from "@/lib/site";
 
-const REVIEW_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 const AI_CRAWLER_LOG_PRIVATE_PREFIXES = [
   "/admin",
   "/auth",
@@ -27,50 +17,7 @@ const AI_CRAWLER_LOG_PRIVATE_PREFIXES = [
   "/_next",
 ];
 
-export function isMicrositeAllowed(pathname: string): boolean {
-  return isSiteRouteAllowed(getSiteFromHost("warondisease.org"), pathname);
-}
-
-function syncReviewSiteVariantCookie(
-  response: NextResponse,
-  resolution: ReturnType<typeof resolveReviewSiteVariantOverride>,
-) {
-  if (resolution.persistSiteKey) {
-    response.cookies.set(
-      SITE_VARIANT_OVERRIDE_COOKIE,
-      resolution.persistSiteKey,
-      {
-        maxAge: REVIEW_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS,
-        path: "/",
-        sameSite: "lax",
-      },
-    );
-  } else if (resolution.clearCookie) {
-    response.cookies.delete(SITE_VARIANT_OVERRIDE_COOKIE);
-  }
-
-  return response;
-}
-
-function getHeadersWithReviewSiteVariantOverride(
-  headers: Headers,
-  resolution: ReturnType<typeof resolveReviewSiteVariantOverride>,
-) {
-  const requestHeaders = new Headers(headers);
-
-  if (resolution.siteKey) {
-    requestHeaders.set(SITE_VARIANT_OVERRIDE_HEADER, resolution.siteKey);
-  } else {
-    requestHeaders.delete(SITE_VARIANT_OVERRIDE_HEADER);
-  }
-
-  return requestHeaders;
-}
-
-function isPublicAiCrawlerLogPath(
-  site: ReturnType<typeof getSiteFromHeaders>,
-  pathname: string,
-) {
+function isPublicAiCrawlerLogPath(pathname: string) {
   if (pathname === "/api/agent" || pathname.startsWith("/api/agent/")) {
     return true;
   }
@@ -79,15 +26,9 @@ function isPublicAiCrawlerLogPath(
     return false;
   }
 
-  if (
-    AI_CRAWLER_LOG_PRIVATE_PREFIXES.some(
-      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-    )
-  ) {
-    return false;
-  }
-
-  return isSiteRouteAllowed(site, pathname);
+  return !AI_CRAWLER_LOG_PRIVATE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
 
 function getReferrerOrigin(referrer: string | null) {
@@ -105,12 +46,9 @@ function getCoarseIsoHour() {
   return date.toISOString();
 }
 
-function logAiCrawlerRequest(
-  req: import("next/server").NextRequest,
-  site: ReturnType<typeof getSiteFromHeaders>,
-) {
+function logAiCrawlerRequest(req: import("next/server").NextRequest) {
   if (req.method !== "GET" && req.method !== "HEAD") return;
-  if (!isPublicAiCrawlerLogPath(site, req.nextUrl.pathname)) return;
+  if (!isPublicAiCrawlerLogPath(req.nextUrl.pathname)) return;
 
   const classification = classifyAiCrawler(req.headers.get("user-agent"));
   const logUnknown = process.env.LOG_UNKNOWN_AI_CRAWLERS === "1";
@@ -181,34 +119,12 @@ function handleRequest(req: NextRequest) {
   const devAuthRedirect = handleDevAuthQueryParams(req);
   if (devAuthRedirect) return devAuthRedirect;
 
-  const overrideResolution = resolveReviewSiteVariantOverride({
-    cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
-    host: req.headers.get("host"),
-    querySiteKey: req.nextUrl.searchParams.has(
-      SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-    )
-      ? req.nextUrl.searchParams.get(SITE_VARIANT_OVERRIDE_QUERY_PARAM)
-      : null,
-  });
-  const requestHeaders = getHeadersWithReviewSiteVariantOverride(
-    req.headers,
-    overrideResolution,
-  );
+  const requestHeaders = new Headers(req.headers);
   applyOAuthConsentFlowHeader(requestHeaders, req.nextUrl);
-  const site = getSiteFromHeaders(requestHeaders);
-  logAiCrawlerRequest(req, site);
-
-  if (overrideResolution.stripQueryParam) {
-    const url = req.nextUrl.clone();
-    url.searchParams.delete(SITE_VARIANT_OVERRIDE_QUERY_PARAM);
-    return syncReviewSiteVariantCookie(
-      NextResponse.redirect(url, 307),
-      overrideResolution,
-    );
-  }
+  logAiCrawlerRequest(req);
 
   const assetRedirectPath = getSiteStaticAssetRedirectPath(
-    site,
+    getSiteFromHeaders(requestHeaders),
     req.nextUrl.pathname,
   );
   if (assetRedirectPath) {
@@ -216,37 +132,10 @@ function handleRequest(req: NextRequest) {
     const [pathname, search = ""] = assetRedirectPath.split("?");
     url.pathname = pathname;
     url.search = search ? `?${search}` : "";
-    return syncReviewSiteVariantCookie(
-      NextResponse.redirect(url, 308),
-      overrideResolution,
-    );
+    return NextResponse.redirect(url, 308);
   }
 
-  const disposition = getSiteRouteDisposition(site, req.nextUrl.pathname);
-  if (disposition.type !== "allow") {
-    if (disposition.type === "redirect") {
-      const url = new URL(disposition.url);
-      url.search = req.nextUrl.search;
-      // 307 keeps method semantics and avoids long-lived browser/CDN caching of
-      // host-routing rules that may flip when site config changes.
-      return syncReviewSiteVariantCookie(
-        NextResponse.redirect(url, 307),
-        overrideResolution,
-      );
-    }
-
-    const url = req.nextUrl.clone();
-    url.pathname = "/_site-not-found";
-    url.search = "";
-    return syncReviewSiteVariantCookie(
-      NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
-      overrideResolution,
-    );
-  }
-  return syncReviewSiteVariantCookie(
-    NextResponse.next({ request: { headers: requestHeaders } }),
-    overrideResolution,
-  );
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 const authMiddleware = withAuth(handleRequest, {
@@ -283,8 +172,8 @@ const authMiddleware = withAuth(handleRequest, {
 });
 
 // withAuth returns before it calls the wrapped function when the request is for
-// its own sign-in page, so handleRequest never saw ROUTES.signIn: no site
-// variant override, no consent-flow header. That page needs no auth gate, so it
+// its own sign-in page, so handleRequest never saw ROUTES.signIn: no
+// consent-flow header. That page needs no auth gate, so it
 // goes to the handler directly.
 export default function middleware(req: NextRequest, event: NextFetchEvent) {
   if (req.nextUrl.pathname === ROUTES.signIn) return handleRequest(req);

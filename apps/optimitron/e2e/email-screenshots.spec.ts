@@ -75,7 +75,7 @@ test.describe("email visual coverage", () => {
       page,
       "magic-link",
       "email-magic-link",
-      "Click the button below to verify your email and save your vote.",
+      "Your sign-in link is below.",
       testInfo,
     );
   });

@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Privacy - International Campaign to End War and Disease
+- Page title: Privacy - Optimitron
 - Meta description: What this site collects, why it collects it, and how to contact us.
-- Canonical: https://warondisease.org/privacy
-- Open Graph title: Privacy - International Campaign to End War and Disease
+- Canonical: https://optimitron.com/privacy
+- Open Graph title: Privacy - Optimitron
 - Open Graph description: What this site collects, why it collects it, and how to contact us.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fprivacy
-- Twitter title: Privacy - International Campaign to End War and Disease
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fprivacy
+- Twitter title: Privacy - Optimitron
 - Twitter description: What this site collects, why it collects it, and how to contact us.
 
 ## Visible Page Copy
@@ -16,7 +16,7 @@
 ## PRIVACY POLICY
 - Last updated July 16, 2026
 ### 1. WHO WE ARE
-- International Campaign to End War and Disease is operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease, a Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3). This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
+- Optimitron is operated by Earth Optimization Services Inc., a Delaware public benefit corporation taxed as a C corporation. This policy explains what we collect when you use optimitron.com, why we collect it, when it may be public, and how to contact us.
 ### 2. INFORMATION WE COLLECT
 - We collect information you give us directly, information created by your use of the site, and limited technical data needed to keep the site working.
 - Account and contact details, such as your name, email address, display name, organization, profile URL, and sign-in provider.
@@ -50,7 +50,7 @@
 - We keep information for as long as needed to operate the site, maintain campaign records, prevent fraud, resolve disputes, comply with law, and keep security logs. Public campaign records and plaintiff or memorial records may stay visible after an account is closed unless we agree or are required to remove them.
 ### 8. YOUR CHOICES
 - Depending on where you live, you may be able to request access, correction, deletion, portability, or limits on certain uses of your personal information. You can also unsubscribe from non-essential email.
-- Send requests to [hello@warondisease.org](mailto:hello@warondisease.org). We may need to verify your identity before changing account or campaign records.
+- Send requests to [wishonia@optimitron.com](mailto:wishonia@optimitron.com). We may need to verify your identity before changing account or campaign records.
 ### 9. SECURITY
 - We use technical and organizational safeguards designed to protect personal information. No internet service is perfectly secure, so do not send information you would not want handled by a web application.
 ### 10. CHILDREN
@@ -59,9 +59,9 @@
 - We operate from the United States and may process information in the United States and other countries where our providers work. Those countries may have different privacy rules than yours.
 ### 12. CHANGES AND CONTACT
 - We may update this policy by posting a new version here. The date above shows when it was last changed.
-- Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease
-- Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3)
-- Operates the International Campaign to End War and Disease and related public education and advocacy programs.
-- Email: [hello@warondisease.org](mailto:hello@warondisease.org)
-- Website: [warondisease.org](https://warondisease.org)
+- Earth Optimization Services Inc.
+- Delaware public benefit corporation taxed as a C corporation
+- Develops and operates Optimitron, publishes public-interest research, and conducts public-advocacy and shareholder-engagement campaigns.
+- Email: [wishonia@optimitron.com](mailto:wishonia@optimitron.com)
+- Website: [optimitron.com](https://optimitron.com)
 - See also: [Terms of Service](/terms)

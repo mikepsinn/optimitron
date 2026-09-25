@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { requireReferendumSiteContent } from "@/lib/referendum-site-content.server";
-import { getSiteFromHeaders } from "@/lib/site";
+import { getReferendumSiteContent } from "@/content/referendum-sites";
 
+// The impact dashboard belongs to the 1% Treaty campaign, so this route always
+// sends visitors to that campaign's impact site.
 export function GET(request: NextRequest) {
-  const site = getSiteFromHeaders(request.headers);
-  const content = requireReferendumSiteContent(site);
-  const target = new URL(content.impactUrl);
+  const target = new URL(
+    getReferendumSiteContent("onePercentTreaty").impactUrl,
+  );
 
   target.search = request.nextUrl.search;
 

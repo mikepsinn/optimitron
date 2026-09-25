@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Universal Security Administration | International Campaign to End War and Disease
+- Page title: Universal Security Administration | Optimitron
 - Meta description: You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators.
-- Canonical: https://warondisease.org/agencies/dtreasury/dssa
+- Canonical: https://optimitron.com/agencies/dtreasury/dssa
 - Open Graph title: Universal Security Administration
 - Open Graph description: You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdssa
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdssa
 - Twitter title: Universal Security Administration
 - Twitter description: You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators.
 
@@ -53,7 +53,8 @@
 - 80+ welfare programs → 1 function call
 - PROTOCOL RULES
 - REFERENCE IMPLEMENTATION
-- ```text
+
+```text
 // UBIDistributor.distributeUBI() — replaces the entire welfare system
 function distributeUBI() external {                             // Anyone can call this
     uint256 balance = wishToken.balanceOf(address(this));       // How much is in the pot
@@ -66,6 +67,7 @@ function distributeUBI() external {                             // Anyone can ca
 // No applications. No case workers. No means testing.
 // No fraud investigation. No waiting. Just equal splits.
 ```
+
 - Every verified citizen gets an equal share. No applications, no case workers, no means-testing, no fraud investigation, no processing delays. The entire welfare bureaucracy becomes a for-loop.
 ### THE SAVINGS
 - That's more than the GDP of the Netherlands. Spent not on helping people, but on deciding which people deserve help.

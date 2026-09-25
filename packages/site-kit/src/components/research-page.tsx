@@ -192,9 +192,9 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     estimated to have saved over <span className="font-black">1 million lives</span>.
                   </p>
                   <p>
-                    RECOVERY cost about <ParameterValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per
+                    RECOVERY cost about <ParameterValue param={{ ...RECOVERY_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per
                     patient, compared with a $41,413 median for pivotal drug trials—about{" "}
-                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} className="font-black" />.
+                    <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" className="font-black" />.
                     A separate review of 64 embedded trials found a $97 median.
                   </p>
                 </div>
@@ -260,7 +260,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     </div>
                   </div>
                   <p className="text-base font-bold text-center">
-                    <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                    <ParameterValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} /> per year funds{" "}
                     <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
                     patient trial slots.
                   </p>
@@ -273,7 +273,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
-                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                    stat: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" />,
                     label: "RECOVERY COST COMPARISON",
                     detail:
                       "About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.",
@@ -286,7 +286,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                     label: "PATIENT TRIAL CAPACITY",
                     detail: (
                       <>
-                        <ParameterValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} /> per year funds{" "}
+                        <ParameterValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} /> per year funds{" "}
                         <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> as many
                         patient trial slots, cutting the disease eradication timeline from{" "}
                         <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} />{" "}
@@ -526,7 +526,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 more clinical trials
               </h1>
               <p className="mx-auto max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-                The 1% Treaty redirects <ResearchValue param={TREATY_ANNUAL_FUNDING} /> a year from weapons and military budgets. After incentives and operating costs, <ResearchValue param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL} /> funds <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> pragmatic-trial participants a year.
+                The 1% Treaty redirects <ResearchValue param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }} /> a year from weapons and military budgets. After incentives and operating costs, <ResearchValue param={{ ...DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL, unit: "USD" }} /> funds <ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} /> pragmatic-trial participants a year.
               </p>
             </div>
           </Container>
@@ -539,13 +539,13 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
             <div className="mx-auto mb-10 max-w-4xl text-center">
               <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Where the money goes</h2>
               <p className="text-base font-bold sm:text-lg">
-                One percent produces <ResearchValue param={TREATY_ANNUAL_FUNDING} /> in annual treaty funding.
+                One percent produces <ResearchValue param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }} /> in annual treaty funding.
               </p>
             </div>
 
             <Card className="mx-auto max-w-3xl gap-2 border-4 border-primary bg-brutal-yellow p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <div className="text-4xl font-black sm:text-5xl">
-                <ResearchValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} /> × <ResearchValue param={TREATY_REDUCTION_PCT} /> = <ResearchValue param={TREATY_ANNUAL_FUNDING} />
+                <ResearchValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} /> × <ResearchValue param={TREATY_REDUCTION_PCT} /> = <ResearchValue param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }} />
               </div>
               <div className="text-sm font-black uppercase">Annual treaty funding</div>
             </Card>
@@ -556,21 +556,21 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               <Card className="gap-2 border-4 border-primary bg-background p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-sm font-black uppercase">80% to trials</div>
                 <div className="text-4xl font-black">
-                  <ResearchValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} />
+                  <ResearchValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} />
                 </div>
                 <p className="font-bold">Pragmatic clinical trials</p>
               </Card>
               <Card className="gap-2 border-4 border-primary bg-brutal-yellow p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-sm font-black uppercase">10% to bonds</div>
                 <div className="text-4xl font-black">
-                  <ResearchValue param={VICTORY_BOND_ANNUAL_PAYOUT} />
+                  <ResearchValue param={{ ...VICTORY_BOND_ANNUAL_PAYOUT, unit: "USD" }} />
                 </div>
                 <p className="font-bold">Treaty success rewards</p>
               </Card>
               <Card className="gap-2 border-4 border-primary bg-brutal-pink p-6 text-center text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-sm font-black uppercase">10% to incentives</div>
                 <div className="text-4xl font-black">
-                  <ResearchValue param={IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL} />
+                  <ResearchValue param={{ ...IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL, unit: "USD" }} />
                 </div>
                 <p className="font-bold">Political incentives for adoption</p>
               </Card>
@@ -578,18 +578,18 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
 
             <h3 className="mb-6 mt-14 text-center text-2xl font-black uppercase md:text-3xl">Trial funding to participants</h3>
             <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr]">
-              <ResearchFlowCard value={<ResearchValue param={DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL} />} label="Trial funding" />
+              <ResearchFlowCard value={<ResearchValue param={{ ...DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL, unit: "USD" }} />} label="Trial funding" />
               <ResearchFlowArrow />
               <ResearchFlowCard
-                value={<ResearchValue param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL} />}
+                value={<ResearchValue param={{ ...DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL, unit: "USD" }} />}
                 label={
                   <>
-                    After <ResearchValue param={DFDA_ANNUAL_OPEX} /> operating cost
+                    After <ResearchValue param={{ ...DFDA_ANNUAL_OPEX, unit: "USD" }} /> operating cost
                   </>
                 }
               />
               <ResearchFlowArrow />
-              <ResearchFlowCard value={<ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />} label="Per participant" />
+              <ResearchFlowCard value={<ResearchValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} />} label="Per participant" />
               <ResearchFlowArrow />
               <ResearchFlowCard value={<ResearchValue param={DFDA_PATIENTS_FUNDABLE_ANNUALLY} />} label="Participants per year" accent />
             </div>
@@ -601,7 +601,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
             <div className="mx-auto mb-10 max-w-4xl text-center">
               <h2 className="mb-3 text-3xl font-black uppercase md:text-5xl">Why pragmatic trials cost less</h2>
               <p className="text-base font-bold sm:text-lg">
-                Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about <ResearchValue param={RECOVERY_TRIAL_COST_PER_PATIENT} /> per participant. The capacity model uses <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />.
+                Pragmatic trials use routine care and health records instead of building a separate research system. RECOVERY cost about <ResearchValue param={{ ...RECOVERY_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> per participant. The capacity model uses <ResearchValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} />.
               </p>
             </div>
 
@@ -610,7 +610,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
                   <span>Traditional Phase 3</span>
                   <span className="text-2xl sm:text-3xl">
-                    <ResearchValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />
+                    <ResearchValue param={{ ...TRADITIONAL_PHASE3_COST_PER_PATIENT, unit: "USD" }} />
                   </span>
                 </div>
                 <div className="h-20 border-4 border-primary bg-brutal-pink" />
@@ -619,7 +619,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
                 <div className="mb-2 flex items-end justify-between gap-4 font-black uppercase">
                   <span>Pragmatic-trial model</span>
                   <span className="text-2xl sm:text-3xl">
-                    <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
+                    <ResearchValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} />
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -629,7 +629,7 @@ export function ResearchPage({ variant }: { variant: ResearchPageVariant }) {
               </div>
             </div>
             <p className="mx-auto mt-8 max-w-3xl text-center font-bold">
-              The <ResearchValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> figure drives the capacity model. The <ResearchValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} /> figure shows the cost difference.
+              The <ResearchValue param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} /> figure drives the capacity model. The <ResearchValue param={{ ...TRADITIONAL_PHASE3_COST_PER_PATIENT, unit: "USD" }} /> figure shows the cost difference.
             </p>
           </Container>
         </SectionContainer>

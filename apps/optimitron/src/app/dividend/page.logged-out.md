@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Optimization Dividend | International Campaign to End War and Disease
+- Page title: Optimization Dividend | Optimitron
 - Meta description: Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.
-- Canonical: https://warondisease.org/dividend
+- Canonical: https://optimitron.com/dividend
 - Open Graph title: Optimization Dividend
 - Open Graph description: Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdividend
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdividend
 - Twitter title: Optimization Dividend
 - Twitter description: Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.
 
@@ -18,6 +18,7 @@
 - On my planet, when the state buys a service for triple the going rate, the difference goes back to the household. So we did the math for yours. We line up every category against the cheapest country that gets better results, and split the overspend per adult. That is your dividend.
 ### BREAKDOWN
 - Every row: your government pays more and gets worse results than a country that already solved it. Pick the cheaper one.
+
 | CATEGORY | MODEL | OVERSPEND | SAVINGS / ADULT | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- |
 | [Justice / Law Enforcement](/obg/justice-law-enforcement) | South Korea | 2.1x | $8,950 | $2.3T |
@@ -38,6 +39,7 @@
 | [Energy](/obg/energy) | Netherlands | 1.9x | $1,218 | $314B |
 | [Science & Space](/obg/science-nasa) [VIEW MODEL LEGISLATION](/legislation/science-nasa-reform) | Netherlands | 1.9x | $1,218 | $314B |
 | [Commerce / Economic Development](/obg/commerce-economic-development) | Netherlands | 1.9x | $1,218 | $314B |
+
 #### YOUR MONTHLY DIVIDEND
 - If the US matched the spending efficiency of top OECD countries, the savings could fund a Universal Dividend for every adult citizen.
 - INCLUDE SAVINGS FROM:

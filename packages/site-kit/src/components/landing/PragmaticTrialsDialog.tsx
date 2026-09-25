@@ -83,7 +83,7 @@ export function PragmaticTrialsDialog({
               <div className="border-4 border-primary bg-brutal-green p-4">
                 <div className="text-xs font-black uppercase">Cost Efficiency</div>
                 <div className="mt-2 text-2xl font-black">
-                  <ParameterInline param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />
+                  <ParameterInline param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} display="withUnit" />
                 </div>
                 <div className="mt-1 text-sm font-bold">cheaper in the RECOVERY model</div>
               </div>

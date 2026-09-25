@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: International Campaign to End War and Disease
-- Meta description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Page title: Optimitron — Earth Optimization Services
+- Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
 - Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Open Graph title: Optimitron — Earth Optimization Services
+- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
+- Open Graph image: https://optimitron.com/og-image.jpg
+- Twitter title: Optimitron — Earth Optimization Services
+- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
 
 ## Visible Page Copy
 
@@ -43,5 +43,5 @@
 - Analysis date: 2026-07-12T07:26:48.637Z · Source: Optimitron OPG (Optimal Policy Generator)
 - EARTH OPTIMIZATION PRIZE
 #### EVERY ONE OF THESE WORKS. NOW WE GET YOUR GOVERNMENT TO RUN THEM.
-- Everyone wants policy that works. Nobody believes their neighbor does. One verified vote count ends the standoff. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
+- Everyone wants policy that works. Nobody believes their neighbor does. One verified vote count ends the standoff. Deposit into the prize pool, get friends to vote, earn Earth Optimization Points.
 - [PLAY THE GAME](/prize)

@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Invest in an Optimized Earth | International Campaign to End War and Disease
+- Page title: Invest in an Optimized Earth | Optimitron
 - Meta description: Your governments fund 12,000 warheads and almost no cures. See why that's a bad investment, then claim your voting share in the fix.
-- Canonical: https://warondisease.org/invest
+- Canonical: https://optimitron.com/invest
 - Open Graph title: Invest in an Optimized Earth
 - Open Graph description: Your governments fund 12,000 warheads and almost no cures. See why that's a bad investment, then claim your voting share in the fix.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Finvest
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Finvest
 - Twitter title: Invest in an Optimized Earth
 - Twitter description: Your governments fund 12,000 warheads and almost no cures. See why that's a bad investment, then claim your voting share in the fix.
 

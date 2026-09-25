@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import {
   getGovernmentMetrics,
   GOVERNMENTS,
 } from "@optimitron/data/datasets/government-report-cards";
 import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
+import { getPoliticianScorecardData } from "@/lib/politician-scorecards";
 import { PoliticianAlignmentDashboard } from "@/components/scoreboard/PoliticianAlignmentDashboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { SectionContainer } from "@/components/ui/section-container";
@@ -28,7 +27,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
   const gov = getGovernmentMetrics(code.toUpperCase());
-  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines | Optimitron`;
+  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines`;
   const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on ${getMilitarySynonym("politicians-meta-desc")} per dollar finding out which medicines work.`;
   return {
     title,
@@ -36,48 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: { title, description, type: "website" },
     twitter: { card: "summary_large_image", title, description },
   };
-}
-
-/** Load generated scorecard data (if it exists) */
-function loadScorecardData(): {
-  scorecards: Array<{
-    bioguideId: string;
-    name: string;
-    party: string;
-    state: string;
-    chamber: string;
-    militaryDollarsVotedFor: number;
-    clinicalTrialDollarsVotedFor: number;
-    ratio: number;
-  }>;
-  presidents: Array<{
-    name: string;
-    term: string;
-    totalMilitarySigned: number;
-    clinicalTrialPortion: number;
-    ratio: number;
-    keyActions: string[];
-  }>;
-  systemWideRatio: number;
-} | null {
-  try {
-    // Try generated data first
-    const generatedPath = join(
-      process.cwd(),
-      "..",
-      "data",
-      "src",
-      "datasets",
-      "generated",
-      "politician-scorecards.json",
-    );
-    if (existsSync(generatedPath)) {
-      return JSON.parse(readFileSync(generatedPath, "utf8"));
-    }
-    return null;
-  } catch {
-    return null;
-  }
 }
 
 function formatDollars(value: number): string {
@@ -93,7 +50,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
   if (!gov) notFound();
 
   const alignmentData = await getLatestAggregateScores(upperCode);
-  const scorecardData = upperCode === "US" ? loadScorecardData() : null;
+  const scorecardData = upperCode === "US" ? getPoliticianScorecardData() : null;
 
   return (
     <div>
@@ -154,7 +111,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
                     </div>
                     <div>
                       <div className="text-xs font-black uppercase text-muted-foreground">Trials</div>
-                      <div className="text-lg font-black text-background">
+                      <div className="text-lg font-black text-foreground">
                         {formatDollars(p.clinicalTrialPortion)}
                       </div>
                     </div>

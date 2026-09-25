@@ -7,13 +7,13 @@ import {
 } from "@optimitron/data/parameters";
 import { CAMPAIGN_NAME } from "@optimitron/data/campaign";
 import { ROUTES } from "@/lib/routes";
-import { getSiteConfig, type SiteConfig } from "@/lib/site";
+import { WAR_ON_DISEASE_CANONICAL_ORIGIN } from "@/lib/domains";
+import { absoluteCanonicalSiteUrl } from "@/lib/site";
 
 export const AGENT_CACHE_SECONDS = 3600;
 export const AGENT_CACHE_CONTROL =
   "public, s-maxage=3600, stale-while-revalidate=86400";
 
-export const AGENT_READABLE_CANONICAL_SITE_KEY = "warOnDisease" as const;
 export const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
 
 export const MARKDOWN_MIRROR_PATHS = [
@@ -100,25 +100,16 @@ export interface AgentReadablePaths {
   pages: AgentReadableLink[];
 }
 
-function campaignSite() {
-  return getSiteConfig(AGENT_READABLE_CANONICAL_SITE_KEY);
-}
-
-export function getCanonicalAgentReadableSite(site: SiteConfig): SiteConfig {
-  return site.key === AGENT_READABLE_CANONICAL_SITE_KEY ? site : campaignSite();
-}
-
-export function isCanonicalAgentReadableSite(site: SiteConfig) {
-  return site.key === AGENT_READABLE_CANONICAL_SITE_KEY;
-}
-
-export function absoluteCampaignUrl(site: SiteConfig, path: string) {
-  const canonicalSite = getCanonicalAgentReadableSite(site);
+// The campaign's human-facing pages (vote, treaty, signatories, FAQ) live on
+// warondisease.org. The agent-readable files (llms.txt, the markdown mirrors,
+// and /api/agent/*) are served only by this app, so they use this app's
+// canonical origin (absoluteCanonicalSiteUrl).
+export function absoluteCampaignUrl(path: string) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${canonicalSite.canonicalOrigin}${normalizedPath}`;
+  return `${WAR_ON_DISEASE_CANONICAL_ORIGIN}${normalizedPath}`;
 }
 
-export function getAgentReadablePaths(site: SiteConfig): AgentReadablePaths {
+export function getAgentReadablePaths(): AgentReadablePaths {
   const pagePaths = [
     { path: ROUTES.treaty, title: "1% Treaty" },
     { path: ROUTES.vote, title: "Vote on the 1% Treaty" },
@@ -132,17 +123,17 @@ export function getAgentReadablePaths(site: SiteConfig): AgentReadablePaths {
     pages: pagePaths.map((entry) => ({
       ...entry,
       url: ["/court", "/humanity-v-government", "/plaintiffs"].includes(entry.path)
-        ? courtUrl(entry.path) : absoluteCampaignUrl(site, entry.path),
+        ? courtUrl(entry.path) : absoluteCampaignUrl(entry.path),
     })),
     markdownMirrors: [...MARKDOWN_MIRROR_PATHS.map((entry) => ({
       path: entry.path,
       title: entry.title,
-      url: absoluteCampaignUrl(site, entry.path),
+      url: absoluteCanonicalSiteUrl(entry.path),
     })), ...COURT_MARKDOWN_MIRROR_PATHS.map(entry => ({ ...entry, url: courtUrl(entry.path) }))],
     agentEndpoints: [...AGENT_ENDPOINT_PATHS.map((entry) => ({
       path: entry.path,
       title: entry.title,
-      url: absoluteCampaignUrl(site, entry.path),
+      url: absoluteCanonicalSiteUrl(entry.path),
     })), { path: "/api/agent/plaintiffs", title: "Court plaintiff count", url: courtUrl("/api/agent/plaintiffs") }],
   };
 }

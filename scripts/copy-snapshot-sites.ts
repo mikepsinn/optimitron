@@ -80,7 +80,7 @@ const routeFilter = routeFilterArg
   .map(normalizeRouteArg)
   .filter(Boolean);
 
-interface Site {
+interface SiteBase {
   /** Extra public routes that are not linked from this site's navigation. */
   additionalSnapshotRoutes?: string[];
   /** Stable command-line selector, when it differs from the directory name. */
@@ -103,18 +103,18 @@ interface Site {
   label: string;
   /** Dev port — matches each package's own `dev` script. */
   port: number;
-  /**
-   * `own` sites delegate to their package's renderer; `nav` sites are rendered
-   * here from their app-local navigation routes.
-   */
-  renderer: "own" | "nav";
-  variant: SiteVariant;
 }
+
+/**
+ * `own` sites delegate to their package's renderer; `nav` sites are rendered
+ * here from their app-local navigation routes.
+ */
+type NavSite = SiteBase & { renderer: "nav"; variant: SiteVariant };
+type Site = (SiteBase & { renderer: "own" }) | NavSite;
 
 const SITES: Site[] = [
   {
-    // web serves every variant from one server and selects between them with
-    // the x-optimitron-site-key request header, so it must NOT get the
+    // web is not a site-kit variant, so it must NOT get the
     // NEXT_PUBLIC_SITE_VARIANT / NEXT_PUBLIC_BASE_URL pinning the apps need.
     commandName: "web",
     devScript: "dev:fast",
@@ -123,7 +123,6 @@ const SITES: Site[] = [
     label: "@optimitron/web",
     port: 3001,
     renderer: "own",
-    variant: VARIANTS.WAR_ON_DISEASE,
   },
   {
     // /soldiers and the other public non-nav routes come from the shared
@@ -249,7 +248,9 @@ async function waitForServer(
 }
 
 function siteEnv(site: Site): NodeJS.ProcessEnv {
-  if (site.devScript) return { ...process.env, PORT: String(site.port) };
+  if (site.renderer === "own" || site.devScript) {
+    return { ...process.env, PORT: String(site.port) };
+  }
   return {
     ...process.env,
     // Canonical and OG URLs come from NEXT_PUBLIC_BASE_URL (site-kit
@@ -411,7 +412,10 @@ function publicSnapshotRoutes(site: Site): string[] {
 }
 
 /** Sites in `apps/` — routes come from their app-local navigation. */
-async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
+async function snapshotNavRoutes(
+  site: NavSite,
+  baseUrl: string,
+): Promise<void> {
   const routes = [
     ...new Set([
       ...getInternalNavigationRoutesForVariant(site.variant).map(

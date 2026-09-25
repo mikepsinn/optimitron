@@ -126,6 +126,7 @@ import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
   ACCELERATED_MEDICINE_FAQ,
+  CUREDAO_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
   WISHOCRACY_FAQ,
@@ -153,6 +154,10 @@ const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(
 const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. The Accelerated Medicine Foundation Inc is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 const DFDA_NON_AFFILIATION_NOTICE =
   "dFDA (Decentralized Framework for Drug Assessment) is an independent open-source project. It is not affiliated with, endorsed by, or acting on behalf of the U.S. Food and Drug Administration.";
+
+/** War on Disease brand icon; also the Organization logo in warondisease.org structured data. */
+export const WAR_ON_DISEASE_LOGO_PATH =
+  "/assets/warondisease/warondisease-android-chrome-192x192.png";
 
 // ===== INTERFACES =====
 
@@ -334,6 +339,8 @@ export interface FaqConfig {
     questions: Array<{
       q: string;
       a: string;
+      /** Renders `text`, which must appear in `a`, as a link. `a` stays plain text for structured data. */
+      link?: { text: string; href: string };
     }>;
   }>;
 
@@ -614,7 +621,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           type: "image/png",
         },
         {
-          url: "/assets/warondisease/warondisease-android-chrome-192x192.png",
+          url: WAR_ON_DISEASE_LOGO_PATH,
           sizes: "192x192",
           type: "image/png",
         },
@@ -1141,7 +1148,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // "CureDAO", so its Terms and Privacy pages name CureDAO as the operator.
     // Crediting the campaign here would contradict them on the same page.
     copyrightText: "© 2025 CureDAO | CC BY-NC 4.0",
-    faq: WAR_ON_DISEASE_FAQ,
+    faq: CUREDAO_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Purple hexagon with white heart inside, thick black outline, magenta (#FF00FF) background.`,

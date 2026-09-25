@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: The Earth Optimization Game | International Campaign to End War and Disease
+- Page title: The Earth Optimization Game | Optimitron
 - Meta description: A pool of money. Two numbers on a Scoreboard: how long people live, how much they earn.
-- Canonical: https://warondisease.org/game
+- Canonical: https://optimitron.com
 - Open Graph title: The Earth Optimization Game
 - Open Graph description: A pool of money. Two numbers on a Scoreboard: how long people live, how much they earn.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fgame
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fgame
 - Twitter title: The Earth Optimization Game
 - Twitter description: A pool of money. Two numbers on a Scoreboard: how long people live, how much they earn.
 
@@ -174,13 +174,13 @@
 #### Atorvastatin 20mg
 - Effectiveness
 - Based on 42 trials with 48,500 participants
-- [More Details](/agencies/dfda/conditions/high-cholesterol/treatments/atorvastatin-20mg)
+- [More Details](https://dfda.earth/conditions/high-cholesterol/treatments/atorvastatin-20mg)
 #### Rosuvastatin 10mg
 - Based on 38 trials with 41,200 participants
-- [More Details](/agencies/dfda/conditions/high-cholesterol/treatments/rosuvastatin-10mg)
+- [More Details](https://dfda.earth/conditions/high-cholesterol/treatments/rosuvastatin-10mg)
 #### Ezetimibe 10mg
 - Based on 24 trials with 19,800 participants
-- [More Details](/agencies/dfda/conditions/high-cholesterol/treatments/ezetimibe-10mg)
+- [More Details](https://dfda.earth/conditions/high-cholesterol/treatments/ezetimibe-10mg)
 - [Explore More Conditions on dfda.earth →](https://dfda.earth)
 - You're on Path A. You chose it by not choosing.
 
@@ -260,7 +260,7 @@
 - REDDIT
 - COPY LINK
 - [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
-- 1.6 YEARS OVERDUE
+- 1.7 YEARS OVERDUE
 - TIME REQUIRED: 1.6 HOURS COMBINED
 - [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
 - Humanity maintains enough nuclear weapons to trigger a civilization-ending nuclear winter [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. This treaty asks us to settle for enough weapons to do it 121.2 times in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
@@ -280,22 +280,31 @@
 - ⏱ TIME
 - REMIND
 - [Donald Trump](/tasks/1-pct-treaty-signer-us)
+- [[initials]](/people/donald-trump-us)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-us)
 - [Li Qiang](/tasks/1-pct-treaty-signer-cn)
+- [[initials]](/people/li-qiang-cn)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-cn)
 - [Yulia Svyrydenko](/tasks/1-pct-treaty-signer-ua)
+- [[initials]](/people/yulia-svyrydenko-ua)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ua)
 - [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
+- [[initials]](/people/mikhail-mishustin-ru)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
 - [Narendra Modi](/tasks/1-pct-treaty-signer-in)
+- [[initials]](/people/narendra-modi-in)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
 - [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
+- [[initials]](/people/donald-tusk-pl)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
 - [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
+- [[initials]](/people/salman-bin-abdulaziz-al-saud-sa)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
 - [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
+- [[initials]](/people/keir-starmer-gb)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
 - [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
+- [[initials]](/people/friedrich-merz-de)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)

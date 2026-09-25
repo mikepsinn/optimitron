@@ -9,10 +9,6 @@ import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import { getRouteReviewSpecs } from "@/lib/routes";
-import {
-  SITE_VARIANT_OVERRIDE_COOKIE,
-  SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-} from "@/lib/site";
 import { VISUAL_CAPTURE_VERSION } from "../scripts/visual-capture-contract.mjs";
 import {
   forceAnimationsComplete,
@@ -25,6 +21,12 @@ import {
   VISUAL_ROUTES,
 } from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock.mjs";
+
+// 1x1 light-gray PNG for image origins a route replaces with a placeholder.
+const PLACEHOLDER_IMAGE_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAADElEQVR4nGO4cuUKAAT8An1D0+G7AAAAAElFTkSuQmCC",
+  "base64",
+);
 
 const VISUAL_REVIEW_CSS = `
   *, *::before, *::after {
@@ -120,7 +122,6 @@ function buildRouteReviewManifest() {
       ? { activationSelector: route.requiredSelector }
       : {}),
     ...(route.covers?.length ? { covers: route.covers } : {}),
-    siteVariant: route.siteVariant,
   }));
   const representedStates = new Set(
     entries.map((entry) => `${entry.path}\u0000${entry.authenticated}`),
@@ -138,7 +139,7 @@ function buildRouteReviewManifest() {
       const hasLoggedOutState = entries.some(
         (entry) => entry.path === spec.path && !entry.authenticated,
       );
-      const ownership = getVisualRouteOwnership(spec.path);
+      const ownership = getVisualRouteOwnership();
       entries.push({
         ...ownership,
         name:
@@ -186,11 +187,13 @@ test.describe("route visual regression", () => {
         ).toBe(true);
       }
 
-      const response = await openVisualRoute(
-        page,
-        route.path,
-        route.siteVariant,
-      );
+      for (const origin of route.placeholderImageOrigins ?? []) {
+        await page.route(`${origin}/**`, (request) =>
+          request.fulfill({ body: PLACEHOLDER_IMAGE_PNG, contentType: "image/png" }),
+        );
+      }
+
+      const response = await openVisualRoute(page, route.path);
       const status = response?.status() ?? 0;
 
       if (!route.required && OPTIONAL_ROUTE_SKIP_STATUSES.has(status)) {
@@ -359,11 +362,7 @@ test.describe("route visual regression", () => {
   }
 });
 
-async function openVisualRoute(
-  page: Page,
-  routePath: string,
-  siteVariant?: string,
-) {
+async function openVisualRoute(page: Page, routePath: string) {
   const errors: string[] = [];
   await page.addInitScript(() => {
     Object.defineProperty(window, "__OPTIMITRON_VISUAL_REVIEW__", {
@@ -379,9 +378,6 @@ async function openVisualRoute(
   });
 
   const routeUrl = new URL(routePath, "http://visual-review.local");
-  if (siteVariant) {
-    routeUrl.searchParams.set(SITE_VARIANT_OVERRIDE_QUERY_PARAM, siteVariant);
-  }
   const targetPath = `${routeUrl.pathname}${routeUrl.search}${routeUrl.hash}`;
   const response = await page.goto(targetPath, {
     waitUntil: "domcontentloaded",
@@ -392,16 +388,6 @@ async function openVisualRoute(
     // final document after redirects settle.
   });
   await forceAnimationsComplete(page);
-
-  if (siteVariant) {
-    const selectedVariant = (await page.context().cookies()).find(
-      (cookie) => cookie.name === SITE_VARIANT_OVERRIDE_COOKIE,
-    );
-    expect(
-      selectedVariant?.value,
-      `${targetPath} should select ${siteVariant} before capture`,
-    ).toBe(siteVariant);
-  }
 
   expect(errors, `${targetPath} should not throw client-side errors`).toEqual(
     [],

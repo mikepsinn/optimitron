@@ -7,11 +7,13 @@ import { Latex } from "@optimitron/neobrutalist-ui/ui/latex"
 import { cn } from "@optimitron/neobrutalist-ui/cn"
 import {
   citations,
+  fmtParam,
+  fmtParamValueOnly,
   type Citation,
   type Parameter,
 } from "@optimitron/data/parameters"
 import {
-  formatParameter,
+  formatParameter as formatCompactParameter,
   type FormatParameterOptions,
 } from "@optimitron/data/parameters/compact-format"
 import { BookOpen, ExternalLink, FlaskConical, Info, type LucideIcon } from "lucide-react"
@@ -19,11 +21,22 @@ import { BookOpen, ExternalLink, FlaskConical, Info, type LucideIcon } from "luc
 export interface ParameterValueProps {
   /** The parameter object to display */
   param: Parameter
-  /** Existing local formatting API */
+  /**
+   * Legacy compact-formatter options. `compact: true` keeps compact notation
+   * ("$27.2B"). Other options print in the Optimitron notation and keep what
+   * the caller asked for: the unit (`includeUnit`), the ratio symbol the
+   * compact formatter always printed, and the significant figures that
+   * `precision` or `figures` produced.
+   */
   format?: FormatParameterOptions
-  /** Compatibility with the external component */
+  /**
+   * As in the Optimitron app (default "auto"):
+   *  - "auto": value without unit words (fmtParamValueOnly)
+   *  - "integer": Math.round(value), no suffixes
+   *  - "withUnit": value with its unit (fmtParam)
+   */
   display?: "auto" | "integer" | "withUnit"
-  /** Compatibility with the external component */
+  /** Significant figures (default 3), as in the Optimitron app */
   figures?: number
   /** When false, render plain text with no modal */
   showPopover?: boolean
@@ -52,8 +65,8 @@ export interface ParameterValueProps {
 export function ParameterValue({
   param,
   format,
-  display = "auto",
-  figures = 3,
+  display,
+  figures,
   showPopover,
   presentation,
   className,
@@ -64,12 +77,7 @@ export function ParameterValue({
 
   const popoverEnabled = showPopover ?? presentation !== "inline"
 
-  const resolvedFormat = resolveFormatOptions(param, format, display, figures)
-  const text =
-    valueOverride ??
-    (display === "integer"
-      ? String(Math.round(param.value))
-      : formatParameter(param, resolvedFormat))
+  const text = valueOverride ?? formatParameterValueText({ param, format, display, figures })
   // Copy-preview snapshots turn this into a markdown link so source-backed
   // values keep their source (see scripts/lib/copy-preview-dom.ts).
   // sourceUrl comes last: the dialog below renders it as the original source,
@@ -110,7 +118,7 @@ export function ParameterValue({
           type="button"
           data-copy-preview-href={referenceUrl}
           className={cn(
-            "inline cursor-help text-left underline decoration-dotted decoration-foreground/30 underline-offset-2",
+            "inline cursor-help [text-align:inherit] underline decoration-dotted decoration-foreground/30 underline-offset-2",
             className
           )}
         >
@@ -135,7 +143,7 @@ export function ParameterValue({
 
 function ParameterDetailContent({ param }: { param: Parameter }) {
   const citation: Citation | undefined = param.sourceRef ? citations[param.sourceRef] : undefined
-  const fullValue = formatParameter(param, { includeUnit: true })
+  const fullValue = fmtParam(param)
 
   return (
     <div className="min-w-0 space-y-3">
@@ -259,8 +267,8 @@ function ConfidenceIntervalBlock({ param }: { param: Parameter }) {
   if (!param.confidenceInterval) return null
 
   const [low, high] = param.confidenceInterval
-  const lowFmt = formatParameter({ ...param, value: low }, { includeUnit: true })
-  const highFmt = formatParameter({ ...param, value: high }, { includeUnit: true })
+  const lowFmt = fmtParam({ ...param, value: low })
+  const highFmt = fmtParam({ ...param, value: high })
 
   return (
     <div className="border-2 border-primary/20 bg-muted p-3 text-sm">
@@ -312,6 +320,64 @@ function MetaLink({
   )
 }
 
+/**
+ * The printed value. Callers that use `display` / `figures` (or no options)
+ * get exactly what the Optimitron app's ParameterValue prints: same formatter,
+ * same semantics, same defaults. Only `format` callers are translated.
+ */
+function formatParameterValueText({
+  param,
+  format,
+  display,
+  figures,
+}: Pick<ParameterValueProps, "param" | "format" | "display" | "figures">): string {
+  if (display === "integer") return String(Math.round(param.value))
+
+  if (format?.compact === true) {
+    return formatCompactParameter(
+      param,
+      resolveFormatOptions(param, format, display ?? "auto", figures ?? 3)
+    )
+  }
+
+  const legacy = format ? translateLegacyFormat(param, format) : undefined
+  const resolvedDisplay = display ?? legacy?.display ?? "auto"
+  const resolvedFigures = figures ?? legacy?.figures ?? 3
+
+  return resolvedDisplay === "withUnit"
+    ? fmtParam(param, resolvedFigures)
+    : fmtParamValueOnly(param, resolvedFigures)
+}
+
+/**
+ * Map compact-formatter options onto the Optimitron `display` / `figures` so a
+ * caller written for the compact formatter keeps what it asked for.
+ */
+function translateLegacyFormat(
+  param: Parameter,
+  format: FormatParameterOptions
+): { display: "auto" | "withUnit"; figures: number | undefined } {
+  const unit = (param.unit ?? "").toLowerCase()
+  // The compact formatter always printed a ratio's symbol ("12.3x", "604:1").
+  // The Optimitron formatter prints it only with display="withUnit".
+  const isRatio = unit === "ratio" || unit === "x" || unit === "multiplier"
+
+  return {
+    display: format.includeUnit || isRatio ? "withUnit" : "auto",
+    figures:
+      format.precision !== undefined || format.figures !== undefined
+        ? significantFiguresShown(formatCompactParameter(param, format))
+        : undefined,
+  }
+}
+
+/** Significant figures in the first number of a formatted value: "0.06%" → 1, "$58.6B" → 3. */
+function significantFiguresShown(formatted: string): number | undefined {
+  const number = /\d[\d,]*(?:\.\d+)?/.exec(formatted)?.[0]
+  if (!number) return undefined
+  return Math.max(number.replace(/[,.]/g, "").replace(/^0+/, "").length, 1)
+}
+
 function resolveFormatOptions(
   param: Parameter,
   format: FormatParameterOptions | undefined,
@@ -348,12 +414,7 @@ export function ParameterInline({
   className,
   valueOverride,
 }: Omit<ParameterValueProps, "showPopover" | "as">) {
-  const resolvedFormat = resolveFormatOptions(param, format, display, figures ?? 3)
-  const text =
-    valueOverride ??
-    (display === "integer"
-      ? String(Math.round(param.value))
-      : formatParameter(param, resolvedFormat))
+  const text = valueOverride ?? formatParameterValueText({ param, format, display, figures })
 
   return <span className={className}>{text}</span>
 }

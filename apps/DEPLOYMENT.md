@@ -6,9 +6,9 @@ Treat every directory under `apps/*` as a peer application with its own Vercel
 project. Keep `apps/optimitron` on its existing project because its domains and
 history already live there. Create one project for each other app.
 
-`apps/warondisease` is the source of truth for the campaign site. Its rich
-neobrutalist home and dashboard must pass public and authenticated visual review
-before `warondisease.org` moves off the temporary `apps/optimitron` host.
+`apps/warondisease` is the source of truth for the campaign site and serves
+`warondisease.org`. `apps/optimitron` serves only `optimitron.com`; it no longer
+selects a site by host.
 
 | Project                | Root Directory              | Production domain          |
 | ---------------------- | --------------------------- | -------------------------- |
@@ -157,7 +157,7 @@ them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
 4. Deploy the remaining apps to Vercel preview URLs.
 5. Run page, API, and authenticated screenshot checks against each preview.
 6. Move one custom domain at a time.
-7. Remove that host from the old multi-host deployment only after its new project is healthy.
+7. Remove that domain from the `optimitron-web` project only after its new project is healthy.
 
 The production survey domain currently returns 404 for `/embed`. Accelerated
 Medicine will show a working iframe only after the survey project is deployed and

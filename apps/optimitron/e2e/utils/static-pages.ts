@@ -7,26 +7,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { ROUTES } from "@/lib/routes";
 import { REDIRECT_ONLY_ROUTE_PATHS } from "@/lib/redirect-review";
-import {
-  getEnabledStaticPathsForSite,
-  getSiteFromHeaders,
-} from "@/lib/site";
 
 const APP_DIR = path.resolve(__dirname, "..", "..", "src", "app");
-
-function getSmokeTestHost() {
-  if (!process.env.BASE_URL) return "127.0.0.1:3001";
-
-  try {
-    return new URL(process.env.BASE_URL).host;
-  } catch {
-    return null;
-  }
-}
-
-const SMOKE_TEST_SITE = getSiteFromHeaders(
-  new Headers({ host: getSmokeTestHost() ?? "" }),
-);
 
 /** Routes that require authentication (redirect to sign-in when unauthenticated) */
 export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
@@ -47,7 +29,7 @@ export const AUTH_REQUIRED_PATHS: Set<string> = new Set([
 
 /** Routes that redirect and should be tested as redirects, not pages. */
 export const REDIRECT_ONLY_PATHS: Set<string> = new Set(
-  getEnabledStaticPathsForSite(SMOKE_TEST_SITE, REDIRECT_ONLY_ROUTE_PATHS),
+  REDIRECT_ONLY_ROUTE_PATHS,
 );
 
 /** Routes to skip entirely (auth forms, redirects, not content pages) */
@@ -108,13 +90,14 @@ function isRouteGroup(segment: string): boolean {
   return segment.startsWith("(") && segment.endsWith(")");
 }
 
-/** All static page paths enabled for the site under test. */
-export const ALL_PAGE_PATHS: string[] = getEnabledStaticPathsForSite(
-  SMOKE_TEST_SITE,
-  discoverStaticAppPages(APP_DIR).filter(
-    (pagePath) => !SKIP_PATHS.has(pagePath),
+/** All static page paths of the app under test. */
+export const ALL_PAGE_PATHS: string[] = [
+  ...new Set(
+    discoverStaticAppPages(APP_DIR).filter(
+      (pagePath) => !SKIP_PATHS.has(pagePath),
+    ),
   ),
-);
+].sort((left, right) => left.localeCompare(right));
 
 /** Public page paths only — no authentication required */
 export const PUBLIC_PAGE_PATHS: string[] = ALL_PAGE_PATHS.filter(

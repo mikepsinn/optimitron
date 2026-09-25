@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Decentralized Congress | International Campaign to End War and Disease
+- Page title: Decentralized Congress | Optimitron
 - Meta description: Wishocracy allocates budgets. Referendums create the consent record governments, courts, funders, and treaty negotiators must answer.
-- Canonical: https://warondisease.org/agencies/dcongress
+- Canonical: https://optimitron.com/agencies/dcongress
 - Open Graph title: Decentralized Congress
 - Open Graph description: Wishocracy allocates budgets. Referendums create the consent record governments, courts, funders, and treaty negotiators must answer.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdcongress
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdcongress
 - Twitter title: Decentralized Congress
 - Twitter description: Wishocracy allocates budgets. Referendums create the consent record governments, courts, funders, and treaty negotiators must answer.
 

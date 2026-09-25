@@ -370,6 +370,16 @@ export const publicSiteAppRoutes = Object.freeze({
   warondisease: [
     {
       covers: [
+        "apps/warondisease/app/institutes/page.tsx",
+        "apps/warondisease/components/institutes/TheBrutalTruth.tsx",
+      ],
+      label: "Institutes",
+      routeName: "institutes",
+      routePath: "/institutes",
+      sourcePage: "apps/warondisease/app/institutes/page.tsx",
+    },
+    {
+      covers: [
         "apps/warondisease/app/research/page.tsx",
         researchPageFile,
         spendingChartFile,

@@ -134,7 +134,7 @@ export default function AboutPage() {
                 description: (
                   <>
                     THE RECOVERY TRIAL DEMONSTRATED <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} format={{ precision: 0 }} /> LOWER COST PER
-                    PATIENT. AT SCALE, THE MODEL PROJECTS <ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} format={{ precision: 1 }} /> IN ANNUAL MEDICAL
+                    PATIENT. AT SCALE, THE MODEL PROJECTS <ParameterValue param={{ ...DFDA_NET_SAVINGS_RD_ONLY_ANNUAL, unit: "USD" }} format={{ precision: 1 }} /> IN ANNUAL MEDICAL
                     R&amp;D SAVINGS.
                   </>
                 ),
@@ -159,7 +159,7 @@ export default function AboutPage() {
                   description: (
                     <>
                       THE MODEL PROJECTS THAT A <ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} /> REDUCTION IN GLOBAL WAR COSTS
-                      COULD PRODUCE <ParameterValue param={PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT} /> IN ANNUAL DIRECT AND INDIRECT SAVINGS.
+                      COULD PRODUCE <ParameterValue param={{ ...PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT, unit: "USD" }} /> IN ANNUAL DIRECT AND INDIRECT SAVINGS.
                     </>
                   ),
                   color: "bg-brutal-yellow",

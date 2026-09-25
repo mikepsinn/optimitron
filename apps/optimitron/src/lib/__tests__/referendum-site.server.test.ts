@@ -49,8 +49,11 @@ import {
   getReferendumSiteHomeData,
   getReferendumSiteSupportersData,
   type PublicSignatoriesPage,
+  withTreatyReferendum,
 } from "@/lib/referendum-site.server";
 import { getSiteConfig } from "@/lib/site";
+
+const treatySite = withTreatyReferendum(getSiteConfig("optimitron"));
 
 describe("referendum-site.server", () => {
   beforeEach(() => {
@@ -94,7 +97,7 @@ describe("referendum-site.server", () => {
     mocks.referendumVoteCount.mockResolvedValue(12);
     mocks.organizationPositionCount.mockResolvedValue(3);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+    const data = await getReferendumSiteHomeData(treatySite);
 
     expect(data?.individualCount).toBe(12);
     expect(data?.organizationCount).toBe(3);
@@ -122,7 +125,7 @@ describe("referendum-site.server", () => {
       .mockRejectedValueOnce(new Error("Server has closed the connection."))
       .mockResolvedValueOnce([]);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+    const data = await getReferendumSiteHomeData(treatySite);
 
     expect(data?.organizationCount).toBe(0);
     expect(mocks.organizationPositionFindMany).toHaveBeenCalledTimes(2);
@@ -136,7 +139,7 @@ describe("referendum-site.server", () => {
     });
     mocks.organizationPositionFindMany.mockResolvedValue([]);
 
-    await getReferendumSiteSupportersData(getSiteConfig("warOnDisease"));
+    await getReferendumSiteSupportersData(treatySite);
 
     expect(mocks.organizationPositionFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -217,7 +220,7 @@ describe("referendum-site.server", () => {
     });
 
     const data = await getReferendumSiteHomeData(
-      getSiteConfig("warOnDisease"),
+      treatySite,
       {
         currentUserId: "user_c",
       },
@@ -285,7 +288,7 @@ describe("referendum-site.server", () => {
       },
     ]);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+    const data = await getReferendumSiteHomeData(treatySite);
 
     expect(mocks.referendumFindMany).toHaveBeenCalledWith({
       where: {
@@ -362,7 +365,7 @@ describe("referendum-site.server", () => {
       },
     ]);
 
-    const data = await getReferendumSiteHomeData(getSiteConfig("warOnDisease"));
+    const data = await getReferendumSiteHomeData(treatySite);
     const publicSignatories = (
       data as { publicSignatories?: PublicSignatoriesPage } | null
     )?.publicSignatories;

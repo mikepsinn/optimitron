@@ -7,7 +7,6 @@ import {
   searchStaticSiteDocuments,
   type StaticSiteSearchDocument,
 } from "@/lib/site-search";
-import type { SiteConfig } from "@/lib/site";
 import { searchContent } from "@/lib/content-search.server";
 import { searchTasks, type TaskSearchResult } from "@/lib/tasks.server";
 
@@ -69,7 +68,6 @@ export async function searchSiteContent(
   options?: {
     contentLimit?: number;
     pageLimit?: number;
-    site?: SiteConfig;
     taskLimit?: number;
     userId?: string | null;
   },
@@ -92,7 +90,6 @@ export async function searchSiteContent(
     Promise.resolve(
       searchStaticSiteDocuments(trimmedQuery, {
         limit: options?.pageLimit ?? 12,
-        site: options?.site,
       }),
     ),
     searchTasks(trimmedQuery, {

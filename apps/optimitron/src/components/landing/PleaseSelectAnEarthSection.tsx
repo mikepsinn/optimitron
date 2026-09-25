@@ -40,7 +40,7 @@ const scenarios = [
     income: `${treatyMultiple}× current`,
     incomeDetail: formatCurrency(Math.round(TREATY_TRAJECTORY_AVG_INCOME_YEAR_15.value)),
     hale: TREATY_PROJECTED_HALE_YEAR_15.value,
-    color: "text-background",
+    color: "text-foreground",
   },
   {
     name: "Optimal Governance",
@@ -48,7 +48,7 @@ const scenarios = [
     income: `${optimalMultiple}× current`,
     incomeDetail: formatCurrency(Math.round(WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15.value)),
     hale: WISHONIA_PROJECTED_HALE_YEAR_15.value,
-    color: "text-brutal-green",
+    color: "text-brutal-green-text",
   },
 ];
 

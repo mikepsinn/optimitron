@@ -1,23 +1,14 @@
 import { ImageResponse } from "next/og";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import { getMilitarySynonymTitle } from "@/lib/messaging";
 import {
   formatPoliticianOgDescriptor,
   formatPoliticianOgRatio,
 } from "@/lib/politician-og";
+import { findPoliticianScorecard } from "@/lib/politician-scorecards";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-function loadScorecardData(): { scorecards: Array<{ bioguideId: string; name: string; party: string; state: string; chamber: string; militaryDollarsVotedFor: number; clinicalTrialDollarsVotedFor: number; ratio: number }>, systemWideRatio: number } | null {
-  try {
-    const p = join(process.cwd(), "..", "data", "src", "datasets", "generated", "politician-scorecards.json");
-    if (existsSync(p)) return JSON.parse(readFileSync(p, "utf8"));
-    return null;
-  } catch { return null; }
-}
 
 function fmt(v: number): string {
   if (v >= 1e12) return `$${(v / 1e12).toFixed(1)}T`;
@@ -31,8 +22,7 @@ export const revalidate = 86400;
 
 export default async function OGImage({ params }: { params: Promise<{ code: string; bioguideId: string }> }) {
   const { bioguideId } = await params;
-  const data = loadScorecardData();
-  const p = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
+  const p = findPoliticianScorecard(bioguideId);
 
   if (!p) {
     return new ImageResponse(

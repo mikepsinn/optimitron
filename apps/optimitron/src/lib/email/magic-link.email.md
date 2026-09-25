@@ -10,8 +10,8 @@
 
 | Field | Value |
 | --- | --- |
-| From | International Campaign to End War and Disease &lt;hello@updates.warondisease.org&gt; |
-| Subject | Save your 1% Treaty vote |
+| From | Earth Optimization Services &lt;hello@updates.warondisease.org&gt; |
+| Subject | Sign in to optimitron.local |
 | Trigger | Fires when a user submits the sign-in email form. Auth provider (NextAuth) dispatches a single-use callback URL signed with the auth secret; clicking it completes the sign-in flow. |
 | Scope | auth |
 | Wishonia signature | Skipped |
@@ -20,8 +20,8 @@
 
 ## Body
 
-Click the button below to verify your email and save your vote.
+Your sign-in link is below.
 
-[SAVE MY VOTE](https://warondisease.local/api/auth/callback/email?token=SAMPLE)
+[SIGN IN](https://optimitron.local/api/auth/callback/email?token=SAMPLE)
 
 Didn't request this? Ignore it.

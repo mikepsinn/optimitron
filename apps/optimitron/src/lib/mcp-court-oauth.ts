@@ -15,7 +15,7 @@ import {
 } from "@optimitron/mcp/resources";
 import { McpScope } from "@optimitron/db/enums";
 import { getIssuerUrl, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "./mcp-oauth";
-import { getAllSiteConfigs } from "./site";
+import { getMcpResourceDomains } from "./site";
 
 export { LEGACY_MCP_RESOURCE };
 
@@ -50,9 +50,7 @@ export function resolveOAuthResource(
     throw new Error("Court MCP resource does not match this environment");
   const legacyResources = new Set([
     `${getIssuerUrl()}/api/mcp`,
-    ...getAllSiteConfigs().flatMap((site) =>
-      site.domains.map((domain) => `https://${domain}/api/mcp`),
-    ),
+    ...getMcpResourceDomains().map((domain) => `https://${domain}/api/mcp`),
   ]);
   const issuer = new URL(getIssuerUrl());
   const loopbackHosts = ["localhost", "127.0.0.1", "[::1]"];

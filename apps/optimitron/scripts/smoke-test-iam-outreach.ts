@@ -1,9 +1,13 @@
 import "./load-env";
 import { OrgStatus, OrgType, TaskCategory } from "@optimitron/db";
-import { DFDA_TRIAL_CAPACITY_MULTIPLIER } from "@optimitron/data/parameters";
+import {
+  DFDA_QUEUE_CLEARANCE_YEARS,
+  DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  NUCLEAR_WINTER_OVERKILL_FACTOR,
+  STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+} from "@optimitron/data/parameters";
 import { createOrganizationWithOwner } from "../src/lib/organization.server";
 import { prisma } from "../src/lib/prisma";
-import { WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION } from "../src/lib/site";
 import { createTask } from "../src/lib/tasks.server";
 
 /**
@@ -133,15 +137,18 @@ async function main() {
   }
 
   // Single canonical thesis line + canonical trial-capacity number, both
-  // sourced from the parameter manifest / site config so the email never
-  // drifts from the rest of the campaign copy. One CTA — the /join
+  // sourced from the parameter manifest so the email never drifts from the
+  // rest of the campaign copy. One CTA — the /join
   // page gives organizations the treaty position and legal notes before
   // they join, so the email is just the wedge.
+  const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
+  const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
+  const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
   const trialMultiplier = DFDA_TRIAL_CAPACITY_MULTIPLIER.value.toFixed(1);
   const description = [
     `The International Campaign to End War and Disease asks the Institute for Accelerated Medicine to publicly support the 1% Treaty: every nation simultaneously redirects 1% of military spending to pragmatic clinical trials.`,
     "",
-    WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
+    `Let's trade one apocalypse out of humanity's ${apocalypseCount}-apocalypse mass-murder capacity for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`,
     "",
     `That ${trialMultiplier}× speedup in clinical-trial throughput is the lever the Institute exists to pull.`,
     "",

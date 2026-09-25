@@ -15,7 +15,7 @@ import {
 import { EosScenarioExplorer } from "@/components/eos-shareholder/EosScenarioExplorer";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { defaultButtonClassName } from "@/components/ui/default-button";
-import { ROUTES } from "@/lib/routes";
+import { ROUTES, warOnDiseaseUrl } from "@/lib/routes";
 
 const sectionClassName = "border-t border-foreground";
 const sectionInnerClassName =
@@ -452,7 +452,7 @@ export function EosShareholderLandingPage() {
               </h3>
               <Link
                 className="mt-5 inline-block text-sm font-black uppercase underline decoration-2 underline-offset-4"
-                href={ROUTES.treaty}
+                href={warOnDiseaseUrl(ROUTES.treaty)}
               >
                 Read the 1% Treaty model
               </Link>

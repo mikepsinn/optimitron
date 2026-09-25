@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Wishonia Demo | International Campaign to End War and Disease
+- Page title: Wishonia Demo | Optimitron
 - Meta description: A guided tour by an alien who's been running a planet for 4,237 years. She has notes.
-- Canonical: https://warondisease.org/demo
+- Canonical: https://optimitron.com/demo
 - Open Graph title: Wishonia Demo
 - Open Graph description: A guided tour by an alien who's been running a planet for 4,237 years. She has notes.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdemo
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdemo
 - Twitter title: Wishonia Demo
 - Twitter description: A guided tour by an alien who's been running a planet for 4,237 years. She has notes.
 

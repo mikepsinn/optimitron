@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Political Dysfunction Tax | International Campaign to End War and Disease
+- Page title: Political Dysfunction Tax | Optimitron
 - Meta description: Your governments cost you $101 trillion a year in dysfunction. Per person, per year. Including the ones who cannot afford lunch.
-- Canonical: https://warondisease.org/dysfunction-tax
+- Canonical: https://optimitron.com/dysfunction-tax
 - Open Graph title: Political Dysfunction Tax
 - Open Graph description: Your governments cost you $101 trillion a year in dysfunction. Per person, per year. Including the ones who cannot afford lunch.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdysfunction-tax
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdysfunction-tax
 - Twitter title: Political Dysfunction Tax
 - Twitter description: Your governments cost you $101 trillion a year in dysfunction. Per person, per year. Including the ones who cannot afford lunch.
 
@@ -27,5 +27,6 @@
 - MILITARY OVERSPEND
 - $2.72 trillion/yr
 - Global military spending. That is 604 times more than you spend on disease research. You have prioritised blowing things up over not dying. Bold strategy.
-- Every human on Earth pays [$12,600/year](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per year in governance dysfunction. Not in taxes — in waste. The taxes are on top of that.
+- 12.6K
+- Every human on Earth pays [$12,600](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per year in governance dysfunction. Not in taxes — in waste. The taxes are on top of that.
 - [READ THE PAPER →](https://political-dysfunction-tax.warondisease.org)

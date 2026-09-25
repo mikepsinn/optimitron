@@ -24,6 +24,7 @@
     "./types/*": "./src/types/*",
     "./lib/*": "./src/lib/*",
     "./lib/court-links": "./src/lib/court-links.ts",
+    "./lib/optimitron-links": "./src/lib/optimitron-links.ts",
     "./lib/court-enrollment.server": "./src/lib/court-enrollment.server.ts",
     "./lib/treaty-represented-person-registration.server": "./src/lib/treaty-represented-person-registration.server.ts",
     "./lib/subject.server": "./src/lib/subject.server.ts",

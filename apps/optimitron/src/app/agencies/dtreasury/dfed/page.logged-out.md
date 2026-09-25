@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Algorithmic Reserve | International Campaign to End War and Disease
+- Page title: Algorithmic Reserve | Optimitron
 - Meta description: Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation.
-- Canonical: https://warondisease.org/agencies/dtreasury/dfed
+- Canonical: https://optimitron.com/agencies/dtreasury/dfed
 - Open Graph title: Algorithmic Reserve
 - Open Graph description: Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdfed
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdfed
 - Twitter title: Algorithmic Reserve
 - Twitter description: Twelve people in a room deciding how much your money is worth. On my planet, we call that a hostage situation.
 
@@ -70,7 +70,8 @@
 - 12 unelected humans → 1 constructor parameter
 - PROTOCOL RULES
 - REFERENCE IMPLEMENTATION
-- ```text
+
+```text
 // WishToken.sol — the entire monetary policy
 constructor(
     address _treasury,
@@ -84,6 +85,7 @@ constructor(
 // That's it. No board meetings. No interest rate decisions.
 // No quantitative easing. No money printer. Just math.
 ```
+
 - The total supply of Wishes is set once at deployment and enforced by the protocol. No entity can create more. Productivity gains manifest as gentle deflation — your money buys more over time, not less.
 ### THE SAVINGS
 - Since 1913, the dollar has lost 96 cents of every dollar. Under fixed supply, that theft is mathematically impossible.

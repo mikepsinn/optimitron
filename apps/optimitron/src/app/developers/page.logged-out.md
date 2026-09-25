@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Developers | International Campaign to End War and Disease
+- Page title: Developers | Optimitron
 - Meta description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
-- Canonical: https://warondisease.org/developers
+- Canonical: https://optimitron.com/developers
 - Open Graph title: Developers
 - Open Graph description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdevelopers
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdevelopers
 - Twitter title: Developers
 - Twitter description: Optimize Earth from your own app or website with the Earth Optimization API: OAuth, shared people, organizations, tasks, referrals, and votes.
 
@@ -18,9 +18,11 @@
 - Connect your survey, dFDA site, field tool, or civic app to Optimitron's shared work graph: OAuth, people, organizations, tasks, referrals, votes, and expected-value coordination.
 - OPENAPI CONTRACT
 - COPY
-- ```text
+
+```text
 /openapi.json
 ```
+
 - [OPEN OPENAPI](/openapi.json)
 - [MCP TOOL REFERENCE](/developers/tools)
 - [INSTALL MCP](/mcp)
@@ -43,12 +45,15 @@
 - 3 EXCHANGE AND REFRESH Trade the authorization code for a Bearer token. Refresh tokens rotate, and revoke is available when the app disconnects.
 #### METADATA
 - Let OAuth clients discover the authorization, token, registration, and revocation endpoints.
-- ```text
+
+```text
 GET /.well-known/oauth-authorization-server
 ```
+
 #### REGISTER
 - Create a public client for browser, mobile, and field apps.
-- ```text
+
+```text
 POST /api/mcp/oauth/register
 
 {
@@ -63,13 +68,16 @@ POST /api/mcp/oauth/register
   "scope": "tasks:personal earthdata:write"
 }
 ```
+
 #### AUTHORIZE AND TOKEN
 - Use PKCE for the browser redirect, then exchange the code on your own server or backend.
-- ```text
+
+```text
 GET /api/mcp/oauth/authorize
 POST /api/mcp/oauth/token
 POST /api/mcp/oauth/revoke
 ```
+
 - REST API
 ### THE USEFUL PARTS ARE OPEN FIRST.
 - These are the open endpoints for embedding a survey, creating tasks for people, collecting votes, and keeping organization data attached to the same shared record.
@@ -84,7 +92,8 @@ POST /api/mcp/oauth/revoke
 - EXAMPLE
 ### CREATE A TASK FOR A HUMAN.
 - A survey or outreach app can ask for a person, create the task, and then show whether that person answered, voted, completed the work, or needs another nudge.
-- ```text
+
+```text
 POST /api/tasks
 
 {
@@ -99,6 +108,7 @@ POST /api/tasks
   "contactTemplate": "Please vote on the 1% Treaty and send it to two people who can help."
 }
 ```
+
 - PERMISSIONS
 ### ASK FOR THE SMALLEST SCOPE THAT WORKS.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations
@@ -111,14 +121,18 @@ POST /api/tasks
 - Admin-only: access the configured GitHub repos via the server-side PAT (search code, read files, list directories, generic API passthrough)
 ### AGENTS USE THE SAME AUTHORIZATION.
 - MCP clients can discover tools, add impact estimates, and call the task graph with the same OAuth scopes used by REST clients.
-- ```text
+
+```text
 GET /api/mcp/tools
 POST /api/mcp
 ```
+
 - [MCP SETUP](/mcp)
 ### MACHINES CAN READ THE CONTRACT.
 - Point API clients, SDK generators, or documentation tooling at the OpenAPI document and stop guessing from source files.
-- ```text
+
+```text
 GET /openapi.json
 ```
+
 - [OPEN JSON](/openapi.json)

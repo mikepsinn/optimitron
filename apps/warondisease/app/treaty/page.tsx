@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { Libre_Baskerville } from "next/font/google"
+import { JsonLdScript } from "@optimitron/site-kit/components/site/JsonLdScript"
 import Layout from "@/components/layout"
 import { TreatySignatureBox } from "@/components/landing/TreatySignatureBox"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import { getSessionUserId } from "@/lib/auth-utils"
+import { buildTreatyStructuredData } from "@/lib/structured-data"
 import { getTreatyPageContent } from "@/lib/treaty-content.server"
 import { getUserTreatyVote } from "@/lib/treaty-votes.server"
 import {
@@ -51,6 +53,7 @@ export default async function TreatyPage() {
 
   return (
     <Layout>
+      <JsonLdScript data={buildTreatyStructuredData()} />
       <SectionContainer bgColor="background" borderPosition="bottom" padding="md">
         <Container size="md">
           <article className={`mx-auto max-w-3xl ${libreBaskerville.variable}`}>

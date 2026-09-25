@@ -200,6 +200,18 @@ export function buildApprovedOrganizationPositionWhere(
   };
 }
 
+/**
+ * This site hosts no referendum of its own. Surfaces that report on the 1%
+ * Treaty (the scoreboard and the agent APIs) name it explicitly.
+ */
+export function withTreatyReferendum(site: SiteConfig): SiteConfig {
+  return {
+    ...site,
+    contentKey: "onePercentTreaty",
+    primaryReferendumSlug: TREATY_REFERENDUM_SLUG,
+  };
+}
+
 export async function getReferendumSiteContext(
   site: SiteConfig,
 ): Promise<ReferendumSiteContext | null> {

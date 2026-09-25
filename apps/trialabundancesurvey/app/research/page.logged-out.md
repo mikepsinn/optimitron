@@ -28,12 +28,12 @@
 - [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS
 - WITH [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) TRIAL CAPACITY
 - [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) YEARS
-- [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year funds [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) as many patient trial slots.
+- [$21.8 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year funds [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) as many patient trial slots.
 ### KEY FINDINGS
 - [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - About $500 per RECOVERY participant versus a $41,413 pivotal-trial median.
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year funds [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) as many patient trial slots, cutting the disease eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
+- [$21.8 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per year funds [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) as many patient trial slots, cutting the disease eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years.
 - RECOVERY's identification of dexamethasone as an effective treatment saved over 1 million lives globally.
 - March 19 to June 16, 2020; RECOVERY produced three treatment findings within 100 days.
 ### PUBLIC SPENDING GAP
@@ -41,7 +41,7 @@
 - $2.718T
 - ANNUAL PUBLICLY FUNDED CLINICAL TRIAL SPENDING
 - [$4.5B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
+- [604x](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 ### WHY CAN'T EVERY DOCTOR OFFER A TRIAL?
 - Pragmatic trials are legal. Doctors can generally prescribe approved drugs off-label, but a systematic study adds research duties: an FDA investigational new drug application unless exempt, ethics review, consent, privacy approval, safety reporting, contracts, data systems, and a research sponsor. Insurance may cover routine care without paying for the research work.
 - Universal access needs reusable study plans, central ethics review, simpler rules for low-risk comparisons, reliable funding, connected health records, and a shared trial network to handle monitoring, reporting, and liability.
@@ -67,6 +67,7 @@
 #### ABOUT
 - [ABOUT](/about)
 - [RESEARCH & EVIDENCE](/research)
+- [SURVEY RESULTS](/results)
 - [FAQ](/faq)
 #### CONTACT
 - [hello@trialabundancesurvey.org](mailto:hello@trialabundancesurvey.org)

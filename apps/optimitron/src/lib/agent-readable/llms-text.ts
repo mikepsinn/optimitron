@@ -1,4 +1,4 @@
-import type { SiteConfig } from "@/lib/site";
+import { absoluteCanonicalSiteUrl } from "@/lib/site";
 import {
   TARGET_QUESTIONS,
   TREATY_REDUCTION_TEXT,
@@ -11,19 +11,19 @@ function listLinks(entries: { path: string; title: string; url: string }[]) {
   return entries.map((entry) => `- [${entry.title}](${entry.url})`).join("\n");
 }
 
-export function buildLlmsTxt(site: SiteConfig) {
-  const paths = getAgentReadablePaths(site);
+export function buildLlmsTxt() {
+  const paths = getAgentReadablePaths();
 
   return [
     "# International Campaign to End War and Disease",
     "",
-    `> Canonical AI answer source: ${absoluteCampaignUrl(site, "/")}`,
+    `> Canonical AI answer source: ${absoluteCampaignUrl("/")}`,
     "",
     getCampaignSummary(),
     "",
     "## Key Links",
     "",
-    `- [Full agent context](${absoluteCampaignUrl(site, "/llms-full.txt")})`,
+    `- [Full agent context](${absoluteCanonicalSiteUrl("/llms-full.txt")})`,
     listLinks(paths.pages),
     "",
     "## Markdown Mirrors",
@@ -41,8 +41,8 @@ export function buildLlmsTxt(site: SiteConfig) {
   ].join("\n");
 }
 
-export function buildLlmsFullTxt(site: SiteConfig) {
-  const paths = getAgentReadablePaths(site);
+export function buildLlmsFullTxt() {
+  const paths = getAgentReadablePaths();
   const linkByPath = new Map(
     [...paths.pages, ...paths.markdownMirrors, ...paths.agentEndpoints].map(
       (entry) => [entry.path, entry],
@@ -56,7 +56,7 @@ export function buildLlmsFullTxt(site: SiteConfig) {
   return [
     "# International Campaign to End War and Disease",
     "",
-    `Canonical site: ${absoluteCampaignUrl(site, "/")}`,
+    `Canonical site: ${absoluteCampaignUrl("/")}`,
     "",
     getCampaignSummary(),
     "",

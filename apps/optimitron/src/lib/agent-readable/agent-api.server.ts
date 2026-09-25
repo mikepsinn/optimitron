@@ -6,6 +6,7 @@ import {
 import { courtUrl } from "@optimitron/site-kit/lib/court-links";
 import {
   getReferendumSiteHomeData,
+  withTreatyReferendum,
   type PublicSignatoryEntry,
 } from "@/lib/referendum-site.server";
 import {
@@ -14,10 +15,9 @@ import {
   absoluteCampaignUrl,
   getAgentReadablePaths,
   getCampaignSummary,
-  getCanonicalAgentReadableSite,
 } from "./campaign-canon";
 import { ROUTES } from "@/lib/routes";
-import type { SiteConfig } from "@/lib/site";
+import { absoluteCanonicalSiteUrl, type SiteConfig } from "@/lib/site";
 import {
   getUserDisplayAvatar,
   getUserDisplayHref,
@@ -65,10 +65,11 @@ function publicHumanName(
   return getUserDisplayLabel(entry.user);
 }
 
-function publicProfileUrl(site: SiteConfig, entry: PublicSignatoryEntry) {
+// Profile pages live on optimitron.com, not on the campaign site.
+function publicProfileUrl(entry: PublicSignatoryEntry) {
   if (entry.kind !== "human" || !entry.user.person) return null;
   const href = getUserDisplayHref(entry.user);
-  return href ? absoluteCampaignUrl(site, href) : null;
+  return href ? absoluteCanonicalSiteUrl(href) : null;
 }
 
 function safePublicUrl(value: string | null | undefined) {
@@ -83,7 +84,7 @@ function safePublicUrl(value: string | null | undefined) {
   }
 }
 
-function summarizeSignatory(site: SiteConfig, entry: PublicSignatoryEntry) {
+function summarizeSignatory(entry: PublicSignatoryEntry) {
   const base = {
     kind: entry.kind,
     rank: entry.rank,
@@ -109,17 +110,16 @@ function summarizeSignatory(site: SiteConfig, entry: PublicSignatoryEntry) {
   return {
     ...base,
     name: publicHumanName(entry),
-    profileUrl: publicProfileUrl(site, entry),
+    profileUrl: publicProfileUrl(entry),
     avatarUrl: safePublicUrl(getUserDisplayAvatar(entry.user)),
   };
 }
 
-export async function buildAgentManifest(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
-  const paths = getAgentReadablePaths(campaignSite);
+export async function buildAgentManifest() {
+  const paths = getAgentReadablePaths();
   return withMetadata({
     name: "War on Disease agent manifest",
-    canonicalOrigin: absoluteCampaignUrl(campaignSite, "/").replace(/\/$/, ""),
+    canonicalOrigin: absoluteCampaignUrl("/").replace(/\/$/, ""),
     summary: getCampaignSummary(),
     targetQuestions: TARGET_QUESTIONS,
     sourceUrls: paths.pages.map((entry) => entry.url),
@@ -129,16 +129,15 @@ export async function buildAgentManifest(site: SiteConfig) {
 }
 
 export async function buildAgentCampaignState(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
-  const homeData = await getReferendumSiteHomeData(campaignSite);
+  const homeData = await getReferendumSiteHomeData(withTreatyReferendum(site));
 
   return withMetadata({
     name: "War on Disease campaign state",
-    canonicalOrigin: absoluteCampaignUrl(campaignSite, "/").replace(/\/$/, ""),
+    canonicalOrigin: absoluteCampaignUrl("/").replace(/\/$/, ""),
     summary: getCampaignSummary(),
     sourceUrls: [
-      absoluteCampaignUrl(campaignSite, ROUTES.vote),
-      absoluteCampaignUrl(campaignSite, ROUTES.signatories),
+      absoluteCampaignUrl(ROUTES.vote),
+      absoluteCampaignUrl(ROUTES.signatories),
       courtUrl("/humanity-v-government"),
       courtUrl("/plaintiffs"),
     ],
@@ -150,58 +149,46 @@ export async function buildAgentCampaignState(site: SiteConfig) {
       publicSignatories: homeData?.publicSignatories.totalCount ?? 0,
     },
     links: {
-      vote: absoluteCampaignUrl(campaignSite, ROUTES.vote),
-      treaty: absoluteCampaignUrl(campaignSite, ROUTES.treaty),
-      signatories: absoluteCampaignUrl(campaignSite, ROUTES.signatories),
+      vote: absoluteCampaignUrl(ROUTES.vote),
+      treaty: absoluteCampaignUrl(ROUTES.treaty),
+      signatories: absoluteCampaignUrl(ROUTES.signatories),
       plaintiffs: courtUrl("/plaintiffs"),
       courtState: courtUrl("/api/agent/plaintiffs"),
-      parameters: absoluteCampaignUrl(campaignSite, "/api/agent/parameters"),
+      parameters: absoluteCanonicalSiteUrl("/api/agent/parameters"),
     },
   });
 }
 
 export async function buildAgentSignatories(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
-  const homeData = await getReferendumSiteHomeData(campaignSite);
+  const homeData = await getReferendumSiteHomeData(withTreatyReferendum(site));
   const page = homeData?.publicSignatories;
 
   return withMetadata({
     name: "War on Disease public signatories",
-    sourceUrls: [absoluteCampaignUrl(campaignSite, ROUTES.signatories)],
+    sourceUrls: [absoluteCampaignUrl(ROUTES.signatories)],
     page: page?.page ?? 1,
     pageSize: page?.pageSize ?? 0,
     totalCount: page?.totalCount ?? 0,
     totalPages: page?.totalPages ?? 1,
     signatories: (page?.signatories ?? []).map((entry) =>
-      summarizeSignatory(campaignSite, entry),
+      summarizeSignatory(entry),
     ),
   });
 }
 
-export async function buildAgentParameters(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
+export async function buildAgentParameters() {
   const parameterExport = buildTreatyParameterExport();
   const parameterSetHash = getTreatyParameterSetHash();
   return {
     ...withMetadata({
       name: "1% Treaty parameter export",
       sourceUrls: [
-        absoluteCampaignUrl(campaignSite, ROUTES.treaty),
+        absoluteCampaignUrl(ROUTES.treaty),
         "https://manual.warondisease.org/knowledge/appendix/parameters-and-calculations.html",
       ],
       parameterSetHash,
       parameterExport,
     }),
     contentHash: parameterSetHash,
-  };
-}
-
-export function buildAgentDiscoveryManifest(site: SiteConfig) {
-  const campaignSite = getCanonicalAgentReadableSite(site);
-  return {
-    llmsTxt: absoluteCampaignUrl(campaignSite, "/llms.txt"),
-    llmsFullTxt: absoluteCampaignUrl(campaignSite, "/llms-full.txt"),
-    markdownMirrors: getAgentReadablePaths(campaignSite).markdownMirrors,
-    agentEndpoints: getAgentReadablePaths(campaignSite).agentEndpoints,
   };
 }

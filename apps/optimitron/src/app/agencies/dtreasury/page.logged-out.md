@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Automated Treasury | International Campaign to End War and Disease
+- Page title: Automated Treasury | Optimitron
 - Meta description: 0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.
-- Canonical: https://warondisease.org/agencies/dtreasury
+- Canonical: https://optimitron.com/agencies/dtreasury
 - Open Graph title: Automated Treasury
 - Open Graph description: 0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdtreasury
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdtreasury
 - Twitter title: Automated Treasury
 - Twitter description: 0.5% transaction tax, UBI, and Wishocratic allocation — in one currency. Your seventy-four-thousand-page tax code is not invited.
 

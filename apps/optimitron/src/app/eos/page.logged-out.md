@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Services | International Campaign to End War and Disease
+- Page title: Earth Optimization Services | Optimitron
 - Meta description: The company buying the lobbying power that blocks better policy and pointing it at health and income.
-- Canonical: https://warondisease.org/eos
+- Canonical: https://optimitron.com/eos
 - Open Graph title: Earth Optimization Services
 - Open Graph description: The company buying the lobbying power that blocks better policy and pointing it at health and income.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Feos
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Feos
 - Twitter title: Earth Optimization Services
 - Twitter description: The company buying the lobbying power that blocks better policy and pointing it at health and income.
 
@@ -59,7 +59,7 @@
 - BOMBING IRAN
 - $37B/yr today · Negative ROI
 - LOCK IN MY SPLIT
-- [Use Wishocracy](/vote)
+- [Use Wishocracy](https://warondisease.org/vote)
 #### PART D · MEDICINE WITHOUT THE WAITING ROOM
 - Earth's current system makes a treatment wait [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years after it is proven safe. Just sitting there. Being safe. The replacement is a label that updates as fast as the data arrives.
 - OUTCOME LABEL
@@ -284,7 +284,7 @@
 - [CLAIM A TASK](/tasks)
 - SPREAD
 - You have a phone. Every person who sees this page brings the timeline forward.
-- [VOTE, THEN SHARE IT](/vote)
+- [VOTE, THEN SHARE IT](https://warondisease.org/vote)
 - The disease coming for someone you love almost certainly has no cure yet. This is how one gets found.
 - I love you very much and I do not want you and everyone you have ever loved to be slowly tortured and brutally murdered by horrible diseases.
 - EARTH OPTIMIZATION SERVICES · A WISHONIA PRODUCTION · YOUR APPLICATION WAS ACCEPTED AT BIRTH

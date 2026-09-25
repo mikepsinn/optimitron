@@ -8,9 +8,12 @@ import { SignatoriesLeaderboard } from "@/components/referendum/SignatoriesLeade
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
+import {
+  getReferendumSiteHomeData,
+  withTreatyReferendum,
+} from "@/lib/referendum-site.server";
 import { scoreboardLink } from "@/lib/routes";
-import { getSiteConfig, getSiteFromHeaders } from "@/lib/site";
+import { getSiteFromHeaders } from "@/lib/site";
 
 export const metadata = getRouteMetadata(scoreboardLink);
 
@@ -27,11 +30,9 @@ const politicianScorecards = POLITICIAN_SCORECARDS.map((politician) => ({
 
 export default async function ScoreboardPage() {
   const hdrs = await headers();
-  const requestSite = getSiteFromHeaders(hdrs);
-  const signatorySite = requestSite.primaryReferendumSlug
-    ? requestSite
-    : getSiteConfig("warOnDisease");
-  const referendumData = await getReferendumSiteHomeData(signatorySite);
+  const referendumData = await getReferendumSiteHomeData(
+    withTreatyReferendum(getSiteFromHeaders(hdrs)),
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">

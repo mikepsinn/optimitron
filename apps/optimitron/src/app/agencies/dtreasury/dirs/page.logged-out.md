@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Automated Revenue Service | International Campaign to End War and Disease
+- Page title: Automated Revenue Service | Optimitron
 - Meta description: Six lines of computer code. That's all it took.
-- Canonical: https://warondisease.org/agencies/dtreasury/dirs
+- Canonical: https://optimitron.com/agencies/dtreasury/dirs
 - Open Graph title: Automated Revenue Service
 - Open Graph description: Six lines of computer code. That's all it took.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdirs
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdtreasury%2Fdirs
 - Twitter title: Automated Revenue Service
 - Twitter description: Six lines of computer code. That's all it took.
 
@@ -61,7 +61,8 @@
 - 74,000 pages of tax code → 6 lines of computer code
 - PROTOCOL RULES
 - REFERENCE IMPLEMENTATION
-- ```text
+
+```text
 // WishToken._update() — replaces the entire IRS
 function _update(address from, address to, uint256 value) internal override {
     // Skip tax on mints, burns, or exempt addresses
@@ -75,6 +76,7 @@ function _update(address from, address to, uint256 value) internal override {
 }
 // No filing. No audits. No loopholes. No accountants. No evasion.
 ```
+
 - Every transfer automatically deducts 0.5% and sends it to the treasury. No filing, no forms, no audits, no compliance departments, no offshore accounts. The tax is unavoidable because it's built into the protocol.
 ### THE SAVINGS
 - $12.3B direct IRS budget + $200B+ in annual compliance costs eliminated. That's $640 per American per year just in paperwork savings.

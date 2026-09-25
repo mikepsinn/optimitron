@@ -45,7 +45,7 @@ export function OutcomeLabel({ title, subtitle, tag, data, footer }: OutcomeLabe
     const textColorClass = isSideEffect
         ? 'text-brutal-red' // Side effects usually shown in red text
         : item.isPositive === true
-          ? 'text-brutal-green'
+          ? 'text-brutal-green-text'
           : item.isPositive === false
             ? 'text-brutal-red'
             : 'text-muted-foreground';

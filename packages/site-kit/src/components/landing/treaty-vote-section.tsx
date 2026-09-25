@@ -62,6 +62,7 @@ export default function TreatyVoteSection({
   const [sliderSubmitted, setSliderSubmitted] = useState(false)
   const [userHasDragged, setUserHasDragged] = useState(disableIntroAnimation)
   const [showAnimation, setShowAnimation] = useState(false)
+  const [visualCaptureActive, setVisualCaptureActive] = useState(false)
   const [animatedValue, setAnimatedValue] = useState(50)
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -127,6 +128,7 @@ export default function TreatyVoteSection({
   useEffect(() => {
     const completeVisualCapture = () => {
       visualCaptureRef.current = true
+      setVisualCaptureActive(true)
       if (introAnimationTimeoutRef.current) {
         clearTimeout(introAnimationTimeoutRef.current)
         introAnimationTimeoutRef.current = null
@@ -439,36 +441,39 @@ export default function TreatyVoteSection({
 
                   {/* Slider with Animation */}
                   <div className="relative px-2">
-                    {/* Animated Hand Icon and "Slide Me" Text */}
-                    <AnimatePresence>
-                      {showAnimation && !userHasDragged && (
-                        <>
-                          <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="absolute -top-20 z-10 pointer-events-none"
-                            style={{ left: `${animatedValue}%`, transform: "translateX(-50%)" }}
-                          >
-                            <div className="bg-brutal-yellow border-4 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                              <p className="font-black uppercase text-sm whitespace-nowrap">👇 Slide Me!</p>
-                            </div>
-                          </motion.div>
+                    {/* Animated Hand Icon and "Slide Me" Text. A visual capture removes it
+                        at once: during the exit animation the hand stays in the screenshot. */}
+                    {!visualCaptureActive && (
+                      <AnimatePresence>
+                        {showAnimation && !userHasDragged && (
+                          <>
+                            <motion.div
+                              initial={{ opacity: 0, y: -20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -20 }}
+                              transition={{ duration: 0.3 }}
+                              className="absolute -top-20 z-10 pointer-events-none"
+                              style={{ left: `${animatedValue}%`, transform: "translateX(-50%)" }}
+                            >
+                              <div className="bg-brutal-yellow border-4 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                <p className="font-black uppercase text-sm whitespace-nowrap">👇 Slide Me!</p>
+                              </div>
+                            </motion.div>
 
-                          <motion.div
-                            className="absolute z-20 pointer-events-none"
-                            style={{
-                              left: `${animatedValue}%`,
-                              transform: "translateX(-50%)",
-                              top: "16px"
-                            }}
-                          >
-                            <div className="text-4xl">☝️</div>
-                          </motion.div>
-                        </>
-                      )}
-                    </AnimatePresence>
+                            <motion.div
+                              className="absolute z-20 pointer-events-none"
+                              style={{
+                                left: `${animatedValue}%`,
+                                transform: "translateX(-50%)",
+                                top: "16px"
+                              }}
+                            >
+                              <div className="text-4xl">☝️</div>
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
+                    )}
 
                     <input
                       type="range"

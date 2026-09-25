@@ -21,12 +21,12 @@ export async function generateMetadata({
 
   if (!owner) {
     return {
-      title: "Alignment Report | Optimitron",
+      title: "Alignment Report",
     };
   }
 
   return {
-    title: `${owner.displayName} Alignment Report | Optimitron`,
+    title: `${owner.displayName} Alignment Report`,
     description:
       "Shared alignment report from Optimitron, the Earth Optimization Game.",
   };

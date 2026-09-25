@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
 import Image from "next/image";
 import { DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT } from "@optimitron/data/parameters";
@@ -14,48 +12,11 @@ import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { ROUTES } from "@/lib/routes";
 import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 import { formatCompactCount } from "@/lib/tasks/accountability";
+import { findPoliticianScorecard, getPoliticianScorecardData } from "@/lib/politician-scorecards";
+import { getBaseUrl } from "@/lib/url";
 
 interface PageProps {
   params: Promise<{ code: string; bioguideId: string }>;
-}
-
-interface PoliticianVote {
-  bill: string;
-  vote: string;
-  amount: number;
-  category: string;
-  sourceUrl?: string;
-}
-
-interface PoliticianScore {
-  bioguideId: string;
-  name: string;
-  party: string;
-  state: string;
-  chamber: string;
-  militaryDollarsVotedFor: number;
-  clinicalTrialDollarsVotedFor: number;
-  ratio: number;
-  votes: PoliticianVote[];
-}
-
-interface ScorecardData {
-  scorecards: PoliticianScore[];
-  systemWideRatio: number;
-}
-
-function loadScorecardData(): ScorecardData | null {
-  try {
-    const generatedPath = join(
-      process.cwd(), "..", "data", "src", "datasets", "generated", "politician-scorecards.json",
-    );
-    if (existsSync(generatedPath)) {
-      return JSON.parse(readFileSync(generatedPath, "utf8"));
-    }
-    return null;
-  } catch {
-    return null;
-  }
 }
 
 function formatDollars(value: number): string {
@@ -83,12 +44,11 @@ export const revalidate = 86400; // re-render at most once per day
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code, bioguideId } = await params;
-  const data = loadScorecardData();
-  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
+  const politician = findPoliticianScorecard(bioguideId);
   const gov = getGovernmentMetrics(code.toUpperCase());
 
   const title = politician
-    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines | Optimitron`
+    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines`
     : `Politician | ${gov?.name ?? code}`;
 
   const description = politician
@@ -117,14 +77,14 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
   const gov = getGovernmentMetrics(upperCode);
   if (!gov) notFound();
 
-  const data = loadScorecardData();
-  const politician = data?.scorecards.find((s) => s.bioguideId === bioguideId.toUpperCase());
+  const data = getPoliticianScorecardData();
+  const politician = findPoliticianScorecard(bioguideId);
   if (!politician) notFound();
 
-  const systemRatio = data?.systemWideRatio ?? 1094;
+  const systemRatio = data.systemWideRatio;
 
   // Compute maxes across all politicians for relative scaling
-  const allScorecards = data?.scorecards ?? [];
+  const allScorecards = data.scorecards;
   const maxMilitary = Math.max(...allScorecards.map((s) => s.militaryDollarsVotedFor), 1);
   const maxTrials = Math.max(...allScorecards.map((s) => s.clinicalTrialDollarsVotedFor), 1);
 
@@ -132,7 +92,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
   const allSorted = allScorecards
     .filter((s) => s.votes.length > 0)
     .sort((a, b) => a.ratio - b.ratio);
-  const rank = allSorted.findIndex((s) => s.bioguideId === bioguideId) + 1;
+  const rank = allSorted.findIndex((s) => s.bioguideId === politician.bioguideId) + 1;
 
   const score = politician.clinicalTrialDollarsVotedFor - politician.militaryDollarsVotedFor;
 
@@ -236,7 +196,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           </div>
           <SpendingBar
             value={Math.abs(score)}
-            max={Math.max(...(data?.scorecards ?? []).map((s) => Math.abs(s.clinicalTrialDollarsVotedFor - s.militaryDollarsVotedFor)), 1)}
+            max={Math.max(...data.scorecards.map((s) => Math.abs(s.clinicalTrialDollarsVotedFor - s.militaryDollarsVotedFor)), 1)}
             color={score >= 0 ? "green" : "red"}
             height="md"
             className="mt-3"
@@ -246,10 +206,10 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Military */}
           <BrutalCard bgColor="red" shadowSize={8} padding="lg">
-            <div className="text-xs font-black uppercase text-brutal-red-foreground mb-1">
+            <div className="text-xs font-black uppercase text-brutal-red mb-1">
               {getMilitarySynonym(politician.bioguideId + "-stat")}
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-brutal-red-foreground">
+            <div className="text-3xl sm:text-4xl font-black text-brutal-red">
               {formatDollars(politician.militaryDollarsVotedFor)}
             </div>
           </BrutalCard>
@@ -273,7 +233,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               {getMilitarySynonym(politician.bioguideId + "-ratio")} : medicines ratio
             </div>
             <div className={`text-3xl sm:text-4xl font-black ${
-              politician.ratio >= 100 ? "text-brutal-red" : politician.ratio <= 1 ? "text-background" : "text-foreground"
+              politician.ratio >= 100 ? "text-brutal-red" : "text-foreground"
             }`}>
               {formatRatio(politician.ratio)}
             </div>
@@ -307,7 +267,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             </div>
             <div>
               <div className="flex justify-between items-baseline mb-1">
-                <span className="text-xs font-black uppercase text-background">
+                <span className="text-xs font-black uppercase text-foreground">
                   Testing Medicines
                 </span>
                 <span className="text-sm font-black text-foreground">
@@ -338,7 +298,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           Share This Scorecard
         </p>
         <SocialShareButtons
-          url={`https://optimitron.earth/governments/${gov.code}/politicians/${politician.bioguideId}`}
+          url={`${getBaseUrl()}/governments/${gov.code}/politicians/${politician.bioguideId}`}
           text={`${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonym(politician.bioguideId + "-share")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} testing which medicines work.`}
         />
       </section>
@@ -491,7 +451,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               </p>
             </div>
             <div>
-              <div className="text-xs font-black uppercase text-background mb-2">
+              <div className="text-xs font-black uppercase text-foreground mb-2">
                 Clinical Trials $
               </div>
               <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">

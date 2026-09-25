@@ -140,12 +140,12 @@
 - Patients say yes when asked.
 - [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
 - The system mostly never asks.
-- [1.9M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [1.9 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - For the entire world.
-- [1.08B](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html)
+- [1.08 billion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html)
 - PEOPLE WITH CHRONIC DISEASE ARE WILLING TO PARTICIPATE
 - Click any underlined number to inspect its source, assumptions, and uncertainty.
-### [2.4B](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) PEOPLE ARE
+### [2.4 billion](https://manual.WarOnDisease.org/knowledge/solution/dfda.html) PEOPLE ARE
 ### LIVING
 ### WITH CHRONIC DISEASE
 #### FOR 2 REASONS:
@@ -183,7 +183,7 @@
 - No major disease has been cured in over 44 years, highlighting the need for new research paradigms.
 ### THE OTHER PROBLEM.
 #### When patients try treatments, the rest of us learn almost nothing.
-- There are about [7K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) rare diseases. Roughly [6.65K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) still lack an effective treatment.
+- There are about [7,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) rare diseases. Roughly [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) still lack an effective treatment.
 - Right to Try creates access. Standardized outcomes turn isolated treatment decisions into comparable evidence about what works.
 ##### GET ANOTHER OPTION
 - When approved treatments have failed, informed adults can still make a choice with their clinician.
@@ -197,16 +197,16 @@
 - Per patient in a real pragmatic trial.
 - [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Reference cost per participant.
-- [$41K](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Median cost per participant.
 - [82x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [44.1x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - [97.7%](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
 ### WHY THE BOTTLENECK IS CLINICAL TRIALS, NOT BASIC SCIENCE
 #### THE VAST UNEXPLORED THERAPEUTIC FRONTIER
-- [9.5K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
-- [9.5M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [32.5K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [9,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [9.5 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [32,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - Exploration Ratio=32.5K tested 9.5M possible=0.34%Exploration Ratio=9.5M possible 32.5K tested​=0.34%
 - TESTED (0.34%)
 - UNEXPLORED (99.7%)
@@ -214,14 +214,14 @@
 - You cannot have "diminishing returns" when you haven't even started.
 - Wait, it gets worse: The FULL therapeutic frontier
 - The 9.5M figure above only counts single drugs against diseases. Modern medicine increasingly uses combination therapies (standard in oncology, HIV, cardiology).
-- [10M](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [45B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [42M](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [9.50 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [45.1 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [42.0 million](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - 45.1B
 - Note: We use the conservative 9.5M figure in our main calculations because single-drug trials are more straightforward. But the combination therapy space shows the true scale of unexplored medicine.
 #### YEARS TO UNIVERSAL TREATMENT COVERAGE
 - Clinical trials are how we discover which treatments work for which diseases. At current trial capacity, we find first effective treatments for only ~15 diseases per year.
-- Reference funding supports [40.7K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) pragmatic trials per year and [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments per year.
+- Reference funding supports [40,700](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) pragmatic trials per year and [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) first treatments per year.
 - [36.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Addressing the "Diminishing Returns" Argument
 - Critics argue: "Just funding more trials won't proportionally increase discoveries - we've picked the low-hanging fruit."
@@ -234,7 +234,7 @@
 - 6.
 - Diminishing returns apply to repeated attempts at the same problem. We're proposing to attempt problems we've never tried.
 #### WHAT MORE TRIAL CAPACITY COULD PRODUCE
-- [40.7K](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
+- [40,700](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html)
 - Pragmatic trials per year under reference funding.
 - [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - First treatments found per year.
@@ -242,9 +242,9 @@
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
 ### WHAT HAPPENS WHEN EVERY PATIENT CAN PARTICIPATE
-- [23.4M](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
+- [23.4 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$58.6B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$58.6 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
 - Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 #### How it Works For Patients

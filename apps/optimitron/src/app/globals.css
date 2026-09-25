@@ -125,6 +125,9 @@ body {
   --brutal-red-foreground: rgb(255, 255, 255);
   --brutal-green: rgb(34, 197, 94);
   --brutal-green-foreground: rgb(0, 0, 0);
+  /* Green for text on the page background. --brutal-green on white is 2.3:1;
+     this is 5.0:1 (WCAG AA). */
+  --brutal-green-text: rgb(21, 128, 61);
 
   /* Treaty palette — used by /vote, /survey, and treaty document surfaces. */
   --treaty-paper: #ffffff;
@@ -186,6 +189,7 @@ body {
   --brutal-red-foreground: rgb(0, 0, 0);
   --brutal-green: rgb(34, 197, 94);
   --brutal-green-foreground: rgb(0, 0, 0);
+  --brutal-green-text: rgb(34, 197, 94);
   --shadow-color: rgb(0, 0, 0);
 }
 
@@ -500,6 +504,7 @@ body {
   --color-brutal-red-foreground: var(--brutal-red-foreground);
   --color-brutal-green: var(--brutal-green);
   --color-brutal-green-foreground: var(--brutal-green-foreground);
+  --color-brutal-green-text: var(--brutal-green-text);
 
   /* Radius - sharp edges */
   --radius-lg: var(--radius);

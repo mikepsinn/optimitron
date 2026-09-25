@@ -35,7 +35,9 @@ const counters: CounterConfig[] = [
     rate: DEATHS_PER_SECOND,
     format: (n) => Math.floor(n).toLocaleString(),
     lightSurfaceColor: "text-brutal-red",
-    darkSurfaceColor: "text-brutal-red",
+    // brutal-red on black is 3.8:1, under WCAG AA; destructive is 5.6:1.
+    // In dark mode this surface is white, so keep brutal-red there.
+    darkSurfaceColor: "text-destructive dark:text-brutal-red",
     emoji: "💀",
     label: "Humans terminated",
     staticFallback: `~${DEATHS_PER_DAY.toLocaleString()} humans terminated/day`,
@@ -45,7 +47,7 @@ const counters: CounterConfig[] = [
     rate: DYSFUNCTION_TAX_PER_SECOND,
     format: formatDollars,
     lightSurfaceColor: "text-foreground",
-    darkSurfaceColor: "text-foreground",
+    darkSurfaceColor: "text-background",
     emoji: "🔥",
     label: "Burned by misaligned governments",
     staticFallback: `$${Math.round(DYSFUNCTION_TAX_PER_YEAR / 1e12)}T/yr governance waste`,

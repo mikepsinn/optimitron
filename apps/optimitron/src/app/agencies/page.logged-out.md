@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Optimized Governance | International Campaign to End War and Disease
+- Page title: Optimized Governance | Optimitron
 - Meta description: 22 optimized agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
-- Canonical: https://warondisease.org/agencies
+- Canonical: https://optimitron.com/agencies
 - Open Graph title: Optimized Governance
 - Open Graph description: 22 optimized agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies
 - Twitter title: Optimized Governance
 - Twitter description: 22 optimized agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
 

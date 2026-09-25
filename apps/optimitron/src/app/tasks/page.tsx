@@ -7,7 +7,7 @@ import type { TaskCardTask } from "@/components/tasks/task-card";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { authOptions } from "@/lib/auth";
 import { getSiteMetadata, getRouteMetadata } from "@/lib/metadata";
-import { ROUTES, tasksLink } from "@/lib/routes";
+import { ROUTES, tasksLink, warOnDiseaseUrl } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 import { getTasksPageData } from "@/lib/tasks.server";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/task-keys";
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 function TreatyVoteCta() {
   return (
     <Link
-      href={ROUTES.vote}
+      href={warOnDiseaseUrl(ROUTES.vote)}
       className="block border-2 border-foreground bg-background p-6 transition hover:bg-muted"
     >
       <div className="flex items-start justify-between gap-4">

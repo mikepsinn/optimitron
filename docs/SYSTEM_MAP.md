@@ -80,7 +80,7 @@ queue.
 |---|---|---|
 | Database contract | `packages/db/prisma/schema.prisma` | Canonical models, enums, relations, indexes. |
 | Generated DB types | `packages/db/src/generated` and `@optimitron/db` exports | Prisma client for web only; pure types and validators for consumers. |
-| Optimitron Web/API/MCP | `apps/optimitron` | `optimitron.com` UI, REST, OAuth, MCP, authorization, server workflows, and temporary legacy host variants during cutover. |
+| Optimitron Web/API/MCP | `apps/optimitron` | `optimitron.com` UI, REST, OAuth, MCP, authorization, and server workflows. |
 | War on Disease campaign | `apps/warondisease` | Canonical rich campaign home and neobrutalist authenticated dashboard. |
 | Satellite sites | `apps/dfda`, `apps/wishocracy`, `apps/trialabundancesurvey`, `apps/curedao`, `apps/acceleratedmedicine`, `apps/courtofhumanity` | Brand-specific deployable entrypoints over shared packages. |
 | Court backend | `apps/courtofhumanity/lib/court-data.server.ts`, `lib/mcp/`, `app/api/` | Court tools, case authorization, jury and plaintiff workflows; central Optimitron OAuth with Court-bound tokens. |

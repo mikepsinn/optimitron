@@ -337,7 +337,7 @@ export function PragmaticTrialEvidenceSection() {
         <div className="grid items-stretch gap-6 md:grid-cols-3">
           <Card className="gap-3 rounded-none border-4 border-primary bg-background p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-5xl font-black text-brutal-pink sm:text-6xl">
-              <EvidenceNumber param={RECOVERY_TRIAL_COST_PER_PATIENT} />
+              <EvidenceNumber param={{ ...RECOVERY_TRIAL_COST_PER_PATIENT, unit: "USD" }} />
             </div>
             <div className="text-lg font-black uppercase">RECOVERY result</div>
             <p className="font-bold">Per patient in a real pragmatic trial.</p>
@@ -345,7 +345,7 @@ export function PragmaticTrialEvidenceSection() {
 
           <Card className="gap-3 rounded-none border-4 border-primary bg-brutal-cyan p-6 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-5xl font-black sm:text-6xl">
-              <EvidenceNumber param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
+              <EvidenceNumber param={{ ...DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT, unit: "USD" }} />
             </div>
             <div className="text-lg font-black uppercase">
               Pragmatic-trial cost
@@ -355,7 +355,7 @@ export function PragmaticTrialEvidenceSection() {
 
           <Card className="gap-3 rounded-none border-4 border-primary bg-primary p-6 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-5xl font-black sm:text-6xl">
-              <EvidenceNumber param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />
+              <EvidenceNumber param={{ ...TRADITIONAL_PHASE3_COST_PER_PATIENT, unit: "USD" }} />
             </div>
             <div className="text-lg font-black uppercase">
               Traditional phase 3
@@ -431,7 +431,7 @@ export function ModeledBenefitsSection() {
       precision: 1,
     },
     {
-      param: DFDA_NET_SAVINGS_RD_ONLY_ANNUAL,
+      param: { ...DFDA_NET_SAVINGS_RD_ONLY_ANNUAL, unit: "USD" },
       label: "Annual net R&D savings",
       color: "bg-brutal-yellow",
       precision: 1,

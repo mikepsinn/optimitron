@@ -44,7 +44,6 @@ const OUTPUT_ROOT = process.env.COPY_PREVIEW_OUTPUT_ROOT
   : APP_DIR;
 
 const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
-const SITE_KEY = process.env.PREVIEW_SITE_KEY ?? "warOnDisease";
 const VERCEL_SHARE_TOKEN = process.env.PREVIEW_VERCEL_SHARE_TOKEN;
 const ROUTES_PER_BROWSER = Math.max(
   1,
@@ -361,7 +360,6 @@ async function capturePass(
   let failures = 0;
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 900 },
-    extraHTTPHeaders: { "x-optimitron-site-key": SITE_KEY },
   });
   if (options.authCookie) {
     await ctx.addCookies([

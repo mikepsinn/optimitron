@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Buy the t-shirt that ended war and disease — 1% Treaty | International Campaign to End War and Disease
+- Page title: Buy the t-shirt that ended war and disease — 1% Treaty | Optimitron
 - Meta description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
-- Canonical: https://warondisease.org/shirt
+- Canonical: https://optimitron.com/shirt
 - Open Graph title: Buy the t-shirt that ended war and disease — 1% Treaty
 - Open Graph description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fshirt
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fshirt
 - Twitter title: Buy the t-shirt that ended war and disease — 1% Treaty
 - Twitter description: Every human on earth would be vastly richer and significantly less dead in a world where we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. 8 billion people wearing this t-shirt will make it clear that 8 billion people agree on this arrangement.
 
@@ -19,7 +19,7 @@
 - Signed out: this uses the public campaign URL. [Sign in](/auth/signin) first if you want the QR to be yours.
 ### WEAR IT ON EARTH OPTIMIZATION DAY — AUGUST 6.
 - If 1 billion humans wear this shirt on the same day, humanity is forced to discuss the fact that it currently maintains sufficient mass-murder capacity to cause [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses, and that it has the option to sacrifice one of these apocalypses for disease eradication within our lifetime.
-- [Foundations: see the bulk math → /foundations](/foundations)
+- [Foundations: see the bulk math → /foundations](https://warondisease.org/foundations)
 ### ORDER ONE
 - SIZE S M L XL XXL
 - COLOR Black White
@@ -54,4 +54,4 @@
 - Back: Trade one apocalypse for disease eradication at warondisease.org. Plus the per-buyer QR code.
 - FRONT
 - BACK WITH QR
-- Want to coordinate with another human? Go on an [Earth Optimization Mission](/missions).
+- Want to coordinate with another human? Go on an [Earth Optimization Mission](https://warondisease.org/missions).

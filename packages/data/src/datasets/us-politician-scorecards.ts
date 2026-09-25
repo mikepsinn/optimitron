@@ -63,7 +63,8 @@ export interface KeyVote {
 // Read from generated JSON (single source of truth)
 // ---------------------------------------------------------------------------
 
-interface GeneratedScorecard {
+/** One member as the generator writes it: raw name ("Paul, Rand"), upper-case bioguide ID. */
+export interface GeneratedPoliticianScorecard {
   bioguideId: string;
   name: string;
   party: string;
@@ -75,9 +76,36 @@ interface GeneratedScorecard {
   votes: { bill: string; vote: string; amount: number; category: string; sourceUrl?: string }[];
 }
 
-const scorecards = (generatedData as { scorecards: GeneratedScorecard[] }).scorecards;
+export interface GeneratedPresidentScorecard {
+  name: string;
+  term: string;
+  totalMilitarySigned: number;
+  totalNIHSigned: number;
+  clinicalTrialPortion: number;
+  ratio: number;
+  keyActions: string[];
+}
 
-function toScorecard(raw: GeneratedScorecard): PoliticianScorecard {
+export interface GeneratedPoliticianScorecardData {
+  generatedAt: string;
+  congress: number;
+  memberCount: number;
+  systemWideRatio: number;
+  scorecards: GeneratedPoliticianScorecard[];
+  presidents: GeneratedPresidentScorecard[];
+}
+
+/**
+ * The generated JSON, unchanged. Import this instead of reading the file from
+ * disk: a bundled import ships with every build, and a path relative to the
+ * app's working directory breaks when the app moves.
+ */
+export const GENERATED_POLITICIAN_SCORECARD_DATA =
+  generatedData as GeneratedPoliticianScorecardData;
+
+const scorecards = GENERATED_POLITICIAN_SCORECARD_DATA.scorecards;
+
+function toScorecard(raw: GeneratedPoliticianScorecard): PoliticianScorecard {
   const mil = raw.militaryDollarsVotedFor;
   const trials = raw.clinicalTrialDollarsVotedFor;
   const total = mil + trials;
@@ -119,7 +147,7 @@ export function getPoliticiansByAlignment(): PoliticianScorecard[] {
 
 /** The system-wide ratio for comparison (from generated data) */
 export const SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO =
-  (generatedData as { systemWideRatio: number }).systemWideRatio;
+  GENERATED_POLITICIAN_SCORECARD_DATA.systemWideRatio;
 
 /** Budget items for display */
 export { BUDGET_ITEMS };

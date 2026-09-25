@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: MCP Tool Reference | International Campaign to End War and Disease
+- Page title: MCP Tool Reference | Optimitron
 - Meta description: Every tool the Optimitron MCP server exposes — parameters, required scopes, and admin gating — generated from the live registry so it cannot drift.
-- Canonical: https://warondisease.org/developers/tools
+- Canonical: https://optimitron.com/developers/tools
 - Open Graph title: MCP Tool Reference
 - Open Graph description: Every tool the Optimitron MCP server exposes — parameters, required scopes, and admin gating — generated from the live registry so it cannot drift.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdevelopers%2Ftools
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdevelopers%2Ftools
 - Twitter title: MCP Tool Reference
 - Twitter description: Every tool the Optimitron MCP server exposes — parameters, required scopes, and admin gating — generated from the live registry so it cannot drift.
 
@@ -98,7 +98,7 @@
 - limit (number) — Max referendums to return (default 20, max 100).
 #### listSitePages
 - Return a structured inventory of pages for configured Optimitron-owned domains. Agents should call this before creating a new page.
-- site (string) — Optional domain filter, e.g. optimitron.com, warondisease.org, dfda.earth, dih.earth, or manual.warondisease.org.
+- site (string) — Optional domain filter: optimitron.com or manual.warondisease.org.
 #### getPageContent
 - Return the fully rendered logged-out text for an Optimitron-owned page as clean markdown, with its title, section headings, and last-modified metadata. Checked-in rendered snapshots are preferred so client-side loading shells are never mistaken for page content; this public reader does not expose authenticated page text.
 - url (string, required) — Full URL of an allowed page.
@@ -121,7 +121,7 @@
 - status (enum) — Optional status filter to narrow dependency candidates.
 ### TASKS:PERSONAL (91)
 #### recordMeasurement tasks:personal
-- Record a personal dFDA/N-of-1 measurement such as a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable. Pass value in the supplied unit, or your personal default when omitted. The server preserves the entered value and converts it to the canonical unit. One-time unit choices do not change personal defaults.
+- Record an ad hoc personal dFDA/N-of-1 measurement. To answer, correct, or snooze a due or overdue notification, use respondToTrackingReminderNotifications instead. recordMeasurement does not mark notifications answered. Supported measurements include a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable. Pass value in the supplied unit, or your personal default when omitted. The server preserves the entered value and converts it to the canonical unit. One-time unit choices do not change personal defaults.
 - PARAMETERS (15)
 - globalVariableId (string)
 - variableName (string)
@@ -179,8 +179,8 @@
 - Get one of the authenticated user's tracking reminders in full, including untruncated instructions, the expanded variable, and the effective recording unit. Use listTrackingReminders to find the ID.
 - trackingReminderId (string, required)
 #### listTrackingReminderNotifications tasks:personal
-- List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or effective status, including OVERDUE. The default compact shape carries id (the trackingReminderId to answer with), name, due (local time), status, defaultValue, unit, and fillingType, so an agent can answer without a second lookup. An OVERDUE item with sameDayMeasurementCount already has same-day data for its variable recorded outside this notification: verify with listMeasurements before answering again, or you may duplicate data. Pass compact: false for full records with scheduledAt, effective notifyAt, and snoozedUntil. Set includeCompleted to include recent TRACKED notifications.
-- dateKey (string) — One local date in YYYY-MM-DD. Defaults to today. Do not combine with startDateKey or endDateKey.
+- List the authenticated user's tracking notification queue. OVERDUE with no date parameters returns outstanding stored notifications from all dates, newest first, plus schedule occurrences generated for the last 14 local days. The response discloses that generation window; pass an explicit date range to inspect earlier unstored schedules. Explicit dates select one local day or an inclusive local-date range. A stored occurrence with canRespond: false cannot be answered through the current schedule; follow its responseUnavailableReason before responding. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or effective status, including OVERDUE. The default compact shape carries id (the trackingReminderId to answer with), globalVariableId, nOf1VariableId, dateKey, name, due (local time), status, defaultValue, unit, and fillingType, so an agent can answer without a second lookup. An OVERDUE item with sameDayMeasurementCount already has same-day data for its variable recorded outside this notification: verify with listMeasurements before answering again, or you may duplicate data. Pass compact: false for full records with scheduledAt, effective notifyAt, and snoozedUntil. Set includeCompleted to include recent TRACKED notifications.
+- dateKey (string) — One local date in YYYY-MM-DD. Defaults to today except for an unbounded stored OVERDUE backlog. Do not combine with startDateKey or endDateKey.
 - startDateKey (string) — First local date in an inclusive range. Defaults to endDateKey when omitted.
 - endDateKey (string) — Last local date in an inclusive range. Defaults to startDateKey when omitted. Ranges may include at most 31 days.
 - trackingReminderId (string) — Return occurrences for only this reminder.
@@ -190,10 +190,10 @@
 #### listDueTrackingReminders tasks:personal
 - Deprecated alias for listTrackingReminderNotifications. It keeps the reminders response key for existing callers.
 - dateKey (string) — Local date in YYYY-MM-DD. Defaults to today.
-- compact (boolean) — Return trackingReminderId as id, plus name, due, and status.
+- compact (boolean) — Return trackingReminderId as id, plus globalVariableId, nOf1VariableId, dateKey, name, due, and status.
 - includeCompleted (boolean) — When true, include reminders already answered or snoozed for the date.
 #### respondToTrackingReminderNotifications tasks:personal
-- Answer several tracking reminder notifications in one call. To answer specific reminders, send only except entries and omit defaultStatus; every other reminder stays untouched. Send defaultStatus only when you intend to answer the whole day. An except entry can also correct a response you already recorded. All-or-nothing: if any exception ID is not scheduled for the date, the tool writes nothing and returns an error. The call targets one local date; when catching up a past day (for example after midnight), pass that day's dateKey. Each result reports notifyAtLocal, the occurrence the answer landed on: verify it is the day you meant.
+- Use this tool to answer, correct, or snooze due or overdue tracking reminder notifications. Unlike recordMeasurement, this updates notification state and records a measurement when tracked. Answer several notifications in one call. To answer specific reminders, send only except entries and omit defaultStatus; every other reminder stays untouched. Send defaultStatus only when you intend to answer the whole day. An except entry can also correct a response you already recorded. All-or-nothing: if any exception ID is not scheduled for the date, the tool writes nothing and returns an error. The call targets one local date; when catching up a past day (for example after midnight), pass that day's dateKey. Each result reports notifyAtLocal, the occurrence the answer landed on: verify it is the day you meant.
 - defaultStatus (enum) — Optional. Apply this status to every due and unanswered notification without an exception. Omit it to answer only the except entries. Already-answered notifications are never touched by the default.
 - except (array) — Answer or correct individual notifications by trackingReminderId. Each entry needs a status when defaultStatus is omitted.
 - snoozeMinutes (number) — Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.

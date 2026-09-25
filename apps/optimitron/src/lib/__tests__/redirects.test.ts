@@ -1,4 +1,6 @@
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const require = createRequire(import.meta.url);
@@ -75,12 +77,12 @@ describe("redirects", () => {
   it("keeps legacy internal redirects out of app pages", () => {
     expect(REDIRECTS).toContainEqual({
       source: "/campaign",
-      destination: "/signatories",
+      destination: "https://warondisease.org/signatories",
       permanent: true,
     });
     expect(REDIRECTS).toContainEqual({
       source: "/coalition",
-      destination: "/signatories",
+      destination: "https://warondisease.org/signatories",
       permanent: true,
     });
     expect(REDIRECTS).toContainEqual({
@@ -110,6 +112,38 @@ describe("redirects", () => {
     expect(isRedirectOnlyRoutePath("/about")).toBe(true);
     expect(isRedirectOnlyRoutePath("/campaign?ref=abc")).toBe(true);
     expect(isRedirectOnlyRoutePath("/politicians/US")).toBe(true);
-    expect(isRedirectOnlyRoutePath("/signatories")).toBe(false);
+    expect(isRedirectOnlyRoutePath("/signatories")).toBe(true);
+    expect(isRedirectOnlyRoutePath("/tasks")).toBe(false);
+  });
+
+  // The campaign pages moved to apps/warondisease. A redirect whose target
+  // that app does not serve would turn every old link into a 404.
+  it("sends moved campaign pages only to routes that warondisease.org serves", () => {
+    const warOnDiseaseAppDir = join(process.cwd(), "..", "warondisease", "app");
+    const movedRedirects = REDIRECTS.filter(
+      (redirect) =>
+        !redirect.has &&
+        redirect.destination.startsWith("https://warondisease.org/"),
+    );
+
+    expect(movedRedirects.map((redirect) => redirect.source)).toEqual(
+      expect.arrayContaining(["/vote", "/treaty", "/signatories", "/faq"]),
+    );
+    for (const redirect of movedRedirects) {
+      const routeDir = join(
+        warOnDiseaseAppDir,
+        ...new URL(redirect.destination).pathname
+          .split("/")
+          .filter(Boolean)
+          .map((segment) =>
+            segment.startsWith(":") ? `[${segment.slice(1)}]` : segment,
+          ),
+      );
+      expect(
+        existsSync(join(routeDir, "page.tsx")) ||
+          existsSync(join(routeDir, "route.ts")),
+        redirect.destination,
+      ).toBe(true);
+    }
   });
 });

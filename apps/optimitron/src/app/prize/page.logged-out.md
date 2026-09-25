@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Prize | International Campaign to End War and Disease
+- Page title: Earth Optimization Prize | Optimitron
 - Meta description: Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool.
-- Canonical: https://warondisease.org/prize
+- Canonical: https://optimitron.com/prize
 - Open Graph title: Earth Optimization Prize
 - Open Graph description: Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fprize
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fprize
 - Twitter title: Earth Optimization Prize
 - Twitter description: Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool.
 

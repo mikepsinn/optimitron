@@ -1971,10 +1971,6 @@ function getRouteUrl(routeName) {
     url.searchParams.set("logout", "1");
     url.searchParams.delete("login");
   }
-  const siteVariant = getRouteSiteVariant(routeName);
-  // Clear a previously selected variant when a reviewer returns to a default
-  // route. Production custom domains ignore this review-only override.
-  url.searchParams.set("site", siteVariant ?? "reset");
   return url.toString();
 }
 

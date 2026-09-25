@@ -1,5 +1,12 @@
 export const CAMPAIGN_NAME = "International Campaign to End War and Disease" as const;
 
+/** Earlier public name of the campaign, still published as an alternate site name. */
+export const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease" as const;
+
+/** What the nonprofit that runs the campaign does, for legal and structured-data surfaces. */
+export const CAMPAIGN_OPERATOR_BUSINESS_DESCRIPTION =
+  "Operates the International Campaign to End War and Disease and related public education and advocacy programs." as const;
+
 export const GLOBAL_SURVEY_NAME =
   "Global Survey to End War and Disease" as const;
 

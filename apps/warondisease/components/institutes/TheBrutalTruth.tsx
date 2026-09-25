@@ -43,7 +43,7 @@ export function TheBrutalTruth() {
         <div className="max-w-4xl mx-auto">
           <Card className="bg-foreground border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
             <div className="text-5xl sm:text-6xl md:text-7xl font-black text-brutal-pink mb-4">
-              <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} />
+              <ParameterValue param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO} display="withUnit" />
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-background">
               HUMANITY SPENDS {spendingRatioRaw}× MORE ON WEAPONS THAN CURING DISEASES

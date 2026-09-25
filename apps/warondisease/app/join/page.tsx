@@ -307,12 +307,18 @@ export default async function EndorsePage() {
             <p className="mt-3">
               The best thing anyone has found to do with money in global health is
               buy insecticide-treated bed nets.{" "}
-              <ParameterValue figures={2} param={BED_NETS_COST_PER_DALY} /> per
-              disability-adjusted life-year averted. That is the GiveWell
+              <ParameterValue
+                figures={2}
+                param={{ ...BED_NETS_COST_PER_DALY, unit: "USD" }}
+              />{" "}
+              per disability-adjusted life-year averted. That is the GiveWell
               gold standard. The 1% Treaty costs{" "}
               <ParameterValue
                 figures={2}
-                param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                param={{
+                  ...TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+                  unit: "USD",
+                }}
               />{" "}
               per DALY averted —{" "}
               <ParameterValue
@@ -405,7 +411,7 @@ export default async function EndorsePage() {
                 that you pay them{" "}
                 <ParameterValue
                   figures={3}
-                  param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
+                  param={{ ...GLOBAL_GOVERNMENT_EXPENSE_ANNUAL, unit: "USD" }}
                 />{" "}
                 a year to promote the general welfare and you would like to
                 receive this service at some point. Signing the 1% Treaty is a

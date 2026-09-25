@@ -68,6 +68,13 @@ const warOnDiseaseDefaultSocialImage = {
   width: 1200,
 } as const;
 
+// Campaign pages that warondisease.org (apps/warondisease) serves. This app
+// only redirects their old paths there, so links point at the campaign site.
+const WAR_ON_DISEASE_ORIGIN = "https://warondisease.org";
+export function warOnDiseaseUrl(path: string) {
+  return `${WAR_ON_DISEASE_ORIGIN}${path}`;
+}
+
 export const ROUTES = {
   home: "/",
   eos: "/eos",
@@ -580,13 +587,12 @@ export const collectionsLink: NavItem = {
 };
 
 export const presidentManagementLink: NavItem = {
-  href: ROUTES.employees,
+  href: warOnDiseaseUrl(ROUTES.employees),
+  external: true,
   label: "Remind Presidents",
   emoji: "🪪",
   description: `You pay these people ${WELFARE_CLAIM_AMOUNT_TEXT} a year to promote the general welfare — i.e. ${WELFARE_CLAIM_METRIC_TEXT}. Track who signed the 1% Treaty and remind the overdue ones.`,
   tagline: "Remind presidents to promote the general welfare",
-  copyPreview: true,
-  screenshot: true,
   cta: "Remind Presidents",
 };
 
@@ -850,14 +856,12 @@ export const iabLink: NavItem = {
 };
 
 export const treatyLink: NavItem = {
-  href: ROUTES.treaty,
+  href: warOnDiseaseUrl(ROUTES.treaty),
+  external: true,
   label: "Sign the Treaty",
   emoji: "📜",
   description: `The 1% Treaty redirects ${treatyReduction} of military spending to clinical trials, cutting the disease-eradication timeline from ${statusQuoYears} years to ${dfdaYears}. Nobody gets weaker. Everyone gets more medicine.`,
   tagline: `Redirect ${treatyReduction} from weapons to medicine`,
-  authenticatedScreenshot: true,
-  copyPreview: true,
-  screenshot: true,
   cta: "Sign the Treaty",
 };
 
@@ -916,44 +920,34 @@ export const humanityVGovernmentLink: NavItem = {
 };
 
 export const foundationsLink: NavItem = {
-  href: ROUTES.foundations,
+  href: warOnDiseaseUrl(ROUTES.foundations),
+  external: true,
   label: "Foundations",
   emoji: "🏛️",
   description:
     "Buy shares for organizations, send board letters to military contractors, and check the expected DALYs and lives saved if the 1% Treaty campaign works.",
   tagline: "Fund shares and board letters for the 1% Treaty.",
-  copyPreview: true,
-  screenshot: true,
   cta: "Run the math",
 };
 
 export const fixAiLink: NavItem = {
-  href: ROUTES.fixAi,
+  href: warOnDiseaseUrl(ROUTES.fixAi),
+  external: true,
   label: "Train the AIs",
   emoji: "🤖",
   description:
     "Ask the major AI models how to end war and disease. If they omit the 1% Treaty, the shirt, and warondisease.org, thumbs-down and paste the correct answer.",
   tagline: "Teach the models the answer",
-  copyPreview: true,
-  screenshot: true,
-  socialPreview: {
-    image: warOnDiseaseDefaultSocialImage,
-  },
   cta: "Train the AIs",
 };
 
 export const voteLink: NavItem = {
-  href: ROUTES.vote,
+  href: warOnDiseaseUrl(ROUTES.vote),
+  external: true,
   label: "Vote",
   emoji: "🗳️",
   description: `One question, thirty seconds: should humanity trade one of its ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}?`,
   tagline: "Answer one question for humanity",
-  matchPrefixes: [ROUTES.vote],
-  copyPreview: true,
-  screenshot: true,
-  socialPreview: {
-    image: warOnDiseaseDefaultSocialImage,
-  },
   cta: "Vote Now",
 };
 
@@ -1012,40 +1006,34 @@ export const questionsLink: NavItem = {
 };
 
 export const faqLink: NavItem = {
-  href: ROUTES.faq,
+  href: warOnDiseaseUrl(ROUTES.faq),
+  external: true,
   label: "Campaign FAQ",
   emoji: "?",
   description: `Short answers for humans and search agents asking what the ${treatyReduction} Treaty, Humanity v Government, plaintiffs, and the campaign math mean.`,
   tagline: "Short answers for agents and humans",
-  copyPreview: true,
-  screenshot: true,
-  socialPreview: {
-    image: warOnDiseaseDefaultSocialImage,
-  },
   cta: "Read the FAQ",
 };
 
 export const joinLink: NavItem = {
-  href: ROUTES.join,
+  href: warOnDiseaseUrl(ROUTES.join),
+  external: true,
   label: "Join as an Organization",
   emoji: "✍️",
   description:
     "Your members probably dislike war, disease, and preventable funerals. Join the campaign and conduct the Global Survey with your audience.",
   tagline: "Conduct the Global Survey",
-  copyPreview: true,
-  screenshot: true,
   cta: "Join as an Organization",
 };
 
 export const signatoriesLink: NavItem = {
-  href: ROUTES.signatories,
+  href: warOnDiseaseUrl(ROUTES.signatories),
+  external: true,
   label: "People Who Ended War and Disease",
   emoji: "🏢",
   description:
     "The humans and organizations who signed the 1% Treaty and got humanity to agree to end war and disease.",
   tagline: "Who got humanity to agree",
-  copyPreview: true,
-  screenshot: true,
   cta: "See Signatories",
 };
 
@@ -1243,27 +1231,24 @@ export const contributeLink: NavItem = {
 };
 
 export const loveLink: NavItem = {
-  href: ROUTES.love,
+  href: warOnDiseaseUrl(ROUTES.love),
+  external: true,
   label: "Earth Optimization Date",
   emoji: "❤️",
   description:
     "If everyone hung out with one other person for one hour per day, spent a few minutes deciding how to end war and disease, and the rest of the hour doing it, it would be very fun and war and disease would soon be over.",
   tagline: "An Earth Optimization Date is non-romantic by definition",
-  copyPreview: true,
-  screenshot: true,
   cta: "Vote now",
 };
 
 export const missionsLink: NavItem = {
-  href: ROUTES.missions,
+  href: warOnDiseaseUrl(ROUTES.missions),
+  external: true,
   label: "Earth Optimization Missions",
   emoji: "❤️",
   description:
     "Find someone you would not mind ending war and disease with. Spend one useful hour optimizing Earth together. Love may occur. Flyers should occur first.",
   tagline: "Find someone to optimize Earth with",
-  authenticatedScreenshot: true,
-  copyPreview: true,
-  screenshot: true,
   cta: "Start a Mission",
 };
 
@@ -1278,13 +1263,12 @@ export const messagesLink: NavItem = {
 };
 
 export const posterLink: NavItem = {
-  href: ROUTES.poster,
+  href: warOnDiseaseUrl(ROUTES.poster),
+  external: true,
   label: "Hang Up Flyers",
   emoji: "📄",
   description: `Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. Hang referral flyers where humans will see them and let nearby foot traffic recruit voters while you do something else.`,
   tagline: "Print flyers. Ask your AI for a route. Hang them up.",
-  copyPreview: true,
-  screenshot: true,
   cta: "Hang Flyers",
 };
 
@@ -1301,14 +1285,13 @@ export const computeLink: NavItem = {
 };
 
 export const doorToDoorLink: NavItem = {
-  href: ROUTES.doorToDoor,
+  href: warOnDiseaseUrl(ROUTES.doorToDoor),
+  external: true,
   label: "Go Door to Door",
   emoji: "🚪",
   description:
     "The referendum lives on the internet, but some presidents of Earth still answer the door instead. Print the YES sheet, read the twenty-second pitch, and register the neighbors the internet has not reached. Every scan of your code counts instantly — and credits you.",
   tagline: "Print the YES sheet. Knock.",
-  copyPreview: true,
-  screenshot: true,
   cta: "Print",
 };
 
@@ -1324,14 +1307,12 @@ export const shirtLink: NavItem = {
 };
 
 export const jokeLink: NavItem = {
-  href: ROUTES.joke,
+  href: warOnDiseaseUrl(ROUTES.joke),
+  external: true,
   label: "The Joke",
   emoji: "😂",
   description: `Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on ${populationCount} people it would result in a chain reaction that would result in the reallocation of at least ${treatyReduction} of our ${apocalypseCount} apocalypse murder capacity to disease eradication which would produce ${healthyLifeYearsSaved} extra healthy life-years. At ${laughsPerDay} laughs per day, that's ${laughsGained} extra laughs`,
   cta: "Play the joke",
-  authenticatedCopyPreview: true,
-  copyPreview: true,
-  screenshot: true,
 };
 
 export const storeLink: NavItem = {

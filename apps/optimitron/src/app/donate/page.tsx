@@ -14,7 +14,7 @@ import { WaysToGiveCard } from "@/components/donate/WaysToGiveCard";
 import { TreatyTradeThesis } from "@/components/referendum/TreatyTradeThesis";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteMetadata } from "@/lib/metadata";
-import { donateLink, onePercentTreatyPaperLink, ROUTES } from "@/lib/routes";
+import { donateLink, onePercentTreatyPaperLink, ROUTES, warOnDiseaseUrl } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
 export async function generateMetadata() {
@@ -122,7 +122,7 @@ export default function DonatePage() {
           Foundations: putting the shirt on every human on Earth costs about
           3% of the global annual philanthropy budget. The other 97% is also
           welcome to end war and disease.{" "}
-          <Link href={ROUTES.foundations} className="font-black underline">
+          <Link href={warOnDiseaseUrl(ROUTES.foundations)} className="font-black underline">
             See the case →
           </Link>
         </p>

@@ -49,6 +49,8 @@ const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
   "mcp-authorize.json",
 );
 const MCP_AUTHORIZE_CLIENT_ID = "visual_mcp_authorize_client";
+// e2e/utils/visual-routes.ts captures /civic/votes/<this identifier>.
+const CIVIC_VOTE_SHARE_IDENTIFIER = `${FIXTURE_PREFIX}civic_vote`;
 const MCP_AUTHORIZE_REDIRECT_URI = "http://127.0.0.1/visual-mcp-callback";
 const MCP_AUTHORIZE_CODE_CHALLENGE =
   "visualreviewcodechallengeaaaaaaaaaaaaaaaa";
@@ -162,6 +164,24 @@ async function seedMcpAuthorizeFixture(input: { nonAdminEmail: string }) {
     "utf8",
   );
   console.log(`[visual-review] wrote ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}`);
+}
+
+// /civic/votes/[identifier] renders one citizen bill vote by share identifier.
+async function seedCivicVote(input: { userId: string }) {
+  const vote = {
+    billId: "119-hr-visual-review",
+    billTitle: "Visual Review Act",
+    // The page prints the vote date, so the date stays fixed.
+    createdAt: new Date("2026-01-15T12:00:00.000Z"),
+    position: "YES" as const,
+    reasoning: "A fixed vote for the visual review.",
+    userId: input.userId,
+  };
+  await prisma.citizenBillVote.upsert({
+    where: { shareIdentifier: CIVIC_VOTE_SHARE_IDENTIFIER },
+    create: { ...vote, shareIdentifier: CIVIC_VOTE_SHARE_IDENTIFIER },
+    update: vote,
+  });
 }
 
 async function resetVisualReviewFixtures() {
@@ -707,6 +727,7 @@ async function main() {
   });
 
   await seedMcpAuthorizeFixture({ nonAdminEmail: nonAdminMcpUser.email });
+  await seedCivicVote({ userId: demo.user.id });
   await mkdir(path.dirname(FIXTURE_MANIFEST_PATH), { recursive: true });
   await writeFile(
     FIXTURE_MANIFEST_PATH,

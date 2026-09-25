@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+import { JsonLdScript } from "@optimitron/site-kit/components/site/JsonLdScript"
 import Layout from "@/components/layout"
 import TreatyVoteSection from "@/components/landing/treaty-vote-section"
 import { getSessionUserId } from "@/lib/auth-utils"
+import { buildVoteStructuredData } from "@/lib/structured-data"
 import { getUserTreatyVote } from "@/lib/treaty-votes.server"
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
@@ -40,6 +42,7 @@ export default async function VotePage() {
 
   return (
     <Layout>
+      <JsonLdScript data={buildVoteStructuredData()} />
       <TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" sectionId="vote" />
     </Layout>
   )

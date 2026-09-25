@@ -5,7 +5,7 @@ import { MissionSafetyNotice } from "@/components/missions/MissionSafetyNotice";
 import { authOptions } from "@/lib/auth";
 import { getDatingMatchesData } from "@/lib/dating.server";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getSignInPath, messagesLink, ROUTES } from "@/lib/routes";
+import { getSignInPath, messagesLink, ROUTES, warOnDiseaseUrl } from "@/lib/routes";
 import { getUserDisplayName } from "@/lib/user-display";
 
 export const metadata = getRouteMetadata(messagesLink);
@@ -48,7 +48,7 @@ export default async function MessagesPage() {
       <div className="mx-auto max-w-4xl">
         <Link
           className="text-sm font-black uppercase underline underline-offset-4"
-          href="/missions"
+          href={warOnDiseaseUrl(ROUTES.missions)}
         >
           Back to missions
         </Link>

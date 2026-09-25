@@ -339,6 +339,9 @@ export function EndorseForm({ referendumSlug, manageableOrgs }: Props) {
           <AuthForm
             callbackUrl={ROUTES.join}
             compact
+            title="Verify"
+            subtitle="One verification, then your organization joins the campaign."
+            googleButtonLabel="Verify with Google"
             emailButtonLabel="Verify by email"
             emailLoadingLabel="Sending verification link..."
           />

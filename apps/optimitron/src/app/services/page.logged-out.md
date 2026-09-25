@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Earth Optimization Services | International Campaign to End War and Disease
+- Page title: Earth Optimization Services | Optimitron
 - Meta description: Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.
-- Canonical: https://warondisease.org/services
+- Canonical: https://optimitron.com/services
 - Open Graph title: Earth Optimization Services
 - Open Graph description: Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fservices
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fservices
 - Twitter title: Earth Optimization Services
 - Twitter description: Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.
 
@@ -80,16 +80,15 @@
 - Order civilization repairs like anything else you shop for. Every item shows the price, what you get, and the return on your dollar. Money-back guarantee: if the work never happens, your money comes back.
 #### [Ratify the 1% Treaty](/tasks/1-pct-treaty#funding)
 - The fastest known settlement is one percent of the war budget pointed at disease.
-- $2,500 COMMITTED - 0%
+- OPENING DAY. BE THE FIRST.
 - [GET IT NOW](/tasks/1-pct-treaty#funding)
 #### [Establish the Court of Humanity](/tasks/court-of-humanity#funding)
 - A majority jury needs a court-shaped place to render the verdict.
-- OPENING DAY. BE THE FIRST.
 - [GET IT NOW](/tasks/court-of-humanity#funding)
 #### [Fund faster, cheaper pragmatic clinical trials](/tasks/dfda#funding)
 - The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.
 - [GET IT NOW](/tasks/dfda#funding)
-#### [Use shareholder power to redirect military lobbying](/tasks/loving-takeover#funding)
+#### [Use shareholder power to redirect corporate lobbying toward public welfare](/tasks/loving-takeover#funding)
 - The best lobbyists money can buy currently block the treaty. So we buy them.
 - [GET IT NOW](/tasks/loving-takeover#funding)
 #### [Seed the shirt cascade](/tasks/shirt-seed#funding)

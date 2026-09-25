@@ -1,6 +1,15 @@
+import type { ReactElement } from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import type { Parameter } from "@optimitron/data/parameters"
+import {
+  DISEASE_BURDEN_GDP_DRAG_PCT,
+  DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
+  GLOBAL_WARHEAD_COUNT,
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  TREATY_ANNUAL_FUNDING,
+  TREATY_REDUCTION_PCT,
+  type Parameter,
+} from "@optimitron/data/parameters"
 import {
   ParameterInline,
   ParameterValue,
@@ -87,5 +96,41 @@ describe("ParameterValue", () => {
     render(<ParameterInline param={bare} display="integer" valueOverride="1.2%" />)
     expect(screen.getByText("1.2%")).toBeTruthy()
     expect(screen.queryByText("42")).toBeNull()
+  })
+})
+
+/** The text a ParameterValue prints (the dialog stays closed). */
+function printed(element: ReactElement): string | null {
+  return render(element).container.textContent
+}
+
+describe("ParameterValue number format", () => {
+  it("prints the same text as the Optimitron app", () => {
+    // warondisease.org printed "7K", "13.000%" and "$27B" for these.
+    expect(printed(<ParameterValue param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT} />)).toBe("6,650")
+    expect(printed(<ParameterValue param={DISEASE_BURDEN_GDP_DRAG_PCT} />)).toBe("13.0%")
+    expect(printed(<ParameterValue param={TREATY_ANNUAL_FUNDING} />)).toBe("$27.2 billion/year")
+  })
+
+  it("keeps what a compact-era format caller asked for, in the Optimitron notation", () => {
+    // precision 0 still prints "1%", not the three-significant-figure "1.00%".
+    expect(printed(<ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} />)).toBe("1%")
+    // The ratio symbol the compact formatter printed stays, as Optimitron's "x".
+    expect(
+      printed(
+        <ParameterValue
+          param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+          format={{ precision: 0 }}
+        />,
+      ),
+    ).toBe("604x")
+    // compact: false showed every digit, so every digit stays.
+    expect(
+      printed(<ParameterValue param={GLOBAL_WARHEAD_COUNT} format={{ compact: false, precision: 0 }} />),
+    ).toBe("12,241")
+    // An explicit compact request keeps compact notation.
+    expect(
+      printed(<ParameterValue param={TREATY_ANNUAL_FUNDING} format={{ compact: true, precision: 1 }} />),
+    ).toBe("$27.2B")
   })
 })

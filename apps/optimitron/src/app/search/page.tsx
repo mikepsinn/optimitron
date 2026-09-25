@@ -15,7 +15,7 @@ import {
 } from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
 import {
-  getStaticSiteSearchDocuments,
+  staticSiteSearchDocuments,
   type StaticSiteSearchDocument,
 } from "@/lib/site-search";
 import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
@@ -148,19 +148,19 @@ function getResultItems(
     title: item.title,
   }));
 
-  const pageItems: SearchResultItem[] = results.pages
-    .filter((page) => !page.external)
-    .map((page) => ({
-      description: page.description,
-      emoji: page.emoji ?? "📄",
-      external: false,
-      href: page.href,
-      meta: page.section,
-      scope: "pages",
-      score: page.score,
-      source: pageSourceLabel,
-      title: page.title,
-    }));
+  // External pages stay in the results: the treaty vote and the other
+  // campaign pages now live on warondisease.org.
+  const pageItems: SearchResultItem[] = results.pages.map((page) => ({
+    description: page.description,
+    emoji: page.emoji ?? "📄",
+    external: page.external ?? false,
+    href: page.href,
+    meta: page.section,
+    scope: "pages",
+    score: page.score,
+    source: page.external ? new URL(page.href).hostname : pageSourceLabel,
+    title: page.title,
+  }));
 
   const taskItems: SearchResultItem[] = results.tasks.map((task) => ({
     description: getTaskDescriptionSummary(task.snippet ?? "Task result", 180),
@@ -364,11 +364,10 @@ export default async function SearchPage({
       : "all";
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
-  const pageDocuments = getStaticSiteSearchDocuments(site);
+  const pageDocuments = staticSiteSearchDocuments;
   const results = await searchSiteContent(query, {
     contentLimit: 24,
     pageLimit: 24,
-    site,
     taskLimit: 24,
     userId,
   });

@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Government Size | International Campaign to End War and Disease
+- Page title: Government Size | Optimitron
 - Meta description: The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.
-- Canonical: https://warondisease.org/government-size
+- Canonical: https://optimitron.com/government-size
 - Open Graph title: Government Size
 - Open Graph description: The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fgovernment-size
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fgovernment-size
 - Twitter title: Government Size
 - Twitter description: The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.
 
@@ -32,11 +32,13 @@
 - Band 24.3% to 44.7%
 - 16 qualifying jurisdictions
 ### START-YEAR SENSITIVITY
+
 | WINDOW | FLOOR | BAND | US STATUS |
 | --- | --- | --- | --- |
 | 1990 to 2023 primary | 23.4% | 22.5% - 24.3% | above optimal band |
 | 1995 to 2023 | 27.8% | 24.3% - 44.7% | within optimal band |
 | 2000 to 2023 | 22.0% | 20.0% - 24.3% | above optimal band |
+
 ### EFFICIENT JURISDICTIONS
 - Countries that spend little and keep their people alive anyway. On my planet we call that the whole job.
 - FINLAND

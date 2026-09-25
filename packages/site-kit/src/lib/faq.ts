@@ -14,12 +14,33 @@ import {
   TREATY_ANNUAL_FUNDING,
   DFDA_BENEFIT_RD_ONLY_ANNUAL,
 } from "@optimitron/data/parameters"
+import { optimitronUrl } from "./optimitron-links"
+
+// The parameter export is served by optimitron.com, not by the campaign sites.
+const AGENT_PARAMETERS_URL = optimitronUrl("/api/agent/parameters")
 
 // ============================================================================
 // INDIVIDUAL FAQ ITEMS (Reusable Questions)
 // ============================================================================
 
 export const FAQ_ITEMS = {
+  // Campaign Questions: the optimitron.com Campaign FAQ, word for word. Only
+  // the parameter export link is absolute, because that path lives there.
+  // "What is the 1% Treaty?" is answered once, in the treaty section.
+  humanityVGovernment: {
+    q: "What is Humanity v Government?",
+    a: "Humanity v Government is the Court of Humanity damages case arguing that governments accepted payment to promote public welfare, then spent the money on war and delayed medicine. The settlement is the 1% Treaty.",
+  },
+  registerPlaintiff: {
+    q: "How do I register a plaintiff?",
+    a: "Go to https://courtofhumanity.org/plaintiffs and add a person who was harmed by war, state violence, regulatory delay, or preventable disease. Public entries show the name and story you choose to publish; private account details are not part of the public case.",
+  },
+  healthWealthMath: {
+    q: "What is the health and wealth math?",
+    a: `The core claim is simple: fewer wars and faster clinical trials mean fewer deaths, less suffering, healthier workers, and higher lifetime income. The parameter export at ${AGENT_PARAMETERS_URL} carries the machine-readable assumptions and citations.`,
+    link: { text: AGENT_PARAMETERS_URL, href: AGENT_PARAMETERS_URL },
+  },
+
   // Treaty Questions
   whatIsTreaty: {
     q: "What is the 1% Treaty?",
@@ -120,6 +141,15 @@ export const FAQ_ITEMS = {
 // ============================================================================
 
 export const FAQ_SECTIONS = {
+  campaign: {
+    category: "THE CAMPAIGN",
+    questions: [
+      FAQ_ITEMS.humanityVGovernment,
+      FAQ_ITEMS.registerPlaintiff,
+      FAQ_ITEMS.healthWealthMath,
+    ],
+  },
+
   treaty: {
     category: "THE 1% TREATY",
     questions: [
@@ -182,6 +212,7 @@ export const WAR_ON_DISEASE_FAQ: FaqConfig = {
   title: 'FREQUENTLY ASKED QUESTIONS',
   subtitle: 'Everything you need to know about the 1% Treaty and the war on disease',
   sections: [
+    FAQ_SECTIONS.campaign,
     FAQ_SECTIONS.treaty,
     FAQ_SECTIONS.pragmaticTrials,
     FAQ_SECTIONS.peaceDividend,
@@ -196,6 +227,17 @@ export const WAR_ON_DISEASE_FAQ: FaqConfig = {
       { label: 'VIEW RESEARCH', href: '/research', variant: 'secondary' },
     ],
   },
+}
+
+/**
+ * CureDAO FAQ: the War on Disease FAQ without the campaign section, whose
+ * answers (the Court case, plaintiff registration) belong to warondisease.org.
+ */
+export const CUREDAO_FAQ: FaqConfig = {
+  ...WAR_ON_DISEASE_FAQ,
+  sections: WAR_ON_DISEASE_FAQ.sections.filter(
+    (section) => section !== FAQ_SECTIONS.campaign,
+  ),
 }
 
 /**

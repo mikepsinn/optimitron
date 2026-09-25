@@ -105,7 +105,7 @@ export function PoliticalDysfunctionTaxSection() {
               $<CountUp value={Math.round(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL.value)} className="" />/person/year
             </div>
             <p className="font-bold max-w-xl mx-auto">
-              Every human on Earth pays <ParameterValue param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} /> per year in governance dysfunction.
+              Every human on Earth pays <ParameterValue param={{ ...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL, unit: "USD" }} /> per year in governance dysfunction.
               Not in taxes — in waste. The taxes are on top of that.
             </p>
             <NavItemLink
