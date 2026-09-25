@@ -53,8 +53,8 @@
 ### YOUR INCOME, TWO FUTURES
 - If your income follows the world median’s path
 - YOUR INCOME TODAY, PER YEAR
-- In 2045, current path$114,328
-- In 2045, with the 1% Treaty$216,242
+- In 2045, current path $114,328
+- In 2045, with the 1% Treaty $216,242
 - World median after-tax income: [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) today, [$3,033](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) in 2045 on the current path, and [$5,736](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) with the 1% Treaty.
 - 2025
 - 2035
