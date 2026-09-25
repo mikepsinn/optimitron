@@ -204,6 +204,20 @@ const CLINICAL_TRIAL_PCT_OF_NIH = 0.033;
 // XML fetching and parsing
 // ---------------------------------------------------------------------------
 
+/** The rollCalls key of a bill's House vote, or null when the bill has none. */
+function houseRollCallKey(bill: BudgetBill): string | null {
+  return bill.houseYear != null && bill.houseRollCall != null
+    ? `house:${bill.houseYear}:${bill.houseRollCall}`
+    : null;
+}
+
+/** The rollCalls key of a bill's Senate vote, or null when the bill has none. */
+function senateRollCallKey(bill: BudgetBill): string | null {
+  return bill.senateCongress != null && bill.senateSession != null && bill.senateVoteNumber != null
+    ? `senate:${bill.senateCongress}:${bill.senateSession}:${bill.senateVoteNumber}`
+    : null;
+}
+
 /**
  * Fetch text from a URL with error handling. Returns null on failure.
  */
@@ -481,21 +495,32 @@ async function main() {
     }
   }
 
+  // A member missing from both roll calls of a bill is scored as not in office
+  // for it. So a roll call that failed to load would silently drop that bill,
+  // or a member, from the scorecards. Stop before any file is written.
+  const missingRollCalls = [
+    ...new Set(KEY_BILLS.flatMap((bill) => [houseRollCallKey(bill), senateRollCallKey(bill)])),
+  ].filter((key): key is string => key !== null && !rollCalls.get(key)?.size);
+  if (missingRollCalls.length > 0) {
+    console.error(
+      `\nNo votes loaded for ${missingRollCalls.join(", ")}. The scorecards were not written.`,
+    );
+    process.exit(1);
+  }
+
   // ─── Step 3: Compute scorecards ────────────────────────────────────
   console.log("\nStep 3: Computing scorecards...");
   const scorecards: MemberVoteRecord[] = [];
 
-  const billRollCalls: BillRollCalls[] = KEY_BILLS.map((bill) => ({
-    bill,
-    house:
-      bill.houseYear != null && bill.houseRollCall != null
-        ? rollCalls.get(`house:${bill.houseYear}:${bill.houseRollCall}`)
-        : undefined,
-    senate:
-      bill.senateCongress != null && bill.senateSession != null && bill.senateVoteNumber != null
-        ? rollCalls.get(`senate:${bill.senateCongress}:${bill.senateSession}:${bill.senateVoteNumber}`)
-        : undefined,
-  }));
+  const billRollCalls: BillRollCalls[] = KEY_BILLS.map((bill) => {
+    const houseKey = houseRollCallKey(bill);
+    const senateKey = senateRollCallKey(bill);
+    return {
+      bill,
+      house: houseKey ? rollCalls.get(houseKey) : undefined,
+      senate: senateKey ? rollCalls.get(senateKey) : undefined,
+    };
+  });
 
   for (const member of members) {
     const bioguideId = member.bioguideId ?? "";

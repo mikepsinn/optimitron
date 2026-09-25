@@ -31,7 +31,9 @@ export interface ScoredMemberVote {
 }
 
 export interface MemberVoteScore {
+  /** YEA dollars on "military" and "enforcement" bills. */
   militaryDollarsVotedFor: number;
+  /** YEA dollars on "clinical_trials" bills, times the clinical-trial share of the NIH budget. */
   clinicalTrialDollarsVotedFor: number;
   votes: ScoredMemberVote[];
 }
