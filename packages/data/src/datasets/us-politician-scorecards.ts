@@ -13,13 +13,13 @@
 import generatedData from "./generated/politician-scorecards.json";
 
 // ---------------------------------------------------------------------------
-// Actual budget line items (FY2024 dollars)
+// Actual budget line items (FY2024 dollars unless noted)
 // ---------------------------------------------------------------------------
 
 /** Real dollar amounts for major budget categories */
 const BUDGET_ITEMS = {
   // Military / Destructive
-  NDAA_DEFENSE: 886_000_000_000,          // National Defense Authorization Act FY2024
+  NDAA_DEFENSE: 900_600_000_000,          // NDAA FY2026 (S. 1071), the systemWideRatio numerator
   NUCLEAR_WEAPONS: 37_700_000_000,         // NNSA weapons activities
   ISRAEL_MILITARY_AID: 3_800_000_000,      // Annual baseline + supplementals
   UKRAINE_MILITARY_AID: 24_000_000_000,    // FY2024 supplemental
@@ -88,7 +88,8 @@ export interface GeneratedPresidentScorecard {
 
 export interface GeneratedPoliticianScorecardData {
   generatedAt: string;
-  congress: number;
+  /** The Congresses whose members are scored, such as [118, 119]. */
+  congress: number[];
   memberCount: number;
   systemWideRatio: number;
   scorecards: GeneratedPoliticianScorecard[];

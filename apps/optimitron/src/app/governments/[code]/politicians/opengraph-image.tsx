@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getGovernmentMetrics } from "@optimitron/data/datasets/government-report-cards";
+import { formatPoliticianOgRatio } from "@/lib/politician-og";
+import { getPoliticianScorecardData } from "@/lib/politician-scorecards";
 
 export const runtime = "nodejs";
 export const revalidate = 86400;
@@ -36,7 +38,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
       </div>
       <div style={{ display: "flex", gap: 40, marginTop: 40 }}>
         <div style={{ display: "flex", flexDirection: "column", backgroundColor: "#ef4444", padding: "16px 24px", border: "4px solid #fff" }}>
-          <div style={{ fontSize: 36, fontWeight: 900, color: "#fff" }}>1,094:1</div>
+          <div style={{ fontSize: 36, fontWeight: 900, color: "#fff" }}>{formatPoliticianOgRatio(getPoliticianScorecardData().systemWideRatio)}</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>SYSTEM RATIO</div>
         </div>
       </div>
