@@ -9,7 +9,7 @@ export const CONTACT_URL = `mailto:${EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_
 
 export function CallTodaySection() {
   return (
-    <LandingSection id="vote" note="30 seconds" title="Call today!">
+    <LandingSection id="vote" title="Call today!">
       <Suspense fallback={null}>
         <TreatyVoteFlow
           authCallbackUrl={ROUTES.dashboard}

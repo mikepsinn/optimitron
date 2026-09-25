@@ -22,7 +22,7 @@
 - You pay your governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare, which means raising median health and wealth. They never check whether any policy or budget actually does. We analyze two centuries of data from 193 countries with causal inference to find the policies and budgets that do.
 #### YOUR OVEN
 - closed loop
-- The oven checks whether the food is the right temperature. If not, it adjusts.
+- The thermometer checks the oven’s temperature. If it is off, the oven adjusts.
 #### YOUR GOVERNMENT
 - open loop
 - It never checks whether the policy is working, so it never adjusts.
@@ -49,23 +49,23 @@
 - [12,241](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) nuclear warheads, one square each
 - [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) are enough to end civilization
 - [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses’ worth, for a planet that can only end once
-- Spent on killing for every dollar on curing: [$604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
+- Spent on weapons for every $1 governments spend on clinical trials: [$604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 ### YOUR INCOME, TWO FUTURES
 - If your income follows the world median’s path
-- YOUR INCOME TODAY, PER YEAR
-- In 2045, current path $114,328
-- In 2045, with the 1% Treaty $216,242
-- World median after-tax income: [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) today, [$3,033](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) in 2045 on the current path, and [$5,736](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) with the 1% Treaty.
+- YOUR AFTER-TAX INCOME PER YEAR
+- Starts at the world median, [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html). Type yours.
+- In 2040, current path [$2,774](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
+- In 2040, with the 1% Treaty [$4,381](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
 - 2025
+- 2030
 - 2035
-- 2045
+- 2040
 ### FEATURED PRODUCTS
-- Every number is live output or a published parameter
 #### DATA
 - Two centuries · 193 countries
 - Health, income, spending, and law for every country, every year there is a record
 #### READINGS
-- World median
+- World
 - [63.3 yrs](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
 - Healthy life expectancy
 - 2040 with the 1% Treaty: [79.4 yrs](https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html)
@@ -79,7 +79,7 @@
 - [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years
 - With the 1% Treaty
 - [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years
-- First treatments a year go from [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Pragmatic trials cost [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient. A conventional phase 3 trial costs [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
+- First treatments a year go from [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Pragmatic trials cost [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient. A conventional phase 3 trial costs [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient.
 - [SEE THE DECENTRALIZED FDA](/agencies/dfda)
 #### OPTIMAL POLICY GENERATOR
 - United States · 10 policies graded
@@ -90,13 +90,13 @@
 - Today Only 34% of US 3-year-olds enrolled; varies wildly by state
 - [SEE EVERY GRADE](/opg)
 #### OPTIMAL BUDGET GENERATOR
-- Spending per person: United States vs the most efficient country
+- US spending per person vs the cheapest country in the top quarter for results
 - Military spending 5.3×US $2,052 · Switzerland $389
 - Total health spending 2.9×US $10,333 · South Korea $3,588
 - Government education spending 2.3×US $2,996 · Japan $1,288
 - Total R&D spending 1.9×US $1,991 · Netherlands $1,064
 - Public social spending 1.6×US $12,848 · Singapore $7,868
-- Federal line measured directly: Military, $886B → $167B a year.
+- Military at Switzerland’s rate: $886B → $167B a year.
 - [SEE THE WHOLE BUDGET](/obg)
 #### DECENTRALIZED TO-DO LIST FOR HUMANITY
 - Big goals split into tasks people can claim
@@ -108,7 +108,6 @@
 - Get a majority of humanity to vote yes
 - Get 193 heads of government to sign Assigned: Narendra Modi, India
 - Fund the referendum: the Earth Optimization Prize
-- Seed the shirt cascade
 - Build and capitalize a public-welfare investment company
 - End Disease
 - End Poverty
@@ -126,7 +125,7 @@
 - per human buys outright control of every major Western military contractor
 - [Fund the Loving Takeover](/tasks/loving-takeover#funding)
 ### YOUR CURRENT PROVIDER, RATED
-- Every government, graded on what it delivered
+- Ranked by weapons spending per dollar of clinical trials
 - WORST GOVERNMENTS
 - LEAST BAD GOVERNMENTS
 - COLUMNS
@@ -156,14 +155,13 @@
 - PRODUCT
 - RETAIL PRICE
 - CURRENTLY PAYING
-- [Decentralized FDA](/agencies/dfda) Replaces Food and Drug Administration [$500](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient
+- [Decentralized FDA](/agencies/dfda) Replaces Food and Drug Administration [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient
 - [Automated Revenue Service](/agencies/dtreasury/dirs) Replaces Internal Revenue Service [$150M](https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html) a year [$12.3B](https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html) a year, plus [$546B](https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html) in filing costs
 - [Universal Security Administration](/agencies/dtreasury/dssa) Replaces Social Security Administration + Welfare Bureaucracy [$101M](https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html) a year, [30¢](https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html) a citizen 83 welfare programs, each with its own bureaucracy
 - [Aligned Election Commission](/agencies/dfec) Replaces Federal Election Commission + Campaign Finance System [$7M](https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html) a year [$20B](https://manual.WarOnDisease.org/knowledge/appendix/cost-of-change-analysis.html) of donor money in the 2024 federal elections
 - [Human Mobility Network](/agencies/dmove) Replaces Immigration & Customs Enforcement + Customs and Border Protection Pays each citizen [$310](https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html) a year [$57T](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) a year in lost output worldwide
 - [SEE EVERY AGENCY](/agencies)
 ### CALL TODAY!
-- 30 seconds
 ### PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE
 - You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare: maximize median health and wealth. Of the money available for military/weapons and pragmatic clinical trials, how much should go to each?
 - PRAGMATIC CLINICAL TRIALS

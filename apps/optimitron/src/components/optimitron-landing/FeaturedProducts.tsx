@@ -2,12 +2,12 @@ import Link from "next/link";
 import {
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   DFDA_FIRST_TREATMENTS_PER_YEAR,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   DFDA_QUEUE_CLEARANCE_YEARS,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   GLOBAL_HALE_CURRENT,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-  RECOVERY_TRIAL_COST_PER_PATIENT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   TREATY_PROJECTED_HALE_YEAR_15,
@@ -118,7 +118,7 @@ function Gauge({
 
 function ReadingsTile() {
   return (
-    <Tile note="World median" title="Readings">
+    <Tile note="World" title="Readings">
       <div className="grid grid-cols-2 gap-5">
         <Gauge
           current={{ param: GLOBAL_HALE_CURRENT, text: `${GLOBAL_HALE_CURRENT.value} yrs` }}
@@ -203,16 +203,16 @@ function DiseaseQueueTile() {
         . Pragmatic trials cost{" "}
         <ParameterValue
           className="font-bold text-foreground"
-          param={RECOVERY_TRIAL_COST_PER_PATIENT}
-          valueOverride={wholeUsd(RECOVERY_TRIAL_COST_PER_PATIENT.value)}
+          param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+          valueOverride={wholeUsd(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value)}
         />{" "}
         a patient. A conventional phase 3 trial costs{" "}
         <ParameterValue
           className="font-bold text-foreground"
           param={TRADITIONAL_PHASE3_COST_PER_PATIENT}
           valueOverride={wholeUsd(TRADITIONAL_PHASE3_COST_PER_PATIENT.value)}
-        />
-        .
+        />{" "}
+        a patient.
       </p>
       <div className="mt-auto pt-5">
         <Link className={landingLinkClass} href={ROUTES.dfda}>
@@ -228,7 +228,7 @@ function BudgetGeneratorTile() {
   const measuredLines = getMeasuredBudgetLines();
 
   return (
-    <Tile note="Spending per person: United States vs the most efficient country" title="Optimal Budget Generator">
+    <Tile note="US spending per person vs the cheapest country in the top quarter for results" title="Optimal Budget Generator">
       <ul className="flex flex-col gap-4">
         {benchmarks.map((row) => (
           <li key={row.field}>
@@ -253,7 +253,7 @@ function BudgetGeneratorTile() {
       </ul>
       {measuredLines.map((line) => (
         <p className="mt-5 text-sm leading-6 text-muted-foreground" key={line.name}>
-          Federal line measured directly: {line.name},{" "}
+          {line.name} at {line.benchmarkCountry}’s rate:{" "}
           <span className="font-mono font-bold text-foreground">
             {compactUsd(line.current)} → {compactUsd(line.optimal)}
           </span>{" "}
@@ -327,7 +327,6 @@ export function FeaturedProductsSection() {
   return (
     <LandingSection
       id="products"
-      note="Every number is live output or a published parameter"
       title="Featured products"
     >
       <TileGrid>

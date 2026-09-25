@@ -208,7 +208,7 @@ function GovernmentLoop() {
           ???
         </text>
         <text textAnchor="middle" x="200" y="116">
-          No sensor. No measurement. No adjustment.
+          Deaths get counted. The budget never reads them.
         </text>
       </g>
       <g className="fill-muted-foreground">
@@ -355,7 +355,7 @@ function OptimizedLoop() {
 const DIAGRAMS = [
   {
     caption:
-      "The oven checks whether the food is the right temperature. If not, it adjusts.",
+      "The thermometer checks the oven’s temperature. If it is off, the oven adjusts.",
     diagram: <OvenLoop />,
     note: "closed loop",
     title: "Your oven",

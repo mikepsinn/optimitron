@@ -124,7 +124,7 @@ export function StatementSection() {
             apocalypses’ worth, for a planet that can only end once
           </li>
           <li>
-            Spent on killing for every dollar on curing:{" "}
+            Spent on weapons for every $1 governments spend on clinical trials:{" "}
             <ParameterValue
               className="font-bold text-foreground"
               display="integer"

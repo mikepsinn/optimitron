@@ -14,6 +14,8 @@ export interface GradedPolicy {
 }
 
 export interface BudgetLine {
+  /** The cheapest top-quarter country the optimal is scaled from. */
+  benchmarkCountry: string;
   current: number;
   name: string;
   optimal: number;
@@ -95,6 +97,7 @@ export function getMeasuredBudgetLines(): BudgetLine[] {
       ? []
       : [
           {
+            benchmarkCountry: category.efficiency?.bestCountry.name ?? "the benchmark",
             current: category.currentSpending,
             name: category.name,
             optimal: category.optimalSpendingNominal,
@@ -125,7 +128,6 @@ export const TASK_TREE_PATH: readonly TaskTreeNode[] = [
     title: "Get 193 heads of government to sign",
   },
   { depth: 3, taskKey: "program:earth-optimization-prize", title: "Fund the referendum: the Earth Optimization Prize" },
-  { depth: 3, taskKey: "program:shirt-seed", title: "Seed the shirt cascade" },
   { depth: 2, taskKey: "program:eos:capitalize", title: "Build and capitalize a public-welfare investment company" },
   { depth: 1, taskKey: "mission:end-disease", title: "End Disease" },
   { depth: 1, taskKey: "mission:end-poverty", title: "End Poverty" },

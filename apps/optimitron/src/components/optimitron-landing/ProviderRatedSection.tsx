@@ -9,7 +9,7 @@ export function ProviderRatedSection() {
   return (
     <LandingSection
       id="rated"
-      note="Every government, graded on what it delivered"
+      note="Ranked by weapons spending per dollar of clinical trials"
       title="Your current provider, rated"
     >
       <GovernmentLeaderboard compact limit={10} />

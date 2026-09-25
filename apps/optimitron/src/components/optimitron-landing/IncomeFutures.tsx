@@ -2,10 +2,10 @@
 
 import { useId, useState } from "react";
 import {
-  CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20,
+  CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
-  TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20,
-  US_MEDIAN_HOUSEHOLD_INCOME_2023,
+  TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15,
+  type Parameter,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { wholeUsd } from "./format";
@@ -42,6 +42,11 @@ function pathPoints(path: readonly IncomeAnchor[]): string {
 }
 
 const STATUS_QUO_POINTS = pathPoints(STATUS_QUO_INCOME_PATH);
+const CHART_YEAR_TICKS = Array.from(
+  { length: (INCOME_END_YEAR - INCOME_START_YEAR) / 5 + 1 },
+  (_, index) => INCOME_START_YEAR + index * 5,
+);
+const WORLD_MEDIAN_INCOME = Math.round(GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value);
 const TREATY_POINTS = pathPoints(TREATY_INCOME_PATH);
 
 function IncomeChart() {
@@ -74,9 +79,9 @@ function IncomeChart() {
         />
       </svg>
       <div className="mt-2 flex justify-between font-mono text-sm text-muted-foreground">
-        <span>{INCOME_START_YEAR}</span>
-        <span>{(INCOME_START_YEAR + INCOME_END_YEAR) / 2}</span>
-        <span>{INCOME_END_YEAR}</span>
+        {CHART_YEAR_TICKS.map((year) => (
+          <span key={year}>{year}</span>
+        ))}
       </div>
     </div>
   );
@@ -87,14 +92,20 @@ function parseIncome(raw: string): number {
   return Number.isFinite(value) ? value : 0;
 }
 
+/**
+ * At the default (the world median) each result is the published parameter,
+ * so it keeps its source link. A typed income is a scenario, shown plain.
+ */
+function IncomeResult({ atDefault, param, value }: { atDefault: boolean; param: Parameter; value: number }) {
+  return atDefault ? <ParameterValue param={param} valueOverride={wholeUsd(value)} /> : <>{wholeUsd(value)}</>;
+}
+
 export function IncomeFuturesSection() {
   const inputId = useId();
-  const [income, setIncome] = useState(Math.round(US_MEDIAN_HOUSEHOLD_INCOME_2023.value));
+  const [income, setIncome] = useState(WORLD_MEDIAN_INCOME);
+  const atDefault = income === WORLD_MEDIAN_INCOME;
   const statusQuo = income * incomeMultipleAt(STATUS_QUO_INCOME_PATH, INCOME_END_YEAR);
   const treaty = income * incomeMultipleAt(TREATY_INCOME_PATH, INCOME_END_YEAR);
-  const worldToday = GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025;
-  const worldStatusQuo = CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20;
-  const worldTreaty = TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20;
 
   return (
     <LandingSection
@@ -108,7 +119,7 @@ export function IncomeFuturesSection() {
             className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-muted-foreground"
             htmlFor={inputId}
           >
-            Your income today, per year
+            Your after-tax income per year
           </label>
           <div className="mt-2 flex items-center border-b-2 border-foreground">
             <span aria-hidden="true" className="font-mono text-3xl font-bold">
@@ -122,13 +133,27 @@ export function IncomeFuturesSection() {
               value={income > 0 ? income.toLocaleString("en-US") : ""}
             />
           </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Starts at the world median,{" "}
+            <ParameterValue
+              param={GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025}
+              valueOverride={wholeUsd(GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value)}
+            />
+            . Type yours.
+          </p>
           <div className="mt-6 flex flex-col gap-3 text-base">
             <p className="flex items-baseline justify-between gap-6">
               <span className="text-muted-foreground">
                 <span aria-hidden="true" className="mr-2 inline-block h-0.5 w-5 bg-foreground align-middle" />
                 In {INCOME_END_YEAR}, current path
               </span>{" "}
-              <span className="font-mono font-bold tabular-nums">{wholeUsd(statusQuo)}</span>
+              <span className="font-mono font-bold tabular-nums">
+                <IncomeResult
+                  atDefault={atDefault}
+                  param={CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15}
+                  value={statusQuo}
+                />
+              </span>
             </p>
             <p className="flex items-baseline justify-between gap-6">
               <span className="text-muted-foreground">
@@ -136,19 +161,14 @@ export function IncomeFuturesSection() {
                 In {INCOME_END_YEAR}, with the 1% Treaty
               </span>{" "}
               <span className={`font-mono text-xl font-bold tabular-nums ${accentTextClass}`}>
-                {wholeUsd(treaty)}
+                <IncomeResult
+                  atDefault={atDefault}
+                  param={TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15}
+                  value={treaty}
+                />
               </span>
             </p>
           </div>
-          <p className="mt-6 text-sm leading-6 text-muted-foreground">
-            World median after-tax income:{" "}
-            <ParameterValue param={worldToday} valueOverride={wholeUsd(worldToday.value)} />{" "}
-            today,{" "}
-            <ParameterValue param={worldStatusQuo} valueOverride={wholeUsd(worldStatusQuo.value)} />{" "}
-            in {INCOME_END_YEAR} on the current path, and{" "}
-            <ParameterValue param={worldTreaty} valueOverride={wholeUsd(worldTreaty.value)} />{" "}
-            with the 1% Treaty.
-          </p>
         </div>
         <IncomeChart />
       </div>
