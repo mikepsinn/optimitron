@@ -33,6 +33,11 @@ function formatCompact(value: number): string {
 interface AgencyGradeChartProps {
   agency: AgencyPerformance;
   compact?: boolean;
+  /**
+   * Link each annotation to its source. Pass false when the chart sits inside
+   * a link: a nested <a> is invalid HTML and breaks hydration.
+   */
+  linkSources?: boolean;
   /** Show all outcome lines (default: just primary) */
   showAllOutcomes?: boolean;
 }
@@ -40,6 +45,7 @@ interface AgencyGradeChartProps {
 export function AgencyGradeChart({
   agency,
   compact = false,
+  linkSources = true,
   showAllOutcomes = false,
 }: AgencyGradeChartProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -274,7 +280,7 @@ export function AgencyGradeChart({
           {annotations.map((ann, i) => (
             <p key={i} className="text-[9px] font-bold text-muted-foreground leading-tight">
               <span className="text-brutal-red font-black">{ann.year}</span>{" "}
-              {ann.url ? (
+              {ann.url && linkSources ? (
                 <a
                   href={ann.url}
                   target="_blank"

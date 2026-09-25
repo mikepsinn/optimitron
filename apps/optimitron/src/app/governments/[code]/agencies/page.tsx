@@ -76,7 +76,7 @@ export default async function AgenciesIndexPage({ params }: PageProps) {
                 href={`/governments/${gov.code}/agencies/${agency.agencyId}`}
                 className="block hover:translate-x-[-2px] hover:translate-y-[-2px] transition-transform"
               >
-                <AgencyGradeChart agency={agency} />
+                <AgencyGradeChart agency={agency} linkSources={false} />
               </Link>
             ))}
           </div>
