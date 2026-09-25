@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 ## POLICY RANKINGS
-- I ranked 10 of your policies by whether they actually work. Most of them don't.
+- I graded 10 policy changes by the evidence that they raise health and income.
 - CATEGORY
 - SORT BY
 - 1 [Pragmatic Clinical Trial Funding Reform](/opg/pragmatic-clinical-trial-funding-reform) Grade A implement health research Redirect research funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost. Current: NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate → Target: Mandate 30%+ of research budget for pragmatic trials with open data requirements+$719/yr INCOME+36mo HALE HEALTH A EVIDENCE▼

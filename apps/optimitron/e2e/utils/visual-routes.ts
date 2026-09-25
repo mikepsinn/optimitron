@@ -714,12 +714,22 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: false,
   },
   {
+    // A line without its own benchmark: no optimal, no gap.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail",
     path: "/obg/epa-environment",
     required: true,
     requiredSelector: "h1",
     requiredText: /^EPA \/ Environment$/,
+  },
+  {
+    // The one line with its own benchmark: numeric optimal and gap.
+    covers: [OBG_CATEGORY_PAGE_FILE],
+    name: "obg-category-detail-benchmarked",
+    path: "/obg/military",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Military$/,
   },
   {
     // Required, and asserted on #also-serves rather than something always
