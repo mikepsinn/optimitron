@@ -208,8 +208,8 @@ export function EarthOptimizationGameLandingPage() {
       <SectionContainer bgColor="foreground" borderPosition="top" padding="lg">
         <Container>
           <SectionHeader
-            title="Worst Players: Politicians"
-            subtitle="How your representatives actually vote vs what humans actually wanted."
+            title="Politicians: Military vs Clinical Trials"
+            subtitle="Military spending and clinical-trial funding each member of Congress voted for."
             size="lg"
             className="text-background [&_p]:text-background"
           />

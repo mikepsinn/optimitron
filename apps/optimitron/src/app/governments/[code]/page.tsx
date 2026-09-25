@@ -583,12 +583,14 @@ export default async function GovernmentDetailPage({ params }: PageProps) {
       <section className="mb-12">
         <BrutalCard bgColor="pink" shadowSize={8} padding="lg">
           <h2 className="mb-3 text-2xl font-black uppercase text-foreground">
-            🗳️ {gov.name} Politician Alignment
+            🗳️ {gov.name} Politicians
           </h2>
           <p className="mb-6 text-lg font-bold text-foreground">
-            Every politician&apos;s votes scored against what citizens actually want
-            via pairwise comparison. The gap between what they vote for and what
-            you&apos;d vote for, expressed as a single number.
+            {gov.code === "US"
+              ? "How each member of Congress voted on military spending and clinical-trial funding. "
+              : ""}
+            Citizen alignment scores, from Wishocracy pairwise comparisons of
+            budget priorities, appear here once enough people have compared them.
           </p>
           <GameCTA
             href={`/governments/${gov.code}/politicians`}

@@ -58,17 +58,13 @@ export default async function ScoreboardPage() {
       </ScoreboardSection>
 
       <ScoreboardSection
-        title="Worst Politicians"
-        description="The same ranking from the Optimitron landing page: dollars each representative voted toward weapons for every dollar toward testing medicines."
+        title="Politicians"
+        description="Dollars of military spending each member of Congress voted for, per dollar of clinical-trial funding they voted for."
       >
         <PoliticianScorecardTable
           scorecards={politicianScorecards}
           systemWideRatio={SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO}
           limit={10}
-          rankModeLabels={{
-            worst: "Worst Politicians",
-            leastBad: "Least Bad Politicians",
-          }}
         />
       </ScoreboardSection>
 

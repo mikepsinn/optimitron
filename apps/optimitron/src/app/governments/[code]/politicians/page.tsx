@@ -14,7 +14,6 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES } from "@/lib/routes";
-import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -27,8 +26,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
   const gov = getGovernmentMetrics(code.toUpperCase());
-  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines`;
-  const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on ${getMilitarySynonym("politicians-meta-desc")} per dollar finding out which medicines work.`;
+  const title = `${gov?.name ?? code} Politicians — Military Spending vs Clinical-Trial Funding`;
+  const description = `Every ${gov?.name ?? code} politician ranked by the military spending they voted for per dollar of clinical-trial funding they voted for.`;
   return {
     title,
     description,
@@ -61,6 +60,11 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
         >
           &larr; {gov.name}
         </Link>
+        {(scorecardData || alignmentData) && (
+          <h1 className="mt-4 text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">
+            {gov.flag} {gov.name} Politicians
+          </h1>
+        )}
       </div>
 
       {/* Military:Trials Scorecard */}
@@ -68,8 +72,8 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
         <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
           <Container>
             <SectionHeader
-              title={`${getMilitarySynonymTitle("politicians-section-title")} vs Testing Medicines`}
-              subtitle={`Your politicians spend ${scorecardData.systemWideRatio.toLocaleString()} dollars on ${getMilitarySynonym("politicians-section-subtitle")} for every 1 dollar finding out which medicines work. Fifty 9/11s worth of people die from disease every single day, except nobody invades anyone about it because diseases don't have oil.`}
+              title="Military Spending vs Clinical-Trial Funding"
+              subtitle={`Across all members, the tracked bills they voted for hold ${scorecardData.systemWideRatio.toLocaleString()} dollars of military spending for every 1 dollar of clinical-trial funding.`}
               size="lg"
             />
             <PoliticianScorecardTable
@@ -86,7 +90,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
           <Container>
             <SectionHeader
               title="Presidential Scorecards"
-              subtitle="Your 'red team' and 'blue team' argue about everything except this ratio, because they're both inside it. Switching parties is like changing the wallpaper in a burning building."
+              subtitle="Military spending and clinical-trial funding in the budget bills each president signed."
               size="md"
               className="text-background [&_p]:text-background/80"
             />
