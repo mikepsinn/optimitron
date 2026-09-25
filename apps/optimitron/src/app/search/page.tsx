@@ -148,19 +148,19 @@ function getResultItems(
     title: item.title,
   }));
 
-  const pageItems: SearchResultItem[] = results.pages
-    .filter((page) => !page.external)
-    .map((page) => ({
-      description: page.description,
-      emoji: page.emoji ?? "📄",
-      external: false,
-      href: page.href,
-      meta: page.section,
-      scope: "pages",
-      score: page.score,
-      source: pageSourceLabel,
-      title: page.title,
-    }));
+  // External pages stay in the results: the treaty vote and the other
+  // campaign pages now live on warondisease.org.
+  const pageItems: SearchResultItem[] = results.pages.map((page) => ({
+    description: page.description,
+    emoji: page.emoji ?? "📄",
+    external: page.external ?? false,
+    href: page.href,
+    meta: page.section,
+    scope: "pages",
+    score: page.score,
+    source: page.external ? new URL(page.href).hostname : pageSourceLabel,
+    title: page.title,
+  }));
 
   const taskItems: SearchResultItem[] = results.tasks.map((task) => ({
     description: getTaskDescriptionSummary(task.snippet ?? "Task result", 180),
