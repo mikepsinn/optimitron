@@ -268,6 +268,11 @@ export function buildCongressUrl(path: string, params: Record<string, string | n
   return `${CONGRESS_API_BASE}${path}?${query}`;
 }
 
+/** The URL with its API key replaced, so it is safe to log. */
+export function redactApiKey(url: string): string {
+  return url.replace(/([?&]api_key=)[^&]*/g, '$1REDACTED');
+}
+
 /**
  * Fetch JSON from the Congress API with error handling.
  * Returns `null` on failure for graceful degradation.
@@ -276,7 +281,7 @@ export async function fetchCongressJson<T>(url: string): Promise<T | null> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.warn(`Congress API ${response.status}: ${response.statusText} — ${url}`);
+      console.warn(`Congress API ${response.status}: ${response.statusText} — ${redactApiKey(url)}`);
       return null;
     }
     return (await response.json()) as T;
@@ -290,7 +295,7 @@ async function fetchCongressText(url: string): Promise<string | null> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.warn(`Congress API ${response.status}: ${response.statusText} — ${url}`);
+      console.warn(`Congress API ${response.status}: ${response.statusText} — ${redactApiKey(url)}`);
       return null;
     }
     return await response.text();
