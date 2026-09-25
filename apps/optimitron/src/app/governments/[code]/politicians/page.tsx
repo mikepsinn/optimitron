@@ -26,8 +26,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
   const gov = getGovernmentMetrics(code.toUpperCase());
-  const title = `${gov?.name ?? code} Politicians — Military Spending vs Clinical-Trial Funding`;
-  const description = `Every ${gov?.name ?? code} politician ranked by the military spending they voted for per dollar of clinical-trial funding they voted for.`;
+  const name = gov?.name ?? code;
+  // Vote scorecards exist only for the US, as in GovernmentPoliticiansPage.
+  const hasScorecards = code.toUpperCase() === "US";
+  const title = hasScorecards
+    ? `${name} Politicians — Military Spending vs Clinical-Trial Funding`
+    : `${name} Politicians`;
+  const description = hasScorecards
+    ? `Every ${name} politician ranked by the military spending they voted for per dollar of clinical-trial funding they voted for.`
+    : `Citizen alignment scores for ${name}'s politicians appear once enough people compare budget priorities.`;
   return {
     title,
     description,
