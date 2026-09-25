@@ -400,6 +400,82 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredText: /Find the human who should do something/i,
   },
   {
+    covers: ["apps/optimitron/src/app/agencies/[agencyId]/page.tsx"],
+    name: "agency-dcbo",
+    path: "/agencies/dcbo",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dcensus/page.tsx"],
+    name: "agency-dcensus",
+    path: "/agencies/dcensus",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dfec/page.tsx"],
+    name: "agency-dfec",
+    path: "/agencies/dfec",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/agencies/dih/page.tsx"],
+    name: "agency-dih",
+    path: "/agencies/dih",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    // Managed data gives Mike's user the person handle "mike".
+    covers: ["apps/optimitron/src/app/agencies/dfec/alignment/[identifier]/page.tsx"],
+    name: "alignment-report-mike",
+    path: "/agencies/dfec/alignment/mike",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    // scripts/seed-visual-review-fixtures.ts writes this vote.
+    covers: ["apps/optimitron/src/app/civic/votes/[identifier]/page.tsx"],
+    name: "civic-vote",
+    path: "/civic/votes/visual_document_review_civic_vote",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /Visual Review Act/,
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/agencies/page.tsx"],
+    name: "government-agencies",
+    path: "/governments/US/agencies",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/agencies/[agencyId]/page.tsx"],
+    name: "government-agency",
+    path: "/governments/US/agencies/nih",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/page.tsx"],
+    name: "government-politicians",
+    path: "/governments/US/politicians",
+    required: true,
+    requiredSelector: "h1",
+  },
+  {
+    // An unknown bioguide ID renders the page's not-found state.
+    covers: ["apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx"],
+    expectNotFound: true,
+    name: "politician-not-found",
+    path: "/governments/US/politicians/VISUAL0000",
+    required: true,
+    requiredSelector: 'nav[aria-label="Page recovery"] a[href="/search"]',
+    requiredText: /Page Not Found/i,
+  },
+  {
     covers: [
       "apps/optimitron/src/app/dysfunction-tax/page.tsx",
       "apps/optimitron/src/components/landing/PoliticalDysfunctionTaxSection.tsx",
