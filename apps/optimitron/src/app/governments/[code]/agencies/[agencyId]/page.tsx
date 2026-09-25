@@ -100,7 +100,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!agency) return { title: "Agency Not Found" };
   const gov = getGovernmentMetrics(code.toUpperCase());
   return {
-    title: `${agency.emoji} ${agency.agencyName} — Grade ${agency.grade} | ${gov?.name ?? code}`,
+    title: `${agency.emoji} ${agency.agencyName} — Grade ${agency.grade} | ${gov?.name ?? code} | Optimitron`,
     description: `${agency.agencyName} report card: ${agency.gradeRationale}`,
   };
 }

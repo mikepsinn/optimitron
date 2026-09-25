@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: referendum.title,
+    title: `${referendum.title} | Optimitron`,
     description: referendum.description ?? referendum.question,
   };
 }

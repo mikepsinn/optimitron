@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${agency.dName}: ${agency.replacesAgencyName}`,
+    title: `${agency.dName}: ${agency.replacesAgencyName} | Optimitron`,
     description: agency.description,
   };
 }
