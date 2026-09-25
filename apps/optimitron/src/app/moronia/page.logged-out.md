@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Moronia | International Campaign to End War and Disease
+- Page title: Moronia | Optimitron
 - Meta description: A planet with a 94.7% correlation to yours. It spent 604x more on weapons than cures. It no longer exists.
-- Canonical: https://warondisease.org/moronia
+- Canonical: https://optimitron.com/moronia
 - Open Graph title: Moronia
 - Open Graph description: A planet with a 94.7% correlation to yours. It spent 604x more on weapons than cures. It no longer exists.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fmoronia
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fmoronia
 - Twitter title: Moronia
 - Twitter description: A planet with a 94.7% correlation to yours. It spent 604x more on weapons than cures. It no longer exists.
 

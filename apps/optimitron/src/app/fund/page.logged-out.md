@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Fund Tasks | International Campaign to End War and Disease
+- Page title: Fund Tasks | Optimitron
 - Meta description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
-- Canonical: https://warondisease.org/fund
+- Canonical: https://optimitron.com/fund
 - Open Graph title: Fund Tasks
 - Open Graph description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Ffund
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Ffund
 - Twitter title: Fund Tasks
 - Twitter description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
 
@@ -19,16 +19,15 @@
 - [BROWSE EVERY TASK](/tasks)
 - [FUND THE PRIZE](/prize)
 #### [Ratify the 1% Treaty](/tasks/1-pct-treaty#funding)
-- $2,500 COMMITTED - 0%
+- OPENING DAY. BE THE FIRST.
 - [FUND TASK](/tasks/1-pct-treaty#funding)
 #### [Seed the shirt cascade](/tasks/shirt-seed#funding)
 - [FUND TASK](/tasks/shirt-seed#funding)
 #### [Establish the Court of Humanity](/tasks/court-of-humanity#funding)
-- OPENING DAY. BE THE FIRST.
 - [FUND TASK](/tasks/court-of-humanity#funding)
-#### [Fund the decentralized FDA directly](/tasks/dfda#funding)
+#### [Fund faster, cheaper pragmatic clinical trials](/tasks/dfda#funding)
 - [FUND TASK](/tasks/dfda#funding)
-#### [The Loving Takeover](/tasks/loving-takeover#funding)
+#### [Use shareholder power to redirect corporate lobbying toward public welfare](/tasks/loving-takeover#funding)
 - [FUND TASK](/tasks/loving-takeover#funding)
 ### YOUR CALCULATOR
 - Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing.

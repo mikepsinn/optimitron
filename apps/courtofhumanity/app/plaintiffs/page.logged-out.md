@@ -52,9 +52,9 @@
 - WHO BELONGS HERE?
 - Add yourself or someone you are authorized to represent. This can include a relative, patient, friend, or person who cannot register because of illness, disability, captivity, lack of internet access, or death.
 - THE DAMAGES CLAIM
-- [$11M](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html)
+- [$11 million/person](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html)
 - PER MURDERED HUMAN (NPV AT 3% PERPETUITY)
-- [$23M](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
+- [$23 million/person](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html)
 - LIFETIME COHORT EXPOSURE PER HUMAN
 - HUMANITY V. GOVERNMENT
 #### THE CASE

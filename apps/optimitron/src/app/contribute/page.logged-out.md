@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Contribute | International Campaign to End War and Disease
+- Page title: Contribute | Optimitron
 - Meta description: Help end war and disease: vote, fund outreach, write code, or add useful data.
-- Canonical: https://warondisease.org/contribute
+- Canonical: https://optimitron.com/contribute
 - Open Graph title: Contribute
 - Open Graph description: Help end war and disease: vote, fund outreach, write code, or add useful data.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fcontribute
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fcontribute
 - Twitter title: Contribute
 - Twitter description: Help end war and disease: vote, fund outreach, write code, or add useful data.
 

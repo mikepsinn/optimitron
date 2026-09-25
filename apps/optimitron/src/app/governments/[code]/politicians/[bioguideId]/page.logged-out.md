@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Politician | %5Bcode%5D | International Campaign to End War and Disease
+- Page title: Politician | %5Bcode%5D | Optimitron
 - Meta description: Politician budget allocation data
 - Canonical: [missing]
 - Open Graph title: Politician | %5Bcode%5D
@@ -17,7 +17,6 @@
 - PAGE NOT FOUND
 - Fascinating. You found a page that does not exist. On my planet, this takes effort.
 - [SEARCH](/search)
-- [VOTE](/vote)
-- [DONATE](/donate)
-- [ORGANIZATIONS](/join)
+- [VOTE](https://warondisease.org/vote)
+- [ORGANIZATIONS](https://warondisease.org/join)
 - Click something real. The machines are willing to forgive you.

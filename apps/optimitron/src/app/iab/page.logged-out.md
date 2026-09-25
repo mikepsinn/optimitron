@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Incentive Alignment Bonds | International Campaign to End War and Disease
+- Page title: Incentive Alignment Bonds | Optimitron
 - Meta description: Learn about aligning politicians with humanity. Projected 272%/year returns if treaty passes. Lobbying, but it cures diseases instead of causing them.
-- Canonical: https://warondisease.org/iab
+- Canonical: https://optimitron.com/iab
 - Open Graph title: Incentive Alignment Bonds
 - Open Graph description: Learn about aligning politicians with humanity. Projected 272%/year returns if treaty passes. Lobbying, but it cures diseases instead of causing them.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fiab
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fiab
 - Twitter title: Incentive Alignment Bonds
 - Twitter description: Learn about aligning politicians with humanity. Projected 272%/year returns if treaty passes. Lobbying, but it cures diseases instead of causing them.
 

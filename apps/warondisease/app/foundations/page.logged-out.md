@@ -68,13 +68,13 @@
 - 49.1% of this target list selected
 - One share gives an organization standing to write the board. It does not control the company. The point is to make the board analyze the shareholder case on the record, then repeat that pressure from enough independent organizations that ignoring it becomes more annoying than reading the math.
 - DALYS AT STAKE
-- [565B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [565 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - LIVES AT STAKE
-- [11B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [10.7 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - TREATY FUNDING
-- [$27B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - MILITARY LOBBYING
-- [$198M](https://manual.WarOnDisease.org/knowledge/appendix/faq.html)
+- [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html)
 ### WHAT MONEY DOES
 - We will take whatever a foundation wants to give us. The unit of work is not mysterious. More money buys more of this loop.
 #### FIND AN ORGANIZATION
@@ -94,8 +94,8 @@
 - IF THE TREATY NEVER PASSES
 - [$0.842](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) per DALY for direct philanthropic funding of pragmatic trials alone.
 - The calculator above prices the full treaty success case: the disease timeline shift in the cited model, discounted by organizations reached, contractor coverage, and whatever pivotal probability you assign.
-- If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts [$22B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
-- The break-even against bed nets at [$89.0](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
+- If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts [$21.7 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
+- The break-even against bed nets at [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
 ### PLEASE CHECK THE MATH
 - Our model says this is the best use of our time for reducing suffering on Earth that we have found. We know how that sounds. The numbers are public because we would rather be corrected before anyone funds us.
 - Please check the math. If there is a better use of our time, or a cheaper way to avert a DALY, email us. We will do the better thing instead.

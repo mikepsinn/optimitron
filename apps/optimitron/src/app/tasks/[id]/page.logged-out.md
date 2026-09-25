@@ -2,22 +2,17 @@
 
 ## Metadata
 
-- Page title: Task Detail | Optimitron | International Campaign to End War and Disease
-- Meta description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Page title: Task Detail | Optimitron
+- Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
 - Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: http://localhost:3001/tasks/%255Bid%255D/opengraph-image?1cc6c2fa7b31a7a6
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Open Graph title: Optimitron — Earth Optimization Services
+- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
+- Open Graph image: http://localhost:3001/tasks/%255Bid%255D/opengraph-image?cf6caf47d8aac205
+- Twitter title: Optimitron — Earth Optimization Services
+- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
 
 ## Visible Page Copy
 
-## 404
-- PAGE NOT FOUND
-- Fascinating. You found a page that does not exist. On my planet, this takes effort.
-- [SEARCH](/search)
-- [VOTE](/vote)
-- [DONATE](/donate)
-- [ORGANIZATIONS](/join)
-- Click something real. The machines are willing to forgive you.
+## Sign in to see this task
+- This task is private, or it doesn't exist. If it's yours or assigned to you, sign in and you'll land right back here.
+- [SIGN IN](/auth/signin?callbackUrl=%2Ftasks%2F%255Bid%255D)

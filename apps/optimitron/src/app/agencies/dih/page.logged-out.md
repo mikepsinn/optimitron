@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Decentralized Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron | International Campaign to End War and Disease
+- Page title: Decentralized Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron
 - Meta description: You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic.
 - Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Open Graph title: Optimitron — Earth Optimization Services
+- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
+- Open Graph image: https://optimitron.com/og-image.jpg
+- Twitter title: Optimitron — Earth Optimization Services
+- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
 
 ## Visible Page Copy
 
@@ -62,7 +62,8 @@
 - $27,800/patient traditional trials → $929/patient pragmatic trials (30x cheaper)
 - SYSTEM LOGIC
 - REFERENCE IMPLEMENTATION
-- ```text
+
+```text
 // dIH allocation — replaces the NIH grant bureaucracy
 // Instead of grant committees, funding follows patients.
 
@@ -78,6 +79,7 @@ function allocateSubsidy(patient) {
 // No grant committees. No 40-minute rejections. No 50% of scientists' time wasted.
 // Sick people choose trials. Money follows them. Results get published. All of them.
 ```
+
 - Instead of scientists spending half their careers writing grant proposals that get 40 minutes of review, dIH subsidises patients directly. Funding is proportional to disease burden (DALYs). Patients choose which pragmatic trial to join. At $929/patient instead of $27,800, the same money runs 30x more trials with 30x more patients. All results — positive and negative — are published in an open data commons.
 ### THE SAVINGS
 - Redirecting 97% of the NIH budget to pragmatic trials instead of grant bureaucracy. Same $47B, but 30x more patients treated, 30x more data generated, and scientists spend their time on science instead of paperwork.

@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Efficiency Audit | International Campaign to End War and Disease
+- Page title: Efficiency Audit | Optimitron
 - Meta description: The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.
-- Canonical: https://warondisease.org/efficiency
+- Canonical: https://optimitron.com/efficiency
 - Open Graph title: Efficiency Audit
 - Open Graph description: The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fefficiency
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fefficiency
 - Twitter title: Efficiency Audit
 - Twitter description: The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.
 
@@ -16,6 +16,7 @@
 - EFFICIENCY RANKINGS
 ## SAME RESULTS, LOWER PRICE. HERE IS WHO ALREADY DOES IT
 - Every row is a country buying the same outcome for less. The US pays more and ranks lower. Open any row for the budget category and, where available, the drafted legislation.
+
 | CATEGORY | BEST COUNTRY | US SPEND / CAP | BEST SPEND / CAP | US RANK | OVERSPEND | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- | --- | --- |
 | [Military](/obg/military) [OPEN LEGISLATION](/legislation/military-reform) | Switzerland Life Expectancy: 83.37 | $2,052 | $389 | 27/28 | 5.3x | $564B |
@@ -36,6 +37,7 @@
 | [Treasury / General Government](/obg/treasury-general-government) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
 | [State Department / Diplomacy](/obg/state-department-diplomacy) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
 | [Interior / Natural Resources](/obg/interior-natural-resources) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
+
 - [BACK TO OBG Full category-by-category spending analysis.](/obg)
 - [OPTIMIZATION DIVIDEND See the savings as a check to your household.](/dividend)
 - [GOVERNMENT SIZE Look at the whole-government floor instead of individual budget lines.](/government-size)

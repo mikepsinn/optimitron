@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Video | International Campaign to End War and Disease
+- Page title: Video | Optimitron
 - Meta description: Your governments spend 604 dollars on weapons for every one dollar on curing disease. I fixed this on my planet. Here is how you fix it on yours.
-- Canonical: https://warondisease.org/video
+- Canonical: https://optimitron.com/video
 - Open Graph title: Video
 - Open Graph description: Your governments spend 604 dollars on weapons for every one dollar on curing disease. I fixed this on my planet. Here is how you fix it on yours.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fvideo
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fvideo
 - Twitter title: Video
 - Twitter description: Your governments spend 604 dollars on weapons for every one dollar on curing disease. I fixed this on my planet. Here is how you fix it on yours.
 

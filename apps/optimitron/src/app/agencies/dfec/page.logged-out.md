@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: dFEC — Elections & Accountability | Optimitron | International Campaign to End War and Disease
+- Page title: dFEC — Elections & Accountability | Optimitron
 - Meta description: Score politicians by how closely their votes match citizen priorities.
 - Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Open Graph title: Optimitron — Earth Optimization Services
+- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
+- Open Graph image: https://optimitron.com/og-image.jpg
+- Twitter title: Optimitron — Earth Optimization Services
+- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
 
 ## Visible Page Copy
 

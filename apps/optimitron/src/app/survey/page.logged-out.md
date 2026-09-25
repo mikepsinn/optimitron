@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Global Survey to End War and Disease | International Campaign to End War and Disease
+- Page title: Global Survey to End War and Disease | Optimitron
 - Meta description: An educational survey about human values: should governments redirect 1% of military spending to pragmatic clinical trials and cut disease eradication from 443 years to 36?
-- Canonical: https://warondisease.org/survey
+- Canonical: https://optimitron.com/survey
 - Open Graph title: Global Survey to End War and Disease
 - Open Graph description: An educational survey about human values: should governments redirect 1% of military spending to pragmatic clinical trials and cut disease eradication from 443 years to 36?
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fsurvey
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fsurvey
 - Twitter title: Global Survey to End War and Disease
 - Twitter description: An educational survey about human values: should governments redirect 1% of military spending to pragmatic clinical trials and cut disease eradication from 443 years to 36?
 

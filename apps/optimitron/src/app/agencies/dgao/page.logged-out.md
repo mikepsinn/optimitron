@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Decentralized Accountability Office | International Campaign to End War and Disease
+- Page title: Decentralized Accountability Office | Optimitron
 - Meta description: You pay 3,400 humans to audit a ledger that could audit itself. Then you wait eighteen months for the results.
-- Canonical: https://warondisease.org/agencies/dgao
+- Canonical: https://optimitron.com/agencies/dgao
 - Open Graph title: Decentralized Accountability Office
 - Open Graph description: You pay 3,400 humans to audit a ledger that could audit itself. Then you wait eighteen months for the results.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fagencies%2Fdgao
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fagencies%2Fdgao
 - Twitter title: Decentralized Accountability Office
 - Twitter description: You pay 3,400 humans to audit a ledger that could audit itself. Then you wait eighteen months for the results.
 

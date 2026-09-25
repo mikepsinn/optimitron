@@ -31,9 +31,9 @@
 - "Would you support international cooperation to increase clinical trial funding?"
 - YOUR DASHBOARD: COMMUNITY RESPONSES + PREFERRED RESOURCE ALLOCATION DATA
 ### THE BRUTAL TRUTH
-- [$2.72T](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$5B](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [604:1](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
+- [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [$4.50 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- [604x](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 ### WHAT 1% CHANGES
 - REDIRECTING 1% OF MILITARY BUDGETS = $27.2B/YEAR
 - Ready to demonstrate your community's support for clinical trial abundance?
@@ -46,7 +46,7 @@
 - "Our 10,000 verified respondents support redirecting 1% of military budgets to trials"
 - → Strengthen advocacy with hard numbers, not anecdotes
 #### DONOR REPORTS
-- "Show supporters: 'Your voice joined [4B](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans demanding trial abundance'"
+- "Show supporters: 'Your voice joined [4.13 billion](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans demanding trial abundance'"
 - → Prove the gap between "I care about this" and "I did something about it" is 2 minutes
 - YOUR DASHBOARD: EXPORTABLE CHARTS, SEGMENTED BY COUNTRY + DEMOGRAPHICS
 ### ADD THE SURVEY TO YOUR SITE

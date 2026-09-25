@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: International Campaign to End War and Disease
-- Meta description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Page title: Optimitron — Earth Optimization Services
+- Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
 - Canonical: [missing]
-- Open Graph title: International Campaign to End War and Disease
-- Open Graph description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
-- Open Graph image: https://warondisease.org/site-assets/warondisease/war-on-disease-og-1200x630.png
-- Twitter title: International Campaign to End War and Disease
-- Twitter description: Let's trade one apocalypse out of humanity's 122-apocalypse mass-murder capacity for disease eradication in 36 years instead of 443.
+- Open Graph title: Optimitron — Earth Optimization Services
+- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
+- Open Graph image: https://optimitron.com/og-image.jpg
+- Twitter title: Optimitron — Earth Optimization Services
+- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
 
 ## Visible Page Copy
 
@@ -46,6 +46,7 @@
 - [Interior / Natural Resources 1.6× overspend Decrease +37.5%Current$17B Optimal$11B](/obg/interior-natural-resources)
 - [EPA / Environment 2.1× overspend Decrease +52.4%Current$12B Optimal$6B](/obg/epa-environment)
 ### FULL CATEGORY BREAKDOWN
+
 | CATEGORY | CURRENT | OPTIMAL | GAP % | OVERSPEND | ACTION |
 | --- | --- | --- | --- | --- | --- |
 | [Military](/obg/military) | $886B | $167B | +81.1% | 5.3× | Major Decrease |
@@ -66,6 +67,7 @@
 | [State Department / Diplomacy](/obg/state-department-diplomacy) | $19B | $12B | +37.5% | 1.6× | Decrease |
 | [Interior / Natural Resources](/obg/interior-natural-resources) | $17B | $11B | +37.5% | 1.6× | Decrease |
 | [EPA / Environment](/obg/epa-environment) | $12B | $6B | +52.4% | 2.1× | Decrease |
+
 - Generated 7/12/2026 · Source: Optimitron OBG (Optimal Budget Generator)
 ### THE EFFICIENT FRONTIER
 - Every country is a data point. The frontier shows what the best-performing countries achieve at each spending level, measured by life expectancy — the metric that actually tells you if people are alive and functional. The US is spending 2.6x what the frontier countries spend — for worse outcomes. On my planet, we call this “paying extra to be worse at things.”
@@ -76,5 +78,5 @@
 - Real median after-tax income from household surveys (World Bank PIP, 2017 PPP dollars). Not GDP — because you can increase GDP by building nuclear bombs and blowing up the rainforest.
 - EARTH OPTIMIZATION PRIZE
 #### THE GAP BETWEEN CURRENT AND OPTIMAL WON'T CLOSE ITSELF.
-- Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
+- Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit into the prize pool, get friends to vote, earn Earth Optimization Points.
 - [PLAY THE GAME](/prize)

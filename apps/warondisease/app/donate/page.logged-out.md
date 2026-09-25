@@ -39,7 +39,7 @@
 - [SEND EMAIL](mailto:donations@warondisease.org?subject=Major%20Gift%20%2F%20Foundation%20Inquiry)
 ### HOW YOUR DONATION IS USED
 #### PUBLIC EDUCATION
-- Educational advertising and public outreach about pragmatic trials and the 1% Treaty. Goal: Reach [4B](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans, about [51.602%](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) of Earth, to demonstrate public support.
+- Educational advertising and public outreach about pragmatic trials and the 1% Treaty. Goal: Reach [4.13 billion](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans, about [51.6%](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) of Earth, to demonstrate public support.
 #### RESEARCH & OPERATIONS
 - Creating treatment outcome labels, publishing treatment rankings, peer-reviewed research, and coordinating organizations working to end disease.
 #### INFRASTRUCTURE

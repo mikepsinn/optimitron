@@ -2,12 +2,12 @@
 
 ## Metadata
 
-- Page title: Declaration of Optimization | International Campaign to End War and Disease
+- Page title: Declaration of Optimization | Optimitron
 - Meta description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
-- Canonical: https://warondisease.org/declaration
+- Canonical: https://optimitron.com/declaration
 - Open Graph title: Declaration of Optimization
 - Open Graph description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
-- Open Graph image: https://warondisease.org/api/og/route?path=%2Fdeclaration
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fdeclaration
 - Twitter title: Declaration of Optimization
 - Twitter description: The Declaration of Optimization: why optimization is necessary, what signatories commit to, and how to publicly sign it.
 
@@ -21,12 +21,12 @@
 - These governments have enough weapons to end civilization [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. Current military spending is enough money to buy [850](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) bullets for every person alive every single year. You only need to kill everyone once for everyone to be dead. (I checked.) The remaining murder capacity is sheer waste.
 - Seven consecutive failed audits have found that the Pentagon has "misplaced" [$2.46 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html). They then requested additional trillions without explanation or apology. This "misplaced" money could have funded [547](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) years of clinical trials at current government spending.
 - For every [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) dollars they spend on the capacity for orphan manufacturing, they only spend one on clinical trials that might cure the diseases that will slowly torture and brutally murder you and everyone you have ever loved.
-- Your chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? 100%.
+- Your chance of being killed by a terrorist? 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html). Your chance of dying of a disease? Approximately 100%.
 - At the current discovery rate, finding treatments for all known diseases takes ~[443 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). One percent of the explosions budget could increase clinical trial capacity by [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and compress that wait to ~[36 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The average cure arrives [212](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years sooner.
 - This is important because you personally will be dead within 80 years. (I mention this not to be rude but because you seem weirdly calm about it.)
 - Had someone properly aligned your governments to maximize median healthy life years and median after-tax inflation-adjusted income in 1900, the average human would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html).
 - They did not. So that is what you are going to do.
-- This Declaration instructs every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.
+- You are going to get every nation on Earth to sign a [treaty](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) redirecting one percent of military spending to clinical trials. One percent.
 - Here is why this is not clinically insane. Even adjusting for inflation, governments now spend [30.6](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) times more than they did immediately before winning World War II.
 - After that war, governments cut military spending by [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) and produced the greatest economic expansion in human history.
 - Unless the human genome has degraded significantly in the last two generations, one percent should be manageable.

@@ -15,6 +15,13 @@
 
 ## FREQUENTLY ASKED QUESTIONS
 - Everything you need to know about the 1% Treaty and the war on disease
+### THE CAMPAIGN
+#### WHAT IS HUMANITY V GOVERNMENT?
+- Humanity v Government is the Court of Humanity damages case arguing that governments accepted payment to promote public welfare, then spent the money on war and delayed medicine. The settlement is the 1% Treaty.
+#### HOW DO I REGISTER A PLAINTIFF?
+- Go to https://courtofhumanity.org/plaintiffs and add a person who was harmed by war, state violence, regulatory delay, or preventable disease. Public entries show the name and story you choose to publish; private account details are not part of the public case.
+#### WHAT IS THE HEALTH AND WEALTH MATH?
+- The core claim is simple: fewer wars and faster clinical trials mean fewer deaths, less suffering, healthier workers, and higher lifetime income. The parameter export at [https://optimitron.com/api/agent/parameters](https://optimitron.com/api/agent/parameters) carries the machine-readable assumptions and citations.
 ### THE 1% TREATY
 #### WHAT IS THE 1% TREATY?
 - The 1% Treaty is a global agreement where nations redirect just 1% of their military spending to fund pragmatic clinical trials integrated into standard healthcare. This gives everyone 1% more security (fewer nuclear weapons pointed at them) while accelerating access to life-saving treatments by years.
