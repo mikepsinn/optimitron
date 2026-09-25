@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Decentralized Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron | Optimitron
+- Page title: Decentralized Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron
 - Meta description: You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic.
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services

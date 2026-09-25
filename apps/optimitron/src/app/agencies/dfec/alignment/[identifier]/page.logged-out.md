@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Alignment Report | Optimitron | Optimitron
+- Page title: Alignment Report | Optimitron
 - Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services
