@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Task Detail | Optimitron
+- Page title: Task Detail | Optimitron | Optimitron
 - Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services

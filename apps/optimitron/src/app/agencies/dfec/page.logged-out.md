@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: dFEC — Elections & Accountability | Optimitron
+- Page title: dFEC — Elections & Accountability | Optimitron | Optimitron
 - Meta description: Score politicians by how closely their votes match citizen priorities.
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services

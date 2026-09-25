@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: The 1% Treaty | Optimitron
+- Page title: The 1% Treaty | Optimitron | Optimitron
 - Meta description: The 1% Treaty redirects one percent of military spending into pragmatic clinical trials so disease gets less time to kill people.
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services

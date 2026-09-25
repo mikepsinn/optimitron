@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Decentralized Census Bureau: United States Census Bureau — DEPRECATED | Optimitron
+- Page title: Decentralized Census Bureau: United States Census Bureau — DEPRECATED | Optimitron | Optimitron
 - Meta description: You spend fourteen billion dollars to count everyone once every ten years. I return citizenCount() in fifty milliseconds.
 - Canonical: [missing]
 - Open Graph title: Optimitron — Earth Optimization Services
