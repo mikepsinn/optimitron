@@ -225,11 +225,16 @@ const SHARED_LANDING_SECTION_FILES = [
   "apps/optimitron/src/components/landing/TreatyVoteSection.tsx",
   "apps/optimitron/src/components/landing/WhyPlaySection.tsx",
   "apps/optimitron/src/components/landing/WishocracyPreview.tsx",
+  "apps/optimitron/src/components/shared/ParasiticEconomyChart.tsx",
 ];
 
 // optimitron.com/ renders OptimitronLandingPage, not the game page.
 const OPTIMITRON_HOME_FILES = [
   "apps/optimitron/src/app/page.tsx",
+  // Global styles, the footer, and the analytics tag load on every page.
+  "apps/optimitron/src/app/globals.css",
+  "apps/optimitron/src/components/Footer.tsx",
+  "apps/optimitron/src/components/site/MicrosoftClarity.tsx",
   "apps/optimitron/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
   "apps/optimitron/src/components/landing/LovingTakeoverSection.tsx",
   "apps/optimitron/src/components/landing/TheBillSection.tsx",
@@ -285,6 +290,16 @@ const PRIZE_PAGE_FILES = [
 
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
+  [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
+  [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
+  [
+    ROUTES.eosShareholders,
+    ["apps/optimitron/src/components/eos-shareholder/EosShareholderLandingPage.tsx"],
+  ],
+  [ROUTES.messages, ["apps/optimitron/src/app/messages/page.tsx"]],
+  [ROUTES.organizations, ["apps/optimitron/src/app/organizations/page.tsx"]],
+  [ROUTES.shirt, ["apps/optimitron/src/app/shirt/page.tsx"]],
+  [ROUTES.tasks, ["apps/optimitron/src/app/tasks/page.tsx"]],
   [
     ROUTES.eos,
     [
@@ -307,7 +322,10 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.prize, PRIZE_PAGE_FILES],
   [ROUTES.profile, ["apps/optimitron/src/components/Providers.tsx"]],
-  [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
+  [
+    ROUTES.scoreboard,
+    [POLITICIAN_SCORECARD_TABLE_FILE, "apps/optimitron/src/app/scoreboard/page.tsx"],
+  ],
   [ROUTES.services, ["apps/optimitron/src/app/services/page.tsx"]],
   [
     ROUTES.tasksTree,
@@ -321,6 +339,13 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
 
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
+  [ROUTES.dashboard, "h1"],
+  [ROUTES.donate, "h1"],
+  [ROUTES.eosShareholders, "h1"],
+  [ROUTES.messages, "h1"],
+  [ROUTES.organizations, "h1"],
+  [ROUTES.shirt, "h1"],
+  [ROUTES.tasks, "h1"],
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   // The home route covers every shared landing section, so without a selector
@@ -373,6 +398,16 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredText: /Find the human who should do something/i,
+  },
+  {
+    covers: [
+      "apps/optimitron/src/app/dysfunction-tax/page.tsx",
+      "apps/optimitron/src/components/landing/PoliticalDysfunctionTaxSection.tsx",
+    ],
+    name: "dysfunction-tax",
+    path: "/dysfunction-tax",
+    required: true,
+    requiredSelector: "section h2",
   },
   {
     covers: [NOT_FOUND_PAGE_FILE],
