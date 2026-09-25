@@ -350,7 +350,7 @@ export async function generateMetadata({
     // Private and nonexistent tasks share one generic, noindexed shell so the
     // URL never reveals whether a private task exists.
     return {
-      title: "Task Detail | Optimitron",
+      title: "Task Detail",
       robots: { index: false, follow: false },
     };
   }
@@ -371,7 +371,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${task.title} | ${tasksLink.label} | Optimitron`,
+    title: `${task.title} | ${tasksLink.label}`,
     description,
     robots: { index: true, follow: true },
     openGraph: {

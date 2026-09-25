@@ -5,7 +5,7 @@ import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 const agency = AGENCIES.dcensus;
 
 export const metadata: Metadata = {
-  title: `${agency.dName}: ${agency.replacesAgencyName} — DEPRECATED | Optimitron`,
+  title: `${agency.dName}: ${agency.replacesAgencyName} — DEPRECATED`,
   description: agency.description,
 };
 

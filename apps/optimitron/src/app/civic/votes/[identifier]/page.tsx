@@ -21,11 +21,11 @@ export async function generateMetadata({
   });
 
   if (!vote) {
-    return { title: "Vote | Optimitron" };
+    return { title: "Vote" };
   }
 
   return {
-    title: `Vote on ${vote.billTitle} | Optimitron`,
+    title: `Vote on ${vote.billTitle}`,
     description: `A citizen voted ${vote.position} on ${vote.billTitle}. See their analysis.`,
   };
 }

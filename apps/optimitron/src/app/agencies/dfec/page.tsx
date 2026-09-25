@@ -6,7 +6,7 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { ROUTES } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "dFEC — Elections & Accountability | Optimitron",
+  title: "dFEC — Elections & Accountability",
   description:
     "Score politicians by how closely their votes match citizen priorities.",
 };
