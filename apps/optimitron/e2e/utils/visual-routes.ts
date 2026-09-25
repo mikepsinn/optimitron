@@ -213,8 +213,7 @@ const GLOBAL_FAILED_STATE_SLIDE_FILE =
   "apps/optimitron/src/components/demo/slides/sierra/slide-global-failed-state.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "apps/optimitron/src/components/shared/PoliticianScorecardTable.tsx";
-// Sections rendered by both optimitron.com/ and /game. Either capture proves
-// they render, so both cover lists include them.
+// Shared landing sections that /game renders.
 const SHARED_LANDING_SECTION_FILES = [
   "apps/optimitron/src/components/animations/CollapseCountdownTimer.tsx",
   "apps/optimitron/src/components/animations/LiveDeathTicker.tsx",
@@ -241,13 +240,27 @@ const OPTIMITRON_HOME_FILES = [
   "apps/optimitron/src/app/globals.css",
   "apps/optimitron/src/components/Footer.tsx",
   "apps/optimitron/src/components/site/MicrosoftClarity.tsx",
-  "apps/optimitron/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
-  "apps/optimitron/src/components/landing/LovingTakeoverSection.tsx",
-  "apps/optimitron/src/components/landing/TheBillSection.tsx",
-  "apps/optimitron/src/components/invest/GiantNumber.tsx",
   "apps/optimitron/src/components/invest/WarheadGrid.tsx",
+  "apps/optimitron/src/components/landing/TreatyVoteFlow.tsx",
+  "apps/optimitron/src/components/shared/GovernmentLeaderboard.tsx",
   "apps/optimitron/src/components/site/OptimitronLandingPage.tsx",
-  ...SHARED_LANDING_SECTION_FILES,
+  "apps/optimitron/src/components/optimitron-landing/CallTodaySection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ControlLoopDiagrams.tsx",
+  "apps/optimitron/src/components/optimitron-landing/DataOrb.tsx",
+  "apps/optimitron/src/components/optimitron-landing/FeaturedProducts.tsx",
+  "apps/optimitron/src/components/optimitron-landing/format.ts",
+  "apps/optimitron/src/components/optimitron-landing/income-futures.ts",
+  "apps/optimitron/src/components/optimitron-landing/IncomeFutures.tsx",
+  "apps/optimitron/src/components/optimitron-landing/landing-data.ts",
+  "apps/optimitron/src/components/optimitron-landing/LandingSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/LiveBillTickers.tsx",
+  "apps/optimitron/src/components/optimitron-landing/LoopDot.tsx",
+  "apps/optimitron/src/components/optimitron-landing/PolicyGeneratorTile.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ProviderRatedSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/ReplacementSuiteSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/StatementSection.tsx",
+  "apps/optimitron/src/components/optimitron-landing/TaskTreeTile.tsx",
+  "apps/optimitron/src/components/optimitron-landing/use-live-motion.ts",
 ];
 
 // /game keeps the original game ordering and its game-only sections.
@@ -315,6 +328,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/components/eos-retro/eos-retro.css",
       "apps/optimitron/src/components/eos-retro/EosRetroLandingPage.tsx",
       "apps/optimitron/src/components/eos-retro/MachineDiagram.tsx",
+      "apps/optimitron/src/components/eos-retro/PolicyGradeTable.tsx",
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
@@ -718,12 +732,47 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: false,
   },
   {
+    // A line without its own benchmark: no optimal, no gap.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail",
     path: "/obg/epa-environment",
     required: true,
     requiredSelector: "h1",
     requiredText: /^EPA \/ Environment$/,
+  },
+  {
+    // The one line with its own benchmark: numeric optimal and gap.
+    covers: [OBG_CATEGORY_PAGE_FILE],
+    name: "obg-category-detail-benchmarked",
+    path: "/obg/military",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Military$/,
+  },
+  {
+    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    name: "obg-index",
+    path: ROUTES.obg,
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^The US Federal Budget, Diagnosed$/,
+  },
+  {
+    covers: ["apps/optimitron/src/app/opg/page.tsx"],
+    name: "opg-index",
+    path: ROUTES.opg,
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Policy Rankings$/,
+  },
+  {
+    // An efficiency-frontier policy: one per spending field.
+    covers: ["apps/optimitron/src/app/opg/[slug]/page.tsx"],
+    name: "opg-policy-detail",
+    path: "/opg/national-health-spending-adopt-south-korea-s-approach",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^National Health Spending: Adopt South Korea's Approach$/,
   },
   {
     // Required, and asserted on #also-serves rather than something always

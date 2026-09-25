@@ -22,6 +22,11 @@ export interface PolicyReportPolicy {
   currentStatus: string;
   recommendedTarget: string;
   blockingFactors: string[];
+  /**
+   * Set only on efficiency-frontier policies: the cross-country spending
+   * field the policy benchmarks. At most one policy per field.
+   */
+  oecdSpendingField?: string;
 }
 
 export interface NaturalExperimentOutcome {

@@ -11,5 +11,6 @@ export * from './minimum-effective-spending.js';
 export * from './efficient-frontier.js';
 export * from './overspend-ratio.js';
 export * from './efficiency-analysis.js';
+export * from './efficiency-attribution.js';
 export * from './budget-report-json.js';
 export * from './budget-legislation-brief.js';

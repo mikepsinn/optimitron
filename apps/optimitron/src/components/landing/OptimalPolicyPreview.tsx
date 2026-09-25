@@ -24,19 +24,23 @@ const ACTION_LABEL: Record<string, { icon: string; label: string }> = {
   maintain: { icon: "✅", label: "MAINTAIN" },
 };
 
+type PreviewPolicy = PolicyReportJSON["policies"][number];
+
+const byName = (name: string) => (p: PreviewPolicy) => p.name === name;
+
 /** Hand-picked policies that showcase diversity of categories and effects */
-const PREVIEW_NAMES = [
-  "Shift Drug Policy from Criminal to Health Approach",
-  "Universal Pre-K (Ages 3-4)",
-  "Pragmatic Clinical Trial Funding Reform",
-  "Military: Adopt Switzerland's Approach",
-  "Housing Supply Deregulation",
+const PREVIEW_PICKS: Array<(p: PreviewPolicy) => boolean> = [
+  byName("Shift Drug Policy from Criminal to Health Approach"),
+  byName("Universal Pre-K (Ages 3-4)"),
+  byName("Pragmatic Clinical Trial Funding Reform"),
+  // The military benchmark's name carries its benchmark country
+  // ("Military: Adopt Switzerland's Approach"), which can change on regeneration.
+  (p) => p.oecdSpendingField === "militarySpendingPerCapitaPpp",
+  byName("Housing Supply Deregulation"),
 ];
 
-const PREVIEW_POLICIES = PREVIEW_NAMES.map((name) =>
-  (usPolicyAnalysis as PolicyReportJSON).policies.find(
-    (p) => p.name === name,
-  ),
+const PREVIEW_POLICIES = PREVIEW_PICKS.map((pick) =>
+  (usPolicyAnalysis as PolicyReportJSON).policies.find(pick),
 ).filter((p): p is NonNullable<typeof p> => p != null);
 
 function formatEffect(value: number, unit: string): string {

@@ -8,6 +8,9 @@ export function recommendationDirection(
     "currentSpending" | "optimalSpendingNominal" | "recommendation"
   >,
 ): RecommendationDirection {
+  // No line-specific benchmark means no optimal and no direction to move.
+  if (category.optimalSpendingNominal == null) return "neutral";
+
   const action = category.recommendation.toLowerCase();
 
   if (action.includes("maintain")) return "neutral";

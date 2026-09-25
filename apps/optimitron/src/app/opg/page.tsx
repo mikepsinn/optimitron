@@ -60,7 +60,7 @@ export default function PoliciesPage() {
           Policy Rankings
         </h1>
         <p className="text-muted-foreground font-bold">
-          I ranked {data.policies.length} of your policies by whether they actually work. Most of them don&apos;t.
+          I graded {data.policies.length} policy changes by the evidence that they raise health and income.
         </p>
       </div>
 

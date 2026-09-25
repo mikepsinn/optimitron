@@ -128,6 +128,9 @@ body {
   /* Green for text on the page background. --brutal-green on white is 2.3:1;
      this is 5.0:1 (WCAG AA). */
   --brutal-green-text: rgb(21, 128, 61);
+  /* Cyan for text on the page background. --brutal-cyan on white is 2.4:1;
+     this is 5.4:1 (WCAG AA). */
+  --brutal-cyan-text: rgb(14, 116, 144);
 
   /* Treaty palette — used by /vote, /survey, and treaty document surfaces. */
   --treaty-paper: #ffffff;
@@ -190,6 +193,7 @@ body {
   --brutal-green: rgb(34, 197, 94);
   --brutal-green-foreground: rgb(0, 0, 0);
   --brutal-green-text: rgb(34, 197, 94);
+  --brutal-cyan-text: rgb(34, 211, 238);
   --shadow-color: rgb(0, 0, 0);
 }
 
@@ -505,6 +509,7 @@ body {
   --color-brutal-green: var(--brutal-green);
   --color-brutal-green-foreground: var(--brutal-green-foreground);
   --color-brutal-green-text: var(--brutal-green-text);
+  --color-brutal-cyan-text: var(--brutal-cyan-text);
 
   /* Radius - sharp edges */
   --radius-lg: var(--radius);

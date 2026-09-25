@@ -63,13 +63,25 @@ function actionLabel(action: string): string {
       return "Decrease";
     case "major_decrease":
       return "Major Decrease";
+    case "no_line_benchmark":
+      return "No Line Benchmark";
     default:
       return action;
   }
 }
 
-function optimalSpending(cat: BudgetReportCategory): number {
+function optimalSpending(cat: BudgetReportCategory): number | null {
   return cat.optimalSpendingNominal;
+}
+
+/** "Total R&D spending" → "total R&D spending" */
+function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
+
+function formatShare(share: number): string {
+  const percent = share * 100;
+  return `${percent < 1 ? percent.toFixed(1) : percent.toFixed(0)}%`;
 }
 
 export function generateStaticParams() {
@@ -102,13 +114,10 @@ export default async function BudgetCategoryPage({
   }
 
   const optimal = optimalSpending(cat);
-  const maxBar = Math.max(cat.currentSpending, optimal, 1);
+  const benchmark = cat.oecdBenchmark;
+  const maxBar = Math.max(cat.currentSpending, optimal ?? 0, 1);
   const currentPct = (cat.currentSpending / maxBar) * 100;
-  const optimalPct = (optimal / maxBar) * 100;
-  const totalOptimal = data.categories.reduce(
-    (s, c) => s + optimalSpending(c),
-    0,
-  );
+  const optimalPct = ((optimal ?? 0) / maxBar) * 100;
   const totalBudget = data.totalSpendingNominal;
   const dr = cat.diminishingReturns;
   const mr = dr?.marginalReturn;
@@ -147,7 +156,7 @@ export default async function BudgetCategoryPage({
               Optimal Spending
             </div>
             <div className="text-2xl sm:text-3xl font-black">
-              {fmt(optimal)}
+              {optimal == null ? "No line benchmark" : fmt(optimal)}
             </div>
           </div>
           <div
@@ -159,7 +168,9 @@ export default async function BudgetCategoryPage({
           >
             <div className="text-xs font-bold uppercase mb-1">Gap</div>
             <div className="text-2xl sm:text-3xl font-black">
-              {direction === "neutral"
+              {optimal == null
+                ? "—"
+                : direction === "neutral"
                 ? "Near optimal"
                 : `${fmt(gapAbs)} (${pct(shouldDecrease ? -gapPctAbs : gapPctAbs)})`}
             </div>
@@ -194,15 +205,17 @@ export default async function BudgetCategoryPage({
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm font-bold text-foreground">Optimal</span>
               <span className="text-sm font-bold text-muted-foreground">
-                {fmt(optimal)}
+                {optimal == null ? "No line benchmark" : fmt(optimal)}
               </span>
             </div>
-            <div className="h-8 bg-muted border-4 border-primary overflow-hidden">
-              <div
-                className="h-full bg-background border-r-2 border-primary"
-                style={{ width: `${optimalPct}%` }}
-              />
-            </div>
+            {optimal != null && (
+              <div className="h-8 bg-muted border-4 border-primary overflow-hidden">
+                <div
+                  className="h-full bg-background border-r-2 border-primary"
+                  style={{ width: `${optimalPct}%` }}
+                />
+              </div>
+            )}
           </div>
         </div>
         {hasMarginalReturn && (
@@ -217,6 +230,12 @@ export default async function BudgetCategoryPage({
           <h2 className="text-lg font-black uppercase text-foreground mb-4">
             Diminishing Returns Analysis
           </h2>
+          {benchmark && optimal == null && (
+            <p className="text-xs font-bold text-muted-foreground mb-4">
+              Fitted on {lowerFirst(benchmark.fieldLabel)} across countries, not on
+              this line.
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <div className="border-4 border-primary p-3 bg-background">
               <div className="text-xs font-bold uppercase text-muted-foreground">
@@ -319,7 +338,9 @@ export default async function BudgetCategoryPage({
           RECOMMENDATION
         </h2>
         <p className="font-bold mb-3">
-          {direction === "neutral"
+          {optimal == null
+            ? `${cat.name} has no line-specific international benchmark. The only comparison, ${benchmark ? lowerFirst(benchmark.fieldLabel) : "a national spending total"}, covers far more than this line${benchmark ? ` (this line is ${formatShare(benchmark.lineShareOfField)} of it)` : ""}, so its overspend ratio is not applied here.`
+            : direction === "neutral"
             ? `Spending on ${cat.name} should be maintained near its current level. The modeled optimal allocation is ${fmt(optimal)}.`
             : shouldDecrease
             ? `Spending on ${cat.name} should be decreased by ${fmt(gapAbs)} (${pct(-gapPctAbs)}) to reach the optimal allocation of ${fmt(optimal)}.`
@@ -364,23 +385,6 @@ export default async function BudgetCategoryPage({
               style={{ width: `${(cat.currentSpending / totalBudget) * 100}%` }}
             />
           </div>
-          <div className="flex justify-between text-sm font-bold text-foreground mt-3">
-            <span>Category share (optimal)</span>
-            <span>
-              {totalOptimal > 0
-                ? ((optimal / totalOptimal) * 100).toFixed(1)
-                : "0.0"}
-              %
-            </span>
-          </div>
-          <div className="h-4 bg-muted border-4 border-primary overflow-hidden">
-            <div
-              className="h-full bg-background"
-              style={{
-                width: `${totalOptimal > 0 ? (optimal / totalOptimal) * 100 : 0}%`,
-              }}
-            />
-          </div>
         </div>
       </section>
 
@@ -418,7 +422,8 @@ export default async function BudgetCategoryPage({
             <strong className="text-foreground">{fmt(totalBudget)}</strong>.
             Each category&apos;s optimal is an independent efficient-frontier
             estimate, not a fixed-budget reallocation of that total across all{" "}
-            {data.categories.length} categories.
+            {data.categories.length} categories. A category gets an optimal only
+            when the international comparison measures that category itself.
           </p>
           <p className="text-xs text-muted-foreground">
             See the{" "}

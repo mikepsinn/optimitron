@@ -1,9 +1,11 @@
+import { permanentRedirect } from "next/navigation";
 import { usPolicyAnalysis as policyData } from "@/data/us-policy-analysis";
 import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { optimalPolicyGeneratorPaperLink, opgLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 import { getPolicyEvidence, type MatchedExperiment, type MatchedComparison } from "@/data/policy-evidence-map";
 import { ExperimentTimeSeriesChart } from "@/components/opg/ExperimentTimeSeriesChart";
+import { retiredPolicyRedirectPath } from "./legacy-policy-redirect";
 import type { CountryDrugPolicy, CountryHealthData, CountryEducationData, CountryCriminalJustice } from "@optimitron/data/datasets/international-comparisons";
 
 /* ------------------------------------------------------------------ */
@@ -143,6 +145,9 @@ export default async function PolicyDetailPage({
   const policy = data.policies.find((p) => slugify(p.name) === slug);
 
   if (!policy) {
+    const redirectPath = retiredPolicyRedirectPath(slug, policyData.policies);
+    if (redirectPath) permanentRedirect(redirectPath);
+
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black uppercase text-foreground mb-4">Policy Not Found</h1>

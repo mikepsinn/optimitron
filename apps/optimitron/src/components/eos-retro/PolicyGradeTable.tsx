@@ -12,18 +12,16 @@ export const POLICY_ROW_LIMIT = 5;
 type PolicyRowData = (typeof usPolicyAnalysis.policies)[number];
 
 /**
- * The generator emits templated "Category: Adopt Country's Approach" rows
- * (18 of 23 in the current dataset) — benchmark transplants with
- * copy-pasted effect pairs, not exhibit-grade recommendations. Show only
- * the named, evidence-cited structural reforms. (No effect-pair dedupe:
- * distinct policies can legitimately share effect estimates.)
+ * The generator also emits one "Field: Adopt Country's Approach" row per
+ * OECD spending field (marked by `oecdSpendingField`). Those are
+ * cross-country spending benchmarks, not exhibit-grade recommendations.
+ * Show only the named, evidence-cited structural reforms. (No effect-pair
+ * dedupe: distinct policies can legitimately share effect estimates.)
  */
-const BENCHMARK_TEMPLATE_ROW = /: Adopt .+'s Approach$/;
-
 export function topDistinctPolicies(): PolicyRowData[] {
   const rows: PolicyRowData[] = [];
   for (const policy of usPolicyAnalysis.policies) {
-    if (BENCHMARK_TEMPLATE_ROW.test(policy.name)) continue;
+    if (policy.oecdSpendingField) continue;
     rows.push(policy);
     if (rows.length >= POLICY_ROW_LIMIT) break;
   }
