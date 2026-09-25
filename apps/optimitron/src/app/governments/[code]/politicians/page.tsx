@@ -111,7 +111,7 @@ export default async function GovernmentPoliticiansPage({ params }: PageProps) {
                     </div>
                     <div>
                       <div className="text-xs font-black uppercase text-muted-foreground">Trials</div>
-                      <div className="text-lg font-black text-background">
+                      <div className="text-lg font-black text-foreground">
                         {formatDollars(p.clinicalTrialPortion)}
                       </div>
                     </div>

@@ -206,10 +206,10 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Military */}
           <BrutalCard bgColor="red" shadowSize={8} padding="lg">
-            <div className="text-xs font-black uppercase text-brutal-red-foreground mb-1">
+            <div className="text-xs font-black uppercase text-brutal-red mb-1">
               {getMilitarySynonym(politician.bioguideId + "-stat")}
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-brutal-red-foreground">
+            <div className="text-3xl sm:text-4xl font-black text-brutal-red">
               {formatDollars(politician.militaryDollarsVotedFor)}
             </div>
           </BrutalCard>
@@ -233,7 +233,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               {getMilitarySynonym(politician.bioguideId + "-ratio")} : medicines ratio
             </div>
             <div className={`text-3xl sm:text-4xl font-black ${
-              politician.ratio >= 100 ? "text-brutal-red" : politician.ratio <= 1 ? "text-background" : "text-foreground"
+              politician.ratio >= 100 ? "text-brutal-red" : "text-foreground"
             }`}>
               {formatRatio(politician.ratio)}
             </div>
@@ -267,7 +267,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             </div>
             <div>
               <div className="flex justify-between items-baseline mb-1">
-                <span className="text-xs font-black uppercase text-background">
+                <span className="text-xs font-black uppercase text-foreground">
                   Testing Medicines
                 </span>
                 <span className="text-sm font-black text-foreground">
@@ -451,7 +451,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               </p>
             </div>
             <div>
-              <div className="text-xs font-black uppercase text-background mb-2">
+              <div className="text-xs font-black uppercase text-foreground mb-2">
                 Clinical Trials $
               </div>
               <div className="bg-background border-2 border-primary px-4 py-2 font-mono text-sm text-foreground mb-2">
