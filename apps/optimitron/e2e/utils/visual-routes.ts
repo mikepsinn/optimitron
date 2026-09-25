@@ -328,6 +328,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/components/eos-retro/eos-retro.css",
       "apps/optimitron/src/components/eos-retro/EosRetroLandingPage.tsx",
       "apps/optimitron/src/components/eos-retro/MachineDiagram.tsx",
+      "apps/optimitron/src/components/eos-retro/PolicyGradeTable.tsx",
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
@@ -730,6 +731,31 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredText: /^Military$/,
+  },
+  {
+    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    name: "obg-index",
+    path: ROUTES.obg,
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^The US Federal Budget, Diagnosed$/,
+  },
+  {
+    covers: ["apps/optimitron/src/app/opg/page.tsx"],
+    name: "opg-index",
+    path: ROUTES.opg,
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Policy Rankings$/,
+  },
+  {
+    // An efficiency-frontier policy: one per spending field.
+    covers: ["apps/optimitron/src/app/opg/[slug]/page.tsx"],
+    name: "opg-policy-detail",
+    path: "/opg/national-health-spending-adopt-south-korea-s-approach",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^National Health Spending: Adopt South Korea's Approach$/,
   },
   {
     // Required, and asserted on #also-serves rather than something always
