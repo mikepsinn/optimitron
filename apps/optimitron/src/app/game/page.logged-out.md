@@ -228,16 +228,16 @@
 
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
-| 2 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
+| 1 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
+| 2 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
 | 3 | [John Kennedy Louisiana](/governments/US/politicians/K000393) | $2.7T | $0 | -$2.7T | ∞ |
-| 4 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
-| 5 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
-| 6 | [Ann Wagner Missouri](/governments/US/politicians/W000812) | $2.7T | $0 | -$2.7T | ∞ |
-| 7 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
-| 8 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
-| 9 | [Pete Sessions Texas](/governments/US/politicians/S000250) | $2.7T | $0 | -$2.7T | ∞ |
-| 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
+| 4 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
+| 5 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
+| 6 | [Robert B. Aderholt Alabama](/governments/US/politicians/A000055) | $2.7T | $0 | -$2.7T | ∞ |
+| 7 | [Vern Buchanan Florida](/governments/US/politicians/B001260) | $2.7T | $0 | -$2.7T | ∞ |
+| 8 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
+| 9 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
+| 10 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
 
 - [SEE ALL POLITICIANS](/governments/US/politicians)
 ### PRESIDENT MANAGEMENT SYSTEM

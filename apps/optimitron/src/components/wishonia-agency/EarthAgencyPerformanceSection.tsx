@@ -29,7 +29,7 @@ function toChartData(ea: EarthAgency): AgencyPerformance {
 function SingleChart({ agency }: { agency: EarthAgency }) {
   return (
     <div className="border-y border-foreground/30 bg-background py-4">
-      <AgencyGradeChart agency={toChartData(agency)} showAllOutcomes />
+      <AgencyGradeChart agency={toChartData(agency)} variant="full" />
     </div>
   );
 }
@@ -53,10 +53,7 @@ function TabbedCharts({ agencies }: { agencies: EarthAgency[] }) {
             key={ea.id}
             className="border-y border-foreground/30 bg-background py-4"
           >
-            <AgencyGradeChart
-              agency={toChartData(ea)}
-              showAllOutcomes
-            />
+            <AgencyGradeChart agency={toChartData(ea)} variant="full" />
           </TabsContent>
         ))}
       </TabsPanels>
