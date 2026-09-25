@@ -18,6 +18,10 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchMembers } from "../src/fetchers/congress.js";
 import type { CongressMember } from "../src/fetchers/congress.js";
+import {
+  scoreMemberVotes,
+  type BillRollCalls,
+} from "../src/datasets/politician-vote-scoring.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -481,49 +485,27 @@ async function main() {
   console.log("\nStep 3: Computing scorecards...");
   const scorecards: MemberVoteRecord[] = [];
 
+  const billRollCalls: BillRollCalls[] = KEY_BILLS.map((bill) => ({
+    bill,
+    house:
+      bill.houseYear != null && bill.houseRollCall != null
+        ? rollCalls.get(`house:${bill.houseYear}:${bill.houseRollCall}`)
+        : undefined,
+    senate:
+      bill.senateCongress != null && bill.senateSession != null && bill.senateVoteNumber != null
+        ? rollCalls.get(`senate:${bill.senateCongress}:${bill.senateSession}:${bill.senateVoteNumber}`)
+        : undefined,
+  }));
+
   for (const member of members) {
     const bioguideId = member.bioguideId ?? "";
     if (!bioguideId) continue;
 
-    const isSenator = member.chamber === "Senate";
-    let militaryDollars = 0;
-    let clinicalTrialDollars = 0;
-    const votes: MemberVoteRecord["votes"] = [];
-
-    for (const bill of KEY_BILLS) {
-      // Determine which vote (House or Senate) applies to this member
-      let voteMap: Map<string, string> | undefined;
-
-      if (isSenator && bill.senateCongress != null && bill.senateSession != null && bill.senateVoteNumber != null) {
-        const senateKey = `senate:${bill.senateCongress}:${bill.senateSession}:${bill.senateVoteNumber}`;
-        voteMap = rollCalls.get(senateKey);
-      } else if (!isSenator && bill.houseYear != null && bill.houseRollCall != null) {
-        const houseKey = `house:${bill.houseYear}:${bill.houseRollCall}`;
-        voteMap = rollCalls.get(houseKey);
-      }
-
-      if (!voteMap) continue;
-
-      const vote = voteMap.get(bioguideId) ?? "NOT VOTING";
-      const votedYea = vote === "YEA" || vote === "AYE" || vote === "YES";
-
-      votes.push({
-        bill: bill.name,
-        vote,
-        amount: bill.amount,
-        category: bill.category,
-        sourceUrl: bill.sourceUrl,
-      });
-
-      if (votedYea) {
-        if (bill.category === "military" || bill.category === "enforcement") {
-          militaryDollars += bill.amount;
-        }
-        if (bill.category === "clinical_trials") {
-          clinicalTrialDollars += bill.amount * CLINICAL_TRIAL_PCT_OF_NIH;
-        }
-      }
-    }
+    const {
+      militaryDollarsVotedFor: militaryDollars,
+      clinicalTrialDollarsVotedFor: clinicalTrialDollars,
+      votes,
+    } = scoreMemberVotes(bioguideId, billRollCalls, CLINICAL_TRIAL_PCT_OF_NIH);
 
     // Skip members with no votes found
     if (votes.length === 0) continue;
@@ -548,8 +530,9 @@ async function main() {
     });
   }
 
-  // Sort by ratio (best first)
-  scorecards.sort((a, b) => a.ratio - b.ratio);
+  // Sort by ratio (best first). Ties sort by bioguide ID, so the order does not
+  // depend on the order in which the API returns members.
+  scorecards.sort((a, b) => a.ratio - b.ratio || a.bioguideId.localeCompare(b.bioguideId));
 
   console.log(`  ${scorecards.length} scorecards computed\n`);
 
