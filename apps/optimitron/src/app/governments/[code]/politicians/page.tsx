@@ -28,7 +28,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params;
   const gov = getGovernmentMetrics(code.toUpperCase());
-  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines | Optimitron`;
+  const title = `${gov?.name ?? code} Politicians — ${getMilitarySynonymTitle("politicians-meta-title")} vs Testing Medicines`;
   const description = `Every ${gov?.name ?? code} politician ranked by how many dollars they spend on ${getMilitarySynonym("politicians-meta-desc")} per dollar finding out which medicines work.`;
   return {
     title,

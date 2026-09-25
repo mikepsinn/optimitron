@@ -23,7 +23,7 @@ const trialComparison = {
 };
 
 export const metadata: Metadata = {
-  title: `${agency.dName}: ${agency.replacesAgencyName} — DEPRECATED | Optimitron`,
+  title: `${agency.dName}: ${agency.replacesAgencyName} — DEPRECATED`,
   description: agency.description,
 };
 

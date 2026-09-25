@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const gov = getGovernmentMetrics(code.toUpperCase());
   if (!gov) return { title: "Country Not Found" };
   return {
-    title: `${gov.name} Agency Report Cards | Optimitron`,
+    title: `${gov.name} Agency Report Cards`,
     description: `Performance grades for ${gov.name}'s government agencies — spending trends vs outcome trends. If the lines diverge, the agency is failing.`,
   };
 }

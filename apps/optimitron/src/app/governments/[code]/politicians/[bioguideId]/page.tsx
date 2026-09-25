@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const gov = getGovernmentMetrics(code.toUpperCase());
 
   const title = politician
-    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines | Optimitron`
+    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines`
     : `Politician | ${gov?.name ?? code}`;
 
   const description = politician
