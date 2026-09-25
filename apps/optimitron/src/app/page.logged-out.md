@@ -90,7 +90,7 @@
 - Today Only 34% of US 3-year-olds enrolled; varies wildly by state
 - [SEE EVERY GRADE](/opg)
 #### OPTIMAL BUDGET GENERATOR
-- US spending per person vs the cheapest country in the top quarter for results
+- US national spending per person vs the cheapest country in the top quarter for results
 - Military spending 5.3×US $2,052 · Switzerland $389
 - Total health spending 2.9×US $10,333 · South Korea $3,588
 - Government education spending 2.3×US $2,996 · Japan $1,288

@@ -228,7 +228,7 @@ function BudgetGeneratorTile() {
   const measuredLines = getMeasuredBudgetLines();
 
   return (
-    <Tile note="US spending per person vs the cheapest country in the top quarter for results" title="Optimal Budget Generator">
+    <Tile note="US national spending per person vs the cheapest country in the top quarter for results" title="Optimal Budget Generator">
       <ul className="flex flex-col gap-4">
         {benchmarks.map((row) => (
           <li key={row.field}>
