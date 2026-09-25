@@ -8,11 +8,15 @@ import {
   type TimePoint,
 } from "../../datasets/agency-performance";
 
-function points(values: number[]): TimePoint[] {
-  return values.map((value, index) => ({ year: 2000 + index * 2, value }));
+function points(values: number[], startYear = 2000): TimePoint[] {
+  return values.map((value, index) => ({ year: startYear + index * 2, value }));
 }
 
-function agency(spending: number[], outcome?: number[]): AgencyPerformanceInput {
+function agency(
+  spending: number[],
+  outcome?: number[],
+  outcomeStartYear = 2000,
+): AgencyPerformanceInput {
   return {
     agencyId: "test",
     agencyName: "Test Agency",
@@ -22,7 +26,7 @@ function agency(spending: number[], outcome?: number[]): AgencyPerformanceInput 
     spendingTimeSeries: points(spending),
     spendingLabel: "Spending",
     outcomes: outcome
-      ? [{ label: "Outcome", emoji: "📈", direction: "higher_is_better", data: points(outcome) }]
+      ? [{ label: "Outcome", emoji: "📈", direction: "higher_is_better", data: points(outcome, outcomeStartYear) }]
       : [],
     gradeRationale: "",
     wishoniaQuote: "",
@@ -39,6 +43,16 @@ describe("gradeAgency", () => {
 
   it("does not grade an outcome with too few points to average", () => {
     expect(gradeAgency(agency(sixYears, [1, 2, 3, 4, 5]))).toBeNull();
+  });
+
+  it("compares spending and outcome over the years both cover", () => {
+    // Spending 2000–2020 rises, then stays flat from 2004; the outcome covers
+    // 2010–2030 and stays flat until 2020. Over their shared 2010–2020 window
+    // neither moves, so the grade is C, not the B the full arrays would give.
+    const spending = [100, 200, 300, 300, 300, 300, 300, 300, 300, 300, 300];
+    const outcome = [50, 50, 50, 50, 50, 50, 70, 80, 90, 100, 100];
+    expect(computeGrade(points(spending), points(outcome, 2010), "higher_is_better").grade).toBe("B");
+    expect(gradeAgency(agency(spending, outcome, 2010))).toBe("C");
   });
 
   it("grades from spending and the first outcome when both are long enough", () => {

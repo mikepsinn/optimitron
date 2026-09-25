@@ -130,19 +130,28 @@ export function computeGrade(
 }
 
 /**
- * Grade an agency on its spending and first outcome series, or return null
- * when either series is too short to grade.
+ * Grade an agency on its spending and first outcome series over the years
+ * both cover, or return null when either is too short there to grade.
+ * computeGrade compares first- and last-3-point averages, so both series
+ * must start and end in the same window or the two changes cover different
+ * periods.
  */
 export function gradeAgency(agency: AgencyPerformanceInput): AgencyGrade | null {
   const primary = agency.outcomes[0];
-  if (
-    !primary ||
-    agency.spendingTimeSeries.length < MIN_POINTS_TO_GRADE ||
-    primary.data.length < MIN_POINTS_TO_GRADE
-  ) {
+  if (!primary) return null;
+
+  const spendingYears = agency.spendingTimeSeries.map((point) => point.year);
+  const outcomeYears = primary.data.map((point) => point.year);
+  const from = Math.max(Math.min(...spendingYears), Math.min(...outcomeYears));
+  const to = Math.min(Math.max(...spendingYears), Math.max(...outcomeYears));
+  const inWindow = (point: TimePoint) => point.year >= from && point.year <= to;
+  const spending = agency.spendingTimeSeries.filter(inWindow);
+  const outcome = primary.data.filter(inWindow);
+
+  if (spending.length < MIN_POINTS_TO_GRADE || outcome.length < MIN_POINTS_TO_GRADE) {
     return null;
   }
-  return computeGrade(agency.spendingTimeSeries, primary.data, primary.direction).grade;
+  return computeGrade(spending, outcome, primary.direction).grade;
 }
 
 // ---------------------------------------------------------------------------
