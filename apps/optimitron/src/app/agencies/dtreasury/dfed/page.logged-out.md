@@ -20,7 +20,7 @@
 - — WISHONIA, PLANETARY SYSTEMS ENGINEER
 ### REPORT CARD
 - 🏦
-- The dollar has lost 97% of its purchasing power since the Fed was created. The economy grew faster without it (3.8% vs 2.7%). Canada had zero bank failures during the Great Depression without a central bank. The Fed's balance sheet went from $900B to $8.9T — printing money that went to the top 1%.
+- The dollar has lost 97% of its purchasing power since the Fed was created. The economy grew faster without it (3.8% vs 2.7%). Canada had zero bank failures during the Great Depression without a central bank. The Fed's balance sheet went from $0.9T (end of 2007) to a peak of $9.0T (April 2022) — printing money that went to the top 1%.
 - “Your species created an institution to manage your money. In 111 years it has destroyed ninety-seven percent of your currency's value, bailed out the banks that crashed the economy, printed four point six trillion dollars during a pandemic that mostly went to the already wealthy, and presided over the largest wealth transfer in human history. On my planet, we would call that embezzlement. Here you call it monetary policy.”
 - — WISHONIA
 ### WHAT THEY OPTIMIZE FOR
@@ -33,29 +33,29 @@
 ### SPENDING VS OUTCOMES
 ##### 🏦 FEDERAL RESERVE SYSTEM
 - Promote maximum employment, stable prices, and moderate long-term interest rates
-- Fed Operating Expenses + Interest on Reserves (USD) · left axis
-- 💵 Dollar Purchasing Power (1913 = $1.00) · right axis
-- 🖨️ Fed Balance Sheet (trillions USD) · right axis
+- Federal Reserve Banks operating expenses, net of Treasury reimbursements (calendar year, nominal USD; excludes interest on reserves) · left axis
+- 💵 Dollar purchasing power (1913 = $1.00; CPI-U annual average) · right axis
+- 🖨️ Fed total assets at year-end (USD trillions, H.4.1) · right axis
 - 2008 [$700B TARP + $16.1T in Fed emergency lending (GAO audit). Citigroup gets $45B, pays $5.33B in exec bonuses. 10M families lose homes. Zero bankers jailed. ↗](https://www.gao.gov/products/gao-11-696)
 - 2020 [COVID: $4.6T created in 2 years. Top 1% gains $4T in net worth. Bottom 50% gets $1,200 stimulus checks. ↗](https://fred.stlouisfed.org/series/WALCL)
 - 2022 [Inflation hits 9.1% — highest since 1981. Grocery prices up 25% in 3 years. ↗](https://www.bls.gov/cpi/)
 - SHOW THE NUMBERS
 
-| Year | Fed Operating Expenses + Interest on Reserves (USD) | Dollar Purchasing Power (1913 = $1.00) | Fed Balance Sheet (trillions USD) |
+| Year | Federal Reserve Banks operating expenses, net of Treasury reimbursements (calendar year, nominal USD; excludes interest on reserves) | Dollar purchasing power (1913 = $1.00; CPI-U annual average) | Fed total assets at year-end (USD trillions, H.4.1) |
 | --- | --- | --- | --- |
-| 2000 | $2.6B | 0.058 | 0.6 |
-| 2002 | $2.8B | 0.056 | 0.7 |
-| 2004 | $3B | 0.053 | 0.7 |
-| 2006 | $3.3B | 0.05 | 0.8 |
-| 2008 | $3.6B | 0.047 | 0.9 |
-| 2010 | $4.1B | 0.045 | 2.3 |
-| 2012 | $4.5B | 0.043 | 2.9 |
-| 2014 | $4.8B | 0.042 | 4.5 |
-| 2016 | $5B | 0.041 | 4.5 |
-| 2018 | $5.2B | 0.039 | 4.1 |
-| 2020 | $5.3B | 0.037 | 7.4 |
-| 2022 | $5.4B | 0.032 | 8.9 |
-| 2024 | $5.5B | 0.03 | 7 |
+| 2000 | $1.6B | 0.057 | 0.6 |
+| 2002 | $2.1B | 0.055 | 0.7 |
+| 2004 | $2.1B | 0.052 | 0.8 |
+| 2006 | $2.4B | 0.049 | 0.9 |
+| 2008 | $2.6B | 0.046 | 2.2 |
+| 2010 | $3.3B | 0.045 | 2.4 |
+| 2012 | $3.7B | 0.043 | 2.9 |
+| 2014 | $3.6B | 0.042 | 4.5 |
+| 2016 | $4B | 0.041 | 4.5 |
+| 2018 | $4.3B | 0.039 | 4.1 |
+| 2020 | $4.5B | 0.038 | 7.4 |
+| 2022 | $5.6B | 0.034 | 8.6 |
+| 2024 | $5.6B | 0.032 | 6.9 |
 
 ### WHAT THEY COST YOU
 - Unelected humans controlling money for 330 million people

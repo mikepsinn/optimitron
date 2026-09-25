@@ -43,7 +43,7 @@ function TabbedCharts({ agencies }: { agencies: EarthAgency[] }) {
             key={ea.id}
             className="border border-foreground/30 text-sm font-black uppercase"
           >
-            {ea.emoji} {ea.name} — {ea.performance!.grade}
+            {ea.emoji} {ea.name} — {ea.performance!.grade ?? "Not graded"}
           </TabsTrigger>
         ))}
       </TabsTriggerList>

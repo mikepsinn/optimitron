@@ -36,7 +36,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
     D: "#FFD600",
     F: "#ef4444",
   };
-  const gradeColor = gradeColors[agency.grade] ?? "#888";
+  const gradeColor = agency.grade ? gradeColors[agency.grade] : "#888";
 
   const spendSeries = agency.spendingTimeSeries;
   const latestSpend = spendSeries.length > 0 ? spendSeries[spendSeries.length - 1]!.value : 0;
@@ -78,7 +78,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
             color: gradeColor,
           }}
         >
-          {agency.grade}
+          {agency.grade ?? "—"}
         </div>
       </div>
 

@@ -20,8 +20,8 @@
 - — WISHONIA, PLANETARY SYSTEMS ENGINEER
 ### REPORT CARD
 - 💸
-- Budget was effectively flat/cut for a decade while the tax gap doubled to $700B. Audit rate collapsed from 1.1% to 0.25%. The IRA funding in 2022 is slowly reversing the damage.
-- “You defunded the one agency that generates revenue. The IRS collects four dollars for every one dollar you spend on it. You cut its budget and the tax gap doubled to seven hundred billion. On my planet, we would call this self-sabotage. Here you call it fiscal conservatism.”
+- IRS operating costs were flat in nominal terms from FY2010 ($12.4B) to FY2018 ($11.7B) while the gross tax gap doubled from $345B (TY2001) to $696B (TY2022 projection). The individual audit rate fell from 1.11% (FY2010) to 0.59% (FY2018); the IRS has examined about 0.3% of individual returns for tax years 2019–2021. IRA funding raised operating costs to $18.2B in FY2024.
+- “You defunded the one agency that generates revenue. The IRS collects four dollars for every one dollar you spend on it. You cut its budget and the tax gap doubled to nearly seven hundred billion. On my planet, we would call this self-sabotage. Here you call it fiscal conservatism.”
 - — WISHONIA
 ### WHAT THEY OPTIMIZE FOR
 - 74,000 pages. Every loophole is a feature, not a bug — it's how donors get paid back.
@@ -33,34 +33,34 @@
 ### SPENDING VS OUTCOMES
 ##### 💸 INTERNAL REVENUE SERVICE
 - Provide America's taxpayers top quality service by helping them understand and meet their tax responsibilities
-- IRS Annual Budget (USD) · left axis
-- 🕳️ Tax Gap (USD, billions) · right axis
-- 🔎 Individual Audit Rate (%) · right axis
+- IRS operating costs (IRS Data Book Table 6-2, fiscal year, nominal USD; includes Inflation Reduction Act costs from FY2023) · left axis
+- 🕳️ Gross tax gap by tax year (USD billions; IRS latest estimate; multi-year periods plotted at the middle year as annual averages; TY2017+ are projections) · right axis
+- 🔎 Individual returns examined in fiscal year ÷ returns filed the prior calendar year (%), IRS Data Book, FY2000–FY2018 · right axis
 - 2013 [IRS targeting scandal — Congress retaliates by cutting budget 20% over next 5 years ↗](https://www.tigta.gov/reports/audit/inappropriate-criteria-were-used-identify-tax-exempt-applications-review)
 - 2017 [Audit rate for millionaires drops to 1.4% — lower than for EITC recipients making <$25K ↗](https://www.irs.gov/statistics/soi-tax-stats-irs-data-book)
 - 2022 [Inflation Reduction Act — $80B IRS funding approved ↗](https://www.congress.gov/bill/117th-congress/house-bill/5376)
 - 2023 [$20B of IRA funding rescinded in debt ceiling deal — before agents are even hired ↗](https://www.congress.gov/bill/118th-congress/house-bill/3746)
 - SHOW THE NUMBERS
 
-| Year | IRS Annual Budget (USD) | Tax Gap (USD, billions) | Individual Audit Rate (%) |
+| Year | IRS operating costs (IRS Data Book Table 6-2, fiscal year, nominal USD; includes Inflation Reduction Act costs from FY2023) | Gross tax gap by tax year (USD billions; IRS latest estimate; multi-year periods plotted at the middle year as annual averages; TY2017+ are projections) | Individual returns examined in fiscal year ÷ returns filed the prior calendar year (%), IRS Data Book, FY2000–FY2018 |
 | --- | --- | --- | --- |
-| 2000 | $8.3B | – | 0.49 |
+| 2000 | $8.26B | – | 0.49 |
 | 2001 | – | 345 | – |
-| 2002 | $9.5B | – | – |
-| 2004 | $10.2B | – | 0.77 |
-| 2006 | $10.6B | 385 | – |
-| 2008 | $11.4B | 450 | 1.01 |
-| 2010 | $12.1B | – | 1.11 |
-| 2011 | – | 406 | – |
-| 2012 | $11.8B | – | 1.02 |
-| 2014 | $11.3B | 441 | 0.86 |
-| 2016 | $11.2B | 480 | 0.7 |
-| 2018 | $11.4B | – | 0.4 |
-| 2019 | – | 600 | – |
-| 2020 | $11.5B | – | 0.25 |
-| 2021 | – | 688 | – |
-| 2022 | $12.6B | – | 0.38 |
-| 2024 | $14.1B | 700 | 0.44 |
+| 2002 | $9.06B | – | – |
+| 2004 | $9.76B | – | 0.77 |
+| 2006 | $10.6B | 472 | – |
+| 2008 | $11.3B | – | 1.01 |
+| 2009 | – | 394 | – |
+| 2010 | $12.3B | – | 1.11 |
+| 2012 | $12.1B | 438 | 1.03 |
+| 2014 | $11.6B | – | 0.86 |
+| 2015 | – | 496 | – |
+| 2016 | $11.7B | – | 0.7 |
+| 2018 | $11.8B | 549 | 0.59 |
+| 2020 | $12.3B | – | – |
+| 2021 | – | 708 | – |
+| 2022 | $14.3B | 696 | – |
+| 2024 | $18.2B | – | – |
 
 ### WHAT THEY COST YOU
 - Full-time IRS staff interpreting the tax code

@@ -350,7 +350,7 @@ export function AgencyGradeChart({ agency, variant = "card", href }: AgencyGrade
   const outcomes = (variant === "full" ? agency.outcomes : agency.outcomes.slice(0, 1)).filter(
     (o) => o.data.length >= 2,
   );
-  if (spend.length < 2 || outcomes.length === 0) return null;
+  if (spend.length < 2) return null;
 
   const isFull = variant === "full";
   const chartedYears = [spend, ...outcomes.map((o) => o.data)].flat().map((p) => p.year);
@@ -372,11 +372,14 @@ export function AgencyGradeChart({ agency, variant = "card", href }: AgencyGrade
           <p className="truncate text-xs font-bold text-muted-foreground">{agency.mission}</p>
         </div>
         <div
-          className={`ml-2 flex h-10 w-10 shrink-0 items-center justify-center border border-foreground/30 ${gradeColors[agency.grade]} text-xl font-black`}
+          aria-label={agency.grade ? `Grade ${agency.grade}` : "Not graded"}
+          className={`ml-2 flex h-10 w-10 shrink-0 items-center justify-center border border-foreground/30 ${agency.grade ? gradeColors[agency.grade] : "bg-background text-muted-foreground"} text-xl font-black`}
+          title={agency.grade ? undefined : "Not graded"}
         >
-          {agency.grade}
+          {agency.grade ?? "—"}
         </div>
       </div>
+
 
       {outcomes.map((outcome) => {
         const ariaLabel = `${agency.agencyName}. ${describeSeries(agency.spendingLabel, spend, formatUsd)}. ${describeSeries(outcome.label, outcome.data, (v) => v.toLocaleString("en-US"))}.`;
