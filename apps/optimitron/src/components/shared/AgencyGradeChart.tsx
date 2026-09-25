@@ -40,10 +40,10 @@ const NARROW_LAYOUT: ChartLayout = {
 /** The full-width chart on an agency page: about 820 px wide from the sm breakpoint. */
 const WIDE_LAYOUT: ChartLayout = {
   width: 820,
-  height: 380,
-  font: 14,
+  height: 400,
+  font: 16,
   dot: 3.5,
-  pad: { top: 34, right: 64, bottom: 32, left: 70 },
+  pad: { top: 34, right: 70, bottom: 36, left: 78 },
 };
 
 function niceStep(span: number, targetTicks: number): number {
