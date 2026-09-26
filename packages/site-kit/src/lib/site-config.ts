@@ -598,7 +598,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       "act.warondisease.org",
       "www.act.warondisease.org",
     ],
-    description: `Click a glowing rectangle. 15 seconds. ${MESSAGING.impact.perVote.combined}.`,
+    description: "Please take 30 seconds to trade one apocalypse for disease eradication.",
     baseUrl: "https://warondisease.org",
     domain: "warondisease.org",
     email: "hello@warondisease.org",

@@ -9,6 +9,7 @@
 // Extend window type for gtag
 declare global {
   interface Window {
+    dataLayer?: unknown[]
     gtag?: (
       command: 'event' | 'config' | 'set',
       targetId: string,
@@ -19,15 +20,25 @@ declare global {
 
 type EventParams = Record<string, string | number | boolean | undefined>
 
+function getGtag(): Window['gtag'] {
+  if (typeof window === 'undefined') return undefined
+  if (!window.gtag && process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim()) {
+    // Preserve early effects until the layout's afterInteractive GA loader runs.
+    window.dataLayer = window.dataLayer || []
+    window.gtag = function () { window.dataLayer!.push(arguments) }
+  }
+  return window.gtag
+}
+
 /**
  * Track a custom event in Google Analytics
  */
 export function trackEvent(eventName: string, params?: EventParams): void {
-  if (typeof window === 'undefined' || !window.gtag) {
-    return
+  try {
+    getGtag()?.('event', eventName, params)
+  } catch {
+    // Analytics delivery must not interrupt the action being measured.
   }
-
-  window.gtag('event', eventName, params)
 }
 
 // ============================================
@@ -77,6 +88,93 @@ export function trackDonationCompleted(params: {
 // ============================================
 // Vote Events
 // ============================================
+
+export type TreatyFunnelStep =
+  | 'viewed'
+  | 'allocation_submitted'
+  | 'answer_selected'
+  | 'details_opened'
+  | 'verification_requested'
+
+/** UI stages measure intent, never a verified response or a new account. */
+export function trackTreatyFunnelStep(step: TreatyFunnelStep): void {
+  trackEvent(`treaty_${step}`, { survey_id: 'one-percent-treaty' })
+}
+
+type TreatyCompletion = { id: string; response: boolean; referred: boolean }
+const completionStorageKey = 'treaty_funnel_completions_v1'
+const completionLimit = 100
+let recentCompletions: TreatyCompletion[] = []
+
+/**
+ * Only the vote API's persisted receipt can complete this funnel. IDs stay in
+ * this browser for deduplication; custom event parameters contain no identity,
+ * answer, or referral. GA's existing automatic page metadata is separate.
+ * Keep at most 100 receipts across reloads/tabs; Web Locks serialize tabs when
+ * supported. Private/blocked storage falls back to this page's memory.
+ * GA is an observed browser funnel, not the canonical participant count: other
+ * devices, cleared/evicted storage, absent GA, and unsupported cross-tab locks
+ * limit deduplication/delivery. Use distinct GA users for the view denominator
+ * and the existing ReferendumVote/referral database counts for durable totals.
+ */
+export async function trackTreatyResponseSaved(receipt: {
+  responseId: string
+  verifiedResponseSaved: boolean
+  verifiedReferredParticipant: boolean
+}): Promise<void> {
+  if (!getGtag() || !receipt.verifiedResponseSaved) return
+
+  const recordCompletion = () => {
+    try {
+      const stored: unknown = JSON.parse(window.localStorage.getItem(completionStorageKey) || '[]')
+      if (Array.isArray(stored)) {
+        const valid = stored.filter((item): item is TreatyCompletion =>
+          typeof item?.id === 'string' && typeof item.response === 'boolean' && typeof item.referred === 'boolean',
+        ).slice(-completionLimit)
+        const combined = new Map(recentCompletions.map((item) => [item.id, item]))
+        for (const item of valid) {
+          const previous = combined.get(item.id)
+          combined.set(item.id, {
+            id: item.id,
+            response: item.response || Boolean(previous?.response),
+            referred: item.referred || Boolean(previous?.referred),
+          })
+        }
+        recentCompletions = [...combined.values()].slice(-completionLimit)
+      }
+    } catch {
+      // Analytics storage must never block saving the response.
+    }
+
+    const previous = recentCompletions.find(({ id }) => id === receipt.responseId)
+    const sendResponse = !previous?.response
+    const sendReferral = receipt.verifiedReferredParticipant && !previous?.referred
+    const completion = {
+      id: receipt.responseId,
+      response: true,
+      referred: Boolean(previous?.referred || receipt.verifiedReferredParticipant),
+    }
+    recentCompletions = [...recentCompletions.filter(({ id }) => id !== receipt.responseId), completion]
+      .slice(-completionLimit)
+    try {
+      window.localStorage.setItem(completionStorageKey, JSON.stringify(recentCompletions))
+    } catch {
+      // Memory still prevents repeated events in this page when storage is blocked.
+    }
+    if (sendResponse) trackEvent('treaty_response_saved', { survey_id: 'one-percent-treaty' })
+    if (sendReferral) trackEvent('treaty_referred_participant', { survey_id: 'one-percent-treaty' })
+  }
+
+  try {
+    if (window.navigator.locks) {
+      await window.navigator.locks.request(completionStorageKey, recordCompletion)
+    } else {
+      recordCompletion()
+    }
+  } catch {
+    // A blocked analytics transport must not turn a persisted vote into a failed save.
+  }
+}
 
 export function trackVoteSubmitted(params: {
   voteType: string

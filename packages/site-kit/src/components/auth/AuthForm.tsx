@@ -9,7 +9,7 @@ import { Label } from "@optimitron/neobrutalist-ui/ui/label"
 import { storage } from "../../lib/storage"
 import { FaGoogle } from "react-icons/fa6"
 import { createLogger } from "../../lib/logger"
-import { trackSignUp } from "../../lib/analytics"
+import { trackTreatyFunnelStep } from "../../lib/analytics"
 import { AlertCard } from "@optimitron/neobrutalist-ui/ui/alert-card"
 
 const logger = createLogger('auth-form')
@@ -107,14 +107,16 @@ export function AuthForm({
         callbackUrl: completionUrl,
       })
 
-      if (result?.error) {
+      if (!result?.ok || result.error) {
         setError("Failed to send email. Please try again.")
         // Clear localStorage on error
         storage.clearSignupData()
       } else {
         setEmailSent(true)
-        // Track signup/login via email
-        trackSignUp({ method: "email" })
+        const pendingVote = storage.getPendingVote()
+        if (pendingVote && ["YES", "NO"].includes(pendingVote.answer)) {
+          trackTreatyFunnelStep("verification_requested")
+        }
         onSuccess?.()
       }
     } catch (error) {
@@ -131,8 +133,6 @@ export function AuthForm({
     setIsLoading(true)
     if (showSubscribe) storage.setSignupSubscribe(subscribe)
     else storage.removeSignupSubscribe()
-    // Track signup/login via social provider
-    trackSignUp({ method: provider })
     const url = new URL(callbackUrl, window.location.origin)
     if (referralCode) {
       url.searchParams.set("ref", referralCode)

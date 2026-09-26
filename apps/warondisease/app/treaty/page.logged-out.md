@@ -6,10 +6,10 @@
 - Meta description: The 1% Treaty redirects 1% of military spending to clinical trials, cutting the disease-eradication timeline from 443 years to 36. Nobody gets weaker. Everyone gets more medicine.
 - Canonical: https://warondisease.org/treaty
 - Open Graph title: The International Campaign to End War and Disease
-- Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Open Graph description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png
 - Twitter title: The International Campaign to End War and Disease
-- Twitter description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Twitter description: Please take 30 seconds to trade one apocalypse for disease eradication.
 
 ## Visible Page Copy
 
