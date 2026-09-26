@@ -69,7 +69,13 @@ function getCampaignHomeFiles(appName) {
     ];
   }
 
-  return [`apps/${appName}/app/page.tsx`, ...campaignHomeSharedFiles];
+  return [
+    `apps/${appName}/app/page.tsx`,
+    ...campaignHomeSharedFiles,
+    ...(appName === "warondisease"
+      ? ["packages/site-kit/src/components/landing/treaty-vote-section.tsx"]
+      : []),
+  ];
 }
 
 const warOnDiseaseDashboardFiles = [

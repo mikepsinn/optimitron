@@ -37,6 +37,7 @@ interface TreatyVoteSectionProps {
   organizationId?: string // Optional: which organization's survey page is this
   sectionId?: string
   hideHeading?: boolean
+  questionAs?: "h1" | "p"
   frameless?: boolean
   bgColor?: SectionBgColor
   showManualPromo?: boolean
@@ -49,6 +50,7 @@ export default function TreatyVoteSection({
   organizationId,
   sectionId = "vote",
   hideHeading = false,
+  questionAs: Question = "p",
   frameless = false,
   bgColor = "yellow",
   showManualPromo = true,
@@ -408,7 +410,7 @@ export default function TreatyVoteSection({
               transition={{ duration: 0.4 }}
             >
               <PanelShell className={panelClassName}>
-                <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
+                <Question className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
                   Adjust slider to show how you'd split your country's finite resources between the{" "}
                   <span className="text-brutal-pink">weapons and military</span> vs{" "}
                   <PragmaticTrialsDialog
@@ -417,7 +419,7 @@ export default function TreatyVoteSection({
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>{" "}
                   to cure diseases.
-                </p>
+                </Question>
 
                 {/* Allocation Display */}
                 <div className="mb-8">
