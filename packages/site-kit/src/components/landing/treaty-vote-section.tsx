@@ -532,13 +532,11 @@ export default function TreatyVoteSection({
                 <VoteQuestion className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
                   Should all nations allocate just {" "}
                   <br className="hidden sm:block" />
-                  <span className="text-brutal-pink">1% of military spending</span> to{" "}
-                  <span className="text-brutal-pink">
-                    <PragmaticTrialsDialog triggerClassName="font-inherit text-inherit underline decoration-dotted underline-offset-4 hover:decoration-solid">
-                      pragmatic clinical trials
-                    </PragmaticTrialsDialog>{" "}
-                    to treat and cure disease
-                  </span>{" "}
+                  1% of <span className="text-brutal-pink">weapons and military spending</span> to{" "}
+                  <PragmaticTrialsDialog triggerClassName="font-inherit text-brutal-pink underline decoration-dotted underline-offset-4 hover:decoration-solid">
+                    pragmatic clinical trials
+                  </PragmaticTrialsDialog>{" "}
+                  to treat and cure disease{" "}
                   <br className="hidden sm:block" />
                   together, making the world safer and ensuring no country is at a disadvantage?
                 </VoteQuestion>
