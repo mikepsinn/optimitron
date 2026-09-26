@@ -3,21 +3,19 @@
 ## Metadata
 
 - Page title: Optimization Dividend | Optimitron
-- Meta description: Explore per-person spending gaps against international benchmarks, with overlapping systems kept separate. These comparisons are not promised cash payments.
+- Meta description: Could better budgets fund a public dividend? Explore policy proposals and spending comparisons.
 - Canonical: https://optimitron.com/dividend
 - Open Graph title: Optimization Dividend
-- Open Graph description: Explore per-person spending gaps against international benchmarks, with overlapping systems kept separate. These comparisons are not promised cash payments.
+- Open Graph description: Could better budgets fund a public dividend? Explore policy proposals and spending comparisons.
 - Open Graph image: https://optimitron.com/api/og/route?path=%2Fdividend
 - Twitter title: Optimization Dividend
-- Twitter description: Explore per-person spending gaps against international benchmarks, with overlapping systems kept separate. These comparisons are not promised cash payments.
+- Twitter description: Could better budgets fund a public dividend? Explore policy proposals and spending comparisons.
 
 ## Visible Page Copy
 
 - OPTIMIZATION DIVIDEND
 ## WHAT WOULD IT TAKE TO FUND A DIVIDEND?
-- Start with evidence about specific reforms, their costs and who receives the savings.
-- [Compare national spending Explore country comparisons and the federal spending they help put in context.](/obg)
-- [Examine policy evidence Review the evidence for specific changes and the limits of what it establishes.](/opg)
+- [Compare national spending Healthcare, education, research and other spending across countries.](/obg)
+- [Explore policy proposals Proposed changes to healthcare, education, housing and drug policy.](/opg)
 ### A dividend estimate is not yet available
-- The current country comparisons do not establish money available for a cash payment. Their spending fields overlap, include different payers, and do not measure the effects of a US reform.
-- An estimate needs a defined reform with evidence for its effects, a fiscal analysis that avoids counting the same money twice, transition costs, and a decision about how much of any net public savings to distribute.
+- We have not yet estimated the public savings or costs of specific reforms. Country spending differences alone are not a dividend estimate.

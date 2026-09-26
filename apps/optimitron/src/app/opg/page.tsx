@@ -14,8 +14,7 @@ export default function PoliciesPage() {
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-3">Policy evidence</h1>
       <p className="text-muted-foreground font-bold mb-6">
-        Compare policy proposals and national spending patterns. Each analysis separates proposed changes,
-        scenario assumptions, and observed comparisons.
+        Explore policy proposals for better health and higher incomes.
       </p>
       <label className="block text-sm font-bold mb-2" htmlFor="policy-category">Category</label>
       <select id="policy-category" value={category} onChange={(event) => setCategory(event.target.value)}
@@ -36,13 +35,12 @@ export default function PoliciesPage() {
             {policy.recommendedTarget && (
               <p className="text-sm mb-4"><strong>{policy.evidenceKind === "comparison" ? "Comparison:" : "Proposed change:"}</strong> {policy.recommendedTarget}</p>
             )}
-            <Link className="font-bold underline text-sm" href={getPolicyPath(policy.name)}>Inspect evidence and assumptions →</Link>
+            <Link className="font-bold underline text-sm" href={getPolicyPath(policy.name)}>View analysis →</Link>
           </article>
         ))}
       </div>
       <p className="text-sm text-muted-foreground mt-8">
-        These entries do not yet have validated national effect estimates or causal evidence grades.
-        <Link href="/obg" className="ml-1 underline">Compare spending and outcomes.</Link>
+        <Link href="/obg" className="underline">Compare spending and outcomes.</Link>
       </p>
       <p className="text-xs text-muted-foreground mt-4">Generated: {usPolicyAnalysis.generatedAt.slice(0, 10)}</p>
     </div>

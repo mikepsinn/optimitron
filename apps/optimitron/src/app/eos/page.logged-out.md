@@ -27,19 +27,18 @@
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#system-dfda)
 - [🏛️OPTIMIZED PUBLIC ADMINISTRATION Public systems designed to produce the greatest health and wealth per dollar spent.](#system-agencies)
 - [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#system-you)
-#### PART A · POLICY PROPOSALS, OPEN FOR INSPECTION
-- Start with proposed changes. Inspect their evidence and assumptions before choosing what to implement.
+#### PART A · POLICY PROPOSALS
+- Proposals for better health and higher incomes.
 - [Universal Pre-K (Ages 3-4)](/opg/universal-pre-k-ages-3-4) Federal funding for universal enrollment by age 3
 - [Shift Drug Policy from Criminal to Health Approach](/opg/shift-drug-policy-from-criminal-to-health-approach) Decriminalize personal use, redirect enforcement budget to treatment
 - [Pragmatic Clinical Trial Funding Reform](/opg/pragmatic-clinical-trial-funding-reform) Mandate 30%+ of research budget for pragmatic trials with open data requirements
 - [Right to Trial & FDA Upgrade Act](/opg/right-to-trial-and-fda-upgrade-act) Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)
 - [Housing Supply Deregulation](/opg/housing-supply-deregulation) Condition federal grants on local zoning reform
-- Policy proposals. Open an analysis to inspect its evidence and assumptions.
 - [Explore the Policy Generator](/opg)
 #### PART B · WHAT OTHER COUNTRIES CAN TEACH US
-- Compare what countries spend with the outcomes they report. A useful lead for research; a spending decision still needs evidence about the specific change.
+- What do other countries spend, and how do their outcomes compare?
 - HEALTHCARE: SPENDING AND OBSERVED OUTCOMES
-- Compare total health spending, public and private, with life expectancy. This is a starting point for studying prices, access and population health.
+- Total healthcare spending, public and private, alongside life expectancy.
 - UNITED STATES
 - $10,333 / person / year
 - Life expectancy: 76.9 years · Observations: 2020, 2021, 2022
@@ -47,7 +46,6 @@
 - $3,588 / person / year
 - Life expectancy: 83.6 years · Observations: 2020, 2021, 2022
 - Spending: constant 2017 international dollars per person per year (PPP). Average of up to three latest available observations per country. The comparison does not establish the effect of cutting spending.
-- A useful budget recommendation needs evidence about a specific reform and the services it would preserve. These national differences cannot be added into a government savings total.
 - [World Bank health expenditure ↗](https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS)
 - [Explore the Budget Generator](/obg)
 #### PART C · THE NINETY-SECOND LEGISLATURE

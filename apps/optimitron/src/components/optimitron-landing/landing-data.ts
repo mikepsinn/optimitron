@@ -1,6 +1,6 @@
 import { listGovernmentLeaders } from "@optimitron/data/datasets/government-leaders";
 import type { PolicyReportPolicy } from "@optimitron/opg";
-import { usBudgetAnalysis } from "@/data/us-budget-analysis";
+import { deduplicateEfficiencyCategories } from "@/lib/analysis-products";
 import { usPolicyAnalysis } from "@/data/us-policy-analysis";
 import { policyDisplayName } from "@/lib/policy-presentation";
 
@@ -56,7 +56,7 @@ export function getPolicySample(): { policies: PolicySample[]; total: number } {
  */
 export function getSpendingBenchmarks(): SpendingBenchmark[] {
   const byField = new Map<string, SpendingBenchmark>();
-  for (const category of usBudgetAnalysis.categories) {
+  for (const category of deduplicateEfficiencyCategories()) {
     const benchmark = category.oecdBenchmark;
     const efficiency = category.efficiency;
     if (!benchmark || !efficiency || byField.has(benchmark.spendingField)) continue;

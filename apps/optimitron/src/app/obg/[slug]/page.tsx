@@ -35,9 +35,6 @@ export default async function BudgetCategoryPage({ params }: { params: Promise<{
           Current estimate{history.at(-1) ? ` for FY${history.at(-1)!.year}` : ""}, nominal US dollars.
           {" "}{((category.currentSpending / usBudgetAnalysis.totalSpendingNominal) * 100).toFixed(1)}% of the dataset&apos;s estimated federal outlays.
         </p>
-        <p className="mt-4 max-w-3xl text-sm font-bold text-muted-foreground">
-          A national spending comparison can suggest where to look for better results. It does not establish how much to increase or cut this federal line, even when their spending categories largely coincide.
-        </p>
       </header>
 
       {comparison ? (
@@ -72,10 +69,6 @@ export default async function BudgetCategoryPage({ params }: { params: Promise<{
       )}
 
       <section className="mt-8 border-t-4 border-primary pt-6">
-        <h2 className="text-xl font-black text-foreground">From a comparison to a spending decision</h2>
-        <p className="mt-3 text-sm font-bold text-muted-foreground">
-          A recommendation needs evidence for a specific change, its expected outcomes, transition costs and the services it must preserve. National spending differences alone do not provide that evidence or money available for a dividend.
-        </p>
         <a href={optimalBudgetGeneratorPaperLink.href} className="mt-4 inline-block text-sm font-bold underline underline-offset-4">Read the OBG research protocol ↗</a>
       </section>
       <p className="mt-6 text-xs font-bold text-muted-foreground">Report generated {usBudgetAnalysis.generatedAt.slice(0, 10)}.</p>

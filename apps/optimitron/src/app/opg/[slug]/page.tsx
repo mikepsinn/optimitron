@@ -61,8 +61,8 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
           <h2 className="text-lg font-black mb-3">{policy.evidenceKind === "assumption" ? "Scenario assumptions" : "Reported effect estimates"}</h2>
           <p className="text-sm text-muted-foreground mb-5">
             {policy.evidenceKind === "assumption"
-              ? "These percentages are supplied assumptions, not estimated national effects. No time horizon or baseline supports converting them into dollars or years."
-              : "Effects retain their reported percentage scale. Converting them into dollars or years requires a specified baseline and time horizon."}
+              ? "Illustrative assumptions, not forecasts of US policy effects."
+              : "Estimated percentage changes."}
           </p>
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div><dt className="font-bold text-sm">Median after-tax income</dt><dd className="text-2xl font-black">{formatPolicyEffect(policy.incomeEffect)}</dd></div>
@@ -71,8 +71,7 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
         </section>
       ) : (
         <p className="text-sm mb-8">
-          This spending comparison does not estimate the health or income effect of adopting another country&apos;s policies.
-          <Link href="/obg" className="ml-1 underline">Inspect the spending data and comparison years.</Link>
+          <Link href="/obg" className="underline">See spending, outcomes and comparison years →</Link>
         </p>
       )}
 
@@ -80,7 +79,6 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
       {evidence.comparison && <InternationalComparisonSection comparison={evidence.comparison} />}
 
       <p className="text-sm text-muted-foreground mb-6">
-        {policy.evidenceKind !== "estimate" && "A causal evidence grade requires an assessment of the underlying studies and their applicability. This entry has not received that assessment. "}
         Read the{" "}
         <NavItemLink item={optimalPolicyGeneratorPaperLink} variant="custom" external className="underline">policy evaluation methodology</NavItemLink>.
       </p>

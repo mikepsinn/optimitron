@@ -1,4 +1,6 @@
-import { getRouteReviewSpecs, ROUTES } from "@/lib/routes";
+import { usPolicyAnalysis } from "@/data/us-policy-analysis";
+import { policyDisplayName } from "@/lib/policy-presentation";
+import { getPolicyPath, getRouteReviewSpecs, ROUTES } from "@/lib/routes";
 import {
   MANAGED_DEMO_COLLECTION_ID,
   MANAGED_DEMO_DOCUMENT_ID,
@@ -43,6 +45,8 @@ export type VisualRoute = {
    */
   placeholderImageOrigins?: string[];
   required: boolean;
+  /** Exact accessible name of the route's primary heading. */
+  requiredHeading?: string;
   requiredSelector?: string;
   requiredText?: RegExp;
   waitForImages?: boolean;
@@ -404,6 +408,14 @@ const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
   [ROUTES.calendar, `${ROUTES.calendar}?date=2036-01-01`],
 ]);
 
+const healthComparisonPolicy = usPolicyAnalysis.policies.find(
+  (policy) => policy.evidenceKind === "comparison"
+    && policy.oecdSpendingField === "healthSpendingPerCapitaPpp",
+);
+if (!healthComparisonPolicy) {
+  throw new Error("Visual review requires the national health spending comparison.");
+}
+
 const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
   {
     authenticated: true,
@@ -755,22 +767,22 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: false,
   },
   {
-    // A line without its own benchmark: no optimal, no gap.
+    // Federal spending context with a related national comparison.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail",
     path: "/obg/epa-environment",
     required: true,
     requiredSelector: "h1",
-    requiredText: /^EPA \/ Environment$/,
+    requiredHeading: "EPA / Environment",
   },
   {
-    // The one line with its own benchmark: numeric optimal and gap.
+    // Military comparisons remain descriptive, without an allocation target.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail-benchmarked",
     path: "/obg/military",
     required: true,
     requiredSelector: "h1",
-    requiredText: /^Military$/,
+    requiredHeading: "Military",
   },
   {
     covers: ["apps/optimitron/src/app/obg/page.tsx"],
@@ -778,7 +790,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     path: ROUTES.obg,
     required: true,
     requiredSelector: "h1",
-    requiredText: /^The US Federal Budget, Diagnosed$/,
+    requiredHeading: "What can we learn from other countries?",
   },
   {
     covers: ["apps/optimitron/src/app/opg/page.tsx"],
@@ -786,16 +798,16 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     path: ROUTES.opg,
     required: true,
     requiredSelector: "h1",
-    requiredText: /^Policy Rankings$/,
+    requiredHeading: "Policy evidence",
   },
   {
-    // An efficiency-frontier policy: one per spending field.
+    // A national comparison, using the public title while retaining its URL.
     covers: ["apps/optimitron/src/app/opg/[slug]/page.tsx"],
     name: "opg-policy-detail",
-    path: "/opg/national-health-spending-adopt-south-korea-s-approach",
+    path: getPolicyPath(healthComparisonPolicy.name),
     required: true,
     requiredSelector: "h1",
-    requiredText: /^National Health Spending: Adopt South Korea's Approach$/,
+    requiredHeading: policyDisplayName(healthComparisonPolicy),
   },
   {
     // Required, and asserted on #also-serves rather than something always

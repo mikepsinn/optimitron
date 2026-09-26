@@ -23,7 +23,7 @@ export default function BudgetPage() {
         <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Budget evidence</p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">What can we learn from other countries?</h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          Compare national spending with observed health, education and income outcomes. These comparisons identify systems worth studying; setting a budget requires evidence about specific changes and the services they would preserve.
+          See how US spending compares with other countries on health, education and income.
         </p>
       </header>
 

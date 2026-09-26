@@ -16,11 +16,10 @@ real after-tax income to the targets in `earthOptimizationPrizeWinCondition`
 Programs compete for position under the `optimize-earth` task root by expected
 value. **The 1% Treaty is the current highest-EV earth-layer program — a
 ranked bet, not an axiom.** If the analysis finds a better bet for the two
-medians, the queue reorders and the roadmap follows. The treaty campaign
-lives at `warondisease.org`. `optimitron.com` leads with policy evidence and
-budget comparisons (OPT-GOV-02/03), while retaining the shared operating
-system and proof engine behind the apps. Personal tracking lives at
-`dfda.earth`; these app boundaries do not fork engines or data models.
+medians, the queue reorders and the roadmap follows. Until then the treaty
+campaign keeps top billing, and `warondisease.org` stays the primary public
+surface with `optimitron.com` as the operating system and proof engine behind
+it.
 
 The personal layer is upstream of everything: every program is executed by
 people choosing their next action, so the Daily Companion Loop (PRD §3) runs
@@ -28,7 +27,7 @@ as a parallel Now track, dogfooded by the operator as user #1.
 
 ## Principles
 
-- Every roadmap item improves policy/budget decision quality, treaty vote conversion,
+- Every roadmap item improves at least one of: treaty vote conversion,
   referral propagation, organization endorsement, plaintiff registration,
   leader reminders, discoverability/trust — or a Daily Companion Loop stage.
 - One task model. Personal, org, treaty-invite, and agent-proposed work are
@@ -40,24 +39,13 @@ as a parallel Now track, dogfooded by the operator as user #1.
 
 ## Now
 
-### Optimitron public app — policy and budget evidence
-
-- Put Policies, Budgets, and Evidence first in the homepage, navigation,
-  and analysis workspace (OPT-GOV-02/03).
-- Correct results and units before promoting comparisons. Keep observed
-  outcomes, assumptions, and proposals distinct. Do not add overlapping
-  spending systems or present benchmarks as guaranteed causal effects.
-- Keep tasks, calendars, documents, and developer tools secondary. Link to
-  existing health and campaign apps; preserve legacy access and shared
-  infrastructure.
-
 ### Track A — Treaty campaign (current highest-EV program)
 
-- Keep War on Disease's `/` and `/vote` focused on one action: vote (OPT-EARTH-01). Auth
+- Keep `/` and `/vote` focused on one action: vote (OPT-EARTH-01). Auth
   inline, pre-vote friction minimal.
 - After voting, route straight into the "get two more humans" referral loop
   (OPT-EARTH-02).
-- Make the campaign dashboard answer: what next, who did I reach, what changes if I act
+- Make the dashboard answer: what next, who did I reach, what changes if I act
   now.
 - `/join` as the fast path for organizations to endorse and recruit
   (OPT-EARTH-03); prefer embeds and referral links over bespoke partnership
@@ -145,8 +133,8 @@ remaining work while preserving this dependency order:
 - Backlog browser + promotion rules for quantified non-treaty tasks.
 - Embeddable widgets beyond endorsement/vote; multi-language surfaces; push
   notifications keyed to campaign progress.
-- Broader Optimitron product features beyond the policy/budget evidence
-  workflow require a concrete decision and an auditable evidence path.
+- Broader Optimitron home-page/product architecture once the campaign has
+  measurable momentum.
 - Design-partner access to one bounded workflow, then a small paid
   verified-work pilot using existing listings, compensation, and application
   fields (OPT-BIZ-01). Record verified deliverables, receipts, costs, and gross
@@ -160,7 +148,7 @@ Do not pick these up unless they directly unblock a Now track:
 
 - Dating registry (kill-threshold rules in archive), i18n (trigger
   conditions in archive), multi-agent service-account plans, AP2/ACP/x402
-  payment protocols, WISH airdrop/DAO
+  payment protocols, Optimitron root-page rewrite, WISH airdrop/DAO
   mechanics, DIH migration, Codex SDK adoption (confirmed not adopted).
 - Anonymized prod-DB fork for previews — trigger: campaign launch makes prod
   state diverse enough to bite regularly.

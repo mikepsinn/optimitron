@@ -250,8 +250,7 @@ function BudgetGeneratorTile() {
         ))}
       </ul>
       <p className="mt-5 text-sm leading-6 text-muted-foreground">
-        Observed differences in constant 2017 PPP dollars. They identify questions
-        to investigate, not fiscal savings or recommended cuts.
+        Spending per person in constant 2017 international dollars (PPP).
       </p>
       <div className="mt-auto pt-5">
         <Link className={landingLinkClass} href={ROUTES.obg}>

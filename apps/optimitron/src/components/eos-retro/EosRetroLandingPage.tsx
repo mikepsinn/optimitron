@@ -274,18 +274,18 @@ export function EosRetroLandingPage() {
 
         <MachinePart
           id="system-opg"
-          intro="Start with proposed changes. Inspect their evidence and assumptions before choosing what to implement."
+          intro="Proposals for better health and higher incomes."
           letter="A"
           stepInsideHref={ROUTES.opg}
           stepInsideLabel="Explore the Policy Generator"
-          title="Policy proposals, open for inspection"
+          title="Policy proposals"
         >
           <PolicyGradeTable />
         </MachinePart>
 
         <MachinePart
           id="system-obg"
-          intro="Compare what countries spend with the outcomes they report. A useful lead for research; a spending decision still needs evidence about the specific change."
+          intro="What do other countries spend, and how do their outcomes compare?"
           letter="B"
           stepInsideHref={ROUTES.obg}
           stepInsideLabel="Explore the Budget Generator"

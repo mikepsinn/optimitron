@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { buildUserReferralUrl } from "@/lib/url"
@@ -25,13 +24,9 @@ import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
 import { PersonalQueueSection } from "@/components/dashboard/PersonalQueueSection"
 import type { PersonalQueueDisplayData } from "@/components/dashboard/personal-queue-display"
 import { useRequestSiteOrigin } from "@/lib/request-site-origin"
-import { landingButtonClass } from "@/components/optimitron-landing/LandingSection"
 import {
   DASHBOARD_INVITE_SECTION_ID,
   DASHBOARD_REFERRAL_SECTION_ID,
-  ROUTES,
-  dfdaTrackingLink,
-  warOnDiseaseAppLink,
 } from "@/lib/routes"
 import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 
@@ -62,110 +57,90 @@ export function EarthOptimizationDashboardClient({
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
         <header className="mb-8 border-b border-[var(--treaty-ink)]/30 pb-3">
           <h1 className="text-lg font-semibold uppercase tracking-wide sm:text-xl">
-            Analysis workspace
+            EARTH OPTIMIZATION
           </h1>
         </header>
 
-        <section className="mb-10 space-y-5" aria-label="Policy and budget analyses">
-          <p className="max-w-2xl text-lg leading-7">
-            Compare policy evidence and government spending. Review the sources
-            and assumptions before choosing a proposal to work on.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link className={landingButtonClass} href={ROUTES.opg}>Compare policies</Link>
-            <Link className={landingButtonClass} href={ROUTES.obg}>Compare budgets</Link>
-          </div>
-          <p className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <a className="underline underline-offset-4" href={dfdaTrackingLink.href}>Personal tracking in dFDA</a>
-            <a className="underline underline-offset-4" href={warOnDiseaseAppLink.href}>Participate in War on Disease</a>
-          </p>
+        <PersonalQueueSection queue={personalQueue} />
+
+        <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
+          <TreatyReminderComposer
+            defaultRecipientMode="one_human"
+            referralBaseUrl={baseUrl}
+            referralUser={user}
+          />
+          <ReferralInvitationStatusCard />
         </section>
 
+        <section className="mx-auto mb-10 max-w-4xl">
+          <HumanityManagerStatusPanel status={initialData.humanityManagerStatus} />
+        </section>
+
+        <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id={DASHBOARD_REFERRAL_SECTION_ID}>
+          <ReferralLinkCard
+            user={user}
+            baseUrl={baseUrl}
+            onUserChange={setUser}
+            onRefresh={refreshPage}
+            className="h-full"
+          />
+          <ReferralGoalCard stats={initialData.stats} />
+        </section>
+
+        {topTasks.length > 0 ? (
+          <section className="mb-10 space-y-3">
+            <h2 className="text-xl font-black uppercase tracking-tight">
+              Top Tasks <span>For You</span>
+            </h2>
+            <SortableTaskList tasks={topTasks} />
+          </section>
+        ) : null}
+
         <details className="border-t border-[var(--treaty-ink)]/30 pt-5">
-          <summary className="cursor-pointer text-base font-bold">Tasks and campaign activity</summary>
-          <div className="mt-8">
-            <PersonalQueueSection queue={personalQueue} />
+          <summary className="cursor-pointer list-none text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
+            More dashboard
+          </summary>
+          <div className="mt-8 space-y-8">
+            {/* Quest Checklist */}
+            <QuestChecklistCard quests={initialData.questChecklist} />
 
-            <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
-              <TreatyReminderComposer
-                defaultRecipientMode="one_human"
-                referralBaseUrl={baseUrl}
-                referralUser={user}
-              />
-              <ReferralInvitationStatusCard />
-            </section>
+            {/* Impact Ledger */}
+            <div id="impact-ledger">
+              <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
+            </div>
 
-            <section className="mx-auto mb-10 max-w-4xl">
-              <HumanityManagerStatusPanel status={initialData.humanityManagerStatus} />
-            </section>
+            {/* Global Progress */}
+            <GlobalProgressCard progress={initialData.globalProgress} />
 
-            <section className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2" id={DASHBOARD_REFERRAL_SECTION_ID}>
-              <ReferralLinkCard
-                user={user}
-                baseUrl={baseUrl}
-                onUserChange={setUser}
-                onRefresh={refreshPage}
-                className="h-full"
-              />
-              <ReferralGoalCard stats={initialData.stats} />
-            </section>
+            {/* Stats Overview */}
+            <StatsOverview stats={initialData.stats} />
 
-            {topTasks.length > 0 ? (
-              <section className="mb-10 space-y-3">
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  Top Tasks <span>For You</span>
-                </h2>
-                <SortableTaskList tasks={topTasks} />
-              </section>
-            ) : null}
+            {/* Badges */}
+            <BadgesSection badges={initialData.badges} />
 
-            <details className="border-t border-[var(--treaty-ink)]/30 pt-5">
-              <summary className="cursor-pointer list-none text-center text-xs font-black uppercase tracking-[0.22em] text-[var(--treaty-ink-muted)]">
-                More dashboard
-              </summary>
-              <div className="mt-8 space-y-8">
-                {/* Quest Checklist */}
-                <QuestChecklistCard quests={initialData.questChecklist} />
+            {/* Leaderboard + Organizations */}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {leaderboard.length > 0 && (
+                <LeaderboardCard
+                  leaderboard={leaderboard}
+                  user={user}
+                  stats={initialData.stats}
+                />
+              )}
+              {initialData.organizations.created.length > 0 && (
+                <OrganizationsCard organizations={initialData.organizations} />
+              )}
+            </div>
 
-                {/* Impact Ledger */}
-                <div id="impact-ledger">
-                  <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
-                </div>
+            {/* Activity Feed */}
+            <ActivityFeed activities={initialData.activities} />
 
-                {/* Global Progress */}
-                <GlobalProgressCard progress={initialData.globalProgress} />
+            {/* Share Templates */}
+            <div id="share-templates">
+              <ShareTemplatesCard referralLink={referralLink} />
+            </div>
 
-                {/* Stats Overview */}
-                <StatsOverview stats={initialData.stats} />
-
-                {/* Badges */}
-                <BadgesSection badges={initialData.badges} />
-
-                {/* Leaderboard + Organizations */}
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                  {leaderboard.length > 0 && (
-                    <LeaderboardCard
-                      leaderboard={leaderboard}
-                      user={user}
-                      stats={initialData.stats}
-                    />
-                  )}
-                  {initialData.organizations.created.length > 0 && (
-                    <OrganizationsCard organizations={initialData.organizations} />
-                  )}
-                </div>
-
-                {/* Activity Feed */}
-                <ActivityFeed activities={initialData.activities} />
-
-                {/* Share Templates */}
-                <div id="share-templates">
-                  <ShareTemplatesCard referralLink={referralLink} />
-                </div>
-
-                <ImpactReceiptsCard receipts={initialData.impactReceipts} />
-              </div>
-            </details>
+            <ImpactReceiptsCard receipts={initialData.impactReceipts} />
           </div>
         </details>
       </div>

@@ -2650,7 +2650,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
     "National comparison, government education spending (all levels): United States spends $2996/cap with PISA Math Score 465. Japan spends $1288/cap with PISA Math Score 536. The 2.3x spending ratio is descriptive; it does not estimate an achievable saving or allocation target.",
     "National comparison, total R&D spending (business and government): United States spends $1576/cap with Measured after-tax median disposable income (OECD real PPP, equivalised household) 37444.1. Ireland spends $859/cap with Measured after-tax median disposable income (OECD real PPP, equivalised household) 32668.47. The 1.8x spending ratio is descriptive; it does not estimate an achievable saving or allocation target."
   ],
-  "generatedAt": "2026-09-26T21:10:03.298Z",
+  "generatedAt": "2026-09-26T22:05:34.368Z",
   "generatedBy": "@optimitron/obg descriptive peer comparisons",
   "inflationAdjustment": {
     "method": "CPI-U deflator for US federal spending history",

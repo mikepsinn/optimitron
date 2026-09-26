@@ -14,7 +14,7 @@ export default function EfficiencyPage() {
         <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Country comparisons</p>
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">Compare spending and outcomes</h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          Each national spending field appears once. See how much the US and a country with a high observed outcome spend, which years they represent, and what to investigate next.
+          Compare what countries spend with their health, education and income outcomes.
         </p>
       </header>
 
@@ -26,7 +26,7 @@ export default function EfficiencyPage() {
         <Link href={ROUTES.opg} className="underline underline-offset-4">Policy evidence</Link>
         <Link href={ROUTES.dividend} className="underline underline-offset-4">What would fund a dividend?</Link>
       </nav>
-      <p className="mt-6 text-xs font-bold text-muted-foreground">Report generated {usBudgetAnalysis.generatedAt.slice(0, 10)}. This date is when the report was built, not when the observations were collected.</p>
+      <p className="mt-6 text-xs font-bold text-muted-foreground">Report generated {usBudgetAnalysis.generatedAt.slice(0, 10)}.</p>
     </div>
   );
 }

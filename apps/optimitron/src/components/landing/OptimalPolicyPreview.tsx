@@ -7,7 +7,7 @@ import { getPolicyPath } from "@/lib/routes";
 import { usPolicyAnalysis } from "@/data/us-policy-analysis";
 
 export function OptimalPolicyPreview({
-  subtitle = "Inspect proposed changes, supporting observations, and assumptions about health and income.",
+  subtitle = "Proposals for healthcare, education, housing and drug policy.",
   title = "Compare Policy Proposals",
 }: {
   subtitle?: string;

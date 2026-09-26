@@ -311,6 +311,14 @@ test.describe("route visual regression", () => {
         await expect(page.getByText(route.requiredText)).toBeVisible();
       }
 
+      if (route.requiredHeading) {
+        await expect(page.getByRole("heading", {
+          level: 1,
+          name: route.requiredHeading,
+          exact: true,
+        })).toBeVisible();
+      }
+
       await waitForVisualIdle(page);
       if (route.waitForImages) {
         await waitForVisualImages(page);

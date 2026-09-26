@@ -128,7 +128,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "healthEffect": null,
       "rationale": "Descriptive spending comparison across 28 countries. The peer has a top-quartile outcome at lower spending; the 5.3x spending ratio does not identify transferable savings or income and health effects. Related federal lines: Military, Homeland Security.",
       "currentStatus": "United States spends $2052/cap on military spending; the selected peer spends $389/cap.",
-      "recommendedTarget": "No allocation target estimated. Evaluate the institutions, population differences, transition costs, and causal evidence before proposing a change.",
+      "recommendedTarget": "No spending target estimated.",
       "blockingFactors": [
         "causal_effect_not_estimated"
       ],
@@ -150,7 +150,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "healthEffect": null,
       "rationale": "Descriptive spending comparison across 28 countries. The peer has a top-quartile outcome at lower spending; the 2.9x spending ratio does not identify transferable savings or income and health effects. Related federal lines: Veterans Affairs, Health (non-Medicare/Medicaid).",
       "currentStatus": "United States spends $10333/cap on total health spending (public and private); the selected peer spends $3588/cap.",
-      "recommendedTarget": "No allocation target estimated. Evaluate the institutions, population differences, transition costs, and causal evidence before proposing a change.",
+      "recommendedTarget": "No spending target estimated.",
       "blockingFactors": [
         "causal_effect_not_estimated"
       ],
@@ -172,7 +172,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "healthEffect": null,
       "rationale": "Descriptive spending comparison across 11 countries. The peer has a top-quartile outcome at lower spending; the 2.3x spending ratio does not identify transferable savings or income and health effects. Related federal lines: Education.",
       "currentStatus": "United States spends $2996/cap on government education spending (all levels); the selected peer spends $1288/cap.",
-      "recommendedTarget": "No allocation target estimated. Evaluate the institutions, population differences, transition costs, and causal evidence before proposing a change.",
+      "recommendedTarget": "No spending target estimated.",
       "blockingFactors": [
         "causal_effect_not_estimated"
       ],
@@ -194,14 +194,14 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "healthEffect": null,
       "rationale": "Descriptive spending comparison across 16 countries. The peer has a top-quartile outcome at lower spending; the 1.8x spending ratio does not identify transferable savings or income and health effects. Related federal lines: Energy, Science / NASA, Commerce / Economic Development.",
       "currentStatus": "United States spends $1576/cap on total R&D spending (business and government); the selected peer spends $859/cap.",
-      "recommendedTarget": "No allocation target estimated. Evaluate the institutions, population differences, transition costs, and causal evidence before proposing a change.",
+      "recommendedTarget": "No spending target estimated.",
       "blockingFactors": [
         "causal_effect_not_estimated"
       ],
       "oecdSpendingField": "rdSpendingPerCapitaPpp"
     }
   ],
-  "generatedAt": "2026-09-26T21:10:03.300Z",
+  "generatedAt": "2026-09-26T22:05:34.370Z",
   "generatedBy": "@optimitron/opg evidence inventory",
   "note": "Curated fractional effect assumptions and descriptive national spending comparisons. Effects are not calibrated causal estimates, and no causal grade, welfare ranking, time horizon, or uncertainty interval is inferred."
 };

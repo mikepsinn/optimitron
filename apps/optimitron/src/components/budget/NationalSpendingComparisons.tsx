@@ -6,27 +6,27 @@ const FIELD_CONTEXT: Record<string, { source: string; sourceName: string; questi
   healthSpendingPerCapitaPpp: {
     source: "https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS",
     sourceName: "World Bank health expenditure",
-    question: "Compare prices, access and population health before estimating what a specific reform could save.",
+    question: "Includes public and private healthcare spending.",
   },
   educationSpendingPerCapitaPpp: {
     source: "https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS",
     sourceName: "World Bank education expenditure",
-    question: "Check student demographics, school coverage and spending per student before transferring a result.",
+    question: "Includes national, state and local government spending on education.",
   },
   militarySpendingPerCapitaPpp: {
     source: "https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS",
     sourceName: "World Bank military expenditure",
-    question: "Life expectancy does not measure security commitments or military effectiveness. This comparison cannot set a defense budget.",
+    question: "Security outcomes and military effectiveness are not measured here.",
   },
   rdSpendingPerCapitaPpp: {
     source: "https://data.worldbank.org/indicator/GB.XPD.RSDV.GD.ZS",
     sourceName: "World Bank R&D expenditure",
-    question: "Separate business and government research, and account for the years between research spending and its benefits.",
+    question: "Includes business and government research spending.",
   },
   socialSpendingPerCapitaPpp: {
     source: "https://www.oecd.org/en/data/datasets/social-expenditure-database-socx.html",
     sourceName: "OECD Social Expenditure Database",
-    question: "Check pension coverage, population age and health spending overlap before comparing specific programs.",
+    question: "Includes pensions and public healthcare, so it overlaps with health spending.",
   },
 };
 
@@ -56,7 +56,7 @@ export function NationalSpendingComparison({ comparison }: { comparison: Nationa
       {efficiency ? (
         <>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
-            {efficiency.bestCountry.name} has the lowest spending among the top quarter for {efficiency.outcomeName.toLowerCase()} in this {efficiency.totalCountries}-country comparison.
+            {efficiency.bestCountry.name} has the lowest spending among countries in the top quarter for {efficiency.outcomeName} in this {efficiency.totalCountries}-country comparison.
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {[
@@ -107,15 +107,15 @@ export function NationalSpendingComparisons({ comparisons }: { comparisons: Nati
 
 export function BudgetComparisonMethod() {
   return (
-    <section className="mt-10 border-t-4 border-primary pt-6">
-      <h2 className="text-xl font-black text-foreground">How to read these comparisons</h2>
+    <details className="mt-10 border-t-4 border-primary pt-6">
+      <summary className="cursor-pointer text-xl font-black text-foreground">Data and method</summary>
       <p className="mt-3 max-w-4xl text-sm font-bold text-muted-foreground">
-        A country spending less with a good outcome is a place to investigate. It does not show what would happen if the US copied its budget. The selection does not adjust for demographics, institutions, security commitments or other differences between countries.
+        Countries are compared using reported spending and outcomes. The comparison does not adjust for demographics, institutions or security commitments, and does not estimate the effect of a budget change.
       </p>
       <p className="mt-3 max-w-4xl text-sm font-bold text-muted-foreground">The health comparison uses life expectancy at birth; healthy life expectancy is a separate measure. Income comparisons use measured household disposable income where a compatible series is available.</p>
       <p className="mt-3 max-w-4xl text-sm font-bold text-muted-foreground">
         These fields overlap and cover different payers: healthcare and R&D include private spending, education includes state and local government, and social spending includes health. Their spending differences cannot be added into federal savings or a household dividend.
       </p>
-    </section>
+    </details>
   );
 }

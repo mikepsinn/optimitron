@@ -2,7 +2,6 @@ import {
   fullManualPaperLink,
   ROUTES,
   SHOW_DONATE_LINKS,
-  legacyNavLinks,
   navSections,
   routeReviewNavItems,
   type NavItem,
@@ -54,13 +53,13 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
     title: "Optimitron",
     emoji: "🏠",
     description:
-      "Compare policy evidence and government spending. Inspect sources, assumptions, and proposed changes.",
+      "Landing page for the Earth Optimization Game, the 1% Treaty, the prize mechanics, and the core argument for fixing public systems with evidence.",
     section: "Primary",
     keywords: [
       "landing",
       "home",
-      "policy analysis",
-      "budget comparisons",
+      "earth optimization game",
+      "planetary debugging",
     ],
   },
   {
@@ -94,7 +93,6 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
 export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
   dedupeByHref([
     ...extraStaticDocuments,
-    ...legacyNavLinks.map((item) => buildDocumentFromNavItem("Pages", item)),
     ...navSections.flatMap((section) =>
       section.items.map((item) =>
         buildDocumentFromNavItem(section.label, item),

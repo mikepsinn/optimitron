@@ -21,9 +21,6 @@ export function PolicyGradeTable() {
           </li>
         ))}
       </ul>
-      <p className="er-caption border-t px-3 py-2" style={{ borderColor: "var(--er-line)" }}>
-        Policy proposals. Open an analysis to inspect its evidence and assumptions.
-      </p>
     </div>
   );
 }

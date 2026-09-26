@@ -23,8 +23,7 @@ export function BudgetFrontierExhibit() {
     <div>
       <p className="er-card-title">Healthcare: spending and observed outcomes</p>
       <p className="er-body mt-3 text-sm">
-        Compare total health spending, public and private, with life expectancy.
-        This is a starting point for studying prices, access and population health.
+        Total healthcare spending, public and private, alongside life expectancy.
       </p>
       <div className="mt-6 space-y-5">
         {countries.map((country, index) => (
@@ -46,11 +45,6 @@ export function BudgetFrontierExhibit() {
         Spending: constant 2017 international dollars per person per year (PPP).
         Average of up to three latest available observations per country.
         The comparison does not establish the effect of cutting spending.
-      </p>
-      <p className="er-body mt-5 text-sm">
-        A useful budget recommendation needs evidence about a specific reform
-        and the services it would preserve. These national differences cannot
-        be added into a government savings total.
       </p>
       <a className="er-caption mt-3 inline-block underline underline-offset-4" href="https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS">World Bank health expenditure ↗</a>
     </div>

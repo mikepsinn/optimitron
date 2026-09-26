@@ -280,7 +280,7 @@ function generatePolicyAnalysis(
         healthEffect: null,
         rationale: `Descriptive spending comparison across ${e.totalCountries} countries. The peer has a top-quartile outcome at lower spending; the ${e.overspendRatio}x spending ratio does not identify transferable savings or income and health effects. Related federal lines: ${lineNames}.`,
         currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap on ${lowerFirst(field.label)}; the selected peer spends $${e.bestCountry.spendingPerCapita}/cap.`,
-        recommendedTarget: 'No allocation target estimated. Evaluate the institutions, population differences, transition costs, and causal evidence before proposing a change.',
+        recommendedTarget: 'No spending target estimated.',
         blockingFactors: ['causal_effect_not_estimated'],
         oecdSpendingField: f.spendingField,
       };
