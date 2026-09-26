@@ -411,14 +411,14 @@ export default function TreatyVoteSection({
             >
               <PanelShell className={panelClassName}>
                 <Question className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
-                  Adjust slider to show how you'd split your country's finite resources between the{" "}
-                  <span className="text-brutal-pink">weapons and military</span> vs{" "}
+                  Drag the slider to show how you’d like your government to split public funding:{" "}
+                  <span className="text-brutal-pink">weapons and military spending</span> versus{" "}
                   <PragmaticTrialsDialog
                     triggerClassName="inline text-brutal-pink underline decoration-dotted decoration-[1px] decoration-brutal-pink/45 underline-offset-2 transition-opacity hover:opacity-80"
                   >
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>{" "}
-                  to cure diseases.
+                  to treat and cure disease.
                 </Question>
 
                 {/* Allocation Display */}
