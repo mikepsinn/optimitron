@@ -316,7 +316,9 @@ const PRIZE_PAGE_FILES = [
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
   [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
+  [ROUTES.dividend, ["apps/optimitron/src/app/dividend/page.tsx"]],
   [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
+  [ROUTES.efficiency, ["apps/optimitron/src/app/efficiency/page.tsx"]],
   [
     ROUTES.eosShareholders,
     ["apps/optimitron/src/components/eos-shareholder/EosShareholderLandingPage.tsx"],
@@ -329,6 +331,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ROUTES.eos,
     [
       "apps/optimitron/src/components/eos-retro/AgencyBooths.tsx",
+      "apps/optimitron/src/components/eos-retro/BudgetFrontierExhibit.tsx",
       "apps/optimitron/src/components/eos-retro/OptimizedPublicAdministration.tsx",
       "apps/optimitron/src/components/eos-retro/DfdaOutcomeLabel.tsx",
       "apps/optimitron/src/components/eos-retro/eos-retro.css",
@@ -366,13 +369,15 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
   [ROUTES.dashboard, "h1"],
+  [ROUTES.dividend, 'main section:has-text("A dividend estimate is not yet available")'],
   [ROUTES.donate, "h1"],
+  [ROUTES.efficiency, "#healthSpendingPerCapitaPpp"],
   [ROUTES.eosShareholders, "h1"],
   [ROUTES.messages, "h1"],
   [ROUTES.organizations, "h1"],
   [ROUTES.shirt, "h1"],
   [ROUTES.tasks, "h1"],
-  [ROUTES.eos, "h1"],
+  [ROUTES.eos, "#system-obg:has(.er-bar-fill)"],
   [ROUTES.game, "#vote"],
   // The home route covers every shared landing section, so without a selector
   // the coverage gate cannot prove any of them rendered. #vote is the last
@@ -785,15 +790,21 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     requiredHeading: "Military",
   },
   {
-    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/obg/page.tsx",
+      "apps/optimitron/src/components/budget/NationalSpendingComparisons.tsx",
+    ],
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
-    requiredSelector: "h1",
+    requiredSelector: "#healthSpendingPerCapitaPpp",
     requiredHeading: "What can we learn from other countries?",
   },
   {
-    covers: ["apps/optimitron/src/app/opg/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/opg/page.tsx",
+      "apps/optimitron/src/app/opg/layout.tsx",
+    ],
     name: "opg-index",
     path: ROUTES.opg,
     required: true,
@@ -808,6 +819,15 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredHeading: policyDisplayName(healthComparisonPolicy),
+  },
+  {
+    // This proposal has historical evidence; the national comparison above does not.
+    covers: ["apps/optimitron/src/components/opg/ExperimentTimeSeriesChart.tsx"],
+    name: "opg-policy-detail-experiments",
+    path: getPolicyPath("Shift Drug Policy from Criminal to Health Approach"),
+    required: true,
+    requiredSelector: 'svg[role="img"][aria-label^="Drug-Induced Deaths in Portugal"]',
+    requiredHeading: "Shift Drug Policy from Criminal to Health Approach",
   },
   {
     // Required, and asserted on #also-serves rather than something always
