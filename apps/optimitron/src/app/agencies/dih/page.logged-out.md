@@ -31,35 +31,35 @@
 - $0.84 per DALY averted with pragmatic trials. Traditional system: ~$50,000. A 60,000x efficiency gap.
 - Zero years. If it's proven safe, patients can access it. No 8.2-year queue while people die waiting.
 ### SPENDING VS OUTCOMES
-- 🔬 NATIONAL INSTITUTES OF HEALTH — D
-- 🏥 FOOD AND DRUG ADMINISTRATION — F
-- 🩺 HEALTHCARE SYSTEM (HHS/CMS) — F
+- 🔬 NATIONAL INSTITUTES OF HEALTH — B
+- 🏥 FOOD AND DRUG ADMINISTRATION — NOT GRADED
+- 🩺 HEALTHCARE SYSTEM (HHS/CMS) — D
 - 💊 DRUG ENFORCEMENT ADMINISTRATION — F
 - 🎖️ DEPARTMENT OF VETERANS AFFAIRS — D
 ##### 🔬 NATIONAL INSTITUTES OF HEALTH
 - Seek fundamental knowledge and apply it to enhance health
-- NIH Annual Budget (USD) · left axis
-- 💊 FDA Novel Drug Approvals (NMEs) · right axis
+- NIH program level (nominal USD, fiscal year; excludes ARPA-H and emergency supplementals) · left axis
+- 💊 CDER novel drug approvals (new molecular entities; plus new therapeutic BLAs from 2004), calendar year · right axis
 - 2003 [Doubling complete ($27.2B) — then budget flatlines for a decade ↗](https://www.nih.gov/about-nih/what-we-do/budget)
 - 2013 [Sequestration cuts $1.7B from NIH — 640 fewer grants funded ↗](https://www.gao.gov/products/gao-14-750r)
 - 2020 [$4.9B emergency COVID supplemental — suddenly money is available when Congress is scared ↗](https://www.nih.gov/coronavirus)
-- Budget increased 164% while drug approvals remained volatile and flat on trend. Only 3.3% of the budget reaches actual clinical trials.
+- Budget increased 165% (FY2000 $17.8B → FY2024 $47.3B) while novel drug approvals rose from 27 (2000) to 50 (2024) — volatile, but about 75% higher comparing 2000–04 with 2020–24. Only 3.3% of the budget reaches actual clinical trials.
 - SHOW THE NUMBERS
 
-| Year | NIH Annual Budget (USD) | FDA Novel Drug Approvals (NMEs) |
+| Year | NIH program level (nominal USD, fiscal year; excludes ARPA-H and emergency supplementals) | CDER novel drug approvals (new molecular entities; plus new therapeutic BLAs from 2004), calendar year |
 | --- | --- | --- |
-| 2000 | $17.9B | 27 |
+| 2000 | $17.8B | 27 |
 | 2002 | $23.3B | 17 |
-| 2004 | $28B | 31 |
-| 2006 | $28.6B | 18 |
-| 2008 | $29.5B | 21 |
-| 2010 | $31B | 21 |
-| 2012 | $30.9B | 33 |
+| 2004 | $28B | 36 |
+| 2006 | $28.6B | 22 |
+| 2008 | $29.6B | 24 |
+| 2010 | $31.2B | 21 |
+| 2012 | $30.9B | 39 |
 | 2014 | $30.1B | 41 |
 | 2016 | $32.3B | 22 |
 | 2018 | $37.3B | 59 |
 | 2020 | $41.7B | 53 |
-| 2022 | $45B | 37 |
+| 2022 | $45.2B | 37 |
 | 2024 | $47.3B | 50 |
 
 ### WHAT THEY COST YOU

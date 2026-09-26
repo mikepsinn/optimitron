@@ -16,12 +16,13 @@ interface EarthAgencyReportCardProps {
   accentColor: AccentColor;
 }
 
-function GradeBadge({ grade }: { grade: AgencyGrade }) {
+function GradeBadge({ grade }: { grade: AgencyGrade | null }) {
   return (
     <span
-      className={`inline-flex h-10 w-10 items-center justify-center border border-foreground text-xl font-black ${gradeColors[grade]}`}
+      aria-label={grade ? `Grade ${grade}` : "Not graded"}
+      className={`inline-flex h-10 w-10 items-center justify-center border border-foreground text-xl font-black ${grade ? gradeColors[grade] : "text-muted-foreground"}`}
     >
-      {grade}
+      {grade ?? "—"}
     </span>
   );
 }

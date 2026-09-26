@@ -446,6 +446,8 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     covers: [
       "apps/optimitron/src/app/agencies/dih/page.tsx",
       "apps/optimitron/src/components/wishonia-agency/EarthAgencyPerformanceSection.tsx",
+      // Its report card lists NIH (graded) and FDA (not graded).
+      "apps/optimitron/src/components/wishonia-agency/EarthAgencyReportCard.tsx",
     ],
     name: "agency-dih",
     path: "/agencies/dih",
@@ -500,6 +502,18 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     path: "/governments/US/agencies/nih",
     required: true,
     requiredSelector: "h1",
+  },
+  {
+    // An agency with no sourced outcome series: spending only, no grade.
+    covers: [
+      "apps/optimitron/src/app/governments/[code]/agencies/[agencyId]/page.tsx",
+      "apps/optimitron/src/components/shared/AgencyGradeChart.tsx",
+    ],
+    name: "government-agency-ungraded",
+    path: "/governments/US/agencies/dod",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^Department of Defense$/,
   },
   {
     covers: [

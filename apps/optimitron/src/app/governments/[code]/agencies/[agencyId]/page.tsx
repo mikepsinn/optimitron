@@ -100,7 +100,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!agency) return { title: "Agency Not Found" };
   const gov = getGovernmentMetrics(code.toUpperCase());
   return {
-    title: `${agency.emoji} ${agency.agencyName} — Grade ${agency.grade} | ${gov?.name ?? code}`,
+    title: `${agency.emoji} ${agency.agencyName} — ${agency.grade ? `Grade ${agency.grade}` : "Not Graded"} | ${gov?.name ?? code}`,
     description: `${agency.agencyName} report card: ${agency.gradeRationale}`,
   };
 }
@@ -154,9 +154,11 @@ export default async function AgencyDetailPage({ params }: PageProps) {
             </p>
           </div>
           <div
-            className={`shrink-0 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center border-4 border-primary ${gradeColors[agency.grade]} font-black text-4xl sm:text-5xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+            aria-label={agency.grade ? `Grade ${agency.grade}` : "Not graded"}
+            className={`shrink-0 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center border-4 border-primary ${agency.grade ? gradeColors[agency.grade] : "bg-background text-muted-foreground"} font-black text-4xl sm:text-5xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+            title={agency.grade ? undefined : "Not graded"}
           >
-            {agency.grade}
+            {agency.grade ?? "—"}
           </div>
         </div>
       </section>

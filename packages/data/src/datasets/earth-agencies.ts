@@ -27,7 +27,7 @@ export interface EarthAgencyPerformance {
   spendingLabel: string;
   outcomes: OutcomeSeries[];
   annotations?: { year: number; label: string; url?: string }[];
-  grade: AgencyGrade;
+  grade: AgencyGrade | null;
   gradeRationale: string;
   wishoniaQuote: string;
   sources: { label: string; url: string }[];
@@ -88,7 +88,7 @@ function buildPerformance(ap: {
   spendingLabel: string;
   outcomes: OutcomeSeries[];
   annotations?: { year: number; label: string; url?: string }[];
-  grade: AgencyGrade;
+  grade: AgencyGrade | null;
   gradeRationale: string;
   wishoniaQuote: string;
   sources: { label: string; url: string }[];

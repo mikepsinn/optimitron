@@ -77,11 +77,11 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
                 display: "flex",
                 fontSize: 28,
                 fontWeight: 900,
-                color: gradeColors[a.grade] ?? "#888",
+                color: a.grade ? gradeColors[a.grade] : "#888",
                 marginLeft: 8,
               }}
             >
-              {a.grade}
+              {a.grade ?? "—"}
             </div>
           </div>
         ))}
