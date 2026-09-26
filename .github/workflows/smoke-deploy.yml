@@ -418,7 +418,7 @@ jobs:
         run: echo "Running lightweight deployed preview smoke only because this PR only changed workflow/deploy plumbing."
 
       - name: Wait for preview database sync
-        if: steps.target.outputs.app == 'optimitron' && steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.target.outputs.app != 'unknown' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/github-script@v8
         with:
           script: |

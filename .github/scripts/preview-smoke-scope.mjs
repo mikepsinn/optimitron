@@ -1,5 +1,5 @@
 const PREVIEW_SMOKE_PATTERN_SOURCES = [
-  "^apps/optimitron/",
+  "^apps/",
   "^packages/",
   "^scripts/",
   "^package\\.json$",
@@ -11,7 +11,7 @@ const PREVIEW_SMOKE_PATTERN_SOURCES = [
   "^playwright(?:\\.[^/]+)?\\.[cm]?[jt]s$",
 ];
 const VERCEL_PREVIEW_BUILD_PATTERN_SOURCES = [
-  "^apps/optimitron/",
+  "^apps/",
   "^packages/",
   "^content/",
   "^scripts/",
@@ -41,7 +41,7 @@ export function shouldRunPreviewSmoke(files) {
   return getPreviewSmokeMatches(files).length > 0;
 }
 
-// Shared by the Optimitron Vercel ignore command and CI production scope.
+// Every site app uses the shared preview schema.
 // Unlike smoke scope, test-only changes still count because Vercel builds them.
 export function getVercelPreviewBuildMatches(files) {
   return files
