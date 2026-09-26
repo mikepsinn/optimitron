@@ -110,6 +110,9 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
     isAuthenticated && user?.isAdmin === true,
   );
   const quickAction = config.quickAction ?? null;
+  const primaryLinks = config.sections
+    .filter((section) => section.primary)
+    .flatMap((section) => section.items);
   const quickActionHref = quickAction
     ? isAuthenticated
       ? quickAction.href
@@ -153,7 +156,7 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 border-b-2 border-foreground bg-background text-foreground">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-[58px] items-center justify-between">
+        <div className="flex min-h-[58px] flex-wrap items-center justify-between gap-x-4">
           {/* Logo */}
           <Link
             href={config.brandHref}
@@ -162,6 +165,19 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
             <span className="sm:hidden">{config.brandLabel}</span>
             <span className="hidden sm:inline">{config.desktopBrandLabel}</span>
           </Link>
+
+          <div className="order-last flex w-full items-center gap-6 pb-3 pt-1 sm:order-none sm:w-auto sm:py-0">
+            {primaryLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isNavItemActive(pathname, item) ? "page" : undefined}
+                className={`text-sm font-bold underline-offset-4 hover:underline ${isNavItemActive(pathname, item) ? "underline" : ""}`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
           {/* Right side: Avatar + Hamburger */}
           <div className="flex items-center gap-3">

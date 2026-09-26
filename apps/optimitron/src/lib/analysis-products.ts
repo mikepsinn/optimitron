@@ -5,122 +5,63 @@ export type BudgetCategoryWithEfficiency = BudgetCategoryOutput & {
   efficiency: NonNullable<BudgetCategoryOutput["efficiency"]>;
 };
 
-export const US_ADULT_POPULATION = 258_000_000;
-
-export const BUDGET_LEGISLATION_SLUGS: Record<string, string> = {
-  military: "military-reform",
-  health_discretionary: "health-non-medicare-medicaid-reform",
-  education: "education-reform",
-  science_nasa: "science-nasa-reform",
+// Select a consistent outcome independently of the spending gap. Social spending
+// also appeared against life expectancy on justice/environment rows; that must
+// not silently replace a missing income comparison.
+const COMPARISON_CATEGORY: Record<string, string> = {
+  militarySpendingPerCapitaPpp: "military",
+  healthSpendingPerCapitaPpp: "health_discretionary",
+  educationSpendingPerCapitaPpp: "education",
+  rdSpendingPerCapitaPpp: "science_nasa",
+  socialSpendingPerCapitaPpp: "transportation",
 };
 
-const EFFICIENCY_GROUPS: Record<string, string> = {
-  medicare: "health",
-  medicaid: "health",
-  health_discretionary: "health",
-  military: "military",
-  social_security: "social",
-  education: "education",
-  science_nasa: "science",
-};
-
-const EFFICIENCY_LABELS: Record<string, string> = {
-  health: "Healthcare",
-  military: "Military",
-  social: "Social Programs",
-  education: "Education",
-  science: "Science & Space",
-};
-
-export interface OptimizationDividendRow {
-  category: BudgetCategoryWithEfficiency;
+export interface NationalBudgetComparison {
+  spendingField: string;
   label: string;
-  legislationSlug?: string;
-  modelCountry: string;
-  overspendRatio: number;
-  annualSavingsTotal: number;
-  annualSavingsPerAdult: number;
-  monthlySavingsPerAdult: number;
+  category: BudgetCategoryOutput;
+  relatedCategories: BudgetCategoryOutput[];
 }
 
-function getEfficiencyGroup(category: BudgetCategoryOutput): string {
-  return EFFICIENCY_GROUPS[category.id] ?? category.id;
-}
-
-function hasEfficiency(category: BudgetCategoryOutput): category is BudgetCategoryWithEfficiency {
-  return category.efficiency !== null;
-}
-
-export function getBudgetCategoriesWithEfficiency(
+export function getNationalBudgetComparisons(
   categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
-): BudgetCategoryWithEfficiency[] {
-  return categories.filter(hasEfficiency);
+): NationalBudgetComparison[] {
+  const grouped = new Map<string, BudgetCategoryOutput[]>();
+  for (const category of categories) {
+    const field = category.oecdBenchmark?.spendingField;
+    if (!field) continue;
+    const group = grouped.get(field) ?? [];
+    group.push(category);
+    grouped.set(field, group);
+  }
+
+  return [...grouped.entries()].map(([spendingField, relatedCategories]) => {
+    const sorted = [...relatedCategories].sort((a, b) => a.id.localeCompare(b.id));
+    const category = sorted.find((row) => row.id === COMPARISON_CATEGORY[spendingField]) ?? sorted[0]!;
+    return {
+      spendingField,
+      label: category.oecdBenchmark!.fieldLabel,
+      category,
+      relatedCategories: sorted,
+    };
+  });
 }
 
 export function deduplicateEfficiencyCategories(
   categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
 ): BudgetCategoryWithEfficiency[] {
-  const grouped = new Map<string, BudgetCategoryWithEfficiency>();
-
-  for (const category of getBudgetCategoriesWithEfficiency(categories)) {
-    const group = getEfficiencyGroup(category);
-    const current = grouped.get(group);
-
-    if (!current) {
-      grouped.set(group, category);
-      continue;
-    }
-
-    const currentScore =
-      current.efficiency.potentialSavingsTotal +
-      (BUDGET_LEGISLATION_SLUGS[current.id] ? 1e15 : 0);
-    const nextScore =
-      category.efficiency.potentialSavingsTotal +
-      (BUDGET_LEGISLATION_SLUGS[category.id] ? 1e15 : 0);
-
-    if (nextScore > currentScore) {
-      grouped.set(group, category);
-    }
-  }
-
-  return [...grouped.values()];
+  return getNationalBudgetComparisons(categories)
+    .map((comparison) => comparison.category)
+    .filter((category): category is BudgetCategoryWithEfficiency => category.efficiency != null);
 }
 
-export function getOptimizationDividendBreakdown(
-  categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
-  adults: number = US_ADULT_POPULATION,
-): OptimizationDividendRow[] {
-  return deduplicateEfficiencyCategories(categories)
-    .map((category) => {
-      const group = getEfficiencyGroup(category);
-      const annualSavingsPerAdult = Math.round(category.efficiency.potentialSavingsTotal / adults);
-
-      return {
-        category,
-        label: EFFICIENCY_LABELS[group] ?? category.name,
-        legislationSlug: BUDGET_LEGISLATION_SLUGS[category.id],
-        modelCountry: category.efficiency.bestCountry.name,
-        overspendRatio: category.efficiency.overspendRatio,
-        annualSavingsTotal: category.efficiency.potentialSavingsTotal,
-        annualSavingsPerAdult,
-        monthlySavingsPerAdult: Math.round(annualSavingsPerAdult / 12),
-      };
-    })
-    .sort((left, right) => right.annualSavingsTotal - left.annualSavingsTotal);
-}
-
+/**
+ * Peer spending differences are neither causal fiscal savings nor distributable
+ * revenue. Fields overlap and mix public/private and federal/local spending.
+ * Even a category-specific comparison cannot establish a cash dividend.
+ */
 export function getOptimizationDividendSummary(
-  categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
-  adults: number = US_ADULT_POPULATION,
-) {
-  const breakdown = getOptimizationDividendBreakdown(categories, adults);
-  const annualTotal = breakdown.reduce((sum, row) => sum + row.annualSavingsTotal, 0);
-  const annualPerAdult = Math.round(annualTotal / adults);
-
-  return {
-    breakdown,
-    annualTotal,
-    annualPerAdult,
-    monthlyPerAdult: Math.round(annualPerAdult / 12),
-  };
+  _categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
+): null {
+  return null;
 }

@@ -51,6 +51,29 @@ describe("navigation routes", () => {
     expect(navSections.map((section) => section.id)).not.toContain("fund");
   });
 
+  it("puts analyses first while retaining secondary workspace and satellite access", () => {
+    const primaryHrefs = navSections
+      .filter((section) => section.primary)
+      .flatMap((section) => section.items.map((item) => item.href));
+
+    expect(primaryHrefs).toEqual([ROUTES.opg, ROUTES.obg, "/#evidence"]);
+    const workspace = navSections.find((section) => section.id === "workspace");
+    expect(workspace?.primary).not.toBe(true);
+    expect(workspace?.items.map((item) => item.href)).toEqual(
+      expect.arrayContaining([ROUTES.dashboard, ROUTES.tasks, ROUTES.calendar]),
+    );
+    const satellites = navSections.find((section) => section.id === "other-apps");
+    expect(satellites?.primary).not.toBe(true);
+    expect(satellites?.items.map((item) => item.href)).toEqual(
+      expect.arrayContaining([
+        "https://dfda.earth/mcp",
+        "https://warondisease.org/",
+        "https://courtofhumanity.org/court",
+      ]),
+    );
+    expect(satellites?.items.every((item) => item.external)).toBe(true);
+  });
+
   it("keeps nested routes highlighted under the correct parent nav item", () => {
     const opg = requireLink(ROUTES.opg, exploreLinks);
 

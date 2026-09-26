@@ -8,6 +8,8 @@ import { getPolicyPath, ROUTES } from "@/lib/routes";
  * replaced it, so the redirect survives a change of benchmark country.
  */
 const RETIRED_POLICY_SLUG_FIELDS: Record<string, string> = {
+  "national-randd-spending-adopt-netherlands-s-approach": "rdSpendingPerCapitaPpp",
+  "public-social-spending-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
   "military-adopt-switzerland-s-approach": "militarySpendingPerCapitaPpp",
   "homeland-security-adopt-switzerland-s-approach": "militarySpendingPerCapitaPpp",
   "veterans-affairs-adopt-south-korea-s-approach": "healthSpendingPerCapitaPpp",

@@ -23,8 +23,8 @@ interface ExperimentTimeSeriesChartProps {
 
 const SERIES_COLORS = [
   "var(--foreground)",
-  "var(--background)",
-  "var(--background)",
+  "var(--foreground)",
+  "var(--foreground)",
 ];
 
 export function ExperimentTimeSeriesChart({

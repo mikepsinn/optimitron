@@ -27,29 +27,28 @@
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#system-dfda)
 - [🏛️OPTIMIZED PUBLIC ADMINISTRATION Public systems designed to produce the greatest health and wealth per dollar spent.](#system-agencies)
 - [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#system-you)
-#### PART A · LAWS GRADED LIKE HOMEWORK
-- 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. But sure, let the humans keep guessing.
-
-| POLICY | HEALTH | INCOME | GRADE | VERDICT |
-| --- | --- | --- | --- | --- |
-| Universal Pre-K (Ages 3-4) | +0.10 yrs | +0.15 pp/yr | A | REALLOCATE |
-| Pragmatic Clinical Trial Funding Reform | +0.30 yrs | +0.05 pp/yr | A | ENACT |
-| Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp/yr | B | ENACT |
-| Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
-| Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
-
-- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
+#### PART A · POLICY PROPOSALS, OPEN FOR INSPECTION
+- Start with proposed changes. Inspect their evidence and assumptions before choosing what to implement.
+- [Universal Pre-K (Ages 3-4)](/opg/universal-pre-k-ages-3-4) Federal funding for universal enrollment by age 3
+- [Shift Drug Policy from Criminal to Health Approach](/opg/shift-drug-policy-from-criminal-to-health-approach) Decriminalize personal use, redirect enforcement budget to treatment
+- [Pragmatic Clinical Trial Funding Reform](/opg/pragmatic-clinical-trial-funding-reform) Mandate 30%+ of research budget for pragmatic trials with open data requirements
+- [Right to Trial & FDA Upgrade Act](/opg/right-to-trial-and-fda-upgrade-act) Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)
+- [Housing Supply Deregulation](/opg/housing-supply-deregulation) Condition federal grants on local zoning reform
+- Policy proposals. Open an analysis to inspect its evidence and assumptions.
 - [Explore the Policy Generator](/opg)
-#### PART B · THE BUDGET, SOLVED LIKE AN EQUATION
-- 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone and costs nothing.
-- Fig. 2 · OECD countries grouped into ten health-spending deciles. Past the gold point, every extra dollar buys less life. The dot on the far right is the decile the United States lives in.
-- MILITARY: WHAT YOU PAY VS THE EFFICIENT FLOOR
-- Current, per person
-- $2K
-- Efficient floor
-- $377
-- Source: OECD efficient frontier (28 countries, rank 27/28). The generator's verdict: major decrease, closing 81% of the gap.
-- Run every category this way and the whole government costs $8.7K per person instead of $21.8K, for equal or better outcomes. A 2.5x markup, currently billed to you.
+#### PART B · WHAT OTHER COUNTRIES CAN TEACH US
+- Compare what countries spend with the outcomes they report. A useful lead for research; a spending decision still needs evidence about the specific change.
+- HEALTHCARE: SPENDING AND OBSERVED OUTCOMES
+- Compare total health spending, public and private, with life expectancy. This is a starting point for studying prices, access and population health.
+- UNITED STATES
+- $10,333 / person / year
+- Life expectancy: 76.9 years · Observations: 2020, 2021, 2022
+- SOUTH KOREA
+- $3,588 / person / year
+- Life expectancy: 83.6 years · Observations: 2020, 2021, 2022
+- Spending: constant 2017 international dollars per person per year (PPP). Average of up to three latest available observations per country. The comparison does not establish the effect of cutting spending.
+- A useful budget recommendation needs evidence about a specific reform and the services it would preserve. These national differences cannot be added into a government savings total.
+- [World Bank health expenditure ↗](https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS)
 - [Explore the Budget Generator](/obg)
 #### PART C · THE NINETY-SECOND LEGISLATURE
 - Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it.

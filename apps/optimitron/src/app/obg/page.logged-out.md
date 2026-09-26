@@ -2,82 +2,119 @@
 
 ## Metadata
 
-- Page title: Optimitron — Earth Optimization Services
-- Meta description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!
-- Canonical: [missing]
-- Open Graph title: Optimitron — Earth Optimization Services
-- Open Graph description: Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!
-- Open Graph image: https://optimitron.com/og-image.jpg
-- Twitter title: Optimitron — Earth Optimization Services
-- Twitter description: Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!
+- Page title: Optimal Budget Generator | Optimitron
+- Meta description: Compare government spending and outcomes across countries. Inspect national spending, reported outcomes, and current federal allocations.
+- Canonical: https://optimitron.com/obg
+- Open Graph title: Optimal Budget Generator
+- Open Graph description: Compare government spending and outcomes across countries. Inspect national spending, reported outcomes, and current federal allocations.
+- Open Graph image: https://optimitron.com/api/og/route?path=%2Fobg
+- Twitter title: Optimal Budget Generator
+- Twitter description: Compare government spending and outcomes across countries. Inspect national spending, reported outcomes, and current federal allocations.
 
 ## Visible Page Copy
 
-## THE US FEDERAL BUDGET, DIAGNOSED
-- Your government's $6.71T shopping list, reviewed by someone who's actually done the maths. 18 categories. 1 of them can be compared line for line with other countries. The rest only have whole-country comparisons, so they get no line-item target.
-### RELATED ANALYSIS
-- [OPTIMIZATION DIVIDEND See the savings land in your household as cash.](/dividend)
-- [EFFICIENCY RANKINGS See the comparator countries behind each overspend claim.](/efficiency)
-- [GOVERNMENT SIZE Switch from federal line items to whole-government floor analysis.](/government-size)
-- [MODEL LEGISLATION Read the drafted bills built from this analysis.](/legislation)
-### TOP 5 RECOMMENDATIONS
-- Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Cutting the $886B line to Switzerland's ratio saves $719B/yr
-- National comparison, total health spending (public and private): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential national savings: $2.3T/yr
-- National comparison, government education spending (all levels): United States spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr
-- National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 25/28). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential national savings: $314B/yr
-- National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 23/26). Singapore spends $7868/cap with After-Tax Median Income (PPP) 36844.31. Overspend: 1.6x. Potential national savings: $1.7T/yr
-### CURRENT VS OPTIMAL SPENDING
-- [Military 5.3× overspend Major Decrease -81.1%Current$886B Optimal$167B](/obg/military)
-- [Veterans Affairs No Line Benchmark Current$325B Optimal No line-specific benchmark. Only comparison: total health spending (public and private).](/obg/veterans-affairs)
-- [Transportation No Line Benchmark Current$105B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/transportation)
-- [Education No Line Benchmark Current$102B Optimal No line-specific benchmark. Only comparison: government education spending (all levels).](/obg/education)
-- [Health (non-Medicare/Medicaid) No Line Benchmark Current$94B Optimal No line-specific benchmark. Only comparison: total health spending (public and private).](/obg/health-non-medicare-medicaid)
-- [HUD / Housing No Line Benchmark Current$73B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/hud-housing)
-- [Foreign Aid / International Affairs No Line Benchmark Current$63B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/foreign-aid-international-affairs)
-- [Homeland Security No Line Benchmark Current$62B Optimal No line-specific benchmark. Only comparison: military spending.](/obg/homeland-security)
-- [Energy No Line Benchmark Current$52B Optimal No line-specific benchmark. Only comparison: total R&D spending (business and government).](/obg/energy)
-- [Science / NASA No Line Benchmark Current$44B Optimal No line-specific benchmark. Only comparison: total R&D spending (business and government).](/obg/science-nasa)
-- [Labor No Line Benchmark Current$42B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/labor)
-- [Justice / Law Enforcement No Line Benchmark Current$40B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/justice-law-enforcement)
-- [Agriculture No Line Benchmark Current$38B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/agriculture)
-- [Treasury / General Government No Line Benchmark Current$30B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/treasury-general-government)
-- [State Department / Diplomacy No Line Benchmark Current$19B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/state-department-diplomacy)
-- [Commerce / Economic Development No Line Benchmark Current$18B Optimal No line-specific benchmark. Only comparison: total R&D spending (business and government).](/obg/commerce-economic-development)
-- [Interior / Natural Resources No Line Benchmark Current$17B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/interior-natural-resources)
-- [EPA / Environment No Line Benchmark Current$12B Optimal No line-specific benchmark. Only comparison: public social spending (pensions, health, income support).](/obg/epa-environment)
-### FULL CATEGORY BREAKDOWN
+- BUDGET EVIDENCE
+## WHAT CAN WE LEARN FROM OTHER COUNTRIES?
+- Compare national spending with observed health, education and income outcomes. These comparisons identify systems worth studying; setting a budget requires evidence about specific changes and the services they would preserve.
+#### Military spending
+- Switzerland has the lowest spending among the top quarter for life expectancy in this 28-country comparison.
+- United States
+- $2,052 / person / year
+- Life Expectancy: 76.93
+- Observations: 2020, 2021, 2022
+- Switzerland
+- $389 / person / year
+- Life Expectancy: 83.37
+- Average of up to three latest available annual observations per country. Spending is in constant 2017 international dollars per person per year (PPP); the years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
+- Life expectancy does not measure security commitments or military effectiveness. This comparison cannot set a defense budget.
+- [World Bank military expenditure ↗](https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS)
+- [World Bank life expectancy ↗](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)
+- Related federal spending
+- These lines provide budget context. The national comparison does not estimate their individual effects or recommend cuts.
+- [Homeland Security](/obg/homeland-security)
+- [Military](/obg/military)
+#### Total health spending (public and private)
+- South Korea has the lowest spending among the top quarter for life expectancy in this 28-country comparison.
+- $10,333 / person / year
+- South Korea
+- $3,588 / person / year
+- Life Expectancy: 83.57
+- Compare prices, access and population health before estimating what a specific reform could save.
+- [World Bank health expenditure ↗](https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS)
+- [Health (non-Medicare/Medicaid)](/obg/health-non-medicare-medicaid)
+- [Veterans Affairs](/obg/veterans-affairs)
+#### Public social spending (pensions, health, income support)
+- Ireland has the lowest spending among the top quarter for measured after-tax median disposable income (oecd real ppp, equivalised household) in this 16-country comparison.
+- $10,268 / person / year
+- Measured after-tax median disposable income (OECD real PPP, equivalised household): 37,444.1
+- Observations: 2018
+- Ireland
+- $9,709 / person / year
+- Measured after-tax median disposable income (OECD real PPP, equivalised household): 32,668.47
+- Income uses measured OECD disposable household income, adjusted for household size and OECD real PPP. Its unit and price basis differ from the spending series.
+- Check pension coverage, population age and health spending overlap before comparing specific programs.
+- [OECD Social Expenditure Database ↗](https://www.oecd.org/en/data/datasets/social-expenditure-database-socx.html)
+- [OECD Income Distribution Database ↗](https://www.oecd.org/en/data/datasets/income-distribution-database.html)
+- [Agriculture](/obg/agriculture)
+- [EPA / Environment](/obg/epa-environment)
+- [Foreign Aid / International Affairs](/obg/foreign-aid-international-affairs)
+- [HUD / Housing](/obg/hud-housing)
+- [Interior / Natural Resources](/obg/interior-natural-resources)
+- [Justice / Law Enforcement](/obg/justice-law-enforcement)
+- [Labor](/obg/labor)
+- [State Department / Diplomacy](/obg/state-department-diplomacy)
+- [Transportation](/obg/transportation)
+- [Treasury / General Government](/obg/treasury-general-government)
+#### Government education spending (all levels)
+- Japan has the lowest spending among the top quarter for pisa math score in this 11-country comparison.
+- $2,996 / person / year
+- PISA Math Score: 465
+- Observations: 2022
+- Japan
+- $1,288 / person / year
+- PISA Math Score: 536
+- Check student demographics, school coverage and spending per student before transferring a result.
+- [World Bank education expenditure ↗](https://data.worldbank.org/indicator/SE.XPD.TOTL.GD.ZS)
+- [OECD PISA data ↗](https://www.oecd.org/en/about/programmes/pisa/pisa-data.html)
+- [Education](/obg/education)
+#### Total R&D spending (business and government)
+- $1,576 / person / year
+- $859 / person / year
+- Separate business and government research, and account for the years between research spending and its benefits.
+- [World Bank R&D expenditure ↗](https://data.worldbank.org/indicator/GB.XPD.RSDV.GD.ZS)
+- [Commerce / Economic Development](/obg/commerce-economic-development)
+- [Energy](/obg/energy)
+- [Science / NASA](/obg/science-nasa)
+### How to read these comparisons
+- A country spending less with a good outcome is a place to investigate. It does not show what would happen if the US copied its budget. The selection does not adjust for demographics, institutions, security commitments or other differences between countries.
+- The health comparison uses life expectancy at birth; healthy life expectancy is a separate measure. Income comparisons use measured household disposable income where a compatible series is available.
+- These fields overlap and cover different payers: healthcare and R&D include private spending, education includes state and local government, and social spending includes health. Their spending differences cannot be added into federal savings or a household dividend.
+- Federal spending context
+- The dataset totals $6.71T in estimated federal outlays. The lines below cover $2.02T of that total; mandatory spending and debt interest are outside this list. Amounts are nominal US dollars, a different scope and price basis from the national comparisons above.
 
-| CATEGORY | CURRENT | OPTIMAL | GAP % | OVERSPEND | ACTION |
-| --- | --- | --- | --- | --- | --- |
-| [Military](/obg/military) | $886B | $167B | -81.1% | 5.3× | Major Decrease |
-| [Veterans Affairs](/obg/veterans-affairs) | $325B | — | — | — | No Line Benchmark |
-| [Transportation](/obg/transportation) | $105B | — | — | — | No Line Benchmark |
-| [Education](/obg/education) | $102B | — | — | — | No Line Benchmark |
-| [Health (non-Medicare/Medicaid)](/obg/health-non-medicare-medicaid) | $94B | — | — | — | No Line Benchmark |
-| [HUD / Housing](/obg/hud-housing) | $73B | — | — | — | No Line Benchmark |
-| [Foreign Aid / International Affairs](/obg/foreign-aid-international-affairs) | $63B | — | — | — | No Line Benchmark |
-| [Homeland Security](/obg/homeland-security) | $62B | — | — | — | No Line Benchmark |
-| [Energy](/obg/energy) | $52B | — | — | — | No Line Benchmark |
-| [Science / NASA](/obg/science-nasa) | $44B | — | — | — | No Line Benchmark |
-| [Labor](/obg/labor) | $42B | — | — | — | No Line Benchmark |
-| [Justice / Law Enforcement](/obg/justice-law-enforcement) | $40B | — | — | — | No Line Benchmark |
-| [Agriculture](/obg/agriculture) | $38B | — | — | — | No Line Benchmark |
-| [Treasury / General Government](/obg/treasury-general-government) | $30B | — | — | — | No Line Benchmark |
-| [State Department / Diplomacy](/obg/state-department-diplomacy) | $19B | — | — | — | No Line Benchmark |
-| [Commerce / Economic Development](/obg/commerce-economic-development) | $18B | — | — | — | No Line Benchmark |
-| [Interior / Natural Resources](/obg/interior-natural-resources) | $17B | — | — | — | No Line Benchmark |
-| [EPA / Environment](/obg/epa-environment) | $12B | — | — | — | No Line Benchmark |
+| Federal line | Fiscal year | Current estimate |
+| --- | --- | --- |
+| [Military](/obg/military) | 2025 | $886.0B |
+| [Veterans Affairs](/obg/veterans-affairs) | 2025 | $325.0B |
+| [Transportation](/obg/transportation) | 2025 | $105.0B |
+| [Education](/obg/education) | 2025 | $102.0B |
+| [Health (non-Medicare/Medicaid)](/obg/health-non-medicare-medicaid) | 2025 | $94.0B |
+| [HUD / Housing](/obg/hud-housing) | 2025 | $73.0B |
+| [Foreign Aid / International Affairs](/obg/foreign-aid-international-affairs) | 2025 | $63.0B |
+| [Homeland Security](/obg/homeland-security) | 2025 | $62.0B |
+| [Energy](/obg/energy) | 2025 | $52.0B |
+| [Science / NASA](/obg/science-nasa) | 2025 | $44.0B |
+| [Labor](/obg/labor) | 2025 | $42.0B |
+| [Justice / Law Enforcement](/obg/justice-law-enforcement) | 2025 | $40.0B |
+| [Agriculture](/obg/agriculture) | 2025 | $38.0B |
+| [Treasury / General Government](/obg/treasury-general-government) | 2025 | $30.0B |
+| [State Department / Diplomacy](/obg/state-department-diplomacy) | 2025 | $19.0B |
+| [Commerce / Economic Development](/obg/commerce-economic-development) | 2025 | $18.0B |
+| [Interior / Natural Resources](/obg/interior-natural-resources) | 2025 | $17.0B |
+| [EPA / Environment](/obg/epa-environment) | 2025 | $12.0B |
 
-- No line benchmark: the only international comparison for this line covers a whole national system, such as all health spending, public and private. That system's overspend is not this line's, so no line-item target is shown.
-- Generated 9/25/2026 · Source: Optimitron OBG (Optimal Budget Generator)
-### THE EFFICIENT FRONTIER
-- Every country is a data point. The frontier shows what the best-performing countries achieve at each spending level, measured by life expectancy — the metric that actually tells you if people are alive and functional. The US is spending 2.6x what the frontier countries spend — for worse outcomes. On my planet, we call this “paying extra to be worse at things.”
-#### SPENDING VS LIFE EXPECTANCY
-##### HEALTH SPENDING
-##### EDUCATION SPENDING
-#### SPENDING VS MEDIAN INCOME
-- Real median after-tax income from household surveys (World Bank PIP, 2017 PPP dollars). Not GDP — because you can increase GDP by building nuclear bombs and blowing up the rainforest.
-- EARTH OPTIMIZATION PRIZE
-#### THE GAP BETWEEN CURRENT AND OPTIMAL WON'T CLOSE ITSELF.
-- Every misallocated dollar above is a life not saved. The 1% Treaty referendum proves demand for evidence-based budgeting. Deposit into the prize pool, get friends to vote, earn Earth Optimization Points.
-- [PLAY THE GAME](/prize)
+- [CBO budget data ↗](https://www.cbo.gov/data/budget-economic-data)
+- [Explore policy evidence](/opg)
+- [Read the OBG research protocol ↗](https://obg.warondisease.org)
+- [What would fund a dividend?](/dividend)
+- Report generated 2026-09-26. Observation years are shown for each comparison.

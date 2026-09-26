@@ -8,11 +8,15 @@ import { EARTH_OPTIMIZATION_SERVICES } from "@/lib/corporate-identity";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
 import {
   ROUTES,
-  communityLinks,
-  exploreLinks,
-  footerAppLinks,
+  analysisNavLinks,
+  githubLink,
+  mcpLink,
   navSections,
-  paperLinks,
+  optimalBudgetGeneratorPaperLink,
+  optimalPolicyGeneratorPaperLink,
+  otherAppLinks,
+  parametersPaperLink,
+  workspaceNavLinks,
   type NavItem,
   type NavSection,
 } from "@/lib/routes";
@@ -243,6 +247,9 @@ const OPTIMITRON_ASSETS: SiteAssetsConfig = {
   themeColor: "#3b82f6",
 };
 
+const OPTIMITRON_ANALYSIS_DESCRIPTION =
+  "Compare policy evidence and government spending with health and income outcomes. Inspect sources, assumptions, and proposed changes.";
+
 const OPTIMITRON_UI: SiteVariantUiConfig = {
   nav: {
     brandHref: ROUTES.home,
@@ -261,13 +268,22 @@ const OPTIMITRON_UI: SiteVariantUiConfig = {
   footer: {
     brandHref: ROUTES.home,
     brandLabel: "⚡ Optimitron",
-    brandDescription: "The Earth Optimization Machine.",
-    bottomText: `© 4237 ${INTERNATIONAL_CAMPAIGN_ORG_NAME}. All rights reserved in this and 6,412 adjacent timelines. Unauthorized reproduction of the general welfare is encouraged and, frankly, overdue.`,
+    brandDescription: "Policy evidence and budget comparisons.",
+    bottomText: `© {year} ${ORGANIZATION_NAME}.`,
     columns: [
-      { title: "App", items: footerAppLinks },
-      { title: "Analysis", items: exploreLinks },
-      { title: "Papers", items: paperLinks },
-      { title: "Open Source", items: communityLinks },
+      { title: "Analysis", items: analysisNavLinks },
+      { title: "Workspace", items: workspaceNavLinks },
+      { title: "Other apps", items: otherAppLinks },
+      {
+        title: "Research & code",
+        items: [
+          optimalPolicyGeneratorPaperLink,
+          optimalBudgetGeneratorPaperLink,
+          parametersPaperLink,
+          githubLink,
+          mcpLink,
+        ],
+      },
     ],
   },
 };
@@ -314,8 +330,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   name: "Optimitron",
   shortName: "Optimitron",
   alternateSiteNames: ["The Earth Optimization Game"],
-  description:
-    "The machine that optimizes Earth. Two numbers: how long you live, how much you keep.",
+  description: OPTIMITRON_ANALYSIS_DESCRIPTION,
   ogImage: "/og-image.jpg",
   analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
@@ -348,37 +363,30 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     rootTaskKey: null,
   },
   homeActions: [
-    { href: ROUTES.dashboard, label: "Run the machine", variant: "primary" },
-    { href: ROUTES.tasks, label: "Pick a job", variant: "outline" },
+    { href: ROUTES.opg, label: "Compare policies", variant: "primary" },
+    { href: ROUTES.obg, label: "Compare budgets", variant: "outline" },
   ],
   primaryReferendumSlug: null,
   primaryTaskKey: null,
   rootMetadata: {
-    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
-    title: "Optimitron — Earth Optimization Services",
-    description:
-      "Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!",
-    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
-    openGraphTitle: "Optimitron — Earth Optimization Services",
-    openGraphDescription:
-      "Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!",
+    title: "Optimitron — Policy Evidence & Budget Comparisons",
+    description: OPTIMITRON_ANALYSIS_DESCRIPTION,
+    openGraphTitle: "Optimitron — Policy Evidence & Budget Comparisons",
+    openGraphDescription: OPTIMITRON_ANALYSIS_DESCRIPTION,
     openGraphImage: {
       url: "/og-image.jpg",
       width: 1200,
       height: 630,
-      // TODO(copy): Mike copy gate. Source: EOS .qmd title.
-      alt: "Optimitron — Earth Optimization Services",
+      alt: "Optimitron",
     },
-    // TODO(copy): Mike copy gate. Source: EOS .qmd title.
-    twitterTitle: "Optimitron — Earth Optimization Services",
-    twitterDescription:
-      "Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!",
+    twitterTitle: "Optimitron — Policy Evidence & Budget Comparisons",
+    twitterDescription: OPTIMITRON_ANALYSIS_DESCRIPTION,
     twitterImage: "/twitter-image.jpg",
     keywords: [
       "Optimitron",
       "Earth Optimization Services",
-      "The Earth Optimization Game",
-      "Earth Optimization Game",
+      "policy evidence",
+      "government spending comparisons",
       "median healthy life expectancy",
       "median real after-tax income",
       "budget optimization",

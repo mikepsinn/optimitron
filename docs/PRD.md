@@ -40,6 +40,21 @@ Every task in the system is, directly or through its ancestors, a bet on
 moving one of those two numbers. A task that is not such a bet should not
 exist.
 
+**Public app boundary.** `optimitron.com` leads with the Optimal Policy
+Generator and Optimal Budget Generator (OPT-GOV-02/03). A visitor can compare
+policy evidence, spending, and outcomes without signing in. Observed
+differences, assumptions, and proposed changes remain distinct; a benchmark
+does not establish a causal optimum or a cash payment. Sources and units
+must remain inspectable.
+
+Primary navigation is Policies, Budgets, and Evidence. Tasks, calendars,
+documents, and integrations remain available through Workspace. Personal
+tracking uses the existing `dfda.earth` app; treaty participation uses
+`warondisease.org`; cases use `courtofhumanity.org`. Campaign, health, token,
+and broad EOS pitches do not compete with the two analysis actions on the
+Optimitron homepage. These product boundaries do not split the shared
+optimizer, tracking, task, identity, provenance, or database foundations.
+
 ### 1.1 Acceptance stories
 
 These stories are the product acceptance test. A model, field, tool, or UI
@@ -112,8 +127,8 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
   capacity-bounded plan for the day: ranked atomic tasks, fixed commitments
   respected, blocked work excluded, items needing estimates flagged.
 - The queue SHALL interleave health actions (medication times, meals,
-  exercise, hygiene) with work tasks in one stream (OPT-EV-04). One queue,
-  not two apps.
+  exercise, hygiene) with work tasks in one stream (OPT-EV-04). Product
+  views share one canonical queue and task model.
 - The signed-in calendar SHALL render that same execution plan as a day
   timeline. It is a view of Optimitron tasks and commitments, not a second
   scheduler or a copy of the plan.
@@ -280,9 +295,10 @@ The system stops guessing as data accumulates:
    timelines, efficacy-lag analysis ("died before the treatment was
    approved"), and variable-relationship estimates.
 
-This is one pipeline, not two products: the companion loop is the data
-collection instrument for the decentralized FDA, and the decentralized FDA is
-what makes the companion loop's recommendations true.
+These products share one pipeline: the companion loop collects data for the
+decentralized FDA, and that evidence can inform companion recommendations.
+The dFDA app owns the personal health entrypoint; Optimitron's public app
+focuses on policy and budget comparisons.
 
 ## 8. Health-data privacy and consent (multi-user model)
 

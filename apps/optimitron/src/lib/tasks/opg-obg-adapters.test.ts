@@ -38,6 +38,7 @@ describe("OPG/OBG task adapters", () => {
           blockingFactors: ["political"],
           bradfordHillScores: { consistency: 0.8 },
           causalConfidenceScore: 0.77,
+          evidenceKind: "estimate",
           category: "treaty",
           currentStatus: "not adopted",
           description: "Commit 1% of military spending to pragmatic trials.",

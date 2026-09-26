@@ -1,4 +1,5 @@
 import { slugify } from "@/lib/slugify";
+import { courtUrl } from "@optimitron/site-kit/lib/court-links";
 // Use the dedicated `/task-keys` subpath (not bare `@optimitron/db`) — this
 // module is reachable from client components via `@/lib/routes`, and the
 // package root re-exports the Prisma client which would pull node built-ins
@@ -232,15 +233,12 @@ export const homeLink: NavItem = {
   label: "Home",
   emoji: "🏠",
   description:
-    "Take 30 seconds to end war and disease. Vote on the 1% Treaty, then hand two humans the same promotion.",
-  tagline: "Take 30 seconds to end war and disease",
+    "Compare policy evidence and government spending with Optimitron's policy and budget analyses. Inspect sources, assumptions, and proposed changes.",
+  tagline: "Compare policies, budgets, and outcomes",
   copyPreview: true,
   reviewName: "home",
   screenshot: true,
-  socialPreview: {
-    image: warOnDiseaseDefaultSocialImage,
-  },
-  cta: "End War and Disease",
+  cta: "Explore the analyses",
 };
 
 export function getBudgetCategoryPath(name: string): string {
@@ -302,18 +300,24 @@ export const opgLink: NavItem = {
   href: ROUTES.opg,
   label: AGENCIES.dcbo.dName,
   emoji: AGENCIES.dcbo.emoji,
-  description: AGENCIES.dcbo.description,
-  tagline: AGENCIES.dcbo.tagline,
-  cta: "See Policy Grades",
+  description:
+    "Compare policy proposals and cross-country evidence, with sources and assumptions shown separately from measured outcomes.",
+  tagline: "Policy evidence and proposals",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Compare Policies",
 };
 
 export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
   emoji: AGENCIES.domb.emoji,
-  description: AGENCIES.domb.description,
-  tagline: AGENCIES.domb.tagline,
-  cta: "See Budget Analysis",
+  description:
+    "Compare government spending and outcomes across countries. Inspect national spending, reported outcomes, and current federal allocations.",
+  tagline: "Spending benchmarks and budget proposals",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Compare Budgets",
 };
 
 export const dihLink: NavItem = {
@@ -516,14 +520,14 @@ export const moroniaLink: NavItem = {
 
 export const dashboardLink: NavItem = {
   href: ROUTES.dashboard,
-  label: "Manage Humanity",
+  label: "Workspace",
   emoji: "📊",
   description:
-    "Get humanity to agree to end war and disease. Share your link and remind presidents to promote the general welfare.",
-  tagline: "Get humanity to agree",
+    "Open policy and budget analyses, then continue your tasks and review activity.",
+  tagline: "Analyses and your work",
   authenticatedCopyPreview: true,
   authenticatedScreenshot: true,
-  cta: "Manage Humanity",
+  cta: "Open Workspace",
 };
 
 export const tasksLink: NavItem = {
@@ -763,26 +767,28 @@ export const developersToolsLink: NavItem = {
 
 export const efficiencyLink: NavItem = {
   href: ROUTES.efficiency,
-  label: "Efficiency Audit",
+  label: "Spending Comparisons",
   emoji: "📉",
   description:
-    "The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.",
-  tagline: "Where budgets are bloated, starved, and fixable",
+    "Compare national spending per person and reported outcomes across countries. Review the scope of each benchmark before interpreting a spending gap.",
+  tagline: "Cross-country spending comparisons",
   matchPrefixes: [ROUTES.efficiency],
-
-  cta: "Audit Waste",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Compare Spending",
 };
 
 export const dividendLink: NavItem = {
   href: ROUTES.dividend,
-  label: "Optimization Dividend",
+  label: "Funding a Dividend",
   emoji: "💵",
   description:
-    "Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.",
-  tagline: "What better budgets pay back to actual humans",
+    "What evidence and fiscal accounting would support a public dividend? Inspect the reforms and costs needed before estimating a payment.",
+  tagline: "Evidence needed to estimate a public dividend",
   matchPrefixes: [ROUTES.dividend],
-
-  cta: "See Dividend",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Explore Dividend Feasibility",
 };
 
 export const governmentSizeLink: NavItem = {
@@ -1346,72 +1352,76 @@ export interface NavSection {
   primary?: boolean;
 }
 
+export const evidenceLink: NavItem = {
+  href: `${ROUTES.home}#evidence`,
+  label: "Evidence",
+  emoji: "📚",
+  description: "Inspect the research, parameters, and source code behind policy and budget comparisons.",
+  cta: "Inspect the Evidence",
+};
+
+export const analysisNavLinks: NavItem[] = [
+  { ...opgLink, label: "Policies" },
+  { ...obgLink, label: "Budgets" },
+  evidenceLink,
+];
+
+export const workspaceNavLinks: NavItem[] = [
+  dashboardLink,
+  tasksLink,
+  calendarLink,
+  documentsLink,
+  collectionsLink,
+  peopleLink,
+  toolsLink,
+];
+
+export const dfdaTrackingLink: NavItem = {
+  href: "https://dfda.earth/mcp",
+  label: "Personal Tracking · dFDA",
+  emoji: "🧬",
+  description: "Connect your assistant to dFDA to log measurements, manage tracking reminders, and retrieve your health history.",
+  external: true,
+  cta: "Open dFDA Tracking",
+};
+
+export const warOnDiseaseAppLink: NavItem = {
+  href: warOnDiseaseUrl("/"),
+  label: "War on Disease",
+  emoji: "🌍",
+  description: "Vote on the 1% Treaty and invite others to take part in the campaign.",
+  external: true,
+  cta: "Open the Campaign",
+};
+
+export const otherAppLinks: NavItem[] = [
+  dfdaTrackingLink,
+  warOnDiseaseAppLink,
+  {
+    ...courtLink,
+    href: courtUrl("/court"),
+    label: "Court of Humanity",
+    external: true,
+  },
+];
+
 export const navSections: NavSection[] = [
-  {
-    id: "primary",
-    label: "Primary",
-    primary: true,
-    items: [prizeLink, tasksLink, calendarLink, peopleLink, dashboardLink],
-  },
-  {
-    id: "track",
-    label: "Track",
-    items: [
-      scoreboardLink,
-      governmentsLink,
-      politicianLeaderboardLink,
-      efficiencyLink,
-      dividendLink,
-      governmentSizeLink,
-      legislationLink,
-      transparencyLink,
-      opgLink,
-      obgLink,
-    ],
-  },
-  {
-    id: "systems",
-    label: "Systems",
-    items: [
-      iabLink,
-      dtreasuryLink,
-      federalReserveLink,
-      dirsLink,
-      dssaLink,
-      agenciesLink,
-      departmentOfWarLink,
-      dihLink,
-      dfdaLink,
-      conditionsLink,
-      treatmentsLink,
-      toolsLink,
-      mcpLink,
-      developersLink,
-      fundLink,
-      wishocracyLink,
-      alignmentLink,
-      referendumLink,
-      servicesLink,
-      contributeLink,
-    ],
-  },
-  {
-    id: "learn",
-    label: "Learn",
-    items: [
-      videoLink,
-      demoLink,
-      declarationLink,
-      treatyLink,
-      wishoniaWorldLink,
-      moroniaLink,
-      editProfileLink,
-      transmitLink,
-      censusLink,
-      checkInLink,
-      settingsLink,
-    ],
-  },
+  { id: "primary", label: "Analysis", primary: true, items: analysisNavLinks },
+  { id: "workspace", label: "Workspace", items: workspaceNavLinks },
+  { id: "other-apps", label: "Other apps", items: otherAppLinks },
+];
+
+/** Preserve discovery of existing pages without promoting them in the main menu. */
+export const legacyNavLinks: NavItem[] = [
+  prizeLink, tasksLink, calendarLink, peopleLink, dashboardLink,
+  scoreboardLink, governmentsLink, politicianLeaderboardLink, efficiencyLink,
+  dividendLink, governmentSizeLink, legislationLink, transparencyLink, opgLink, obgLink,
+  iabLink, dtreasuryLink, federalReserveLink, dirsLink, dssaLink, agenciesLink,
+  departmentOfWarLink, dihLink, dfdaLink, conditionsLink, treatmentsLink, toolsLink,
+  mcpLink, developersLink, fundLink, wishocracyLink, alignmentLink, referendumLink,
+  servicesLink, contributeLink, videoLink, demoLink, declarationLink, treatyLink,
+  wishoniaWorldLink, moroniaLink, editProfileLink, transmitLink, censusLink, checkInLink,
+  settingsLink,
 ];
 
 /** Sections for the /tools page — every tool grouped by purpose */
@@ -1506,11 +1516,9 @@ export const feedbackLink: NavItem = {
 /** All internal nav links (explore + top-level + footer app links) */
 export const allNavLinks: NavItem[] = [
   ...exploreLinks,
-  ...footerAppLinks.filter(
-    (link, index, links) =>
-      links.findIndex(({ href }) => href === link.href) === index,
-  ),
-];
+  ...footerAppLinks,
+  ...legacyNavLinks,
+].filter((link, index, links) => links.findIndex(({ href }) => href === link.href) === index);
 
 export const dfdaSpecPaperLink: NavItem = {
   label: "dFDA Spec",
@@ -1904,6 +1912,10 @@ export interface RouteReviewSpec {
 export const routeReviewNavItems = [
   adminLink,
   homeLink,
+  opgLink,
+  obgLink,
+  efficiencyLink,
+  dividendLink,
   prizeLink,
   gameLink,
   servicesLink,

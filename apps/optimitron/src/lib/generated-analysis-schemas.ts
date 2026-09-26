@@ -43,12 +43,15 @@ export interface PolicyOutput {
   category: string;
   description: string;
   recommendationType: string;
-  evidenceGrade: string;
-  causalConfidenceScore: number;
-  policyImpactScore: number;
-  welfareScore: number;
-  incomeEffect: number;
-  healthEffect: number;
+  evidenceKind: 'assumption' | 'comparison' | 'estimate';
+  evidenceGrade: string | null;
+  causalConfidenceScore: number | null;
+  policyImpactScore: number | null;
+  welfareScore: number | null;
+  /** Fractional assumption, not annual growth or dollars. */
+  incomeEffect: number | null;
+  /** Fractional assumption, not years gained. */
+  healthEffect: number | null;
   bradfordHillScores: Record<string, number>;
   rationale: string;
   currentStatus: string;
@@ -128,12 +131,13 @@ export const PolicyOutputSchema: z.ZodType<PolicyOutput> = z.object({
   category: z.string(),
   description: z.string(),
   recommendationType: z.string(),
-  evidenceGrade: z.string(),
-  causalConfidenceScore: z.number(),
-  policyImpactScore: z.number(),
-  welfareScore: z.number(),
-  incomeEffect: z.number(),
-  healthEffect: z.number(),
+  evidenceKind: z.enum(['assumption', 'comparison', 'estimate']),
+  evidenceGrade: z.string().nullable(),
+  causalConfidenceScore: z.number().nullable(),
+  policyImpactScore: z.number().nullable(),
+  welfareScore: z.number().nullable(),
+  incomeEffect: z.number().nullable(),
+  healthEffect: z.number().nullable(),
   bradfordHillScores: z.record(z.number()),
   rationale: z.string(),
   currentStatus: z.string(),

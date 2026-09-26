@@ -274,22 +274,22 @@ export function EosRetroLandingPage() {
 
         <MachinePart
           id="system-opg"
-          intro={AGENCIES.dcbo.wishoniaQuote}
+          intro="Start with proposed changes. Inspect their evidence and assumptions before choosing what to implement."
           letter="A"
           stepInsideHref={ROUTES.opg}
           stepInsideLabel="Explore the Policy Generator"
-          title="Laws graded like homework"
+          title="Policy proposals, open for inspection"
         >
           <PolicyGradeTable />
         </MachinePart>
 
         <MachinePart
           id="system-obg"
-          intro={AGENCIES.domb.wishoniaQuote}
+          intro="Compare what countries spend with the outcomes they report. A useful lead for research; a spending decision still needs evidence about the specific change."
           letter="B"
           stepInsideHref={ROUTES.obg}
           stepInsideLabel="Explore the Budget Generator"
-          title="The budget, solved like an equation"
+          title="What other countries can teach us"
         >
           <BudgetFrontierExhibit />
         </MachinePart>

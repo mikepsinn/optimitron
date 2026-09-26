@@ -20,8 +20,7 @@ import { ROUTES } from "@/lib/routes";
 import { DataOrb } from "./DataOrb";
 import { compactUsd, wholeUsd } from "./format";
 import {
-  getGradedPolicySample,
-  getMeasuredBudgetLines,
+  getPolicySample,
   getSpendingBenchmarks,
   TASK_TREE_PATH,
   getTreatySigners,
@@ -225,10 +224,9 @@ function DiseaseQueueTile() {
 
 function BudgetGeneratorTile() {
   const benchmarks = getSpendingBenchmarks();
-  const measuredLines = getMeasuredBudgetLines();
 
   return (
-    <Tile note="US national spending per person vs the cheapest country in the top quarter for results" title="Optimal Budget Generator">
+    <Tile note="Annual national spending per person vs a country in the top outcome quarter" title="Budget comparisons">
       <ul className="flex flex-col gap-4">
         {benchmarks.map((row) => (
           <li key={row.field}>
@@ -251,18 +249,13 @@ function BudgetGeneratorTile() {
           </li>
         ))}
       </ul>
-      {measuredLines.map((line) => (
-        <p className="mt-5 text-sm leading-6 text-muted-foreground" key={line.name}>
-          {line.name} at {line.benchmarkCountry}’s rate:{" "}
-          <span className="font-mono font-bold text-foreground">
-            {compactUsd(line.current)} → {compactUsd(line.optimal)}
-          </span>{" "}
-          a year.
-        </p>
-      ))}
+      <p className="mt-5 text-sm leading-6 text-muted-foreground">
+        Observed differences in constant 2017 PPP dollars. They identify questions
+        to investigate, not fiscal savings or recommended cuts.
+      </p>
       <div className="mt-auto pt-5">
         <Link className={landingLinkClass} href={ROUTES.obg}>
-          See the whole budget
+          Compare spending and outcomes
         </Link>
       </div>
     </Tile>
@@ -322,7 +315,7 @@ function LovingTakeoverTile() {
 }
 
 export function FeaturedProductsSection() {
-  const { policies, total } = getGradedPolicySample();
+  const { policies, total } = getPolicySample();
 
   return (
     <LandingSection

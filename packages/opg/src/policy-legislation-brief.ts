@@ -44,7 +44,24 @@ function toActionLabel(recommendationType: string): string {
   }
 }
 
-function toBrief(policy: PolicyReportPolicy, generatedAt: string): PolicyLegislationBrief {
+type EstimatedPolicy = PolicyReportPolicy & {
+  evidenceKind: 'estimate';
+  evidenceGrade: string;
+  causalConfidenceScore: number;
+  welfareScore: number;
+};
+
+/** Assumptions and peer observations must not become certified-effect draft inputs. */
+function isEstimatedPolicy(policy: PolicyReportPolicy): policy is EstimatedPolicy {
+  return policy.evidenceKind === 'estimate'
+    && policy.evidenceGrade !== null
+    && policy.causalConfidenceScore !== null
+    && Number.isFinite(policy.causalConfidenceScore)
+    && policy.welfareScore !== null
+    && Number.isFinite(policy.welfareScore);
+}
+
+function toBrief(policy: EstimatedPolicy, generatedAt: string): PolicyLegislationBrief {
   return {
     slug: slugify(policy.name),
     title: `Policy Brief: ${policy.name}`,
@@ -72,6 +89,7 @@ export function createPolicyLegislationBriefs(
   const includeMaintain = options?.includeMaintain ?? false;
 
   return report.policies
+    .filter(isEstimatedPolicy)
     .filter((policy) => includeMaintain || policy.recommendationType !== "maintain")
     .sort((left, right) => right.welfareScore - left.welfareScore)
     .map((policy) => toBrief(policy, report.generatedAt));

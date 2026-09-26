@@ -5,166 +5,28 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { GameCTA } from "@/components/ui/game-cta";
 import { getPolicyPath } from "@/lib/routes";
 import { usPolicyAnalysis } from "@/data/us-policy-analysis";
-import type { PolicyReportJSON } from "@optimitron/opg";
-
-type Grade = "A" | "B" | "C" | "D" | "F";
-
-const GRADE_COLOR: Record<Grade, string> = {
-  A: "bg-brutal-green text-brutal-green-foreground",
-  B: "bg-background text-foreground",
-  C: "bg-background text-foreground",
-  D: "bg-brutal-red text-brutal-red-foreground",
-  F: "bg-brutal-red text-brutal-red-foreground",
-};
-
-const ACTION_LABEL: Record<string, { icon: string; label: string }> = {
-  implement: { icon: "✅", label: "IMPLEMENT" },
-  reallocate: { icon: "🔄", label: "REALLOCATE" },
-  repeal: { icon: "❌", label: "REPEAL" },
-  maintain: { icon: "✅", label: "MAINTAIN" },
-};
-
-type PreviewPolicy = PolicyReportJSON["policies"][number];
-
-const byName = (name: string) => (p: PreviewPolicy) => p.name === name;
-
-/** Hand-picked policies that showcase diversity of categories and effects */
-const PREVIEW_PICKS: Array<(p: PreviewPolicy) => boolean> = [
-  byName("Shift Drug Policy from Criminal to Health Approach"),
-  byName("Universal Pre-K (Ages 3-4)"),
-  byName("Pragmatic Clinical Trial Funding Reform"),
-  // The military benchmark's name carries its benchmark country
-  // ("Military: Adopt Switzerland's Approach"), which can change on regeneration.
-  (p) => p.oecdSpendingField === "militarySpendingPerCapitaPpp",
-  byName("Housing Supply Deregulation"),
-];
-
-const PREVIEW_POLICIES = PREVIEW_PICKS.map((pick) =>
-  (usPolicyAnalysis as PolicyReportJSON).policies.find(pick),
-).filter((p): p is NonNullable<typeof p> => p != null);
-
-function formatEffect(value: number, unit: string): string {
-  if (value === 0) return "0.00" + unit;
-  const sign = value > 0 ? "+" : "";
-  return `${sign}${value.toFixed(2)}${unit}`;
-}
-
-function effectColor(value: number): string {
-  if (value > 0) return "text-brutal-green-text";
-  if (value < 0) return "text-brutal-red";
-  return "text-muted-foreground";
-}
 
 export function OptimalPolicyPreview({
-  subtitle = "I ran causal inference on decades of data across dozens of countries. Most of your policies fail.",
-  title = "Every Policy Graded A Through F",
+  subtitle = "Inspect proposed changes, supporting observations, and assumptions about health and income.",
+  title = "Compare Policy Proposals",
 }: {
   subtitle?: string;
   title?: string;
 }) {
+  const policies = usPolicyAnalysis.policies.filter((policy) => !policy.oecdSpendingField);
   return (
-    <SectionContainer bgColor="cyan" borderPosition="top" padding="lg">
+    <SectionContainer>
       <Container>
-        <SectionHeader title={title} subtitle={subtitle} size="lg" />
-
-        <div className="space-y-3 md:hidden">
-          {PREVIEW_POLICIES.map((p) => {
-            const grade = p.evidenceGrade as Grade;
-            const action = ACTION_LABEL[p.recommendationType] ?? {
-              icon: "📋",
-              label: p.recommendationType.toUpperCase(),
-            };
-
-            return (
-              <Link
-                key={p.name}
-                href={getPolicyPath(p.name)}
-                className="block border-4 border-primary bg-background p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-transform active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="min-w-0 flex-1 break-words text-base font-black leading-tight text-foreground">
-                    {p.name}
-                  </h3>
-                  <span className={`shrink-0 border-2 border-primary px-3 py-1 text-sm font-black ${GRADE_COLOR[grade] ?? GRADE_COLOR.D}`}>
-                    {grade}
-                  </span>
-                </div>
-
-                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <dt className="font-black uppercase text-muted-foreground">Health</dt>
-                    <dd className={`mt-1 font-black ${effectColor(p.healthEffect)}`}>
-                      {formatEffect(p.healthEffect, " yrs")}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-black uppercase text-muted-foreground">Income</dt>
-                    <dd className={`mt-1 font-black ${effectColor(p.incomeEffect)}`}>
-                      {formatEffect(p.incomeEffect, " pp")}
-                    </dd>
-                  </div>
-                  <div className="col-span-2 border-t-2 border-primary pt-3">
-                    <dt className="font-black uppercase text-muted-foreground">Action</dt>
-                    <dd className="mt-1 break-words font-black">
-                      {action.icon} {action.label}
-                    </dd>
-                  </div>
-                </dl>
-              </Link>
-            );
-          })}
+        <SectionHeader title={title} subtitle={subtitle} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {policies.map((policy) => (
+            <Link key={policy.name} href={getPolicyPath(policy.name)} className="border-4 border-primary p-5 block">
+              <h3 className="font-black underline mb-2">{policy.name}</h3>
+              <p className="text-sm">{policy.recommendedTarget}</p>
+            </Link>
+          ))}
         </div>
-
-        <div className="hidden overflow-hidden border-4 border-primary bg-background shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:block">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b-4 border-primary bg-foreground text-background">
-                <th className="py-3 px-4 text-left font-black uppercase text-sm">Policy</th>
-                <th className="py-3 px-4 text-right font-black uppercase text-sm">Health</th>
-                <th className="py-3 px-4 text-right font-black uppercase text-sm">Income</th>
-                <th className="py-3 px-4 text-center font-black uppercase text-sm">Grade</th>
-                <th className="py-3 px-4 text-center font-black uppercase text-sm">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {PREVIEW_POLICIES.map((p) => {
-                const grade = p.evidenceGrade as Grade;
-                const action = ACTION_LABEL[p.recommendationType] ?? {
-                  icon: "📋",
-                  label: p.recommendationType.toUpperCase(),
-                };
-                return (
-                  <tr key={p.name} className="border-b-2 border-primary hover:bg-muted transition-colors relative">
-                    <td className="py-3 px-4 font-black text-foreground">
-                      <Link href={getPolicyPath(p.name)} className="absolute inset-0" aria-label={p.name} />
-                      {p.name}
-                    </td>
-                    <td className={`py-3 px-4 text-right font-black ${effectColor(p.healthEffect)}`}>
-                      {formatEffect(p.healthEffect, " yrs")}
-                    </td>
-                    <td className={`py-3 px-4 text-right font-black ${effectColor(p.incomeEffect)}`}>
-                      {formatEffect(p.incomeEffect, " pp")}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span className={`inline-block px-3 py-1 font-black text-sm border-2 border-primary ${GRADE_COLOR[grade] ?? GRADE_COLOR.D}`}>
-                        {grade}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center font-black text-sm">
-                      {action.icon} {action.label}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mt-8 text-center">
-          <GameCTA href="/opg" variant="primary">
-            See All Policy Grades &rarr;
-          </GameCTA>
-        </div>
+        <div className="mt-8 text-center"><GameCTA href="/opg" variant="primary">Explore policies →</GameCTA></div>
       </Container>
     </SectionContainer>
   );
