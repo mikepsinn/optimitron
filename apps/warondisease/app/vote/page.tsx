@@ -43,7 +43,7 @@ export default async function VotePage() {
   return (
     <Layout>
       <JsonLdScript data={buildVoteStructuredData()} />
-      <TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" sectionId="vote" />
+      <TreatyVoteSection hideHeading questionAs="h1" authenticatedPostVoteRedirectUrl="/dashboard" sectionId="vote" />
     </Layout>
   )
 }

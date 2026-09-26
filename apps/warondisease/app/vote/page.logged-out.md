@@ -15,8 +15,7 @@
 
 - [THE INTERNATIONAL CAMPAIGN TO END WAR AND DISEASE](/)
 - [Go to Dashboard](/dashboard)
-### THE QUESTION
-- Adjust slider to show how you'd split your country's finite resources between the weapons and military vs pragmatic clinical trials to cure diseases.
+## Drag the slider to show how you’d like your government to split public funding: weapons and military spending versus pragmatic clinical trials to treat and cure disease.
 - MAKING SUFFERING OPTIONAL
 #### DO SOMETHING
 - [ANSWER THE QUESTION](/#vote)

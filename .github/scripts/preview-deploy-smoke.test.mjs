@@ -152,6 +152,11 @@ test("preview smoke waits for the merge-ref database sync check", () => {
   ].map((match) => match[0]);
 
   assert.equal(waitBlocks.length, 2);
+  assert.match(
+    waitBlocks[0],
+    /if: steps\.target\.outputs\.app != 'unknown' && steps\.deployment_status\.outputs\.state != 'skipped' && steps\.target\.outputs\.environment == 'Preview'/u,
+    "all known app previews must wait for schema preparation, including Court of Humanity",
+  );
   for (const block of waitBlocks) {
     assert.match(block, /listPullRequestsAssociatedWithCommit/u);
     assert.match(block, /currentPull\.merge_commit_sha/u);

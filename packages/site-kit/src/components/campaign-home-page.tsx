@@ -16,18 +16,20 @@ import WarVsCuresChart from "./landing/war-vs-cures-chart"
 import YourImpactSection from "./landing/your-impact-section"
 
 type CampaignHomePageProps = {
+  showHero?: boolean
   primaryVoteSection?: ReactNode
   finalVoteSection?: ReactNode
 }
 
 /** The full campaign case, branded and configured by the current site variant. */
 export function CampaignHomePage({
+  showHero = true,
   primaryVoteSection,
   finalVoteSection,
 }: CampaignHomePageProps) {
   return (
     <>
-      <HeroSection />
+      {showHero && <HeroSection />}
       {primaryVoteSection}
       <ProblemStatement />
       <SystemProblemsSection />

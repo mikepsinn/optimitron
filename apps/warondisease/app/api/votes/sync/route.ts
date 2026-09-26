@@ -11,6 +11,8 @@ import { formatParameter } from "@/lib/format-parameter"
 import { VOTER_LIVES_SAVED } from "@/lib/parameters-calculations-citations"
 import { createLogger } from "@/lib/logger"
 import {
+  ensureWishocraticItemsExist,
+  type Prisma,
   VotePosition,
   ActivityType,
   NotificationType,
@@ -18,6 +20,10 @@ import {
   EmailLogStatus,
   ReferralInvitationStatus,
 } from "@optimitron/db"
+import {
+  MILITARY_ALLOCATION_ITEM_ID,
+  TRIALS_ALLOCATION_ITEM_ID,
+} from "@/lib/survey-results"
 import {
   getUserTreatyVote,
   upsertTreatyVote,
@@ -51,10 +57,28 @@ export async function POST(req: NextRequest) {
       sourceUrl,
       sourceReferrer,
       makePublic,
+      militaryAllocationPercent,
     } = body
 
     if (!answer || ![VotePosition.YES, VotePosition.NO].includes(answer)) {
       return NextResponse.json({ error: "Invalid vote answer" }, { status: 400 })
+    }
+
+    if (
+      militaryAllocationPercent !== undefined &&
+      (typeof militaryAllocationPercent !== "number" ||
+        !Number.isInteger(militaryAllocationPercent) ||
+        militaryAllocationPercent < 0 ||
+        militaryAllocationPercent > 100)
+    ) {
+      return NextResponse.json({ error: "Invalid military allocation" }, { status: 400 })
+    }
+
+    if (militaryAllocationPercent !== undefined) {
+      await ensureWishocraticItemsExist(prisma, [
+        MILITARY_ALLOCATION_ITEM_ID,
+        TRIALS_ALLOCATION_ITEM_ID,
+      ])
     }
 
     const voteIsPublic = typeof makePublic === "boolean" ? makePublic : undefined
@@ -93,13 +117,16 @@ export async function POST(req: NextRequest) {
         updateData.isPublic = voteIsPublic
       }
 
-      let vote = existingVote
-      if (Object.keys(updateData).length > 0) {
-        vote = await prisma.referendumVote.update({
-          where: { id: existingVote.id },
-          data: updateData,
-        })
-      }
+      const vote = await prisma.$transaction(async (transaction) => {
+        const savedVote = Object.keys(updateData).length > 0
+          ? await transaction.referendumVote.update({
+              where: { id: existingVote.id },
+              data: updateData,
+            })
+          : existingVote
+        await saveFundingAllocation(transaction, userId, militaryAllocationPercent)
+        return savedVote
+      })
 
       await applySignatureProfile(userId, body)
 
@@ -140,13 +167,20 @@ export async function POST(req: NextRequest) {
         ? sourceReferrer.split(/[?#]/)[0].slice(0, 512)
         : null)
 
-    const vote = await upsertTreatyVote({
-      userId,
-      answer: answer as VotePosition,
-      referredByUserId: referrerUserId,
-      organizationId: organizationId || null,
-      originUrl,
-      isPublic: voteIsPublic,
+    const vote = await prisma.$transaction(async (transaction) => {
+      const savedVote = await upsertTreatyVote(
+        {
+          userId,
+          answer: answer as VotePosition,
+          referredByUserId: referrerUserId,
+          organizationId: organizationId || null,
+          originUrl,
+          isPublic: voteIsPublic,
+        },
+        transaction,
+      )
+      await saveFundingAllocation(transaction, userId, militaryAllocationPercent)
+      return savedVote
     })
 
     await applySignatureProfile(userId, body)
@@ -247,6 +281,31 @@ export async function POST(req: NextRequest) {
       error instanceof Error ? error.message : "Failed to sync vote"
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
+}
+
+async function saveFundingAllocation(
+  transaction: Prisma.TransactionClient,
+  userId: string,
+  militaryAllocationPercent: number | undefined,
+) {
+  // Signature-only clients omit the slider; never replace their saved preference.
+  if (militaryAllocationPercent === undefined) return
+
+  const pair = {
+    userId,
+    itemAId: MILITARY_ALLOCATION_ITEM_ID,
+    itemBId: TRIALS_ALLOCATION_ITEM_ID,
+  }
+  const allocation = {
+    allocationA: militaryAllocationPercent,
+    allocationB: 100 - militaryAllocationPercent,
+    deletedAt: null,
+  }
+  await transaction.wishocraticAllocation.upsert({
+    where: { userId_itemAId_itemBId: pair },
+    create: { ...pair, ...allocation },
+    update: allocation,
+  })
 }
 
 async function findReferralInvitation(inviteToken: unknown) {

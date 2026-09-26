@@ -69,7 +69,13 @@ function getCampaignHomeFiles(appName) {
     ];
   }
 
-  return [`apps/${appName}/app/page.tsx`, ...campaignHomeSharedFiles];
+  return [
+    `apps/${appName}/app/page.tsx`,
+    ...campaignHomeSharedFiles,
+    ...(appName === "warondisease"
+      ? ["packages/site-kit/src/components/landing/treaty-vote-section.tsx"]
+      : []),
+  ];
 }
 
 const warOnDiseaseDashboardFiles = [
@@ -606,7 +612,10 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/warondisease/app/developers/tools/page.tsx",
     },
     {
-      covers: ["apps/warondisease/app/survey/demo/page.tsx"],
+      covers: [
+        "apps/warondisease/app/survey/demo/page.tsx",
+        "packages/site-kit/src/components/landing/treaty-vote-section.tsx",
+      ],
       label: "Survey embed demo",
       routeName: "survey-demo",
       routePath: "/survey/demo",
@@ -616,6 +625,7 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/warondisease/app/survey/[slug]/page.tsx",
         "apps/warondisease/app/survey/[slug]/layout.tsx",
+        "packages/site-kit/src/components/landing/treaty-vote-section.tsx",
       ],
       label: "Partner institute survey",
       routeName: "survey-organization",

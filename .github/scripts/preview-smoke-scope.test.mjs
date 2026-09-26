@@ -30,6 +30,16 @@ test("runs preview smoke for app, database, and shared package changes", () => {
   assert.deepEqual(getPreviewSmokeMatches(files), files.sort());
 });
 
+test("prepares the shared preview database for standalone site app changes", () => {
+  for (const file of [
+    "apps/courtofhumanity/app/page.tsx",
+    "apps/warondisease/app/vote/page.tsx",
+  ]) {
+    assert.equal(shouldPreparePreviewDatabase([file]), true, file);
+    assert.equal(shouldRunPreviewSmoke([file]), true, file);
+  }
+});
+
 test("runs preview smoke for package manager and build configuration changes", () => {
   const files = [
     "package.json",

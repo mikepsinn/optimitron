@@ -37,6 +37,7 @@ interface TreatyVoteSectionProps {
   organizationId?: string // Optional: which organization's survey page is this
   sectionId?: string
   hideHeading?: boolean
+  questionAs?: "h1" | "p"
   frameless?: boolean
   bgColor?: SectionBgColor
   showManualPromo?: boolean
@@ -49,6 +50,7 @@ export default function TreatyVoteSection({
   organizationId,
   sectionId = "vote",
   hideHeading = false,
+  questionAs: Question = "p",
   frameless = false,
   bgColor = "yellow",
   showManualPromo = true,
@@ -56,6 +58,7 @@ export default function TreatyVoteSection({
   authenticatedPostVoteRedirectUrl,
   disableIntroAnimation = false
 }: TreatyVoteSectionProps = {}) {
+  const VoteQuestion = Question === "h1" ? "h1" : "div"
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null)
   const [militaryAllocation, setMilitaryAllocation] = useState<number>(50)
   const [showSlider, setShowSlider] = useState(true)
@@ -408,16 +411,16 @@ export default function TreatyVoteSection({
               transition={{ duration: 0.4 }}
             >
               <PanelShell className={panelClassName}>
-                <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
-                  Adjust slider to show how you'd split your country's finite resources between the{" "}
-                  <span className="text-brutal-pink">weapons and military</span> vs{" "}
+                <Question className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-8">
+                  Drag the slider to show how you’d like your government to split public funding:{" "}
+                  <span className="text-brutal-pink">weapons and military spending</span> versus{" "}
                   <PragmaticTrialsDialog
                     triggerClassName="inline text-brutal-pink underline decoration-dotted decoration-[1px] decoration-brutal-pink/45 underline-offset-2 transition-opacity hover:opacity-80"
                   >
                     pragmatic clinical trials
                   </PragmaticTrialsDialog>{" "}
-                  to cure diseases.
-                </p>
+                  to treat and cure disease.
+                </Question>
 
                 {/* Allocation Display */}
                 <div className="mb-8">
@@ -557,13 +560,13 @@ export default function TreatyVoteSection({
                   <span className="text-brutal-pink font-black text-xl">years</span>.
                 </div>
 
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
+                <VoteQuestion className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
                   Should all nations allocate just {" "}
                   <br className="hidden sm:block" />
                   <span className="text-brutal-pink">1% of military spending</span> to <span className="text-brutal-pink"> pragmatic clinical trials to treat and cure disease</span> {" "}
                   <br className="hidden sm:block" />
                   together, making the world safer and ensuring no country is at a disadvantage?
-                </div>
+                </VoteQuestion>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <Button
