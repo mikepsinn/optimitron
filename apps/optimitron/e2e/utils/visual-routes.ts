@@ -205,6 +205,8 @@ const SEARCH_DISCOVERY_FILE =
 const PEOPLE_DIRECTORY_PAGE_FILE = "apps/optimitron/src/app/people/page.tsx";
 const NOT_FOUND_PAGE_FILE = "apps/optimitron/src/app/not-found.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
+const COMPUTE_FLEET_ANALYZER_FILE =
+  "apps/optimitron/src/app/compute/fleet-analyzer.tsx";
 const DEMO_PLAYER_FILE =
   "apps/optimitron/src/components/demo/DemoPlayer.tsx";
 const CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE =
@@ -609,6 +611,13 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector:
       'video[src*="optimitron-game-campaign-cut-2026-08-09.mp4"]',
+  },
+  {
+    covers: [COMPUTE_FLEET_ANALYZER_FILE],
+    name: "compute-fleet-analyzer",
+    path: ROUTES.compute,
+    required: true,
+    requiredSelector: "section#fleet",
   },
   {
     covers: [DEMO_PLAYER_FILE, CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE],

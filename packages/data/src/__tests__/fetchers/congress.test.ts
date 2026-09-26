@@ -347,6 +347,22 @@ describe('Congress Fetcher', () => {
       const result = await fetchCongressJson('https://example.com');
       expect(result).toBeNull();
     });
+
+    it('keeps the API key out of the HTTP error log', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 429,
+        statusText: 'Too Many Requests',
+      });
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      await fetchCongressJson('https://api.congress.gov/v3/member?api_key=secret-key&format=json');
+
+      const logged = warn.mock.calls.flat().join(' ');
+      expect(logged).not.toContain('secret-key');
+      expect(logged).toContain('api_key=REDACTED&format=json');
+      warn.mockRestore();
+    });
   });
 
   // ─── Parsers ──────────────────────────────────────────────────────

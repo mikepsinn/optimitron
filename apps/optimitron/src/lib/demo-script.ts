@@ -47,7 +47,6 @@ import {
   TREATY_TRAJECTORY_CAGR_YEAR_20,
   TREATY_TRAJECTORY_AVG_INCOME_YEAR_20,
   CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20,
-  US_MILITARY_SPENDING_2024_ANNUAL,
   EFFICACY_LAG_YEARS,
   EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL,
   DISEASE_BURDEN_GDP_DRAG_PCT,
@@ -115,7 +114,6 @@ const militaryRoi = fmtSpeech(ECONOMIC_MULTIPLIER_MILITARY_SPENDING, 2);   // "0
 const treatyCagr = fmtSpeech(TREATY_TRAJECTORY_CAGR_YEAR_20, 2);           // "18"
 const currentIncome20 = fmtSpeech(CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20);  // "20500"
 const treatyIncome20 = fmtSpeech(TREATY_TRAJECTORY_AVG_INCOME_YEAR_20, 2); // "340000"
-const usMilitaryAnnual = fmtSpeech(US_MILITARY_SPENDING_2024_ANNUAL, 2);   // "890 billion"
 const efficacyLag = fmtSpeech(EFFICACY_LAG_YEARS);                         // "8.2"
 const fdaDelayDeaths = fmtSpeech(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL, 2); // "100 million"
 const diseaseBurdenPct = fmtSpeech(DISEASE_BURDEN_GDP_DRAG_PCT, 2);        // "13"
@@ -402,15 +400,6 @@ export const SEGMENTS = [
     tags: ["evidence", "financial", "solution"],
     act: "II-solution",
     narration: `At current trajectory, your economy grows at 2.5 percent. Redirect 1 percent of the explosions budget, and it compounds at ${treatyCagr} percent. Over twenty years, that is the difference between ${currentIncome20} dollars per person per year and ${treatyIncome20} dollars per person per year. One slider. Twenty-seven times more money.`,
-  },
-  {
-    id: "congress-military-trials-ratio",
-    title: "Congress Voted 1,094 to 1",
-    slideId: "congress-military-trials-ratio",
-    bgColor: "foreground",
-    tags: ["problem", "evidence"],
-    act: "II-accountability",
-    narration: `Your Congress spent ${usMilitaryAnnual} dollars on the military this year. And $810 million on clinical trials. That is a ratio of 1,094 to 1. For every dollar spent trying to stop diseases from killing you, 1,094 dollars on new ways to kill other people's children. Both parties voted for this. It is not a left-right problem. It is a math problem.`,
   },
   {
     id: "fda-approval-delay-8yr",

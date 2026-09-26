@@ -1,9 +1,9 @@
 /**
  * Generate politician scorecards from Congressional vote data.
  *
- * Fetches all current members of Congress from the Congress.gov API,
- * then pulls their votes on key military and health bills from the
- * direct XML sources (clerk.house.gov and senate.gov), computes
+ * Fetches every member of the 118th and 119th Congresses from the
+ * Congress.gov API, then pulls their votes on key military and health bills
+ * from the direct XML sources (clerk.house.gov and senate.gov), computes
  * military:trials ratios, and writes to a generated JSON file.
  *
  * Usage: pnpm --filter @optimitron/data run data:refresh:politicians
@@ -22,14 +22,22 @@ import {
   scoreMemberVotes,
   type BillRollCalls,
 } from "../src/datasets/politician-vote-scoring.js";
+import { parseHouseXml, parseSenateXml } from "../src/datasets/politician-roll-call-xml.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const OUTPUT_DIR = join(__dirname, "..", "src", "datasets", "generated");
 const OUTPUT_FILE = join(OUTPUT_DIR, "politician-scorecards.json");
 
+/**
+ * The Congresses whose members are scored. Members who left after the 118th
+ * keep their FY2023–FY2025 votes. Members new in the 119th are scored on the
+ * 119th Congress's bills.
+ */
+const MEMBER_CONGRESSES = [118, 119] as const;
+
 // ---------------------------------------------------------------------------
-// Key budget bills to check votes on (FY2024)
+// Key budget bills to check votes on (FY2023–FY2026)
 // ---------------------------------------------------------------------------
 
 interface BudgetBill {
@@ -195,13 +203,120 @@ const KEY_BILLS: BudgetBill[] = [
     senateSession: 2,
     senateVoteNumber: 325,
   },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // FY2025 (119th Congress)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // Full-Year CR FY2025 — H.R. 1968 (P.L. 119-4), military portion ($892.5B base defense, CBO via CRS R48517)
+  // House roll 70/2025 (passage, 217-213)
+  // Senate vote 133/119-1 (54-46)
+  {
+    name: "Full-Year CR FY2025 — Military ($892.5B)",
+    amount: 892_500_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/1968",
+    houseYear: 2025,
+    houseRollCall: 70,
+    senateCongress: 119,
+    senateSession: 1,
+    senateVoteNumber: 133,
+  },
+  // Full-Year CR FY2025 — H.R. 1968, NIH portion ($47.035B program level, CRS R43341 → $1.55B trials at 3.3%)
+  // Same roll calls as above
+  {
+    name: "Full-Year CR FY2025 — NIH ($47.0B)",
+    amount: 47_000_000_000,
+    category: "clinical_trials",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/1968",
+    houseYear: 2025,
+    houseRollCall: 70,
+    senateCongress: 119,
+    senateSession: 1,
+    senateVoteNumber: 133,
+  },
+  // Reconciliation 2025 — H.R. 1 One Big Beautiful Bill Act (P.L. 119-21), Title II defense ($156.2B, CRS IN12580)
+  // House roll 190/2025 (Senate amendment concurrence, 218-214)
+  // Senate vote 372/119-1 (50-50, Vice President voted Yea)
+  {
+    name: "Reconciliation 2025 (H.R. 1) — Military ($156.2B)",
+    amount: 156_200_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/1",
+    houseYear: 2025,
+    houseRollCall: 190,
+    senateCongress: 119,
+    senateSession: 1,
+    senateVoteNumber: 372,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // FY2026 (119th Congress)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // NDAA FY2026 — S. 1071 (P.L. 119-60), $900.6B military authorization
+  // House roll 320/2025 (passage with House amendment, 312-112)
+  // Senate vote 648/119-1 (House amendment concurrence, 77-20)
+  {
+    name: "NDAA FY2026 ($900.6B)",
+    amount: 900_600_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/senate-bill/1071",
+    houseYear: 2025,
+    houseRollCall: 320,
+    senateCongress: 119,
+    senateSession: 1,
+    senateVoteNumber: 648,
+  },
+  // CR + MilCon-VA FY2026 — H.R. 5371 (P.L. 119-37), Division D military construction ($19.737B, CRS IN12622)
+  // Only the full-year MilCon money: H.R. 7148 below replaced this law's continuing-resolution DoD and NIH money.
+  // House roll 285/2025 (Senate amendment concurrence, 222-209)
+  // Senate vote 618/119-1 (60-40)
+  {
+    name: "MilCon FY2026 (H.R. 5371) — Military ($19.7B)",
+    amount: 19_700_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/5371",
+    houseYear: 2025,
+    houseRollCall: 285,
+    senateCongress: 119,
+    senateSession: 1,
+    senateVoteNumber: 618,
+  },
+  // Omnibus FY2026 — H.R. 7148 (P.L. 119-75), Division A Defense ($838.7B)
+  // House roll 53/2026 (Senate amendments concurrence, 217-214)
+  // Senate vote 20/119-2 (71-29)
+  {
+    name: "Omnibus FY2026 — Military ($838.7B)",
+    amount: 838_700_000_000,
+    category: "military",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/7148",
+    houseYear: 2026,
+    houseRollCall: 53,
+    senateCongress: 119,
+    senateSession: 2,
+    senateVoteNumber: 20,
+  },
+  // Omnibus FY2026 — H.R. 7148, Division B NIH ($47.493B program level, CRS R43341 → $1.57B trials at 3.3%)
+  // Same roll calls as above
+  {
+    name: "Omnibus FY2026 — NIH ($47.5B)",
+    amount: 47_500_000_000,
+    category: "clinical_trials",
+    sourceUrl: "https://www.congress.gov/bill/119th-congress/house-bill/7148",
+    houseYear: 2026,
+    houseRollCall: 53,
+    senateCongress: 119,
+    senateSession: 2,
+    senateVoteNumber: 20,
+  },
 ];
 
 // Clinical trials are ~3.3% of NIH budget (NIH_CLINICAL_TRIALS_SPENDING_PCT from parameters)
 const CLINICAL_TRIAL_PCT_OF_NIH = 0.033;
 
 // ---------------------------------------------------------------------------
-// XML fetching and parsing
+// XML fetching
 // ---------------------------------------------------------------------------
 
 /** The rollCalls key of a bill's House vote, or null when the bill has none. */
@@ -256,160 +371,6 @@ function senateXmlUrl(congress: number, session: number, voteNumber: number): st
   return `https://www.senate.gov/legislative/LIS/roll_call_votes/vote${congress}${session}/vote_${congress}_${session}_${paddedVote}.xml`;
 }
 
-/**
- * Parse House clerk XML and return a map of bioguideId → vote position.
- *
- * XML structure:
- * ```xml
- * <recorded-vote>
- *   <legislator name-id="B001302" party="R" state="AZ">Biggs</legislator>
- *   <vote>Yea</vote>
- * </recorded-vote>
- * ```
- */
-function parseHouseXml(xml: string): Map<string, string> {
-  const voteMap = new Map<string, string>();
-  const pattern =
-    /<recorded-vote>\s*<legislator\b[^>]*name-id="([^"]+)"[\s\S]*?<\/legislator>\s*<vote>([\s\S]*?)<\/vote>\s*<\/recorded-vote>/gi;
-
-  let match = pattern.exec(xml);
-  while (match) {
-    const bioguideId = match[1]?.trim();
-    const vote = decodeXmlEntities(match[2]?.trim() ?? "");
-    if (bioguideId && vote) {
-      voteMap.set(bioguideId, vote.toUpperCase());
-    }
-    match = pattern.exec(xml);
-  }
-
-  return voteMap;
-}
-
-/**
- * Parse Senate XML and return a map of bioguideId → vote position.
- *
- * Senate XML uses lis_member_id, not bioguide. We match by last_name + state
- * against the known member list from the Congress.gov API.
- *
- * XML structure:
- * ```xml
- * <member>
- *   <member_full>Baldwin (D-WI)</member_full>
- *   <last_name>Baldwin</last_name>
- *   <first_name>Tammy</first_name>
- *   <party>D</party>
- *   <state>WI</state>
- *   <vote_cast>Yea</vote_cast>
- *   <lis_member_id>S354</lis_member_id>
- * </member>
- * ```
- */
-function parseSenateXml(xml: string, senators: CongressMember[]): Map<string, string> {
-  // Build lookup: normalized(lastName):STATE → bioguideId
-  const bioguideByNameState = new Map<string, string>();
-  for (const senator of senators) {
-    if (!senator.bioguideId || !senator.state) continue;
-    const nameParts = extractNameParts(senator.name);
-    const stateCode = normalizeState(senator.state);
-    // Key by last name + state
-    bioguideByNameState.set(
-      `${normalizeName(nameParts.lastName)}:${stateCode}`,
-      senator.bioguideId,
-    );
-    // Also key by full name + state for disambiguation
-    bioguideByNameState.set(
-      `${normalizeName(`${nameParts.firstName} ${nameParts.lastName}`)}:${stateCode}`,
-      senator.bioguideId,
-    );
-  }
-
-  const voteMap = new Map<string, string>();
-  const memberPattern =
-    /<member>\s*<member_full>([\s\S]*?)<\/member_full>[\s\S]*?<last_name>([\s\S]*?)<\/last_name>[\s\S]*?<first_name>([\s\S]*?)<\/first_name>[\s\S]*?<party>([\s\S]*?)<\/party>[\s\S]*?<state>([\s\S]*?)<\/state>[\s\S]*?<vote_cast>([\s\S]*?)<\/vote_cast>[\s\S]*?<\/member>/gi;
-
-  let match = memberPattern.exec(xml);
-  while (match) {
-    const fullName = decodeXmlEntities(match[1]?.trim() ?? "");
-    const lastName = decodeXmlEntities(match[2]?.trim() ?? "");
-    const firstName = decodeXmlEntities(match[3]?.trim() ?? "");
-    const state = decodeXmlEntities(match[5]?.trim() ?? "");
-    const voteCast = decodeXmlEntities(match[6]?.trim() ?? "");
-
-    const bioguideId =
-      bioguideByNameState.get(`${normalizeName(lastName)}:${state}`) ??
-      bioguideByNameState.get(`${normalizeName(`${firstName} ${lastName}`)}:${state}`) ??
-      bioguideByNameState.get(`${normalizeName(fullName)}:${state}`);
-
-    if (bioguideId && voteCast) {
-      voteMap.set(bioguideId, voteCast.toUpperCase());
-    }
-    match = memberPattern.exec(xml);
-  }
-
-  return voteMap;
-}
-
-// ---------------------------------------------------------------------------
-// String helpers
-// ---------------------------------------------------------------------------
-
-function decodeXmlEntities(value: string): string {
-  return value
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&apos;", "'")
-    .replaceAll("&#39;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
-}
-
-/** Strip accents and non-alpha characters, lowercase. */
-function normalizeName(value: string): string {
-  return value
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-}
-
-const US_STATE_ABBREVIATIONS: Record<string, string> = {
-  alabama: "AL", alaska: "AK", arizona: "AZ", arkansas: "AR",
-  california: "CA", colorado: "CO", connecticut: "CT", delaware: "DE",
-  florida: "FL", georgia: "GA", hawaii: "HI", idaho: "ID",
-  illinois: "IL", indiana: "IN", iowa: "IA", kansas: "KS",
-  kentucky: "KY", louisiana: "LA", maine: "ME", maryland: "MD",
-  massachusetts: "MA", michigan: "MI", minnesota: "MN", mississippi: "MS",
-  missouri: "MO", montana: "MT", nebraska: "NE", nevada: "NV",
-  "new hampshire": "NH", "new jersey": "NJ", "new mexico": "NM",
-  "new york": "NY", "north carolina": "NC", "north dakota": "ND",
-  ohio: "OH", oklahoma: "OK", oregon: "OR", pennsylvania: "PA",
-  "rhode island": "RI", "south carolina": "SC", "south dakota": "SD",
-  tennessee: "TN", texas: "TX", utah: "UT", vermont: "VT",
-  virginia: "VA", washington: "WA", "west virginia": "WV",
-  wisconsin: "WI", wyoming: "WY", "district of columbia": "DC",
-};
-
-function normalizeState(state: string): string {
-  const trimmed = state.trim();
-  if (trimmed.length === 2) return trimmed.toUpperCase();
-  return US_STATE_ABBREVIATIONS[trimmed.toLowerCase()] ?? trimmed.toUpperCase();
-}
-
-function extractNameParts(name: string): { firstName: string; lastName: string } {
-  if (name.includes(",")) {
-    const [lastName = "", firstName = ""] = name.split(",", 2);
-    return {
-      firstName: firstName.trim().split(/\s+/)[0] ?? "",
-      lastName: lastName.trim(),
-    };
-  }
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return {
-    firstName: parts[0] ?? "",
-    lastName: parts.slice(1).join(" ") || parts[0] || "",
-  };
-}
-
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -437,14 +398,26 @@ async function main() {
     mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
-  // ─── Step 1: Fetch all current members ─────────────────────────────
-  console.log("Step 1: Fetching current members of Congress...");
-  const members = await fetchMembers(118);
-  if (!members || members.length === 0) {
-    console.error("Failed to fetch members. Check CONGRESS_API_KEY.");
-    process.exit(1);
+  // ─── Step 1: Fetch the members of each scored Congress ─────────────
+  console.log(`Step 1: Fetching members of Congresses ${MEMBER_CONGRESSES.join(" and ")}...`);
+  const membersById = new Map<string, CongressMember>();
+  for (const congress of MEMBER_CONGRESSES) {
+    const congressMembers = await fetchMembers(congress);
+    // A Congress has 535 voting seats, so a shorter list means a page failed to load.
+    if (congressMembers.length < 535) {
+      console.error(
+        `Fetched only ${congressMembers.length} members of Congress ${congress}. Check CONGRESS_API_KEY.`,
+      );
+      process.exit(1);
+    }
+    console.log(`  Congress ${congress}: ${congressMembers.length} members`);
+    // The later Congress's record replaces the earlier one, so party, state and chamber are current.
+    for (const member of congressMembers) {
+      if (member.bioguideId) membersById.set(member.bioguideId, member);
+    }
   }
-  console.log(`  ${members.length} members found\n`);
+  const members = [...membersById.values()];
+  console.log(`  ${members.length} members after removing duplicates\n`);
 
   // Build a quick lookup for senators (needed for Senate XML matching)
   const senators = members.filter((m) => m.chamber === "Senate");
@@ -652,9 +625,12 @@ async function main() {
   // ─── Write output ──────────────────────────────────────────────────
   const output = {
     generatedAt: new Date().toISOString(),
-    congress: 118,
+    congress: Math.max(...MEMBER_CONGRESSES),
+    congresses: [...MEMBER_CONGRESSES],
     memberCount: scorecards.length,
-    systemWideRatio: Math.round(886_000_000_000 / 810_000_000),
+    // The latest enacted NDAA (FY2026, S. 1071: $900.6B) over NIH clinical-trial
+    // spending (~$810M a year, JAMA Health Forum).
+    systemWideRatio: Math.round(900_600_000_000 / 810_000_000),
     scorecards,
     presidents,
   };

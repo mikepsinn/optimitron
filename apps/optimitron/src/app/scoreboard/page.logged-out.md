@@ -41,16 +41,16 @@
 
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
-| 2 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
-| 3 | [John Kennedy Louisiana](/governments/US/politicians/K000393) | $2.7T | $0 | -$2.7T | ∞ |
-| 4 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
-| 5 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
-| 6 | [Robert B. Aderholt Alabama](/governments/US/politicians/A000055) | $2.7T | $0 | -$2.7T | ∞ |
-| 7 | [Vern Buchanan Florida](/governments/US/politicians/B001260) | $2.7T | $0 | -$2.7T | ∞ |
-| 8 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
-| 9 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
-| 10 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
+| 1 | [Cathy McMorris Rodgers Washington](/governments/US/politicians/M001159) | $2.7T | $0 | -$2.7T | ∞ |
+| 2 | [Kelly Armstrong North Dakota](/governments/US/politicians/A000377) | $2.7T | $0 | -$2.7T | ∞ |
+| 3 | [Jerry L. Carl Alabama](/governments/US/politicians/C001054) | $2.7T | $0 | -$2.7T | ∞ |
+| 4 | [Michael Waltz Florida](/governments/US/politicians/W000823) | $2.7T | $0 | -$2.7T | ∞ |
+| 5 | [Marco Rubio Florida](/governments/US/politicians/R000595) | $2.6T | $0 | -$2.6T | ∞ |
+| 6 | [Michael C. Burgess Texas](/governments/US/politicians/B001248) | $1.8T | $0 | -$1.8T | ∞ |
+| 7 | [Timothy M. Kennedy New York](/governments/US/politicians/K000402) | $1.8T | $0 | -$1.8T | ∞ |
+| 8 | [Jeff Duncan South Carolina](/governments/US/politicians/D000615) | $1.8T | $0 | -$1.8T | ∞ |
+| 9 | [Garret Graves Louisiana](/governments/US/politicians/G000577) | $1.8T | $0 | -$1.8T | ∞ |
+| 10 | [Debbie Lesko Arizona](/governments/US/politicians/L000589) | $1.8T | $0 | -$1.8T | ∞ |
 
 ### SIGNATURE LEADERBOARD
 - Top signatories by verified treaty signatures attributed to them. This is the part where the species notices it has thumbs.

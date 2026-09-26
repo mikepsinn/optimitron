@@ -30,9 +30,6 @@ export const slideRegistry = {
   armory: demoSlide("slide-armory"),
   "brain-drain-professionals": demoSlide("slide-brain-drain-professionals"),
   "compound-growth-scenarios": demoSlide("slide-compound-growth-scenarios"),
-  "congress-military-trials-ratio": demoSlide(
-    "slide-congress-military-trials-ratio",
-  ),
   "daily-death-toll": demoSlide("slide-daily-death-toll"),
   "decentralized-fda": demoSlide("slide-decentralized-fda"),
   "decentralized-federal-reserve": demoSlide(
