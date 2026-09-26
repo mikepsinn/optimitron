@@ -436,6 +436,16 @@ export const publicSiteAppRoutes = Object.freeze({
     },
     {
       covers: [
+        "apps/warondisease/app/search/campaign-search.server.ts",
+        "apps/warondisease/app/search/page.tsx",
+      ],
+      label: "Campaign plaintiff search",
+      routeName: "search-plaintiff",
+      routePath: "/search?q=plaintiff",
+      sourcePage: "apps/warondisease/app/search/page.tsx",
+    },
+    {
+      covers: [
         "apps/warondisease/app/signatories/page.tsx",
         "packages/site-kit/src/components/referendum/SignatoriesLeaderboard.tsx",
       ],
