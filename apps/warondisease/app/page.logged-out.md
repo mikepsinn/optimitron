@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The International Campaign to End War and Disease
-- Meta description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Meta description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Canonical: https://warondisease.org
 - Open Graph title: The International Campaign to End War and Disease
-- Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Open Graph description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png
 - Twitter title: The International Campaign to End War and Disease
-- Twitter description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Twitter description: Please take 30 seconds to trade one apocalypse for disease eradication.
 
 ## Visible Page Copy
 
