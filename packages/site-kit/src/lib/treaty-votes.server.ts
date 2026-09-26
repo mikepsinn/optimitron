@@ -1,4 +1,5 @@
 import {
+  type Prisma,
   type VotePosition,
   ReferendumStatus,
   ReferendumVoteSource,
@@ -62,21 +63,24 @@ export async function countTreatyVotes(
   });
 }
 
-export async function upsertTreatyVote(input: {
-  userId: string;
-  answer: VotePosition;
-  referredByUserId?: string | null;
-  organizationId?: string | null;
-  originUrl?: string | null;
-  /** Signature-surface consent; omitted keeps the existing default (public). */
-  isPublic?: boolean;
-}) {
+export async function upsertTreatyVote(
+  input: {
+    userId: string;
+    answer: VotePosition;
+    referredByUserId?: string | null;
+    organizationId?: string | null;
+    originUrl?: string | null;
+    /** Signature-surface consent; omitted keeps the existing default (public). */
+    isPublic?: boolean;
+  },
+  transaction?: Prisma.TransactionClient,
+) {
   const referendum = await getTreatyReferendum();
   if (referendum.status !== ReferendumStatus.ACTIVE) {
     throw new Error("Treaty referendum is not accepting votes");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const saveVote = async (tx: Prisma.TransactionClient) => {
     const person = await ensurePersonForUser(input.userId, {}, tx);
     const vote = await tx.referendumVote.upsert({
       where: {
@@ -114,5 +118,6 @@ export async function upsertTreatyVote(input: {
       });
     }
     return vote;
-  });
+  };
+  return transaction ? saveVote(transaction) : prisma.$transaction(saveVote);
 }

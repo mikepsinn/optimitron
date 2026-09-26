@@ -537,7 +537,7 @@ jobs:
           SITE_APP_SCREENSHOT_ROOT: apps/optimitron/output/playwright/site-app-screenshots
 
       - name: Verify survey email authentication against the production build
-        if: ${{ matrix.app == 'trialabundancesurvey' || matrix.app == 'acceleratedmedicine' }}
+        if: ${{ matrix.app == 'trialabundancesurvey' || matrix.app == 'acceleratedmedicine' || matrix.app == 'warondisease' }}
         run: pnpm --filter "@apps/${{ matrix.app }}" test:e2e:auth
         env:
           PLAYWRIGHT_BROWSER_CHANNEL: chrome

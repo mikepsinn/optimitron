@@ -18,7 +18,8 @@ if (
 
 const outbox = process.env.AUTH_E2E_OUTBOX
 await mkdir(path.dirname(outbox), { recursive: true })
-await writeFile(outbox, "", { mode: 0o600 })
+// Next.js child workers inherit the preload; none may erase captured messages.
+await writeFile(outbox, "", { flag: "a", mode: 0o600 })
 const server = setupServer(
   http.post("https://api.resend.com/emails", async ({ request }) => {
     const message = await request.json()
