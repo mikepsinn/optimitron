@@ -248,25 +248,6 @@ export const MILITARY_SPENDING_SYNONYMS = [
   "destroying everything",
 ] as const;
 
-/**
- * Get a deterministic synonym for a given seed (e.g. politician bioguideId, page path).
- * Same seed always returns the same synonym — no layout shift on re-render.
- */
-export function getMilitarySynonym(seed: string): string {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
-  }
-  return MILITARY_SPENDING_SYNONYMS[
-    Math.abs(hash) % MILITARY_SPENDING_SYNONYMS.length
-  ]!;
-}
-
-/** Title-cased variant for headings and meta tags where CSS uppercase isn't applied */
-export function getMilitarySynonymTitle(seed: string): string {
-  return getMilitarySynonym(seed).replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 export const ARCADE_LABELS = {
   gameTitle: "The Earth Optimization Game",
   insertCoin: "Insert Coin to Play",

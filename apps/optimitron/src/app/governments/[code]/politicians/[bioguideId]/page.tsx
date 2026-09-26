@@ -10,7 +10,6 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { SpendingBar } from "@/components/ui/spending-bar";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
 import { ROUTES } from "@/lib/routes";
-import { getMilitarySynonym, getMilitarySynonymTitle } from "@/lib/messaging";
 import { formatCompactCount } from "@/lib/tasks/accountability";
 import { findPoliticianScorecard, getPoliticianScorecardData } from "@/lib/politician-scorecards";
 import { getBaseUrl } from "@/lib/url";
@@ -48,11 +47,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const gov = getGovernmentMetrics(code.toUpperCase());
 
   const title = politician
-    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonymTitle(politician.bioguideId + "-title")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Testing Medicines`
+    ? `${politician.name} — ${formatDollars(politician.militaryDollarsVotedFor)} Military Spending, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} Clinical-Trial Funding Voted For`
     : `Politician | ${gov?.name ?? code}`;
 
   const description = politician
-    ? `${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonym(politician.bioguideId + "-desc")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} finding out which medicines work.`
+    ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in military spending and ${formatDollars(politician.clinicalTrialDollarsVotedFor)} in clinical-trial funding in the tracked budget bills.`
     : "Politician budget allocation data";
 
   return {
@@ -151,9 +150,9 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
 
       <section className="mb-8">
         <EmployeeReviewBanner
-          eyebrow="Employee Performance Review"
-          title="Budget influence review."
-          description={`${politician.name} is a public employee. This review tracks the federal budget this office backed instead of pretending congressional votes are just vibes. At ${DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value.toLocaleString("en-US")} dollars per patient, the military dollars this office backed could have funded pragmatic trials for about ${formatCompactCount(militaryPatientsFundable)} patients.`}
+          eyebrow="Voting record"
+          title="Budget votes."
+          description={`At ${DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT.value.toLocaleString("en-US")} dollars per patient, the military dollars this office backed could have funded pragmatic trials for about ${formatCompactCount(militaryPatientsFundable)} patients.`}
           metrics={[
             {
               detail: "Bills this office backed that expand military spending",
@@ -191,7 +190,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               </div>
             </div>
             <p className="text-xs font-bold text-muted-foreground max-w-xs">
-              Clinical trial spending minus military spending. Everyone is negative.
+              Clinical-trial funding voted for, minus military spending voted for.
             </p>
           </div>
           <SpendingBar
@@ -207,7 +206,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           {/* Military */}
           <BrutalCard bgColor="red" shadowSize={8} padding="lg">
             <div className="text-xs font-black uppercase text-brutal-red mb-1">
-              {getMilitarySynonym(politician.bioguideId + "-stat")}
+              Military spending voted for
             </div>
             <div className="text-3xl sm:text-4xl font-black text-brutal-red">
               {formatDollars(politician.militaryDollarsVotedFor)}
@@ -217,20 +216,20 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           {/* Trials */}
           <BrutalCard bgColor="cyan" shadowSize={8} padding="lg">
             <div className="text-xs font-black uppercase text-foreground mb-1">
-              Testing Medicines $ Voted For
+              Clinical-trial funding voted for
             </div>
             <div className="text-3xl sm:text-4xl font-black text-foreground">
               {formatDollars(politician.clinicalTrialDollarsVotedFor)}
             </div>
             <p className="text-xs font-bold text-muted-foreground mt-1">
-              3.3% of the NIH budget actually tests which medicines work
+              Counted as 3.3% of NIH funding, the share NIH spends on clinical trials
             </p>
           </BrutalCard>
 
           {/* Ratio */}
           <BrutalCard bgColor="background" shadowSize={8} padding="lg">
             <div className="text-xs font-black uppercase text-muted-foreground mb-1">
-              {getMilitarySynonym(politician.bioguideId + "-ratio")} : medicines ratio
+              Military-to-trials ratio
             </div>
             <div className={`text-3xl sm:text-4xl font-black ${
               politician.ratio >= 100 ? "text-brutal-red" : "text-foreground"
@@ -238,7 +237,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
               {formatRatio(politician.ratio)}
             </div>
             <p className="text-xs font-bold text-muted-foreground mt-1">
-              System average: {systemRatio.toLocaleString()}:1
+              Federal budget as a whole: {systemRatio.toLocaleString()}:1
             </p>
           </BrutalCard>
         </div>
@@ -252,7 +251,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             <div>
               <div className="flex justify-between items-baseline mb-1">
                 <span className="text-xs font-black uppercase text-brutal-red">
-                  {getMilitarySynonym(politician.bioguideId + "-bar")}
+                  Military spending
                 </span>
                 <span className="text-sm font-black text-foreground">
                   {formatDollars(politician.militaryDollarsVotedFor)}
@@ -268,7 +267,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
             <div>
               <div className="flex justify-between items-baseline mb-1">
                 <span className="text-xs font-black uppercase text-foreground">
-                  Testing Medicines
+                  Clinical-trial funding
                 </span>
                 <span className="text-sm font-black text-foreground">
                   {formatDollars(politician.clinicalTrialDollarsVotedFor)}
@@ -281,11 +280,11 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                 height="md"
               />
               <p className="text-[10px] font-bold text-muted-foreground mt-1">
-                Scaled to the same axis as military spending — the bar is barely visible because clinical trials get {
+                Both bars use the same scale. Clinical-trial funding is {
                   politician.militaryDollarsVotedFor > 0 && politician.clinicalTrialDollarsVotedFor > 0
                     ? `${(politician.clinicalTrialDollarsVotedFor / politician.militaryDollarsVotedFor * 100).toFixed(2)}%`
                     : "a fraction"
-                } of the funding
+                } of the military spending
               </p>
             </div>
           </div>
@@ -299,7 +298,7 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
         </p>
         <SocialShareButtons
           url={`${getBaseUrl()}/governments/${gov.code}/politicians/${politician.bioguideId}`}
-          text={`${politician.name}: ${formatDollars(politician.militaryDollarsVotedFor)} on ${getMilitarySynonym(politician.bioguideId + "-share")}, ${formatDollars(politician.clinicalTrialDollarsVotedFor)} testing which medicines work.`}
+          text={`${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in military spending and ${formatDollars(politician.clinicalTrialDollarsVotedFor)} in clinical-trial funding.`}
         />
       </section>
 
@@ -481,14 +480,14 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
                 Ratio = Military $ &divide; Clinical Trials $
               </div>
               <p className="text-xs font-bold text-muted-foreground">
-                Higher = worse. &infin; means the politician voted for military spending but never voted for any bill containing clinical trial funding.
+                Higher means more military spending per dollar of clinical-trial funding. &infin; means the politician voted for military spending but for no bill with clinical-trial funding.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Context — Wishonia voice */}
+      {/* Plain summary of the numbers above */}
       <section className="mb-12">
         <BrutalCard bgColor="yellow" shadowSize={8} padding="lg">
           <h3 className="text-base font-black uppercase text-foreground mb-2">
@@ -496,12 +495,12 @@ export default async function PoliticianDetailPage({ params }: PageProps) {
           </h3>
           <p className="text-base font-bold text-foreground leading-relaxed">
             {politician.militaryDollarsVotedFor === 0 && politician.clinicalTrialDollarsVotedFor === 0
-              ? `${politician.name} voted against both ${getMilitarySynonym(politician.bioguideId + "-maths-a")} and finding out which medicines work. I mention not to be rude but because you seem weirdly calm about it.`
+              ? `${politician.name} voted for none of the tracked military spending or clinical-trial funding.`
               : politician.militaryDollarsVotedFor === 0
-                ? `${politician.name} voted to find out which medicines work without voting for any ${getMilitarySynonym(politician.bioguideId + "-maths-b")}. You'd think this would be more common. You'd be adorable for thinking that.`
+                ? `${politician.name} voted for clinical-trial funding and for none of the tracked military spending.`
                 : politician.clinicalTrialDollarsVotedFor === 0
-                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in ${getMilitarySynonym(politician.bioguideId + "-maths-c")} and zero dollars finding out which medicines work.`
-                  : `${politician.name} spent $${politician.ratio.toLocaleString()} on ${getMilitarySynonym(politician.bioguideId + "-maths-d")} for every $1 finding out which medicines work. Your species average is ${systemRatio.toLocaleString()}:1. Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%.`
+                  ? `${politician.name} voted for ${formatDollars(politician.militaryDollarsVotedFor)} in military spending and no clinical-trial funding.`
+                  : `${politician.name} voted for $${politician.ratio.toLocaleString()} in military spending for every $1 of clinical-trial funding. The federal budget as a whole spends ${systemRatio.toLocaleString()}:1.`
             }
           </p>
         </BrutalCard>

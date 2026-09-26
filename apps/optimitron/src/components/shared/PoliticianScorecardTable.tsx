@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/retroui/Button";
 import { SpendingBar } from "@/components/ui/spending-bar";
 import { ColumnHelp } from "@/components/ui/column-help";
-import { getMilitarySynonym } from "@/lib/messaging";
 
 interface PoliticianScore {
   bioguideId: string;
@@ -68,9 +67,9 @@ const COLUMN_HELP = {
   rank: "Rank position based on current sort",
   name: "Politician name, state, and party",
   military: "Total dollars voted YEA on military/defense bills (NDAA, supplementals, omnibus military portions)",
-  trials: "Dollars voted YEA on bills containing NIH clinical trial funding (3.3% of NIH budget actually funds clinical trials)",
-  score: "Clinical trial spending minus military spending. Negative = more money on military than medicine.",
-  ratio: "Military dollars per clinical trial dollar. Higher = worse. ∞ = voted for military but never for trials.",
+  trials: "Dollars voted YEA on bills containing NIH clinical trial funding, counted as 3.3% of NIH funding (the share NIH spends on clinical trials)",
+  score: "Clinical-trial funding minus military spending. Negative = more military spending than clinical-trial funding.",
+  ratio: "Military dollars per clinical-trial dollar. Higher = more military spending per trial dollar. ∞ = voted for military spending but never for trials.",
 } as const;
 
 export function PoliticianScorecardTable({
@@ -82,8 +81,8 @@ export function PoliticianScorecardTable({
   showTitle = false,
   subtitle,
   rankModeLabels = {
-    worst: "Worst Players",
-    leastBad: "Least Bad Players",
+    worst: "Highest Ratio",
+    leastBad: "Lowest Ratio",
   },
 }: PoliticianScorecardTableProps) {
   const compact = limit != null;
@@ -248,11 +247,11 @@ export function PoliticianScorecardTable({
               </th>
               {/* Military — hidden on mobile */}
               <th className={`${hdrClass} text-right hidden lg:table-cell`} onClick={() => handleSort("military")}>
-                {getMilitarySynonym("table-header")}{indicator("military")}<ColumnHelp text={COLUMN_HELP.military} />
+                Military{indicator("military")}<ColumnHelp text={COLUMN_HELP.military} />
               </th>
               {/* Trials — hidden on mobile */}
               <th className={`${hdrClass} text-right hidden lg:table-cell`} onClick={() => handleSort("trials")}>
-                Testing Medicines{indicator("trials")}<ColumnHelp text={COLUMN_HELP.trials} />
+                Clinical Trials{indicator("trials")}<ColumnHelp text={COLUMN_HELP.trials} />
               </th>
               {/* Score — always visible */}
               <th className={`${hdrClass} text-right`} onClick={() => handleSort("score")}>

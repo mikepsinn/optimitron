@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { getMilitarySynonymTitle } from "@/lib/messaging";
 import {
   formatPoliticianOgDescriptor,
   formatPoliticianOgRatio,
@@ -47,7 +46,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
   const barMaxWidth = 1080; // px (1200 - padding)
   const milBarWidth = Math.round((milPct / 100) * barMaxWidth);
   const trialsBarWidth = Math.max(Math.round((trialsPct / 100) * barMaxWidth), 4);
-  const milLabel = getMilitarySynonymTitle(p.bioguideId + "-og-bar");
+  const milLabel = "Military Spending";
 
   return new ImageResponse(
     <div
@@ -73,7 +72,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
       {/* Ratio callout */}
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 32 }}>
         <div style={{ display: "flex", fontSize: 56, fontWeight: 900, color: "#ef4444" }}>{ratioText}</div>
-        <div style={{ display: "flex", fontSize: 24, fontWeight: 700, color: "#888" }}>ratio</div>
+        <div style={{ display: "flex", fontSize: 24, fontWeight: 700, color: "#888" }}>military-to-trials ratio</div>
       </div>
 
       {/* Horizontal bars */}
@@ -103,7 +102,7 @@ export default async function OGImage({ params }: { params: Promise<{ code: stri
       {/* Bottom */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
         <div style={{ display: "flex", fontSize: 15, fontWeight: 700, color: "#666" }}>
-          optimitron.earth
+          optimitron.com
         </div>
         <div style={{ display: "flex", fontSize: 18, fontWeight: 900, color: "#FF6B9D", textTransform: "uppercase" }}>
           The Earth Optimization Game

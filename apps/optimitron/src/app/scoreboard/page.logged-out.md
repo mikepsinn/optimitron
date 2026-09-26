@@ -35,11 +35,12 @@
 | 9 | [🇬🇧United Kingdom](/governments/GB) | [$75B](/governments/GB) | [500,000](/governments/GB) | [414:1](/governments/GB) | [70.1](/governments/GB) | [$17.2K](/governments/GB) | [27.8:1](/governments/GB) |
 | 10 | [🇪🇹Ethiopia](/governments/ET) | [$1B](/governments/ET) | [873,000](/governments/ET) | [333:1](/governments/ET) | [56.0](/governments/ET) | [$1.1K](/governments/ET) | [21.3:1](/governments/ET) |
 
-### WORST POLITICIANS
-- The same ranking from the Optimitron landing page: dollars each representative voted toward weapons for every dollar toward testing medicines.
-- LEAST BAD POLITICIANS
+### POLITICIANS
+- Dollars of military spending each member of Congress voted for, per dollar of clinical-trial funding they voted for.
+- HIGHEST RATIO
+- LOWEST RATIO
 
-| #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
+| #? | NAME? | MILITARY? | CLINICAL TRIALS? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [Cathy McMorris Rodgers Washington](/governments/US/politicians/M001159) | $2.7T | $0 | -$2.7T | ∞ |
 | 2 | [Kelly Armstrong North Dakota](/governments/US/politicians/A000377) | $2.7T | $0 | -$2.7T | ∞ |
