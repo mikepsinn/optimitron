@@ -82,22 +82,22 @@
 - First treatments a year go from [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) to [185](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Pragmatic trials cost [$929](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient. A conventional phase 3 trial costs [$41,000](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a patient.
 - [SEE THE DECENTRALIZED FDA](/agencies/dfda)
 #### OPTIMAL POLICY GENERATOR
-- United States · 10 policies graded
-- Universal Pre-K (Ages 3-4)
-- Education
-- Causal confidence 0.88
-- Recommendation Reallocate
-- Today Only 34% of US 3-year-olds enrolled; varies wildly by state
-- [SEE EVERY GRADE](/opg)
-#### OPTIMAL BUDGET GENERATOR
-- US national spending per person vs the cheapest country in the top quarter for results
+- United States · 9 policies
+- Housing Supply Deregulation
+- Housing
+- Evidence type Policy proposal
+- Proposal Evaluate
+- Today 75% of US residential land zoned single-family only
+- [COMPARE POLICIES](/opg)
+#### BUDGET COMPARISONS
+- Annual national spending per person vs a country in the top outcome quarter
 - Military spending 5.3×US $2,052 · Switzerland $389
-- Total health spending 2.9×US $10,333 · South Korea $3,588
-- Government education spending 2.3×US $2,996 · Japan $1,288
-- Total R&D spending 1.9×US $1,991 · Netherlands $1,064
-- Public social spending 1.6×US $12,848 · Singapore $7,868
-- Military at Switzerland’s rate: $886B → $167B a year.
-- [SEE THE WHOLE BUDGET](/obg)
+- Total health spending (public and private) 2.9×US $10,333 · South Korea $3,588
+- Government education spending (all levels) 2.3×US $2,996 · Japan $1,288
+- Total R&D spending (business and government) 1.8×US $1,576 · Ireland $859
+- Public social spending (pensions, health, income support) 1.1×US $10,268 · Ireland $9,709
+- Spending per person in constant 2017 international dollars (PPP).
+- [COMPARE SPENDING AND OUTCOMES](/obg)
 #### DECENTRALIZED TO-DO LIST FOR HUMANITY
 - Big goals split into tasks people can claim
 - Optimize Earth

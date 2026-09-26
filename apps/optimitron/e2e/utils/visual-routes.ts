@@ -1,4 +1,6 @@
-import { getRouteReviewSpecs, ROUTES } from "@/lib/routes";
+import { usPolicyAnalysis } from "@/data/us-policy-analysis";
+import { policyDisplayName } from "@/lib/policy-presentation";
+import { getPolicyPath, getRouteReviewSpecs, ROUTES } from "@/lib/routes";
 import {
   MANAGED_DEMO_COLLECTION_ID,
   MANAGED_DEMO_DOCUMENT_ID,
@@ -43,6 +45,8 @@ export type VisualRoute = {
    */
   placeholderImageOrigins?: string[];
   required: boolean;
+  /** Exact accessible name of the route's primary heading. */
+  requiredHeading?: string;
   requiredSelector?: string;
   requiredText?: RegExp;
   waitForImages?: boolean;
@@ -312,7 +316,9 @@ const PRIZE_PAGE_FILES = [
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
   [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
+  [ROUTES.dividend, ["apps/optimitron/src/app/dividend/page.tsx"]],
   [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
+  [ROUTES.efficiency, ["apps/optimitron/src/app/efficiency/page.tsx"]],
   [
     ROUTES.eosShareholders,
     ["apps/optimitron/src/components/eos-shareholder/EosShareholderLandingPage.tsx"],
@@ -325,6 +331,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ROUTES.eos,
     [
       "apps/optimitron/src/components/eos-retro/AgencyBooths.tsx",
+      "apps/optimitron/src/components/eos-retro/BudgetFrontierExhibit.tsx",
       "apps/optimitron/src/components/eos-retro/OptimizedPublicAdministration.tsx",
       "apps/optimitron/src/components/eos-retro/DfdaOutcomeLabel.tsx",
       "apps/optimitron/src/components/eos-retro/eos-retro.css",
@@ -362,13 +369,15 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
   [ROUTES.dashboard, "h1"],
+  [ROUTES.dividend, 'main section:has-text("A dividend estimate is not yet available")'],
   [ROUTES.donate, "h1"],
+  [ROUTES.efficiency, "#healthSpendingPerCapitaPpp"],
   [ROUTES.eosShareholders, "h1"],
   [ROUTES.messages, "h1"],
   [ROUTES.organizations, "h1"],
   [ROUTES.shirt, "h1"],
   [ROUTES.tasks, "h1"],
-  [ROUTES.eos, "h1"],
+  [ROUTES.eos, "#system-obg:has(.er-bar-fill)"],
   [ROUTES.game, "#vote"],
   // The home route covers every shared landing section, so without a selector
   // the coverage gate cannot prove any of them rendered. #vote is the last
@@ -403,6 +412,14 @@ const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
 const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
   [ROUTES.calendar, `${ROUTES.calendar}?date=2036-01-01`],
 ]);
+
+const healthComparisonPolicy = usPolicyAnalysis.policies.find(
+  (policy) => policy.evidenceKind === "comparison"
+    && policy.oecdSpendingField === "healthSpendingPerCapitaPpp",
+);
+if (!healthComparisonPolicy) {
+  throw new Error("Visual review requires the national health spending comparison.");
+}
 
 const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
   {
@@ -755,47 +772,62 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: false,
   },
   {
-    // A line without its own benchmark: no optimal, no gap.
+    // Federal spending context with a related national comparison.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail",
     path: "/obg/epa-environment",
     required: true,
     requiredSelector: "h1",
-    requiredText: /^EPA \/ Environment$/,
+    requiredHeading: "EPA / Environment",
   },
   {
-    // The one line with its own benchmark: numeric optimal and gap.
+    // Military comparisons remain descriptive, without an allocation target.
     covers: [OBG_CATEGORY_PAGE_FILE],
     name: "obg-category-detail-benchmarked",
     path: "/obg/military",
     required: true,
     requiredSelector: "h1",
-    requiredText: /^Military$/,
+    requiredHeading: "Military",
   },
   {
-    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/obg/page.tsx",
+      "apps/optimitron/src/components/budget/NationalSpendingComparisons.tsx",
+    ],
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
-    requiredSelector: "h1",
-    requiredText: /^The US Federal Budget, Diagnosed$/,
+    requiredSelector: "#healthSpendingPerCapitaPpp",
+    requiredHeading: "What can we learn from other countries?",
   },
   {
-    covers: ["apps/optimitron/src/app/opg/page.tsx"],
+    covers: [
+      "apps/optimitron/src/app/opg/page.tsx",
+      "apps/optimitron/src/app/opg/layout.tsx",
+    ],
     name: "opg-index",
     path: ROUTES.opg,
     required: true,
     requiredSelector: "h1",
-    requiredText: /^Policy Rankings$/,
+    requiredHeading: "Policy evidence",
   },
   {
-    // An efficiency-frontier policy: one per spending field.
+    // A national comparison, using the public title while retaining its URL.
     covers: ["apps/optimitron/src/app/opg/[slug]/page.tsx"],
     name: "opg-policy-detail",
-    path: "/opg/national-health-spending-adopt-south-korea-s-approach",
+    path: getPolicyPath(healthComparisonPolicy.name),
     required: true,
     requiredSelector: "h1",
-    requiredText: /^National Health Spending: Adopt South Korea's Approach$/,
+    requiredHeading: policyDisplayName(healthComparisonPolicy),
+  },
+  {
+    // This proposal has historical evidence; the national comparison above does not.
+    covers: ["apps/optimitron/src/components/opg/ExperimentTimeSeriesChart.tsx"],
+    name: "opg-policy-detail-experiments",
+    path: getPolicyPath("Shift Drug Policy from Criminal to Health Approach"),
+    required: true,
+    requiredSelector: 'svg[role="img"][aria-label^="Drug-Induced Deaths in Portugal"]',
+    requiredHeading: "Shift Drug Policy from Criminal to Health Approach",
   },
   {
     // Required, and asserted on #also-serves rather than something always

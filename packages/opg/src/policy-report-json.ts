@@ -11,12 +11,16 @@ export interface PolicyReportPolicy {
   category: string;
   description: string;
   recommendationType: string;
-  evidenceGrade: string;
-  causalConfidenceScore: number;
-  policyImpactScore: number;
-  welfareScore: number;
-  incomeEffect: number;
-  healthEffect: number;
+  /** Curated assumptions and descriptive comparisons are not causal estimates. */
+  evidenceKind: 'assumption' | 'comparison' | 'estimate';
+  evidenceGrade: string | null;
+  causalConfidenceScore: number | null;
+  policyImpactScore: number | null;
+  welfareScore: number | null;
+  /** Assumed fractional change in median income; null when not estimated. */
+  incomeEffect: number | null;
+  /** Assumed fractional change in median healthy life years; null when not estimated. */
+  healthEffect: number | null;
   bradfordHillScores: Record<string, number>;
   rationale: string;
   currentStatus: string;

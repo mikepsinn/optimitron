@@ -1,24 +1,15 @@
 import { listGovernmentLeaders } from "@optimitron/data/datasets/government-leaders";
-import { usBudgetAnalysis } from "@/data/us-budget-analysis";
+import type { PolicyReportPolicy } from "@optimitron/opg";
+import { deduplicateEfficiencyCategories } from "@/lib/analysis-products";
 import { usPolicyAnalysis } from "@/data/us-policy-analysis";
+import { policyDisplayName } from "@/lib/policy-presentation";
 
-export interface GradedPolicy {
+export interface PolicySample {
   category: string;
-  confidence: number;
-  grade: string;
-  healthEffect: number;
-  incomeEffect: number;
+  evidenceKind: PolicyReportPolicy["evidenceKind"];
   name: string;
   recommendation: string;
   status: string;
-}
-
-export interface BudgetLine {
-  /** The cheapest top-quarter country the optimal is scaled from. */
-  benchmarkCountry: string;
-  current: number;
-  name: string;
-  optimal: number;
 }
 
 export interface SpendingBenchmark {
@@ -43,24 +34,16 @@ export interface Signer {
 }
 
 const POLICY_SAMPLE_SIZE = 6;
-const GRADE_ORDER = ["A", "B", "C", "D", "F"];
 
-/** The best-graded policies, strongest first, for the generator tile. */
-export function getGradedPolicySample(): { policies: GradedPolicy[]; total: number } {
+/** A name-ordered sample; proposals and comparisons have no causal ranking. */
+export function getPolicySample(): { policies: PolicySample[]; total: number } {
   const policies = [...usPolicyAnalysis.policies]
-    .sort(
-      (left, right) =>
-        GRADE_ORDER.indexOf(left.evidenceGrade) - GRADE_ORDER.indexOf(right.evidenceGrade) ||
-        right.policyImpactScore - left.policyImpactScore,
-    )
+    .sort((left, right) => policyDisplayName(left).localeCompare(policyDisplayName(right)))
     .slice(0, POLICY_SAMPLE_SIZE)
     .map((policy) => ({
       category: policy.category.replace(/_/g, " "),
-      confidence: policy.causalConfidenceScore,
-      grade: policy.evidenceGrade,
-      healthEffect: policy.healthEffect,
-      incomeEffect: policy.incomeEffect,
-      name: policy.name,
+      evidenceKind: policy.evidenceKind,
+      name: policyDisplayName(policy),
       recommendation: policy.recommendationType.replace(/_/g, " "),
       status: policy.currentStatus,
     }));
@@ -68,42 +51,24 @@ export function getGradedPolicySample(): { policies: GradedPolicy[]; total: numb
 }
 
 /**
- * One row per cross-country spending field: US spending per person against
- * the most efficient country with an equal or better outcome. Several budget
- * lines share a field, so rows come from fields, not lines.
+ * One descriptive comparison per national spending field. Several federal
+ * lines share a field, and fields can overlap, so these rows are not additive.
  */
 export function getSpendingBenchmarks(): SpendingBenchmark[] {
   const byField = new Map<string, SpendingBenchmark>();
-  for (const category of usBudgetAnalysis.categories) {
+  for (const category of deduplicateEfficiencyCategories()) {
     const benchmark = category.oecdBenchmark;
     const efficiency = category.efficiency;
     if (!benchmark || !efficiency || byField.has(benchmark.spendingField)) continue;
     byField.set(benchmark.spendingField, {
       bestCountry: efficiency.bestCountry.name,
       bestPerCapita: efficiency.bestCountry.spendingPerCapita,
-      // "Public social spending (pensions, ...)" -> "Public social spending"
-      field: benchmark.fieldLabel.replace(/\s*\(.*\)$/, ""),
+      field: benchmark.fieldLabel,
       overspendRatio: efficiency.overspendRatio,
       usPerCapita: efficiency.spendingPerCapita,
     });
   }
   return [...byField.values()].sort((left, right) => right.overspendRatio - left.overspendRatio);
-}
-
-/** Budget lines a benchmark measures directly, so they have an optimal level. */
-export function getMeasuredBudgetLines(): BudgetLine[] {
-  return usBudgetAnalysis.categories.flatMap((category) =>
-    category.optimalSpendingNominal == null
-      ? []
-      : [
-          {
-            benchmarkCountry: category.efficiency?.bestCountry.name ?? "the benchmark",
-            current: category.currentSpending,
-            name: category.name,
-            optimal: category.optimalSpendingNominal,
-          },
-        ],
-  );
 }
 
 /**

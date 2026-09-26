@@ -1,272 +1,134 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usPolicyAnalysis } from "@/data/us-policy-analysis";
 import { getPolicyPath } from "@/lib/routes";
-import { PrizeCTA } from "@/components/prize/PrizeCTA";
-import { PRIZE_CTA_COPY } from "@/lib/messaging";
-import { GLOBAL_AVG_INCOME_2025, GLOBAL_HALE_CURRENT } from "@optimitron/data/parameters";
+import { getNationalBudgetComparisons, type NationalBudgetComparison } from "@/lib/analysis-products";
+import { policyDisplayName, policyEvidenceLabel } from "@/lib/policy-presentation";
 
-// All types flow from @optimitron/opg via the generated .ts file.
-const data = usPolicyAnalysis;
+const comparisons = new Map(getNationalBudgetComparisons().map((comparison) => [comparison.spendingField, comparison]));
 
-const MEDIAN_INCOME = GLOBAL_AVG_INCOME_2025.value;
-const HALE_YEARS = GLOBAL_HALE_CURRENT.value;
+function CountryComparison({ comparison }: { comparison: NationalBudgetComparison }) {
+  const { efficiency, oecdBenchmark } = comparison.category;
+  if (!efficiency) return null;
 
-/** Translate abstract effect percentages into dollar/year amounts per person */
-function incomePerYear(effect: number): number {
-  return Math.round(effect * MEDIAN_INCOME);
-}
-function haleMonths(effect: number): number {
-  return Math.round(effect * 12 * 10); // effect is fraction, ×10 years scale ×12 months
-}
-
-type SortKey = "welfareScore" | "evidenceGrade" | "causalConfidenceScore" | "policyImpactScore" | "incomeEffect" | "healthEffect";
-const gradeOrder: Record<string, number> = { A: 1, B: 2, C: 3, D: 4, F: 5 };
-
-export default function PoliciesPage() {
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortBy, setSortBy] = useState<SortKey>("welfareScore");
-
-  const categories = useMemo(
-    () => ["all", ...new Set(data.policies.map((p) => p.category))],
-    []
-  );
-
-  const filtered = useMemo(() => {
-    let list = categoryFilter === "all"
-      ? data.policies
-      : data.policies.filter((p) => p.category === categoryFilter);
-
-    return [...list].sort((a, b) => {
-      if (sortBy === "evidenceGrade") {
-        return (gradeOrder[a.evidenceGrade] ?? 9) - (gradeOrder[b.evidenceGrade] ?? 9);
-      }
-      const aVal = a[sortBy];
-      const bVal = b[sortBy];
-      if (typeof aVal === "number" && typeof bVal === "number") {
-        return bVal - aVal;
-      }
-      return 0;
-    });
-  }, [categoryFilter, sortBy]);
+  const incomeOutcome = comparison.spendingField === "rdSpendingPerCapitaPpp" || comparison.spendingField === "socialSpendingPerCapitaPpp";
+  const outcomeLabel = incomeOutcome
+    ? "Median disposable income"
+    : comparison.spendingField === "educationSpendingPerCapitaPpp" ? "PISA math score" : "Life expectancy";
+  const countries = [
+    { name: usPolicyAnalysis.jurisdiction, spending: efficiency.spendingPerCapita, outcome: efficiency.outcome, years: oecdBenchmark?.comparisonYears?.target },
+    { name: efficiency.bestCountry.name, spending: efficiency.bestCountry.spendingPerCapita, outcome: efficiency.bestCountry.outcome, years: oecdBenchmark?.comparisonYears?.peer },
+  ];
+  const maxSpending = Math.max(...countries.map((country) => country.spending));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-foreground mb-2">
-          Policy Rankings
-        </h1>
-        <p className="text-muted-foreground font-bold">
-          I graded {data.policies.length} policy changes by the evidence that they raise health and income.
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-8">
-        <div>
-          <label className="text-xs text-muted-foreground block mb-1 font-bold uppercase">Category</label>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="bg-background border-4 border-primary px-3 py-2 text-sm text-foreground font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c === "all" ? "All Categories" : c.replace(/_/g, " ")}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground block mb-1 font-bold uppercase">Sort by</label>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortKey)}
-            className="bg-background border-4 border-primary px-3 py-2 text-sm text-foreground font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <option value="welfareScore">Welfare Score</option>
-            <option value="evidenceGrade">Evidence Grade</option>
-            <option value="causalConfidenceScore">Causal Confidence</option>
-            <option value="policyImpactScore">Policy Impact</option>
-            <option value="incomeEffect">Income Benefit ($)</option>
-            <option value="healthEffect">Health Benefit (HALE)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Policy list */}
-      <div className="space-y-3">
-        {filtered.map((policy, i) => (
-          <div key={policy.name} className="card">
-            <button
-              onClick={() => setExpanded(expanded === policy.name ? null : policy.name)}
-              className="w-full text-left"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-foreground flex items-center justify-center text-sm font-black text-background">
-                  {i + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <Link href={getPolicyPath(policy.name)} className="text-foreground font-black truncate hover:text-foreground transition-colors underline" onClick={(e) => e.stopPropagation()}>{policy.name}</Link>
-                    <GradeBadge grade={policy.evidenceGrade} />
-                    <RecommendationBadge type={policy.recommendationType} />
-                    <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted border border-primary font-bold">
-                      {policy.category.replace(/_/g, " ")}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-1 font-bold">{policy.description}</p>
-                  {(policy.currentStatus || policy.recommendedTarget) && (
-                    <p className="text-xs text-muted-foreground font-bold mt-1">
-                      {policy.currentStatus && <>Current: {policy.currentStatus}</>}
-                      {policy.currentStatus && policy.recommendedTarget && " → "}
-                      {policy.recommendedTarget && <>Target: {policy.recommendedTarget}</>}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <Metric label="Income" value={`+$${incomePerYear(policy.incomeEffect).toLocaleString()}/yr`} highlight />
-                  <Metric label="Health" value={`+${haleMonths(policy.healthEffect)}mo HALE`} highlight />
-                  <Metric label="Evidence" value={policy.evidenceGrade} />
-                  <span className="text-muted-foreground text-lg font-black">
-                    {expanded === policy.name ? "▲" : "▼"}
+    <div className="mt-5">
+      <p className="mb-3 text-sm font-semibold">{comparison.label}</p>
+      <div className="grid grid-cols-2 gap-4">
+        {countries.map((country) => (
+          <div key={country.name} className="min-w-0">
+            <h3 className="border-b border-foreground/20 pb-2 text-sm font-bold">{country.name}</h3>
+            <dl>
+              <div className="mt-3">
+                <dt className="text-xs text-muted-foreground"><p>Spending / person / year</p></dt>
+                <dd className="mt-1 text-2xl font-black tabular-nums">
+                  <p>${Math.round(country.spending).toLocaleString("en-US")}</p>
+                  <span aria-hidden="true" className="my-3 block h-2 bg-muted">
+                    <span className="block h-full bg-foreground" style={{ width: `${maxSpending > 0 ? country.spending / maxSpending * 100 : 0}%` }} />
                   </span>
-                </div>
+                </dd>
               </div>
-            </button>
-
-            {expanded === policy.name && (
-              <div className="mt-4 pt-4 border-t-2 border-primary space-y-4">
-                <div>
-                  <p className="text-sm text-foreground font-bold">{policy.rationale}</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-black">Details</h4>
-                    <div className="space-y-1 text-sm">
-                      <p className="text-muted-foreground font-bold">
-                        <span className="text-muted-foreground font-bold">Type:</span> {policy.type.replace(/_/g, " ")}
-                      </p>
-                      <p className="text-muted-foreground font-bold">
-                        <span className="text-muted-foreground font-bold">Action:</span> {policy.recommendationType}
-                      </p>
-                      <p className="text-muted-foreground font-bold">
-                        <span className="text-muted-foreground font-bold">Income Effect:</span>{" "}
-                        <span className="text-background font-black">+${incomePerYear(policy.incomeEffect).toLocaleString()}/yr</span>
-                        <span className="text-muted-foreground"> ({(policy.incomeEffect * 100).toFixed(0)}% of median income)</span>
-                      </p>
-                      <p className="text-muted-foreground font-bold">
-                        <span className="text-muted-foreground font-bold">Health Effect:</span>{" "}
-                        <span className="text-background font-black">+{haleMonths(policy.healthEffect)} months</span>
-                        <span className="text-muted-foreground"> healthy life expectancy</span>
-                      </p>
-                      <p className="text-muted-foreground font-bold">
-                        <span className="text-muted-foreground font-bold">Welfare Score:</span>{" "}
-                        <span className="text-foreground font-black">+{policy.welfareScore}</span>
-                        <span className="text-muted-foreground"> (CCS: {(policy.causalConfidenceScore * 100).toFixed(0)}%)</span>
-                      </p>
-                      {policy.currentStatus && (
-                        <p className="text-muted-foreground font-bold">
-                          <span className="text-muted-foreground font-bold">Current:</span> {policy.currentStatus}
-                        </p>
-                      )}
-                      {policy.recommendedTarget && (
-                        <p className="text-muted-foreground font-bold">
-                          <span className="text-muted-foreground font-bold">Target:</span> {policy.recommendedTarget}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {policy.blockingFactors.map((f) => (
-                          <span key={f} className="text-xs bg-brutal-red text-brutal-red-foreground px-2 py-0.5 border border-primary font-bold">
-                            {f.replace(/_/g, " ")}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-black">
-                      Bradford Hill Scores
-                    </h4>
-                    <div className="space-y-1.5">
-                      {Object.entries(policy.bradfordHillScores).map(([key, val]) => (
-                        <div key={key} className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground w-24 capitalize font-bold">{key}</span>
-                          <div className="flex-1 h-2 bg-muted border border-primary overflow-hidden">
-                            <div
-                              className="h-full bg-foreground"
-                              style={{ width: `${(val as number) * 100}%` }}
-                            />
-                          </div>
-                          <span className="text-xs text-muted-foreground w-10 text-right font-bold">
-                            {((val as number) * 100).toFixed(0)}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <Link
-                  href={getPolicyPath(policy.name)}
-                  className="inline-block mt-2 border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-none transition-colors hover:bg-background hover:text-foreground"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  View Full Analysis →
-                </Link>
+              <div>
+                <dt className="text-xs text-muted-foreground"><p>{outcomeLabel}</p></dt>
+                <dd className="mt-1 text-lg font-bold tabular-nums">
+                  <p>
+                    {incomeOutcome ? "$" : ""}{country.outcome.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: incomeOutcome ? 2 : 0 })}
+                    {!incomeOutcome && comparison.spendingField !== "educationSpendingPerCapitaPpp" ? <span className="text-sm font-normal"> years</span> : null}
+                  </p>
+                </dd>
               </div>
-            )}
+              <div className="mt-3">
+                <dt className="text-xs text-muted-foreground"><p>Observation years</p></dt>
+                <dd className="mt-1 text-xs tabular-nums"><p>{country.years?.length ? country.years.join(", ") : "Unavailable"}</p></dd>
+              </div>
+            </dl>
           </div>
         ))}
       </div>
-
-      <p className="text-xs text-muted-foreground mt-8 font-bold">
-        Analysis date: {data.generatedAt} · Source: Optimitron OPG (Optimal Policy Generator)
-      </p>
-
-      <div className="mt-10">
-        <PrizeCTA
-          headline="Every one of these works. Now we get your government to run them."
-          body={`Everyone wants policy that works. Nobody believes their neighbor does. One verified vote count ends the standoff. ${PRIZE_CTA_COPY.depositAndRecruit}`}
-          variant="yellow"
-        />
-      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">Spending: constant 2017 international dollars (PPP). Averages over the observation years shown.</p>
+      {incomeOutcome ? <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Income: after-tax household median, adjusted for household size; OECD real PPP, with a different price basis from spending.</p> : null}
     </div>
   );
 }
 
-function GradeBadge({ grade }: { grade: string }) {
-  return (
-    <span className={`badge-${grade} text-xs font-black px-2 py-0.5`}>
-      Grade {grade}
-    </span>
-  );
-}
+export default function PoliciesPage() {
+  const [category, setCategory] = useState("all");
+  const policies = usPolicyAnalysis.policies.filter((policy) => category === "all" || policy.category === category);
 
-function RecommendationBadge({ type }: { type: string }) {
-  const styles: Record<string, string> = {
-    enact: "bg-background text-foreground",
-    modify: "bg-background text-foreground",
-    repeal: "bg-brutal-red text-brutal-red-foreground",
-    maintain: "bg-muted",
-  };
   return (
-    <span className={`text-xs font-black px-2 py-0.5 border border-primary ${styles[type] ?? "bg-muted"}`}>
-      {type}
-    </span>
-  );
-}
-
-function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className="text-center">
-      <div className={`text-sm font-black ${highlight ? "text-background" : "text-foreground"}`}>{value}</div>
-      <div className="text-[10px] text-muted-foreground font-bold uppercase">{label}</div>
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8 flex flex-col gap-6 border-b-2 border-foreground pb-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="mb-3 text-3xl font-black uppercase tracking-tight md:text-4xl">Policy evidence</h1>
+          <p className="max-w-lg text-muted-foreground">Explore policy proposals for better health and higher incomes.</p>
+        </div>
+        <div className="shrink-0">
+          <label className="mb-2 block text-xs font-bold uppercase tracking-wide" htmlFor="policy-category">Category</label>
+          <select id="policy-category" value={category} onChange={(event) => setCategory(event.target.value)}
+            className="w-full max-w-full border-2 border-foreground bg-background px-3 py-2.5 text-sm font-semibold md:w-56">
+            <option value="all">All categories</option>
+            {[...new Set(usPolicyAnalysis.policies.map((policy) => policy.category))].map((value) => (
+              <option key={value} value={value}>{value.replace(/_/g, " ")}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {policies.map((policy) => {
+          const comparison = policy.evidenceKind === "comparison" && policy.oecdSpendingField ? comparisons.get(policy.oecdSpendingField) : undefined;
+          return (
+            <article key={policy.name} className="flex min-w-0 flex-col border-2 border-foreground bg-card shadow-[3px_3px_0_0_var(--foreground)]">
+              <div className="flex-1 p-5 sm:p-6">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{policyEvidenceLabel(policy.evidenceKind)}</p>
+                <h2 className="text-xl font-black leading-snug tracking-tight">
+                  <Link className="underline-offset-4 hover:underline focus-visible:underline" href={getPolicyPath(policy.name)}>{policyDisplayName(policy)}</Link>
+                </h2>
+                {comparison?.category.efficiency ? (
+                  <CountryComparison comparison={comparison} />
+                ) : (
+                  <>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{policy.description}</p>
+                    {policy.evidenceKind !== "comparison" ? <dl className="mt-5 space-y-4 border-l-2 border-foreground/20 pl-4">
+                      {policy.currentStatus ? (
+                        <div>
+                          <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground"><p>Today</p></dt>
+                          <dd className="mt-1 text-sm leading-relaxed"><p>{policy.currentStatus}</p></dd>
+                        </div>
+                      ) : null}
+                      {policy.recommendedTarget ? (
+                        <div>
+                          <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground"><p>Proposed change</p></dt>
+                          <dd className="mt-1 text-sm font-semibold leading-relaxed"><p>{policy.recommendedTarget}</p></dd>
+                        </div>
+                      ) : null}
+                    </dl> : null}
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-foreground/20 bg-muted/40 px-5 py-4 sm:px-6">
+                {policy.evidenceKind === "comparison" ? <p className="text-xs text-muted-foreground">{policy.recommendedTarget}</p> : null}
+                <Link className="ml-auto inline-flex min-h-6 items-center gap-3 text-sm font-bold underline-offset-4 hover:underline focus-visible:underline" href={getPolicyPath(policy.name)}>View analysis <span aria-hidden="true">→</span></Link>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <p className="text-sm text-muted-foreground mt-8">
+        <Link href="/obg" className="underline">Compare spending and outcomes.</Link>
+      </p>
+      <p className="text-xs text-muted-foreground mt-4">Generated: {usPolicyAnalysis.generatedAt.slice(0, 10)}</p>
     </div>
   );
 }

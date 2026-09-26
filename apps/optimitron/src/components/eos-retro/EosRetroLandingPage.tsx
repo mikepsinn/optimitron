@@ -274,22 +274,22 @@ export function EosRetroLandingPage() {
 
         <MachinePart
           id="system-opg"
-          intro={AGENCIES.dcbo.wishoniaQuote}
+          intro="Proposals for better health and higher incomes."
           letter="A"
           stepInsideHref={ROUTES.opg}
           stepInsideLabel="Explore the Policy Generator"
-          title="Laws graded like homework"
+          title="Policy proposals"
         >
           <PolicyGradeTable />
         </MachinePart>
 
         <MachinePart
           id="system-obg"
-          intro={AGENCIES.domb.wishoniaQuote}
+          intro="What do other countries spend, and how do their outcomes compare?"
           letter="B"
           stepInsideHref={ROUTES.obg}
           stepInsideLabel="Explore the Budget Generator"
-          title="The budget, solved like an equation"
+          title="What other countries can teach us"
         >
           <BudgetFrontierExhibit />
         </MachinePart>

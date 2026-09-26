@@ -92,7 +92,7 @@ export interface OECDBudgetPanelDataPoint {
   pisaMathScore: number | null;
 
   // ── Welfare outcome (the actual Optimocracy metric) ───────────────
-  /** Real after-tax median disposable income, PPP-adjusted (constant intl $, per equivalised person) */
+  /** Measured OECD real PPP disposable income per equivalised household; published price basis, not 2017 dollars. */
   afterTaxMedianIncomePpp: number | null;
 }
 
@@ -866,19 +866,43 @@ const data: OECDBudgetPanelDataPoint[] = [
 
 // ─── Enrich with Median Income Data ──────────────────────────────────
 
-import { getBestAvailableMedianIncomeSeries } from './median-income-series';
+import { getBestAvailableMedianIncomeSeriesFromRecords, MEDIAN_INCOME_SERIES } from './median-income-series';
+import type { MedianIncomeSeriesRecord } from './median-income-types';
 
-/** Build a lookup: "ISO3:YEAR" → median income value (real PPP) */
-function buildMedianIncomeLookup(): Map<string, number> {
-  const records = getBestAvailableMedianIncomeSeries({
-    priceBasis: 'real',
-    purchasingPower: 'ppp',
-  });
+/**
+ * Keep one compatible survey-income definition. OECD's CPI/PPP conversions of
+ * observed disposable income are allowed; subtracting government spending from
+ * PIP income is not. Eurostat has a different equivalence/conversion series and
+ * must not silently fill this series. Unmarked OECD records are survey inputs;
+ * the OECD builder does not interpolate them.
+ */
+export function isEligiblePanelIncomeRecord(record: MedianIncomeSeriesRecord): boolean {
+  return record.source === 'OECD IDD'
+    && record.concept === 'after_tax_median_disposable_income'
+    && record.isAfterTax
+    && record.taxScope === 'after_direct_taxes_and_cash_transfers'
+    && record.priceBasis === 'real'
+    && record.purchasingPower === 'ppp'
+    && record.unit === 'Real PPP-adjusted US dollars per equivalised household'
+    && record.methodology === 'METH2012'
+    && record.definition === 'D_CUR'
+    && record.isInterpolated !== true
+    && record.welfareType !== 'consumption'
+    && Number.isFinite(record.value)
+    && record.value > 0;
+}
+
+/** Build a lookup without imputing unavailable country-years. */
+export function buildMedianIncomeLookup(
+  input: readonly MedianIncomeSeriesRecord[] = MEDIAN_INCOME_SERIES,
+): Map<string, number> {
+  const records = getBestAvailableMedianIncomeSeriesFromRecords(
+    input.filter(isEligiblePanelIncomeRecord),
+  );
 
   const lookup = new Map<string, number>();
   for (const r of records) {
     const key = `${r.jurisdictionIso3}:${r.year}`;
-    // Only overwrite if this record has higher preference rank
     if (!lookup.has(key)) {
       lookup.set(key, r.value);
     }
@@ -900,7 +924,8 @@ const enrichedData = data.map(row => ({
  * Extended cross-country budget/outcome panel (28 countries, 2000–2022+).
  *
  * Includes 23 OECD core + 5 high-performing non-OECD countries (SGP, EST, VNM, TWN, POL).
- * Enriched with real after-tax median disposable income from Eurostat EU-SILC + World Bank PIP.
+ * Income uses measured OECD IDD real PPP disposable income only. Missing
+ * observations stay null; the income price basis is not claimed to be 2017.
  */
 export const OECD_BUDGET_PANEL: readonly OECDBudgetPanelDataPoint[] = Object.freeze(enrichedData);
 
@@ -916,6 +941,7 @@ export const OECD_BUDGET_PANEL_META = {
     'World Bank World Development Indicators (WDI)',
     'OECD Social Expenditure Database (SOCX)',
     'OECD StatExtracts',
+    'OECD Income Distribution Database (strict disposable-income observations)',
   ],
   indicators: {
     // % GDP (context/comparison)

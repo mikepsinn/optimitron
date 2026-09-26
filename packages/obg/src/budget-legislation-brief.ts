@@ -24,8 +24,18 @@ type BudgetCategoryWithEfficiency = BudgetReportCategory & {
   efficiency: NonNullable<BudgetReportCategory["efficiency"]>;
 };
 
-function hasEfficiency(category: BudgetReportCategory): category is BudgetCategoryWithEfficiency {
-  return category.efficiency !== undefined;
+/** A descriptive peer comparison cannot authorize a budget reform draft. */
+function hasActionableAllocation(category: BudgetReportCategory): category is BudgetCategoryWithEfficiency {
+  return category.efficiency !== undefined
+    && category.efficiency !== null
+    && category.recommendation !== "comparison_only"
+    && category.recommendation !== "no_comparison"
+    && category.optimalSpendingNominal !== null
+    && Number.isFinite(category.optimalSpendingNominal)
+    && category.optimalSpendingNominal >= 0
+    && category.optimalSpendingPerCapita !== null
+    && Number.isFinite(category.optimalSpendingPerCapita)
+    && category.optimalSpendingPerCapita >= 0;
 }
 
 function slugify(value: string): string {
@@ -85,7 +95,7 @@ export function createBudgetLegislationBriefs(
   const minOverspendRatio = options?.minOverspendRatio ?? 1.25;
 
   return report.categories
-    .filter(hasEfficiency)
+    .filter(hasActionableAllocation)
     .filter((category) => category.efficiency.overspendRatio >= minOverspendRatio)
     .sort((left, right) => right.efficiency.overspendRatio - left.efficiency.overspendRatio)
     .map((category) => toBrief(category, report.generatedAt));

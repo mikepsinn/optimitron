@@ -302,17 +302,21 @@ export const opgLink: NavItem = {
   href: ROUTES.opg,
   label: AGENCIES.dcbo.dName,
   emoji: AGENCIES.dcbo.emoji,
-  description: AGENCIES.dcbo.description,
-  tagline: AGENCIES.dcbo.tagline,
-  cta: "See Policy Grades",
+  description: "Policy proposals for better health and higher incomes, with research and country comparisons.",
+  tagline: "Policy evidence and proposals",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Compare Policies",
 };
 
 export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
   emoji: AGENCIES.domb.emoji,
-  description: AGENCIES.domb.description,
-  tagline: AGENCIES.domb.tagline,
+  description: "Compare US spending with other countries on healthcare, education, research and more.",
+  tagline: "Government spending and outcomes",
+  copyPreview: true,
+  screenshot: true,
   cta: "See Budget Analysis",
 };
 
@@ -763,14 +767,15 @@ export const developersToolsLink: NavItem = {
 
 export const efficiencyLink: NavItem = {
   href: ROUTES.efficiency,
-  label: "Efficiency Audit",
+  label: "Spending Comparisons",
   emoji: "📉",
   description:
-    "The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.",
-  tagline: "Where budgets are bloated, starved, and fixable",
+    "Compare what countries spend with their health, education and income outcomes.",
+  tagline: "Spending and outcomes across countries",
   matchPrefixes: [ROUTES.efficiency],
-
-  cta: "Audit Waste",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Compare Spending",
 };
 
 export const dividendLink: NavItem = {
@@ -778,11 +783,12 @@ export const dividendLink: NavItem = {
   label: "Optimization Dividend",
   emoji: "💵",
   description:
-    "Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.",
-  tagline: "What better budgets pay back to actual humans",
+    "Could better budgets fund a public dividend? Explore policy proposals and spending comparisons.",
+  tagline: "Could better budgets fund a public dividend?",
   matchPrefixes: [ROUTES.dividend],
-
-  cta: "See Dividend",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Explore a Public Dividend",
 };
 
 export const governmentSizeLink: NavItem = {
@@ -1904,6 +1910,10 @@ export interface RouteReviewSpec {
 export const routeReviewNavItems = [
   adminLink,
   homeLink,
+  opgLink,
+  obgLink,
+  efficiencyLink,
+  dividendLink,
   prizeLink,
   gameLink,
   servicesLink,

@@ -56,7 +56,6 @@ const POLICY_EXPERIMENT_MAP: Record<string, string[]> = {
 
   // Health-related
   "healthcare": ["Universal Healthcare with Market Competition (3M System)", "Universal Healthcare (CCSS + EBAIS primary care)", "Community Health Worker (CHW) Program"],
-  "clinical trial": ["Universal Healthcare with Market Competition (3M System)"],
 
   // Military / firearms
   "firearms": ["National Firearms Agreement (Gun Buyback)"],
@@ -82,7 +81,6 @@ const POLICY_EXPERIMENT_MAP: Record<string, string[]> = {
  */
 const CATEGORY_COMPARISON_MAP: Record<string, { type: ComparisonType; label: string }> = {
   health: { type: "health", label: "Health Systems by Country" },
-  health_research: { type: "health", label: "Health Systems by Country" },
   health_non_medicare_medicaid_: { type: "health", label: "Health Systems by Country" },
   veterans_affairs: { type: "health", label: "Health Systems by Country" },
   education: { type: "education", label: "Education Outcomes by Country" },
@@ -92,7 +90,7 @@ const CATEGORY_COMPARISON_MAP: Record<string, { type: ComparisonType; label: str
 /** Special override: drug-related policies get drug comparison instead of health */
 function isDrugPolicy(name: string, description: string): boolean {
   const text = `${name} ${description}`.toLowerCase();
-  return text.includes("drug") || text.includes("cannabis") || text.includes("decriminal");
+  return text.includes("drug policy") || text.includes("cannabis") || text.includes("decriminal");
 }
 
 /* ------------------------------------------------------------------ */

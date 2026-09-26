@@ -43,6 +43,8 @@ export interface BudgetReportOecdBenchmark {
   scope: EfficiencyEvidenceScope;
   /** This line's real spending per capita ÷ the field's spending per capita */
   lineShareOfField: number;
+  /** Exact observation years used in the target and selected peer averages. */
+  comparisonYears?: { target: number[]; peer: number[] };
 }
 
 export interface BudgetReportCategory {
@@ -50,9 +52,9 @@ export interface BudgetReportCategory {
   name: string;
   currentSpending: number;
   currentSpendingRealPerCapita: number;
-  /** Null when no benchmark measures this line (see `oecdBenchmark.scope`) */
+  /** Null unless a policy evaluation identifies an actionable allocation target. */
   optimalSpendingPerCapita: number | null;
-  /** Null when no benchmark measures this line (see `oecdBenchmark.scope`) */
+  /** Null unless a policy evaluation identifies an actionable allocation target. */
   optimalSpendingNominal: number | null;
   /** current − optimal; 0 when the optimal is null */
   gap: number;
@@ -61,8 +63,8 @@ export interface BudgetReportCategory {
   evidenceSource: string;
   outcomeMetrics: BudgetReportOutcomeMetric[];
   historicalRealPerCapita?: BudgetReportHistoricalPoint[];
-  diminishingReturns?: BudgetReportDiminishingReturns;
-  efficiency?: EfficiencyAnalysis;
+  diminishingReturns?: BudgetReportDiminishingReturns | null;
+  efficiency?: EfficiencyAnalysis | null;
   oecdBenchmark?: BudgetReportOecdBenchmark;
 }
 
