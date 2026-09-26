@@ -1,4 +1,5 @@
 import { ContentVisibility, OrgStatus } from "@optimitron/db"
+import { COURT_LINKS } from "@/lib/court-links"
 import { prisma } from "@/lib/prisma"
 import { ROUTES } from "@/lib/routes"
 import { SHOW_DONATE_LINKS } from "@/lib/site-config"
@@ -248,6 +249,23 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
     keywords: ["research", "evidence", "math", "calculations", "clinical trials"],
     section: "About",
     title: "Research",
+  },
+  {
+    description:
+      "Add yourself or a person you represent to the public record for Humanity v. Government.",
+    emoji: "⚖️",
+    href: COURT_LINKS.plaintiffs.url,
+    keywords: [
+      "plaintiff",
+      "plaintiffs",
+      "register",
+      "humanity v government",
+      "class action",
+      "memorial",
+      "damages",
+    ],
+    section: "The campaign",
+    title: "Register a Plaintiff",
   },
   {
     description: "Who runs this campaign and why.",

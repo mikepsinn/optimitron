@@ -78,6 +78,21 @@ describe("searchCampaign", () => {
     expect(results.pages.map((page) => page.href)).toContain("/poster")
   })
 
+  it.each(["plaintiff", "memorial", "humanity v government"])(
+    "finds the canonical Court registration page for %s",
+    async (query) => {
+      const results = await searchCampaign(query)
+
+      expect(results.pages).toContainEqual(
+        expect.objectContaining({
+          href: "https://courtofhumanity.org/plaintiffs",
+          title: "Register a Plaintiff",
+        }),
+      )
+      expect(results.pages.map((page) => page.href)).not.toContain("/plaintiffs")
+    },
+  )
+
   it("ranks a person above nothing and keeps the profile href", async () => {
     mocks.userFindMany.mockResolvedValue([
       {
