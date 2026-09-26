@@ -43,7 +43,7 @@ export function SiteRootLayout({
   navigation,
 }: Readonly<{ children: ReactNode; navigation: AppNavigation }>) {
   const config = getSiteConfig();
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
   const analyticsScript = gaId
     ? `window.dataLayer=window.dataLayer||[];function gtag(){window.dataLayer.push(arguments)};gtag('js',new Date());gtag('config',${JSON.stringify(gaId)},{site_variant:${JSON.stringify(config.domain)}})`
     : null;
@@ -66,7 +66,7 @@ export function SiteRootLayout({
               src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`}
               strategy="afterInteractive"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="beforeInteractive">
               {analyticsScript}
             </Script>
           </>

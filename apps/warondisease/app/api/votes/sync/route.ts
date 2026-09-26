@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true },
+      select: { id: true, emailVerified: true },
     })
 
     if (!user) {
@@ -47,6 +47,15 @@ export async function POST(req: NextRequest) {
         { status: 404 },
       )
     }
+
+    // Receipt flags describe persisted server state, never raw referral params.
+    // Auth intent alone (including a password-only account) is not verification.
+    const analyticsReceipt = (vote: { id: string; referredByUserId: string | null }) => ({
+      responseId: vote.id,
+      verifiedResponseSaved: user.emailVerified !== null,
+      verifiedReferredParticipant: user.emailVerified !== null &&
+        vote.referredByUserId !== null && vote.referredByUserId !== userId,
+    })
 
     const body = await req.json()
     const {
@@ -142,7 +151,7 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        { message: "Vote already recorded", vote },
+        { message: "Vote already recorded", vote, analytics: analyticsReceipt(vote) },
         { status: 200 },
       )
     }
@@ -269,7 +278,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, vote }, { status: 200 })
+    return NextResponse.json({ success: true, vote, analytics: analyticsReceipt(vote) }, { status: 200 })
   } catch (error) {
     log.error("Error syncing vote", { error })
 

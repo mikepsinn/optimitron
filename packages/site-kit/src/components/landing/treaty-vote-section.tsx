@@ -21,7 +21,7 @@ import {
   DFDA_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters"
 import { ParameterValue } from "../shared/ParameterValue"
-import { trackVoteSubmitted } from "../../lib/analytics"
+import { trackTreatyFunnelStep } from "../../lib/analytics"
 import { ManualPromoCard } from "../shared/ManualPromoCard"
 import { PragmaticTrialsDialog } from "./PragmaticTrialsDialog"
 import { TreatyPostVoteFlow, type TreatyPostVoteMode } from "./TreatyPostVoteFlow"
@@ -77,6 +77,15 @@ export default function TreatyVoteSection({
   const animationFrameRef = useRef<number | null>(null)
   const introAnimationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const visualCaptureRef = useRef(false)
+  const hasTrackedViewRef = useRef(false)
+
+  useEffect(() => {
+    // The homepage also mounts a footer ballot; count only the primary survey.
+    if (sectionId === "vote" && !hasTrackedViewRef.current) {
+      hasTrackedViewRef.current = true
+      trackTreatyFunnelStep("viewed")
+    }
+  }, [sectionId])
 
   // Restore state from localStorage on mount
   useEffect(() => {
@@ -303,6 +312,7 @@ export default function TreatyVoteSection({
     })
     setSliderSubmitted(true)
     setShowSlider(false)
+    trackTreatyFunnelStep("allocation_submitted")
   }
 
   // Calculate clinical trials percentage
@@ -313,12 +323,7 @@ export default function TreatyVoteSection({
   const handleAnswer = async (choice: "yes" | "no") => {
     setAnswer(choice)
 
-    // Track vote submitted event
-    trackVoteSubmitted({
-      voteType: "treaty_vote",
-      answer: choice.toUpperCase(),
-      authenticated: status === "authenticated",
-    })
+    trackTreatyFunnelStep("answer_selected")
 
     // Trigger confetti for YES votes
     if (choice === "yes") {
@@ -524,46 +529,16 @@ export default function TreatyVoteSection({
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <PanelShell className={panelClassName}>
-                <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-2">
-                  Governments spend{" "}
-                  <br className="hidden sm:block" />
-                  <span className="text-brutal-pink">{militaryToClinicalsRatioFormatted}</span> on weapons and military systems{" "}
-                  <br className="hidden sm:block" />
-                  for every{" "}
-                  <br className="hidden sm:block" />
-                  <span className="text-brutal-pink">$1</span> on <span className="text-brutal-pink">CLINICAL TRIALS TO CURE DISEASE</span>.
-                </p>
-
-                <div className="text-base sm:text-lg font-bold text-center mb-4">
-                  That&apos;s {militarySpendingPct}% to military and just{" "}
-                  <span className="text-brutal-pink text-xl">{clinicalTrialsSpendingPct}%</span> to clinical trials.
-                </div>
-
-                <div className="text-base sm:text-lg font-bold text-center mb-4 p-4 bg-brutal-yellow border-4 border-primary">
-                  Redirecting just 1% of military spending would increase clinical trial capacity by{" "}
-                  <ParameterValue
-                    param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
-                    format={{ precision: 1 }}
-                    className="text-brutal-pink font-black text-xl"
-                  />, compressing the projected disease eradication timeline from{" "}
-                  <ParameterValue
-                    param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
-                    format={{ precision: 0 }}
-                    className="text-brutal-pink font-black text-xl"
-                  />{" "}
-                  <span className="text-brutal-pink font-black text-xl">years</span> to{" "}
-                  <ParameterValue
-                    param={DFDA_QUEUE_CLEARANCE_YEARS}
-                    format={{ precision: 0 }}
-                    className="text-brutal-pink font-black text-xl"
-                  />{" "}
-                  <span className="text-brutal-pink font-black text-xl">years</span>.
-                </div>
-
                 <VoteQuestion className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
                   Should all nations allocate just {" "}
                   <br className="hidden sm:block" />
-                  <span className="text-brutal-pink">1% of military spending</span> to <span className="text-brutal-pink"> pragmatic clinical trials to treat and cure disease</span> {" "}
+                  <span className="text-brutal-pink">1% of military spending</span> to{" "}
+                  <span className="text-brutal-pink">
+                    <PragmaticTrialsDialog triggerClassName="font-inherit text-inherit underline decoration-dotted underline-offset-4 hover:decoration-solid">
+                      pragmatic clinical trials
+                    </PragmaticTrialsDialog>{" "}
+                    to treat and cure disease
+                  </span>{" "}
                   <br className="hidden sm:block" />
                   together, making the world safer and ensuring no country is at a disadvantage?
                 </VoteQuestion>
@@ -584,6 +559,54 @@ export default function TreatyVoteSection({
                     NO
                   </Button>
                 </div>
+
+                <details
+                  className="mt-6"
+                  onToggle={(event) => {
+                    if (event.currentTarget.open) trackTreatyFunnelStep("details_opened")
+                  }}
+                >
+                  <summary className="cursor-pointer text-center font-bold underline underline-offset-4">
+                    Why 1%?
+                  </summary>
+                  <div className="mt-4">
+                    <p className="font-bold text-lg sm:text-xl md:text-2xl leading-snug text-center mb-2">
+                      Governments spend{" "}
+                      <br className="hidden sm:block" />
+                      <span className="text-brutal-pink">{militaryToClinicalsRatioFormatted}</span> on weapons and military systems{" "}
+                      <br className="hidden sm:block" />
+                      for every{" "}
+                      <br className="hidden sm:block" />
+                      <span className="text-brutal-pink">$1</span> on <span className="text-brutal-pink">CLINICAL TRIALS TO CURE DISEASE</span>.
+                    </p>
+
+                    <div className="text-base sm:text-lg font-bold text-center mb-4">
+                      That&apos;s {militarySpendingPct}% to military and just{" "}
+                      <span className="text-brutal-pink text-xl">{clinicalTrialsSpendingPct}%</span> to clinical trials.
+                    </div>
+
+                    <div className="text-base sm:text-lg font-bold text-center mb-4 p-4 bg-brutal-yellow border-4 border-primary">
+                      Redirecting just 1% of military spending would increase clinical trial capacity by{" "}
+                      <ParameterValue
+                        param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
+                        format={{ precision: 1 }}
+                        className="text-brutal-pink font-black text-xl"
+                      />, compressing the projected disease eradication timeline from{" "}
+                      <ParameterValue
+                        param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
+                        format={{ precision: 0 }}
+                        className="text-brutal-pink font-black text-xl"
+                      />{" "}
+                      <span className="text-brutal-pink font-black text-xl">years</span> to{" "}
+                      <ParameterValue
+                        param={DFDA_QUEUE_CLEARANCE_YEARS}
+                        format={{ precision: 0 }}
+                        className="text-brutal-pink font-black text-xl"
+                      />{" "}
+                      <span className="text-brutal-pink font-black text-xl">years</span>.
+                    </div>
+                  </div>
+                </details>
               </PanelShell>
             </motion.div>
           )}
