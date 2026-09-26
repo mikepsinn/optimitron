@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getBestAvailableMedianIncomeSeries } from "@optimitron/data/datasets/median-income-series";
 import { usBudgetAnalysis } from "./us-budget-analysis";
 import { usPolicyAnalysis } from "./us-policy-analysis";
 
@@ -35,6 +36,32 @@ describe("generated budget and policy analysis", () => {
       for (const amount of usdAmounts(recommendation)) {
         expect(amount, recommendation).toBeLessThanOrEqual(line.currentSpending);
       }
+    }
+  });
+
+  // The series runs oldest year first, so index 0 is 1981 ($10,382). Dividing a
+  // per-household dividend by that per-person income inflated every effect.
+  it("divides each per-person dividend by the latest measured per-person median income", () => {
+    const measured = getBestAvailableMedianIncomeSeries({
+      jurisdictions: ["USA"],
+      isAfterTax: true,
+      purchasingPower: "ppp",
+      excludeInterpolated: true,
+    });
+    const latestMedianIncome = Math.round(measured[measured.length - 1]!.value);
+    const efficiencyPolicies = usPolicyAnalysis.policies.filter(
+      (policy) => policy.oecdSpendingField,
+    );
+
+    expect(efficiencyPolicies.length).toBeGreaterThan(0);
+    for (const policy of efficiencyPolicies) {
+      const dividend = policy.rationale.match(/\$([\d,]+)\/person\/yr/);
+      expect(dividend, policy.name).not.toBeNull();
+      const dividendPerPerson = Number(dividend![1]!.replace(/,/g, ""));
+      expect(policy.incomeEffect, policy.name).toBeCloseTo(
+        dividendPerPerson / latestMedianIncome,
+        3,
+      );
     }
   });
 

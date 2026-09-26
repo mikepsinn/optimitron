@@ -60,21 +60,26 @@ import { getBestAvailableMedianIncomeSeries } from '@optimitron/data/datasets/me
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../src/data');
 
-// Pull latest after-tax median income PPP from canonical source
+// Latest measured after-tax median income (PPP, per person) from the canonical source.
+// The series runs oldest year first. Interpolated years after the last survey are skipped.
 const usIncomeRecords = getBestAvailableMedianIncomeSeries({
   jurisdictions: ['USA'],
   isAfterTax: true,
   purchasingPower: 'ppp',
+  excludeInterpolated: true,
 });
-const latestUsIncomeRecord = usIncomeRecords[0];
-const usMedianIncome = latestUsIncomeRecord ? Math.round(latestUsIncomeRecord.value) : 59_540;
+const latestUsIncomeRecord = usIncomeRecords[usIncomeRecords.length - 1];
+if (!latestUsIncomeRecord) {
+  throw new Error('No measured US after-tax median income in the median income series');
+}
+const usMedianIncome = Math.round(latestUsIncomeRecord.value);
 
 // Jurisdiction config — change to generate for any country
 const JURISDICTION = {
   code: 'USA',
   name: 'United States',
   population: 339_000_000,
-  households: 133_000_000,
+  /** Per person, like the savings it is compared with. */
   medianIncome: usMedianIncome,
 };
 
@@ -395,7 +400,7 @@ function generateEfficiencyPolicies(
   categoryNames: ReadonlyMap<string, string>,
 ): PolicyInput[] {
   const MEDIAN_INCOME = JURISDICTION.medianIncome;
-  const HOUSEHOLDS = JURISDICTION.households;
+  const POPULATION = JURISDICTION.population;
 
   return findings
     .filter(f => f.efficiency.overspendRatio >= 1.5)
@@ -404,8 +409,9 @@ function generateEfficiencyPolicies(
       const field = OECD_FIELDS[f.spendingField as OECDSpendingField];
       const fieldName = lowerFirst(field.label);
       const lineNames = f.lineIds.map(id => categoryNames.get(id) ?? id).join(', ');
-      const savingsPerHH = Math.round(e.potentialSavingsTotal / HOUSEHOLDS);
-      const incomeEffect = savingsPerHH / MEDIAN_INCOME;
+      // Per person over per person: the median income series is per person.
+      const savingsPerPerson = Math.round(e.potentialSavingsTotal / POPULATION);
+      const incomeEffect = savingsPerPerson / MEDIAN_INCOME;
 
       // Health effect: only claim if outcome IS life expectancy AND best country is better
       // For non-LE outcomes (PISA, median income), health effect is 0.
@@ -431,7 +437,7 @@ function generateEfficiencyPolicies(
         outcomeCount: 1,
         incomeEffect: Math.round(incomeEffect * 1000) / 1000,
         healthEffect,
-        rationale: `Cheapest-high-performer analysis of ${fieldName}: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerHH.toLocaleString()}/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: ${lineNames}.`,
+        rationale: `Cheapest-high-performer analysis of ${fieldName}: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerPerson.toLocaleString()}/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: ${lineNames}.`,
         currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap on ${fieldName}, ranks ${e.rank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
         recommendedTarget: `${e.bestCountry.name} model ($${e.floorSpendingPerCapita}/cap floor). $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr savings → Optimization Dividend.`,
         blockingFactors: ['political_opposition'],

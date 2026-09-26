@@ -89,7 +89,7 @@
 | Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp | B | ✅ IMPLEMENT |
 | Universal Pre-K (Ages 3-4) | +0.10 yrs | +0.15 pp | A | 🔄 REALLOCATE |
 | Pragmatic Clinical Trial Funding Reform | +0.30 yrs | +0.05 pp | A | ✅ IMPLEMENT |
-| Military: Adopt Switzerland's Approach | +0.05 yrs | +0.41 pp | B | 🔄 REALLOCATE |
+| Military: Adopt Switzerland's Approach | +0.05 yrs | +0.10 pp | B | 🔄 REALLOCATE |
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp | B | ✅ IMPLEMENT |
 
 - [SEE ALL POLICY GRADES →](/opg)

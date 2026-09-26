@@ -74,9 +74,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.739,
-      "policyImpactScore": 0.596,
+      "policyImpactScore": 0.595,
       "welfareScore": 38,
-      "incomeEffect": 0.408,
+      "incomeEffect": 0.102,
       "healthEffect": 0.049,
       "bradfordHillScores": {
         "strength": 0.971,
@@ -89,7 +89,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of military spending: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $4,240/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Military, Homeland Security.",
+      "rationale": "Cheapest-high-performer analysis of military spending: Switzerland achieves Life Expectancy 83.37 at $389/cap. United States at $2052/cap (5.3x overspend). Top 3: Switzerland ($389), Japan ($400), Sweden ($565). Savings: $564B/yr → $1,663/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Military, Homeland Security.",
       "currentStatus": "United States spends $2052/cap on military spending, ranks 27/28. 5.3x overspend.",
       "recommendedTarget": "Switzerland model ($389/cap floor). $564B/yr savings → Optimization Dividend.",
       "blockingFactors": [
@@ -105,9 +105,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.722,
-      "policyImpactScore": 0.591,
-      "welfareScore": 39,
-      "incomeEffect": 1.656,
+      "policyImpactScore": 0.586,
+      "welfareScore": 38,
+      "incomeEffect": 0.413,
       "healthEffect": 0.05,
       "bradfordHillScores": {
         "strength": 0.855,
@@ -120,7 +120,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of total health spending (public and private): South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $17,192/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Veterans Affairs, Health (non-Medicare/Medicaid).",
+      "rationale": "Cheapest-high-performer analysis of total health spending (public and private): South Korea achieves Life Expectancy 83.57 at $3588/cap. United States at $10333/cap (2.9x overspend). Top 3: South Korea ($3588), Japan ($4095), Australia ($4544). Savings: $2287B/yr → $6,745/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Veterans Affairs, Health (non-Medicare/Medicaid).",
       "currentStatus": "United States spends $10333/cap on total health spending (public and private), ranks 28/28. 2.9x overspend.",
       "recommendedTarget": "South Korea model ($3588/cap floor). $2287B/yr savings → Optimization Dividend.",
       "blockingFactors": [
@@ -196,9 +196,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.652,
-      "policyImpactScore": 0.542,
+      "policyImpactScore": 0.541,
       "welfareScore": 38,
-      "incomeEffect": 0.228,
+      "incomeEffect": 0.057,
       "healthEffect": 0,
       "bradfordHillScores": {
         "strength": 0.718,
@@ -211,7 +211,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of total R&D spending (business and government): Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $2,363/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Energy, Science / NASA, Commerce / Economic Development.",
+      "rationale": "Cheapest-high-performer analysis of total R&D spending (business and government): Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $927/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Energy, Science / NASA, Commerce / Economic Development.",
       "currentStatus": "United States spends $1991/cap on total R&D spending (business and government), ranks 25/28. 1.9x overspend.",
       "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
       "blockingFactors": [
@@ -227,9 +227,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.649,
-      "policyImpactScore": 0.541,
+      "policyImpactScore": 0.54,
       "welfareScore": 38,
-      "incomeEffect": 0.419,
+      "incomeEffect": 0.105,
       "healthEffect": 0,
       "bradfordHillScores": {
         "strength": 0.784,
@@ -242,7 +242,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of government education spending (all levels): Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $4,353/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Education.",
+      "rationale": "Cheapest-high-performer analysis of government education spending (all levels): Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $1,708/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Education.",
       "currentStatus": "United States spends $2996/cap on government education spending (all levels), ranks 11/11. 2.3x overspend.",
       "recommendedTarget": "Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.",
       "blockingFactors": [
@@ -258,9 +258,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.539,
-      "welfareScore": 39,
-      "incomeEffect": 1.223,
+      "policyImpactScore": 0.535,
+      "welfareScore": 38,
+      "incomeEffect": 0.305,
       "healthEffect": 0,
       "bradfordHillScores": {
         "strength": 0.656,
@@ -273,7 +273,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of public social spending (pensions, health, income support): Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $12,694/household/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Transportation, HUD / Housing, Foreign Aid / International Affairs, Justice / Law Enforcement, Agriculture, EPA / Environment, Labor, Interior / Natural Resources, Treasury / General Government, State Department / Diplomacy.",
+      "rationale": "Cheapest-high-performer analysis of public social spending (pensions, health, income support): Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $4,980/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Transportation, HUD / Housing, Foreign Aid / International Affairs, Justice / Law Enforcement, Agriculture, EPA / Environment, Labor, Interior / Natural Resources, Treasury / General Government, State Department / Diplomacy.",
       "currentStatus": "United States spends $12848/cap on public social spending (pensions, health, income support), ranks 23/26. 1.6x overspend.",
       "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
       "blockingFactors": [
@@ -313,7 +313,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     }
   ],
-  "generatedAt": "2026-09-25T17:18:15.916Z",
+  "generatedAt": "2026-09-25T23:14:50.147Z",
   "generatedBy": "@optimitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 };
