@@ -58,6 +58,7 @@ export default function TreatyVoteSection({
   authenticatedPostVoteRedirectUrl,
   disableIntroAnimation = false
 }: TreatyVoteSectionProps = {}) {
+  const VoteQuestion = Question === "h1" ? "h1" : "div"
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null)
   const [militaryAllocation, setMilitaryAllocation] = useState<number>(50)
   const [showSlider, setShowSlider] = useState(true)
@@ -559,13 +560,13 @@ export default function TreatyVoteSection({
                   <span className="text-brutal-pink font-black text-xl">years</span>.
                 </div>
 
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
+                <VoteQuestion className="text-xl sm:text-2xl md:text-3xl font-black text-center mb-4">
                   Should all nations allocate just {" "}
                   <br className="hidden sm:block" />
                   <span className="text-brutal-pink">1% of military spending</span> to <span className="text-brutal-pink"> pragmatic clinical trials to treat and cure disease</span> {" "}
                   <br className="hidden sm:block" />
                   together, making the world safer and ensuring no country is at a disadvantage?
-                </div>
+                </VoteQuestion>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <Button

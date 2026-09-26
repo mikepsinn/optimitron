@@ -91,10 +91,14 @@ describe("authenticated treaty voting", () => {
       })
     })
 
-    render(<TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" disableIntroAnimation />)
+    render(<TreatyVoteSection hideHeading questionAs="h1" authenticatedPostVoteRedirectUrl="/dashboard" disableIntroAnimation />)
+
+    expect(screen.getByRole("heading", { level: 1, name: /Drag the slider/ })).toBeInTheDocument()
 
     fireEvent.change(screen.getByRole("slider"), { target: { value: "60" } })
     fireEvent.click(await screen.findByRole("button", { name: "SUBMIT" }))
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1)
+    expect(screen.getByRole("heading", { level: 1, name: /Should all nations allocate/ })).toBeInTheDocument()
     fireEvent.click(await screen.findByRole("button", { name: "YES" }))
 
     expect(await screen.findByTestId("treaty-vote-saving")).toHaveTextContent("Saving your vote.")
@@ -121,7 +125,11 @@ describe("authenticated treaty voting", () => {
         }),
     )
 
-    render(<TreatyVoteSection authenticatedPostVoteRedirectUrl="/dashboard" disableIntroAnimation />)
+    render(<TreatyVoteSection hideHeading questionAs="h1" authenticatedPostVoteRedirectUrl="/dashboard" disableIntroAnimation />)
+
+    expect(screen.queryByRole("slider")).toBeNull()
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1)
+    expect(screen.getByRole("heading", { level: 1, name: /Should all nations allocate/ })).toBeInTheDocument()
 
     expect(await screen.findByTestId("treaty-vote-saving")).toHaveTextContent("Saving your vote.")
     expect(screen.queryByTestId("full-post-vote-flow")).toBeNull()
