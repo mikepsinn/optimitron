@@ -794,6 +794,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
   {
     covers: [
       "apps/optimitron/src/app/obg/page.tsx",
+      "apps/optimitron/src/components/budget/BestPracticeBudget.tsx",
       "apps/optimitron/src/components/budget/NationalSpendingComparisons.tsx",
       "apps/optimitron/src/components/budget/DecisionResults.tsx",
     ],
@@ -802,7 +803,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: true,
     openProgramScenarios: true,
     requiredSelector: 'main:has(#healthSpendingPerCapitaPpp) section[aria-label="Program funding scenario"]',
-    requiredHeading: "A budget for longer, healthier, wealthier lives",
+    requiredHeading: "The Optimal Budget Generator",
   },
   {
     covers: [

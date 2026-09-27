@@ -8,7 +8,11 @@ import { getBestPracticeBudget } from "@/lib/best-practice-budget";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getBudgetCategoryPath, obgLink, optimalBudgetGeneratorPaperLink, ROUTES } from "@/lib/routes";
 
-export const metadata = getRouteMetadata(obgLink);
+const populationBudget = getBestPracticeBudget();
+const title = "The Optimal Budget Generator";
+const description = `We've compared ${populationBudget.period.length} years of data from ${populationBudget.countryCount} countries to build a budget with one goal: maximize median health and wealth.`;
+
+export const metadata = getRouteMetadata({ ...obgLink, label: title, description });
 
 function money(value: number): string {
   return value >= 1e12 ? `$${(value / 1e12).toFixed(2)}T` : `$${(value / 1e9).toFixed(1)}B`;
@@ -24,13 +28,13 @@ export default function BudgetPage() {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="mb-8">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Budget evidence</p>
-        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">A budget for longer, healthier, wealthier lives</h1>
+        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">{title}</h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          Explore how public spending relates to health and take-home income, and where the US could do better.
+          {description}
         </p>
       </header>
 
-      <BestPracticeBudget report={getBestPracticeBudget()} />
+      <BestPracticeBudget report={populationBudget} />
 
       <details className="mt-8 border-2 border-foreground p-5 sm:p-6">
         <summary className="mb-4 cursor-pointer text-lg font-black">More international spending comparisons</summary>

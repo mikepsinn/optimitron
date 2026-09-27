@@ -2,20 +2,20 @@
 
 ## Metadata
 
-- Page title: Optimal Budget Generator | Optimitron
-- Meta description: Compare US spending with other countries on healthcare, education, research and more.
+- Page title: The Optimal Budget Generator | Optimitron
+- Meta description: We've compared 3 years of data from 30 countries to build a budget with one goal: maximize median health and wealth.
 - Canonical: https://optimitron.com/obg
-- Open Graph title: Optimal Budget Generator
-- Open Graph description: Compare US spending with other countries on healthcare, education, research and more.
+- Open Graph title: The Optimal Budget Generator
+- Open Graph description: We've compared 3 years of data from 30 countries to build a budget with one goal: maximize median health and wealth.
 - Open Graph image: https://optimitron.com/api/og/route?path=%2Fobg
-- Twitter title: Optimal Budget Generator
-- Twitter description: Compare US spending with other countries on healthcare, education, research and more.
+- Twitter title: The Optimal Budget Generator
+- Twitter description: We've compared 3 years of data from 30 countries to build a budget with one goal: maximize median health and wealth.
 
 ## Visible Page Copy
 
 - BUDGET EVIDENCE
-## A BUDGET FOR LONGER, HEALTHIER, WEALTHIER LIVES
-- Explore how public spending relates to health and take-home income, and where the US could do better.
+## THE OPTIMAL BUDGET GENERATOR
+- We've compared 3 years of data from 30 countries to build a budget with one goal: maximize median health and wealth.
 - Population
 - Annual public budget
 - $20,225,861,607

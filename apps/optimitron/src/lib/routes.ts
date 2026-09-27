@@ -313,7 +313,7 @@ export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
   emoji: AGENCIES.domb.emoji,
-  description: "Compare US spending with other countries on healthcare, education, research and more.",
+  description: "Compare public spending and outcomes across countries on healthcare, education, research and more.",
   tagline: "Government spending and outcomes",
   copyPreview: true,
   screenshot: true,
