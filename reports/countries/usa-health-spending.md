@@ -25,7 +25,7 @@ This is an observed group difference, not an estimated effect of setting the pre
 
 - Forward Pearson (predictor → outcome): 0.32
 - Reverse Pearson (outcome → predictor): 0.50
-- Predictive Direction Score (forward − reverse): -0.18 (slightly stronger reverse predictive association)
+- Predictive Direction Score (|forward| − |reverse|): -0.18 (slightly stronger reverse predictive association)
 - Relative predictive direction compares correlation magnitudes; it does not establish causation.
 - Bradford Hill Score: 4.9/9
 - p-value: 1.0000

@@ -97,7 +97,6 @@ export function generateMarkdownReport(
     outcomeName,
     forwardPearson,
     reversePearson,
-    predictivePearson,
     pValue,
     baselineFollowup,
     optimalValues,
@@ -182,7 +181,12 @@ export function generateMarkdownReport(
   lines.push(`- Forward Pearson (predictor → outcome): ${fmt(forwardPearson)}`);
   lines.push(`- Reverse Pearson (outcome → predictor): ${fmt(reversePearson)}`);
   lines.push(
-    `- Predictive Direction Score (forward − reverse): ${fmt(predictivePearson)} (${describePredictiveDirection(forwardPearson, reversePearson)})`,
+    // Report the magnitude difference, not `result.predictivePearson`
+    // (forward − reverse). With two negative correlations the signed difference
+    // carries the opposite sign to the direction it describes: forward −0.8 and
+    // reverse −0.2 would print −0.60 beside "stronger forward predictive
+    // association".
+    `- Predictive Direction Score (|forward| − |reverse|): ${fmt(Math.abs(forwardPearson) - Math.abs(reversePearson))} (${describePredictiveDirection(forwardPearson, reversePearson)})`,
   );
   lines.push('- Relative predictive direction compares correlation magnitudes; it does not establish causation.');
   lines.push(`- Bradford Hill Score: ${fmt(bhTotal, 1)}/9`);

@@ -8,6 +8,9 @@ test("policy navigation shows calculated uncertainty and retains earlier hypothe
   await expect(page).toHaveURL(/\/opg(?:\?|$)/);
   await page.getByLabel("Category", { exact: true }).selectOption("health_research");
   await page.getByRole("link", { name: "Pragmatic Clinical Trial Funding Reform", exact: true }).click();
+  // Every /opg card carries the same region label, so the locator below matches
+  // twice until the soft navigation lands. Wait for the detail route first.
+  await expect(page).toHaveURL(/\/opg\/pragmatic-clinical-trial-funding-reform$/);
   const estimates = page.getByRole("region", { name: "Modeled policy benefits" });
   await expect(estimates).toContainText("90% model range:");
   await expect(estimates).toContainText("US healthy years gained over 20 years");

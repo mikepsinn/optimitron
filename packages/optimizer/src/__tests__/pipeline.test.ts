@@ -382,7 +382,7 @@ describe('generateMarkdownReport', () => {
   });
 
   it('contains Predictive Pearson value', () => {
-    expect(report).toContain('Predictive Direction Score (forward − reverse)');
+    expect(report).toContain('Predictive Direction Score (|forward| − |reverse|)');
   });
 
   it('contains Bradford Hill Score', () => {
@@ -525,7 +525,11 @@ describe('generateMarkdownReport', () => {
       reversePearson: -0.2,
       predictivePearson: -0.6,
     });
-    expect(asymmetricReport).toContain('substantially stronger forward predictive association');
+    // Both correlations are negative, so the signed forward − reverse difference
+    // (-0.60) would contradict the "stronger forward" wording beside it.
+    expect(asymmetricReport).toContain(
+      'Predictive Direction Score (|forward| − |reverse|): 0.60 (substantially stronger forward predictive association)',
+    );
     expect(asymmetricReport).toContain('does not establish causation');
     expect(asymmetricReport).not.toMatch(/forward causation|reverse causation|drives outcome|drives predictor/);
   });

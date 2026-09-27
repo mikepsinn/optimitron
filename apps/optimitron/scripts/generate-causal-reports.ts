@@ -38,6 +38,15 @@ const cacheDir = resolve(__dirname, '../.cache');
 const CACHE_FILE = resolve(cacheDir, 'country-data.json');
 const CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
+// The fetch pipeline collects every World Bank series it can reach, but the
+// country analysis below only reads life expectancy, GDP per capita and health
+// expenditure. Listing the rest would credit sources this report never touched.
+const COUNTRY_ANALYSIS_SOURCES = [
+  'World Bank WDI (SP.DYN.LE00.IN)', // life_expectancy
+  'World Bank WDI (NY.GDP.PCAP.PP.CD)', // gdp_per_capita
+  'World Bank WDI (SH.XPD.CHEX.GD.ZS)', // health_expenditure_pct_gdp
+];
+
 // ─── Country names ───────────────────────────────────────────────────
 
 const COUNTRY_NAMES: Record<string, string> = {
@@ -409,7 +418,7 @@ function countryReport(result: CountryResult, dataset: FetchedDataset, cacheOnly
   return [
     `# ${result.name}: Health Spending → Life Expectancy`, '',
     `> Data vintage: fetched ${dataset.metadata.fetchedAt}; dataset observation window ${dataset.metadata.yearRange[0]}–${dataset.metadata.yearRange[1]} (annual).`,
-    `> Sources used: ${dataset.metadata.sources.filter(source => source.startsWith('World Bank')).join('; ')}.`,
+    `> Sources used: ${dataset.metadata.sources.filter(source => COUNTRY_ANALYSIS_SOURCES.includes(source)).join('; ')}.`,
     ...(cacheOnly ? ['> Regenerated from the existing cache only; no source data refresh was performed.'] : []), '',
     result.report,
   ].join('\n');

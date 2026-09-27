@@ -137,6 +137,15 @@ describe('integrated budget and policy decision report', () => {
     }
   });
 
+  // /opg renders the policies in serialized order and tells readers they are
+  // "ordered by expected net benefit", so that order is a published claim.
+  it('serializes policies allocation-eligible first, then by descending expected net benefit', () => {
+    const eligible = report.policies.filter(policy => policy.allocationEligible);
+    expect(report.policies.slice(0, eligible.length)).toEqual(eligible);
+    const means = eligible.map(policy => policy.netBenefit!.mean);
+    expect(means).toEqual([...means].sort((left, right) => right - left));
+  });
+
   it('renders the serialized allocation, full ledger, and intervals in its Markdown download', () => {
     const serialized = JSON.parse(JSON.stringify(report)) as DecisionReport;
     const markdown = generateDecisionMarkdown(serialized);
