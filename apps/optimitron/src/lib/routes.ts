@@ -796,10 +796,11 @@ export const governmentSizeLink: NavItem = {
   label: "Government Size",
   emoji: "📏",
   description:
-    "The optimal size of government, estimated from the states that deliver the most per dollar. See whether yours is too big, too small, or spending on the wrong things.",
+    "Compare public spending with healthy life expectancy and real after-tax median income across countries and over time.",
   tagline: "How large the state is, and how it is shaped",
   matchPrefixes: [ROUTES.governmentSize],
-
+  copyPreview: true,
+  screenshot: true,
   cta: "See Size Audit",
 };
 

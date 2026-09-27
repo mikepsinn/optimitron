@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Generate descriptive spending comparisons and explicit policy scenarios.
- * A separate constrained model selects allocations under stated uncertainty.
+ * A separate reference-program model retains monetary scenarios under uncertainty.
  *
  * Run: pnpm --filter @optimitron/web run generate
  */
@@ -362,4 +362,4 @@ mkdirSync(downloadDir, { recursive: true });
 writeFileSync(resolve(reportDir, 'us-budget-policy-decision.md'), reportMarkdown);
 writeFileSync(resolve(downloadDir, 'us-budget-policy-decision.md'), reportMarkdown);
 console.warn(`  ✅ ${decisionAnalysis.draws} uncertainty draws → shared website data and Markdown report`);
-console.warn('\nDone! Comparisons, policy scenarios, and constrained allocations generated.');
+console.warn('\nDone! Comparisons and program funding scenarios generated.');

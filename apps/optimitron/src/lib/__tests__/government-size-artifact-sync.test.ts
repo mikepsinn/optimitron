@@ -11,12 +11,12 @@ import {
 } from "../government-size-artifact-sync";
 
 describe("government size artifact sync", () => {
-  it("resolves the examples source and web target paths from the scripts directory", () => {
+  it("uses the canonical app artifact after generation", () => {
     const scriptsDir = resolve("repo/apps/optimitron/scripts");
     const paths = resolveGovernmentSizeSyncPaths(scriptsDir);
 
     expect(paths.sourcePath).toBe(
-      resolve(scriptsDir, "../../../packages/examples/output/us-government-size-analysis.json"),
+      resolve(scriptsDir, "../src/data/us-government-size-analysis.json"),
     );
     expect(paths.targetPath).toBe(
       resolve(scriptsDir, "../src/data/us-government-size-analysis.json"),
@@ -27,9 +27,9 @@ describe("government size artifact sync", () => {
     const tempDir = mkdtempSync(join(tmpdir(), "gov-size-sync-"));
 
     try {
-      const sourcePath = resolve(tempDir, "examples/output/us-government-size-analysis.json");
+      const sourcePath = resolve(tempDir, "output/us-government-size-analysis.json");
       const targetPath = resolve(tempDir, "web/src/data/us-government-size-analysis.json");
-      mkdirSync(resolve(tempDir, "examples/output"), { recursive: true });
+      mkdirSync(resolve(tempDir, "output"), { recursive: true });
 
       writeFileSync(
         sourcePath,
@@ -48,6 +48,7 @@ describe("government size artifact sync", () => {
       expect(JSON.parse(readFileSync(targetPath, "utf-8"))).toEqual(
         JSON.parse(readFileSync(sourcePath, "utf-8")),
       );
+      expect(syncGovernmentSizeAnalysis({ sourcePath: targetPath, targetPath }).outcomeCount).toBe(2);
     } finally {
       rmSync(tempDir, { recursive: true, force: true });
     }
@@ -57,8 +58,8 @@ describe("government size artifact sync", () => {
     const tempDir = mkdtempSync(join(tmpdir(), "gov-size-sync-invalid-"));
 
     try {
-      const sourcePath = resolve(tempDir, "examples/output/us-government-size-analysis.json");
-      mkdirSync(resolve(tempDir, "examples/output"), { recursive: true });
+      const sourcePath = resolve(tempDir, "output/us-government-size-analysis.json");
+      mkdirSync(resolve(tempDir, "output"), { recursive: true });
       writeFileSync(sourcePath, JSON.stringify({ outcomes: [] }), "utf-8");
 
       expect(() => readGovernmentSizeSyncPayload(sourcePath)).toThrow(/generatedAt/);

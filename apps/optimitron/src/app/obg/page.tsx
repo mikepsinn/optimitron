@@ -22,17 +22,25 @@ export default function BudgetPage() {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="mb-8">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Budget evidence</p>
-        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">What can we learn from other countries?</h1>
+        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-foreground md:text-4xl">A budget for longer, healthier, wealthier lives</h1>
         <p className="mt-3 max-w-3xl text-sm font-bold text-muted-foreground">
-          See how US spending compares with other countries on health, education and income.
+          Explore how public spending relates to health and take-home income, and where the US could do better.
         </p>
       </header>
 
-      <BudgetDecisionResults />
       <section aria-label="National spending comparisons">
         <NationalSpendingComparisons comparisons={comparisons} />
       </section>
       <BudgetComparisonMethod />
+
+      <p className="mt-6 text-sm font-bold">
+        <Link href="/government-size" className="underline underline-offset-4">Explore spending, health and income over time →</Link>
+      </p>
+
+      <details className="mt-8 border-2 border-foreground p-5 sm:p-6">
+        <summary className="cursor-pointer text-lg font-black">Program funding scenarios</summary>
+        <BudgetDecisionResults />
+      </details>
 
       <details className="mt-10 border-4 border-primary bg-background p-5 sm:p-6">
         <summary className="cursor-pointer text-xl font-black text-foreground">Federal spending context</summary>

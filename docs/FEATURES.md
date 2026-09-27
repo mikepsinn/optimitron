@@ -222,20 +222,20 @@ verified against `feature/private-execution-system` (2026-07-17).
 ### OPT-GOV-02 — Optimal Policy Generator (opg)
 
 - **Layer:** government
-- **Status:** implemented
-- **Summary:** Policy evaluation with Bradford-Hill-style causal confidence scoring, welfare framing, jurisdiction handling.
+- **Status:** partial
+- **Summary:** Policy evidence evaluation, jurisdiction analysis and report generation are implemented. The public app shows proposals, observed comparisons and program scenarios. A joint ranking by predicted national median healthspan and median real after-tax income is not yet calibrated; monetary scenario benefits do not supply that ranking.
 - **Evidence:** packages/opg/src/ (bradford-hill.ts, policy-impact-score.ts, …); apps/optimitron/src/app/opg/page.tsx; apps/optimitron/src/lib/tasks/opg-obg-adapters.ts
-- **Acceptance:** OPG scores a policy dataset into ranked recommendations rendered at /opg.
-- **Roadmap:** shipped — maintain
+- **Acceptance:** OPG evaluates policy evidence and reports both national median effects, with units, horizons and uncertainty preserved, in the public recommendations.
+- **Roadmap:** Connect retained policy evaluation to calibrated two-outcome effects.
 
 ### OPT-GOV-03 — Optimal Budget Generator (obg)
 
 - **Layer:** government
-- **Status:** implemented
-- **Summary:** Budget reallocation targets: cost-effectiveness, diminishing returns, efficient frontier, minimum effective spending, overspend ratios.
-- **Evidence:** packages/obg/src/ (efficient-frontier.ts, budget-impact-score.ts, …); apps/optimitron/src/app/obg/page.tsx; apps/optimitron/src/lib/tasks/opg-obg-adapters.ts
-- **Acceptance:** OBG produces a constrained reallocation report rendered at /obg and /budget.
-- **Roadmap:** shipped — maintain
+- **Status:** partial
+- **Summary:** Response curves, cost-effectiveness and country reports are implemented. The bounded welfare allocator conserves the full supplied budget and maximizes expected health/income welfare over paired model draws. The national response curves needed to apply it to the actual US budget remain uncalibrated; the public app does not present the separate capped monetary scenarios as that optimum.
+- **Evidence:** packages/obg/src/welfare-budget.ts and __tests__/welfare-budget.test.ts; apps/optimitron/scripts/generate-welfare-budget.ts; apps/optimitron/src/lib/welfare-budget-artifact.test.ts; apps/optimitron/scripts/analysis/government-welfare-analysis.ts; apps/optimitron/src/app/obg/page.tsx
+- **Acceptance:** A complete US allocation sums to its budget, respects bounds, and reports median healthy-year and real after-tax income-growth effects with uncertainty from calibrated national response curves. The model-input allocator meets the arithmetic portion; empirical calibration remains open.
+- **Roadmap:** Supply compatible category response curves and national median endpoints to the existing allocator.
 
 ### OPT-GOV-04 — Wishocracy / RAPPA preference aggregation
 

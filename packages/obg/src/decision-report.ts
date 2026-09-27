@@ -97,7 +97,9 @@ export function generateDecisionMarkdown(report: DecisionReport): string {
     (scenario) => scenario.id === report.recommendedScenarioId,
   )!;
   const lines = [
-    `# ${report.jurisdiction}: budget and policy decisions under uncertainty`,
+    `# ${report.jurisdiction}: program funding scenarios`,
+    "",
+    "These scenarios compare monetized benefits within specified program funding caps. They do not optimize the complete budget for median healthy life years and real after-tax median income growth.",
     "",
     `Baseline: FY${report.fiscalYear} estimate, ${formatDecisionMoney(report.baselineOutlaysUsd)}.`,
     "",

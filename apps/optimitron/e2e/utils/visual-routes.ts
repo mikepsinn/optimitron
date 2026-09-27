@@ -32,6 +32,7 @@ export type VisualRoute = {
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
   openWishocracySpending?: boolean;
+  openProgramScenarios?: boolean;
   verifyMcpDisabledAuthorize?: boolean;
   mcpScopeAccess?: "admin" | "non-admin";
   openMenu?: boolean;
@@ -799,8 +800,9 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
-    requiredSelector: 'main:has(#healthSpendingPerCapitaPpp) section[aria-label="Budget optimization with uncertainty"]',
-    requiredHeading: "What can we learn from other countries?",
+    openProgramScenarios: true,
+    requiredSelector: 'main:has(#healthSpendingPerCapitaPpp) section[aria-label="Program funding scenario"]',
+    requiredHeading: "A budget for longer, healthier, wealthier lives",
   },
   {
     covers: [
@@ -812,6 +814,14 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredHeading: "Policy evidence",
+  },
+  {
+    covers: ["apps/optimitron/src/app/government-size/page.tsx"],
+    name: "government-size-analysis",
+    path: ROUTES.governmentSize,
+    required: true,
+    requiredSelector: 'a[href="/reports/us-government-size-analysis.md"]',
+    requiredHeading: "Government spending, health and income",
   },
   {
     // A national comparison, using the public title while retaining its URL.

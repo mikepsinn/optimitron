@@ -40,20 +40,21 @@ export function PolicyDecisionSummary({
       className="mt-5 border-t border-foreground/20 pt-4"
       aria-label="Modeled policy benefits"
     >
-      <p className="text-xs font-bold uppercase tracking-wide">
-        {policy.allocationEligible
-          ? "Modeled benefit"
-          : "Modeled renter savings"}
-      </p>
-      <p className="mt-1 text-2xl font-black tabular-nums">
-        {money(policy.benefit.mean)}
-      </p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        90% model range: {range(policy.benefit)}
-      </p>
+      <dl className="grid gap-4 sm:grid-cols-2">
+        {(expanded ? native : native.slice(0, 2)).map((metric) => (
+          <div key={metric.label}>
+            <dt className="text-xs font-bold"><span>{metric.label}</span></dt>
+            <dd className="mt-1 text-2xl font-black tabular-nums">
+              <span>{metric.unit.includes("USD") ? money(metric.estimate.mean) : number(metric.estimate.mean)}</span>
+            </dd>
+            <dd className="mt-1 text-xs text-muted-foreground">
+              <span>90% model range: {range(metric.estimate, metric.unit.includes("USD") ? money : number)}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
       <p className="mt-2 text-xs">
-        Present value from {money(policy.referenceBudgetUsd)} in additional
-        funding.
+        Scenario funding: {money(policy.referenceBudgetUsd)}.
       </p>
       <p className="mt-2 text-xs text-muted-foreground">
         {policy.referenceCase}
@@ -61,33 +62,21 @@ export function PolicyDecisionSummary({
       {expanded && (
         <>
           <dl className="mt-5 grid gap-5 sm:grid-cols-2">
-            {native.map((metric) => (
-              <div key={metric.label}>
-                <dt className="text-sm font-bold">{metric.label}</dt>
-                <dd className="mt-1 text-xl font-black tabular-nums">
-                  {metric.unit.includes("USD")
-                    ? money(metric.estimate.mean)
-                    : number(metric.estimate.mean)}
-                </dd>
-                <dd className="mt-1 text-xs text-muted-foreground">
-                  90% range:{" "}
-                  {range(
-                    metric.estimate,
-                    metric.unit.includes("USD") ? money : number,
-                  )}
-                </dd>
-              </div>
-            ))}
+            <div>
+              <dt className="text-sm font-bold"><span>{policy.allocationEligible ? "Monetized benefit" : "Gross renter savings"}</span></dt>
+              <dd className="mt-1 text-xl font-black tabular-nums"><span>{money(policy.benefit.mean)}</span></dd>
+              <dd className="mt-1 text-xs text-muted-foreground"><span>90% model range: {range(policy.benefit)}</span></dd>
+            </div>
             {policy.netBenefit && (
               <div>
                 <dt className="text-sm font-bold">
-                  Net benefit after financing costs
+                  <span>Net benefit after financing costs</span>
                 </dt>
                 <dd className="mt-1 text-xl font-black">
-                  {money(policy.netBenefit.mean)}
+                  <span>{money(policy.netBenefit.mean)}</span>
                 </dd>
                 <dd className="mt-1 text-xs text-muted-foreground">
-                  90% range: {range(policy.netBenefit)}
+                  <span>90% range: {range(policy.netBenefit)}</span>
                 </dd>
               </div>
             )}
@@ -149,16 +138,16 @@ export function BudgetDecisionResults() {
   )!;
   return (
     <section
-      className="mb-12 border-2 border-foreground p-5 sm:p-6"
-      aria-label="Budget optimization with uncertainty"
+      className="mt-5"
+      aria-label="Program funding scenario"
     >
       <h2 className="text-xl font-black sm:text-2xl">
-        The model&apos;s preferred allocation
+        Five-program funding comparison
       </h2>
       <p className="mt-3 text-sm">
-        Move {money(result.annualCostUsd)} from the military budget into the
-        programs below. Total estimated FY{report.fiscalYear} outlays stay at{" "}
-        {money(report.baselineOutlaysUsd)}.
+        This scenario moves {money(result.annualCostUsd)} from military spending into
+        the programs below. It compares their estimated monetary benefits; it does
+        not maximize median healthspan or median real after-tax income across the full budget.
       </p>
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         <div>

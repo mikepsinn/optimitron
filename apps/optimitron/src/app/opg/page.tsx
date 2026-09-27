@@ -11,7 +11,6 @@ import { usDecisionAnalysis } from "@/data/us-decision-analysis";
 import { slugify } from "@/lib/slugify";
 
 const comparisons = new Map(getNationalBudgetComparisons().map((comparison) => [comparison.spendingField, comparison]));
-const modeledOrder = new Map(usDecisionAnalysis.policies.map((policy, index) => [policy.id, index]));
 
 function CountryComparison({ comparison }: { comparison: NationalBudgetComparison }) {
   const { efficiency, oecdBenchmark } = comparison.category;
@@ -70,15 +69,14 @@ function CountryComparison({ comparison }: { comparison: NationalBudgetCompariso
 export default function PoliciesPage() {
   const [category, setCategory] = useState("all");
   const policies = usPolicyAnalysis.policies
-    .filter((policy) => category === "all" || policy.category === category)
-    .sort((a, b) => (modeledOrder.get(slugify(a.name)) ?? 99) - (modeledOrder.get(slugify(b.name)) ?? 99));
+    .filter((policy) => category === "all" || policy.category === category);
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8 flex flex-col gap-6 border-b-2 border-foreground pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="mb-3 text-3xl font-black uppercase tracking-tight md:text-4xl">Policy evidence</h1>
-          <p className="max-w-lg text-muted-foreground">Compare modeled benefits, funding and uncertainty. Proposals are ordered by expected net benefit at the funding levels shown.</p>
+          <p className="max-w-lg text-muted-foreground">Compare policy proposals, health and income effects, and the evidence behind them.</p>
         </div>
         <div className="shrink-0">
           <label className="mb-2 block text-xs font-bold uppercase tracking-wide" htmlFor="policy-category">Category</label>

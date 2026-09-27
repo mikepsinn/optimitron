@@ -23,11 +23,17 @@
 - PROPOSAL
 - Mandate 30%+ of research budget for pragmatic trials with open data requirements
 - NIH reported about $9B in indirect costs out of $35B in FY2023 grants, approximately 26%. The widely cited 85% research-waste estimate covers question selection, study methods and reporting; it is not a replication-failure rate. Embedded pragmatic trials can reduce research costs; the scenario model estimates downstream benefits separately from trial capacity. Sources: https://www.grants.nih.gov/grants/guide/notice-files/NOT-OD-25-068.html and https://blogs.bmj.com/bmj/2016/01/14/paul-glasziou-and-iain-chalmers-is-85-of-health-research-really-wasted/
-- MODELED BENEFIT
+- US healthy years gained over 20 years
+- 9,732
+- 90% model range: 574 to 27,821
+- Scenario funding: $20M.
+- One year of extra pragmatic-trial funding; US health benefits followed for 20 years.
+- Monetized benefit
 - $273.41M
 - 90% model range: −$121.97M to $1.08B
-- Present value from $20M in additional funding.
-- One year of extra pragmatic-trial funding; US health benefits followed for 20 years.
+- Net benefit after financing costs
+- $197.11M
+- 90% range: −$214.68M to $1B
 - 20-year US follow-up: a discovery hazard derived from the canonical average wait, uncertain capacity translation, US burden share, adoption and delivery costs. Funding changes discovery for one year; funded access infrastructure for ten years. Baseline discovery resumes afterwards, while discoveries already made remain available. Both reforms modify one shared process. Original global benchmarks remain separate below.
 - Inputs, sources and uncertainty
 - 5,000 simulations. Scenario ranges describe explicit assumptions; published statistical intervals retain their source. Clinical results assume the funded program is implemented.

@@ -23,11 +23,12 @@
 - PROPOSAL
 - Condition federal grants on local zoning reform
 - Tokyo has no housing crisis because they allow building. Minneapolis eliminated single-family zoning: rents stabilized. Oregon statewide upzoning reduced housing cost growth. Hsieh & Moretti (2019) estimate $1.6T/yr GDP cost from restrictive zoning.
-- MODELED RENTER SAVINGS
+- Renter savings over 10 years (present value)
 - $796.44M
 - 90% model range: $236.52M to $1.43B
-- Present value from $103M in additional funding.
+- Scenario funding: $103M.
 - One local reform affecting a reference group of 100,000 renter households over ten years.
+- Gross renter savings
 - One local reform affecting a reference group of 100,000 renter households over ten years. annual renter savings = households × baseline annual rent × 23% × transport share × ramp; ramp is zero through year 2, linear to full effect at year 8; NPV sums years 1–10 at 3% 2024 USD reference implementation budget, an explicit scenario rather than a sourced estimate of the cost of zoning reform. Private construction is not included.
 - Inputs, sources and uncertainty
 - 5,000 simulations. Scenario ranges describe explicit assumptions; published statistical intervals retain their source. Clinical results assume the funded program is implemented.

@@ -14,54 +14,56 @@
 ## Visible Page Copy
 
 ## POLICY EVIDENCE
-- Compare modeled benefits, funding and uncertainty. Proposals are ordered by expected net benefit at the funding levels shown.
+- Compare policy proposals, health and income effects, and the evidence behind them.
 - CATEGORY
 - MODELED POLICY SCENARIO
-### [Right to Trial & FDA Upgrade Act](/opg/right-to-trial-and-fda-upgrade-act)
-- Guarantee every patient the right to join a pragmatic trial of any treatment that passed safety testing, and upgrade the FDA to publish real-time outcome labels from all treatment data.
-- MODELED BENEFIT
-- $303.38B
-- 90% model range: −$130.41B to $1.25T
-- Present value from $200M in additional funding.
-- Ten years of trial-access infrastructure; conditional US health benefits followed for 20 years.
+### [Universal Pre-K (Ages 3-4)](/opg/universal-pre-k-ages-3-4)
+- Federally funded universal pre-K. Perry Preschool RCT shows $7-12 ROI per dollar over 40 years.
+- Participant lifetime earnings (present value)
+- $5.7B
+- 90% model range: $1.85B to $9.47B
+- Scenario funding: $2.84B.
+- One annual cohort of 100,000 additional children receiving a Perry-like two-year program.
 - TODAY
-- Draft legislation; most patients ineligible for conventional trials; 6,650 diseases with zero FDA-approved treatments
+- Only 34% of US 3-year-olds enrolled; varies wildly by state
 - PROPOSED CHANGE
-- Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)
-- [View analysis →](/opg/right-to-trial-and-fda-upgrade-act)
+- Federal funding for universal enrollment by age 3
+- [View analysis →](/opg/universal-pre-k-ages-3-4)
 ### [Shift Drug Policy from Criminal to Health Approach](/opg/shift-drug-policy-from-criminal-to-health-approach)
 - Decriminalize personal drug use, redirect enforcement budget to treatment. Based on Portugal (2001).
-- $1.75B
-- 90% model range: $470.51M to $3.48B
-- Present value from $88M in additional funding.
+- Deaths averted in one treatment year
+- 126
+- 90% model range: 37 to 233
+- Scenario funding: $88M.
 - 10,000 additional person-years retained in methadone treatment; estimates the treatment component of the proposal.
 - US spends $40B/yr on enforcement; 1.5M arrests/yr; overdose deaths at record highs
 - Decriminalize personal use, redirect enforcement budget to treatment
 - [View analysis →](/opg/shift-drug-policy-from-criminal-to-health-approach)
 ### [Pragmatic Clinical Trial Funding Reform](/opg/pragmatic-clinical-trial-funding-reform)
 - Redirect research funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost.
-- $273.41M
-- 90% model range: −$121.97M to $1.08B
-- Present value from $20M in additional funding.
+- US healthy years gained over 20 years
+- 9,732
+- 90% model range: 574 to 27,821
+- Scenario funding: $20M.
 - One year of extra pragmatic-trial funding; US health benefits followed for 20 years.
 - NIH reported about $35B in FY2023 grants, including $9B in indirect costs. Pragmatic trial funding is a separate allocation decision.
 - Mandate 30%+ of research budget for pragmatic trials with open data requirements
 - [View analysis →](/opg/pragmatic-clinical-trial-funding-reform)
-### [Universal Pre-K (Ages 3-4)](/opg/universal-pre-k-ages-3-4)
-- Federally funded universal pre-K. Perry Preschool RCT shows $7-12 ROI per dollar over 40 years.
-- $5.7B
-- 90% model range: $1.85B to $9.47B
-- Present value from $2.84B in additional funding.
-- One annual cohort of 100,000 additional children receiving a Perry-like two-year program.
-- Only 34% of US 3-year-olds enrolled; varies wildly by state
-- Federal funding for universal enrollment by age 3
-- [View analysis →](/opg/universal-pre-k-ages-3-4)
+### [Right to Trial & FDA Upgrade Act](/opg/right-to-trial-and-fda-upgrade-act)
+- Guarantee every patient the right to join a pragmatic trial of any treatment that passed safety testing, and upgrade the FDA to publish real-time outcome labels from all treatment data.
+- 11,283,575
+- 90% model range: 413,494 to 34,082,462
+- Scenario funding: $200M.
+- Ten years of trial-access infrastructure; conditional US health benefits followed for 20 years.
+- Draft legislation; most patients ineligible for conventional trials; 6,650 diseases with zero FDA-approved treatments
+- Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)
+- [View analysis →](/opg/right-to-trial-and-fda-upgrade-act)
 ### [Housing Supply Deregulation](/opg/housing-supply-deregulation)
 - Remove restrictive zoning that constrains housing supply. Tokyo, Minneapolis, Oregon show reduced housing cost growth.
-- MODELED RENTER SAVINGS
+- Renter savings over 10 years (present value)
 - $796.44M
 - 90% model range: $236.52M to $1.43B
-- Present value from $103M in additional funding.
+- Scenario funding: $103M.
 - One local reform affecting a reference group of 100,000 renter households over ten years.
 - 75% of US residential land zoned single-family only
 - Condition federal grants on local zoning reform

@@ -226,6 +226,9 @@ test.describe("route visual regression", () => {
       }
 
       await normalizeVisualPage(page);
+      if (route.openProgramScenarios) {
+        await page.getByText("Program funding scenarios", { exact: true }).click();
+      }
       if (route.openWishocracySpending) {
         await page.getByRole("button", { name: /B\/yr.*▼/ }).first().click();
         await expect(page.getByRole("link", { name: "See modeled allocations and benefits", exact: true })).toBeVisible();

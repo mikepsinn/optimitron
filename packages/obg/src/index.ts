@@ -16,3 +16,4 @@ export * from './budget-report-json.js';
 export * from './budget-legislation-brief.js';
 export * from './uncertain-allocation.js';
 export * from './decision-report.js';
+export * from './welfare-budget.js';

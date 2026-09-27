@@ -23,11 +23,15 @@
 - PROPOSAL
 - Federal funding for universal enrollment by age 3
 - Perry Preschool RCT: 40-year follow-up shows $7-12 ROI per dollar. Participants had 15% higher income, 20% less likely to be arrested, healthier outcomes. France, Denmark, Finland all have universal pre-K with better PISA scores.
-- MODELED BENEFIT
+- Participant lifetime earnings (present value)
 - $5.7B
 - 90% model range: $1.85B to $9.47B
-- Present value from $2.84B in additional funding.
+- Scenario funding: $2.84B.
 - One annual cohort of 100,000 additional children receiving a Perry-like two-year program.
+- Monetized benefit
+- Net benefit after financing costs
+- −$5.13B
+- 90% range: −$17.53B to $4.46B
 - One annual cohort of 100,000 additional children receiving a Perry-like two-year program. cost = additional children × Perry total cost × CPI2024/CPI2006; earnings NPV = additional children × Perry lifetime earnings NPV × CPI2024/CPI2006 × transport share 2024 USD; both cost and earnings converted from 2006 USD using CPI-U. Cost covers the whole preschool program for one entering cohort.
 - Inputs, sources and uncertainty
 - 5,000 simulations. Scenario ranges describe explicit assumptions; published statistical intervals retain their source. Clinical results assume the funded program is implemented.

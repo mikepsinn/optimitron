@@ -23,11 +23,17 @@
 - PROPOSAL
 - Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)
 - Oxford RECOVERY enrolled 49,000+ patients through routine hospital care and found four life-saving COVID treatments in months at roughly $500/patient versus ~$41,000 in conventional trials. Most patients are ineligible for conventional trials, and 6,650 diseases have zero approved treatments. The act applies the RECOVERY model to every disease: universal trial-access rights plus automated real-time outcome labels. US Right to Try (2018) and Japan conditional approval are narrow enacted precedents; no country has implemented the full model.
-- MODELED BENEFIT
+- US healthy years gained over 20 years
+- 11,283,575
+- 90% model range: 413,494 to 34,082,462
+- Scenario funding: $200M.
+- Ten years of trial-access infrastructure; conditional US health benefits followed for 20 years.
+- Monetized benefit
 - $303.38B
 - 90% model range: −$130.41B to $1.25T
-- Present value from $200M in additional funding.
-- Ten years of trial-access infrastructure; conditional US health benefits followed for 20 years.
+- Net benefit after financing costs
+- $302.61B
+- 90% range: −$131.53B to $1.25T
 - 20-year US follow-up: a discovery hazard derived from the canonical average wait, uncertain capacity translation, US burden share, adoption and delivery costs. Funding changes discovery for one year; funded access infrastructure for ten years. Baseline discovery resumes afterwards, while discoveries already made remain available. Both reforms modify one shared process. Original global benchmarks remain separate below.
 - Inputs, sources and uncertainty
 - 5,000 simulations. Scenario ranges describe explicit assumptions; published statistical intervals retain their source. Clinical results assume the funded program is implemented.

@@ -15,6 +15,8 @@ import {
   COUNTRY_PANEL_DATA as GENERATED_COUNTRY_PANEL_DATA,
   COUNTRY_PANEL_METADATA as GENERATED_COUNTRY_PANEL_METADATA,
 } from '../generated/country-panel';
+import { resolveCountryPanelIncome } from './country-panel-income';
+import type { MedianIncomeSeriesRecord } from './median-income-types';
 
 export interface CountryPanelRow {
   /** ISO 3166-1 alpha-3 country code */
@@ -26,13 +28,15 @@ export interface CountryPanelRow {
 
   // === TARGET METRICS ===
 
-  /** After-tax median income per capita, PPP (best available source) */
+  /** Strict real PPP disposable income with its published unit and source definition. */
+  afterTaxMedianIncome?: MedianIncomeSeriesRecord | null;
+  /** @deprecated Always null in the public panel. Use afterTaxMedianIncome with its original unit. */
   afterTaxMedianIncomePerCapitaPpp: number | null;
-  /** Source of the after-tax median income value */
+  /** @deprecated Read afterTaxMedianIncome.source. */
   afterTaxMedianIncomeSource: string | null;
-  /** Whether the income value is from a survey or derived */
+  /** @deprecated Read afterTaxMedianIncome.isAfterTax. */
   afterTaxMedianIncomeIsAfterTax: boolean;
-  /** Pre-tax median income per capita, PPP (World Bank PIP) */
+  /** Reported median income per capita, PPP (World Bank PIP; tax scope unspecified). */
   medianIncomePerCapitaPpp: number | null;
   /** GDP per capita, PPP current international $ (World Bank) */
   gdpPerCapitaPpp: number | null;
@@ -89,9 +93,22 @@ export interface CountryPanelMetadata {
   countryCount: number;
   yearRange: [number, number];
   sources: string[];
+  /** Income selection can be refreshed without changing the age of general indicators. */
+  incomeRefresh?: {
+    refreshedAt: string;
+    sourceGeneratedAt: string;
+    eligibleObservationCount: number;
+  };
 }
 
-export const COUNTRY_PANEL: CountryPanelRow[] = GENERATED_COUNTRY_PANEL_DATA;
+// Older snapshots mix nominal income, household-ratio estimates and PIP-derived
+// income without sufficient metadata. Reject those legacy income fields; the
+// refreshed snapshot supplies strict observations without loading the full
+// income dataset into consumers of this panel.
+export const COUNTRY_PANEL: CountryPanelRow[] = GENERATED_COUNTRY_PANEL_DATA.map((row) => ({
+  ...row,
+  ...resolveCountryPanelIncome(row),
+}));
 export const COUNTRY_PANEL_METADATA: CountryPanelMetadata =
   GENERATED_COUNTRY_PANEL_METADATA;
 
@@ -121,6 +138,7 @@ export function getCountryPanelLatestResolved(): CountryPanelRow[] {
   // Keys we want coalesced — every CountryPanelRow field except the
   // identifier/timestamp trio.
   const FIELDS = [
+    "afterTaxMedianIncome",
     "afterTaxMedianIncomePerCapitaPpp",
     "afterTaxMedianIncomeSource",
     "afterTaxMedianIncomeIsAfterTax",

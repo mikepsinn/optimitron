@@ -23,11 +23,17 @@
 - PROPOSAL
 - Decriminalize personal use, redirect enforcement budget to treatment
 - Portugal decriminalized in 2001: drug deaths dropped 80%, HIV among users dropped 90%, treatment uptake tripled. US spends $40B/yr on drug enforcement with zero measurable reduction in drug deaths (r=0.026). Czech Republic, Switzerland, Netherlands show similar results.
-- MODELED BENEFIT
+- Deaths averted in one treatment year
+- 126
+- 90% model range: 37 to 233
+- Scenario funding: $88M.
+- 10,000 additional person-years retained in methadone treatment; estimates the treatment component of the proposal.
+- Monetized benefit
 - $1.75B
 - 90% model range: $470.51M to $3.48B
-- Present value from $88M in additional funding.
-- 10,000 additional person-years retained in methadone treatment; estimates the treatment component of the proposal.
+- Net benefit after financing costs
+- $1.41B
+- 90% range: $81.55M to $3.18B
 - 10,000 additional person-years retained in methadone treatment; estimates the treatment component of the proposal. cost = added retained person-years × annual treatment cost × CPI2024/CPI2016; deaths averted = added retained person-years × mortality difference/1,000 × transport share 2024 USD; NIDA preliminary 2016 treatment cost converted using CPI-U. Includes medication and support services; excludes separate law-reform costs.
 - Inputs, sources and uncertainty
 - 5,000 simulations. Scenario ranges describe explicit assumptions; published statistical intervals retain their source. Clinical results assume the funded program is implemented.

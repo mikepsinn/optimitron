@@ -1,4 +1,6 @@
-# United States: budget and policy decisions under uncertainty
+# United States: program funding scenarios
+
+These scenarios compare monetized benefits within specified program funding caps. They do not optimize the complete budget for median healthy life years and real after-tax median income growth.
 
 Baseline: FY2025 estimate, $6.87T.
 
@@ -301,4 +303,4 @@ One local reform affecting a reference group of 100,000 renter households over t
 - Policy benefit horizons differ and remain explicit: existing lifetime earnings NPV, one treatment year, twenty-year clinical flows, and ten-year renter savings. Annual spending does not imply annual realization of lifetime benefits.
 - National peer-spending differences are descriptive context. They do not enter this optimization as free savings or causal response curves.
 
-Generated 2026-09-26T23:55:08.982Z.
+Generated 2026-09-27T03:44:00.859Z.

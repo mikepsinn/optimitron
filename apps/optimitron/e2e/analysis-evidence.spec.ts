@@ -10,7 +10,8 @@ test("policy navigation shows calculated uncertainty and retains earlier hypothe
   await page.getByRole("link", { name: "Pragmatic Clinical Trial Funding Reform", exact: true }).click();
   // Every /opg card carries the same region label, so the locator below matches
   // twice until the soft navigation lands. Wait for the detail route first.
-  await expect(page).toHaveURL(/\/opg\/pragmatic-clinical-trial-funding-reform$/);
+  await expect(page).toHaveURL(/\/opg\/pragmatic-clinical-trial-funding-reform(?:\?|$)/);
+  await expect(page.getByRole("heading", { name: "Pragmatic Clinical Trial Funding Reform", exact: true })).toBeVisible();
   const estimates = page.getByRole("region", { name: "Modeled policy benefits" });
   await expect(estimates).toContainText("90% model range:");
   await expect(estimates).toContainText("US healthy years gained over 20 years");
@@ -24,9 +25,13 @@ test("policy navigation shows calculated uncertainty and retains earlier hypothe
   await expect(page.getByRole("main")).not.toContainText(/\+36mo|\+0\.30 years|\+\$719/);
 });
 
-test("budget report download and website use the same calculated allocation", async ({ page }) => {
+test("program scenarios stay separate from the budget objective and match their download", async ({ page }) => {
   await page.goto("/obg?logout=1");
-  const result = page.getByRole("region", { name: "Budget optimization with uncertainty" });
+  const result = page.getByRole("region", { name: "Program funding scenario" });
+  await expect(result).not.toBeVisible();
+  await page.getByText("Program funding scenarios", { exact: true }).click();
+  await expect(result).toBeVisible();
+  await expect(result).toContainText("median healthspan");
   await expect(result).toContainText("90% model range:");
   const response = await page.request.get("/reports/us-budget-policy-decision.md");
   expect(response.ok()).toBeTruthy();

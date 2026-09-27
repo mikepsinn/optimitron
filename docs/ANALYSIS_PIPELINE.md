@@ -18,6 +18,10 @@ The web app is the product surface for analysis outputs.
   - `pnpm --filter @optimitron/web run generate`
 - Refresh government-size artifact into the app:
   - `pnpm --filter @optimitron/web run refresh:government-size`
+- Allocate a complete budget using supplied national median response curves:
+  - `pnpm --filter @optimitron/web run generate:welfare-budget --input <document.json> --output <directory>`
+  - The input contract is [WelfareBudgetDocument](../apps/optimitron/scripts/analysis/welfare-budget-artifact.ts). It requires jurisdiction, fiscal year, currency, a common effect horizon, the exact two median endpoints, source references and category bounds/response curves.
+  - Output is one `budget.json` artifact and a `budget.md` rendering of the same allocation and endpoint effects. No synthetic country model is substituted when input is missing.
 - Draft legislation markdown:
   - `pnpm --filter @optimitron/web run draft:legislation`
   - This now performs a first-pass evidence synthesis over [packages/data/src/parameters/parameters-calculations-citations.ts](../packages/data/src/parameters/parameters-calculations-citations.ts) before bill drafting.
@@ -29,6 +33,18 @@ The web app is the product surface for analysis outputs.
 - `packages/agent`: LLM-facing synthesis and drafting logic, including the typed legislation evidence bundle built from the parameter corpus.
 - `content/legislation`: committed markdown drafts reviewed through normal GitHub PRs.
 - `reports/site`: removed. Do not recreate a second static analysis site unless there is a deliberate deployment target for it.
+
+## Retained engines and recovered workflows
+
+The March 2026 removal of `obg/optimize-budget.ts` and `optimize-budget-multi-outcome.ts` removed orchestration, but their independently selected or averaged spending targets did not conserve the supplied budget. Do not restore those heuristics as an optimal allocation. The retained optimizer's longitudinal analysis and response curves remain the calculation foundation.
+
+The April 2026 removal of `packages/examples` also removed the government-size report producer. The app now owns that bounded workflow; the separate examples package, static site, inferred tax-return baseline and lowest-spending-bin heuristic stay retired. Historical floor estimates remain identifiable as earlier hypotheses, not newly calculated allocations.
+
+`@optimitron/obg` now solves the separable, bounded, concave welfare problem using its existing log/saturation curves and `@optimitron/opg`'s welfare function. Category spending must account for the entire budget. Paired bootstrap/posterior curves, when supplied, determine expected welfare and evaluate one selected allocation across all draws. Negative/nonconcave curves are rejected; the solver does not clip evidence to force an answer. Category interactions and causal calibration must be represented in the supplied model or addressed before using this separable solver.
+
+The welfare units are income-growth percentage points/year and median healthy life years. The explicit weighting parameter defines their tradeoff; money-valued health, GDP per capita and HALE cannot silently replace those endpoints. Government-size reports may analyze HALE under its actual name as expected healthy years; this is evidence relevant to the goal, not a measurement of population median healthspan.
+
+The earlier five-program Monte Carlo model remains available as a program scenario comparison, including its assumptions and benefits. Its monetary objective and capacity limits do not produce a national two-median optimum, and do not determine public policy ordering.
 
 ## Current routes
 

@@ -7,7 +7,7 @@ export const usDecisionAnalysis: DecisionReport = {
   "jurisdiction": "United States",
   "fiscalYear": 2025,
   "baselineOutlaysUsd": 6872000000000,
-  "generatedAt": "2026-09-26T23:55:08.982Z",
+  "generatedAt": "2026-09-27T03:44:00.859Z",
   "seed": 20260926,
   "draws": 5000,
   "gridUsd": 1000000,

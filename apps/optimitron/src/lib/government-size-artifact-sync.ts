@@ -21,7 +21,7 @@ export interface GovernmentSizeSyncResult extends GovernmentSizeSyncPaths {
 
 export function resolveGovernmentSizeSyncPaths(baseDir: string): GovernmentSizeSyncPaths {
   return {
-    sourcePath: resolve(baseDir, "../../../packages/examples/output/us-government-size-analysis.json"),
+    sourcePath: resolve(baseDir, "../src/data/us-government-size-analysis.json"),
     targetPath: resolve(baseDir, "../src/data/us-government-size-analysis.json"),
   };
 }
@@ -53,7 +53,7 @@ export function readGovernmentSizeSyncPayload(sourcePath: string): GovernmentSiz
 export function syncGovernmentSizeAnalysis(paths: GovernmentSizeSyncPaths): GovernmentSizeSyncResult {
   const payload = readGovernmentSizeSyncPayload(paths.sourcePath);
   mkdirSync(dirname(paths.targetPath), { recursive: true });
-  copyFileSync(paths.sourcePath, paths.targetPath);
+  if (resolve(paths.sourcePath) !== resolve(paths.targetPath)) copyFileSync(paths.sourcePath, paths.targetPath);
 
   return {
     sourcePath: paths.sourcePath,

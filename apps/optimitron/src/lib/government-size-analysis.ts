@@ -28,7 +28,7 @@ export interface GovernmentSizeSensitivityScenario {
   isPrimaryScenario: boolean;
 }
 
-export interface GovernmentSizeAnalysis {
+export interface HistoricalGovernmentSizeAnalysis {
   predictor: {
     id: string;
     name: string;
@@ -100,6 +100,59 @@ export interface GovernmentSizeAnalysis {
     note: string;
   };
   generatedAt: string;
+}
+
+export interface GovernmentWelfareInterval {
+  mean: number;
+  low: number;
+  high: number;
+}
+
+export interface GovernmentWelfareOutcome {
+  id: string;
+  name: string;
+  unit: string;
+  definition: string;
+  countryCount: number;
+  excludedCountryCount: number;
+  sourceObservationCount: number;
+  yearRange: [number, number] | null;
+  meanCorrelation: GovernmentWelfareInterval | null;
+  meanOutcomeDifference: GovernmentWelfareInterval | null;
+  countries: Array<{
+    id: string;
+    name: string;
+    source: string;
+    sourceUrl: string;
+    sourceObservations: number;
+    pairedYears: number;
+    correlation: number;
+    outcomeDifference: number;
+    lowerSpendingPctGdp: number;
+    higherSpendingPctGdp: number;
+    dataQualityPassed: boolean;
+    includedInSummary: boolean;
+    warnings: string[];
+  }>;
+}
+
+export interface GovernmentSizeAnalysis {
+  schemaVersion: 2;
+  generatedAt: string;
+  sourceMode: string;
+  sourceSnapshots: Array<{ name: string; generatedAt: string; url: string }>;
+  predictor: { id: string; name: string; definition: string };
+  outcomes: GovernmentWelfareOutcome[];
+  methodology: {
+    onsetDelayDays: number;
+    durationOfActionDays: number;
+    minimumDataPoints: number;
+    bootstrapDraws: number;
+    seed: number;
+    intervalDescription: string;
+    notes: string[];
+  };
+  historicalBenchmark: HistoricalGovernmentSizeAnalysis | null;
 }
 
 export const usGovernmentSizeAnalysis = analysis as unknown as GovernmentSizeAnalysis;
