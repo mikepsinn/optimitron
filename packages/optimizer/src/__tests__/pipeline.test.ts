@@ -382,7 +382,7 @@ describe('generateMarkdownReport', () => {
   });
 
   it('contains Predictive Pearson value', () => {
-    expect(report).toContain('Causal Direction Score (forward − reverse)');
+    expect(report).toContain('Predictive Direction Score (forward − reverse)');
   });
 
   it('contains Bradford Hill Score', () => {
@@ -409,18 +409,125 @@ describe('generateMarkdownReport', () => {
     expect(report).toContain(`Pairs analyzed: ${result.numberOfPairs}`);
   });
 
-  it('contains practical recommendation', () => {
-    expect(report).toContain('Practical recommendation:');
-    expect(report).toContain('daily');
+  it('retains a candidate value without inventing an observation period or desired outcome direction', () => {
+    expect(report).toContain(`Candidate predictor value associated with higher outcomes:** ${result.optimalValues.valuePredictingHighOutcome.toFixed(2)}`);
+    expect(report).toContain('Observation period: unspecified');
+    expect(report).not.toMatch(/daily|treatment days|improvement|worsening|\*\*Target:/);
   });
 
   it('uses consistent predictor-split labels in optimal values section', () => {
-    // Should show predictor-split: "High <predictor> days (avg X): Outcome = Y"
-    expect(report).toContain('High Vitamin D days (avg');
-    expect(report).toContain('Low Vitamin D days (avg');
-    // Should NOT mix outcome-split with predictor-split
-    expect(report).not.toContain('Value predicting high outcome');
-    expect(report).not.toContain('Value predicting low outcome');
+    expect(report).toContain(`High Vitamin D observations (avg ${result.optimalValues.averageDailyHighPredictor.toFixed(2)}): Overall Mood = ${result.optimalValues.averageOutcomeFollowingHighPredictor.toFixed(2)}`);
+    expect(report).toContain(`Low Vitamin D observations (avg ${result.optimalValues.averageDailyLowPredictor.toFixed(2)}): Overall Mood = ${result.optimalValues.averageOutcomeFollowingLowPredictor.toFixed(2)}`);
+    // The inverse split remains separately labelled; these are different estimates.
+    expect(report).toContain(`Mean predictor preceding above-mean outcomes: ${result.optimalValues.valuePredictingHighOutcome.toFixed(2)}`);
+    expect(report).toContain(`Mean predictor preceding at-or-below-mean outcomes: ${result.optimalValues.valuePredictingLowOutcome.toFixed(2)}`);
+  });
+
+  it('reports annual observations in the original units without turning them into daily inputs', () => {
+    const annualReport = generateMarkdownReport({
+      ...result,
+      predictorName: 'Annual input',
+      outcomeName: 'Duration',
+      predictorUnit: 'USD per capita',
+      outcomeUnit: 'years',
+    }, { observationPeriod: 'year', outcomeDirection: 'higher' });
+
+    expect(annualReport).toContain('High Annual input years (avg');
+    expect(annualReport).toContain(`${result.optimalValues.averageDailyHighPredictor.toFixed(2)} USD per capita`);
+    expect(annualReport).toContain(`Duration = ${result.optimalValues.averageOutcomeFollowingHighPredictor.toFixed(2)} years`);
+    expect(annualReport).toContain('Observation period: year');
+    expect(annualReport).not.toMatch(/daily|treatment/);
+  });
+
+  it('supports explicitly supplied daily observations', () => {
+    const dailyReport = generateMarkdownReport(result, { observationPeriod: 'day' });
+    expect(dailyReport).toContain('High Vitamin D days (avg');
+    expect(dailyReport).toContain('Observation period: day');
+  });
+
+  it.each([
+    [20, 'lower', 'higher', 'worsening'],
+    [-20, 'lower', 'lower', 'improvement'],
+    [20, 'higher', 'higher', 'improvement'],
+    [-20, 'higher', 'lower', 'worsening'],
+  ] as const)('interprets change %s with desired %s outcomes correctly', (change, desired, numericDirection, interpretation) => {
+    const directionalReport = generateMarkdownReport({
+      ...result,
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 100,
+        outcomeFollowUpAverage: 100 + change,
+        outcomeFollowUpPercentChangeFromBaseline: change,
+      },
+      optimalValues: {
+        ...result.optimalValues,
+        valuePredictingHighOutcome: 123.45,
+        valuePredictingLowOutcome: 67.89,
+      },
+    }, { outcomeDirection: desired });
+
+    expect(directionalReport).toContain(`**20.0% ${numericDirection}**`);
+    expect(directionalReport).toContain(`(${interpretation} in the specified outcome direction)`);
+    expect(directionalReport).toContain(`Candidate predictor value associated with ${desired} outcomes:** ${desired === 'lower' ? '67.89' : '123.45'}`);
+  });
+
+  it('does not call zero change an improvement', () => {
+    const unchangedReport = generateMarkdownReport({
+      ...result,
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 100,
+        outcomeFollowUpAverage: 100,
+        outcomeFollowUpPercentChangeFromBaseline: 0,
+      },
+    }, { outcomeDirection: 'higher' });
+    expect(unchangedReport).toContain('**unchanged**');
+    expect(unchangedReport).not.toMatch(/improvement|worsening/);
+  });
+
+  it('does not label the legacy absolute difference from a zero baseline as a percentage', () => {
+    const zeroBaselineReport = generateMarkdownReport({
+      ...result,
+      outcomeUnit: 'points',
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 0,
+        outcomeFollowUpAverage: 4,
+        outcomeFollowUpPercentChangeFromBaseline: 4,
+      },
+    });
+    expect(zeroBaselineReport).toContain('**4.00 points higher**');
+    expect(zeroBaselineReport).toContain('Percentage change is undefined');
+    expect(zeroBaselineReport).not.toContain('4.0%');
+  });
+
+  it('keeps failed-quality estimates but qualifies them before the findings and withholds a target', () => {
+    const failedReport = generateMarkdownReport({
+      ...result,
+      dataQuality: {
+        ...result.dataQuality,
+        isValid: false,
+        failureReasons: ['Too few independent observations'],
+      },
+    });
+    expect(failedReport.indexOf('Exploratory result: data quality checks failed')).toBeLessThan(failedReport.indexOf('## Key Findings'));
+    expect(failedReport).toContain(`Candidate predictor value associated with higher outcomes:** ${result.optimalValues.valuePredictingHighOutcome.toFixed(2)}`);
+    expect(failedReport).toContain(`${Math.abs(result.baselineFollowup.outcomeFollowUpPercentChangeFromBaseline).toFixed(1)}%`);
+    expect(failedReport).toContain('A target recommendation is withheld');
+    expect(failedReport).toContain('Too few independent observations');
+    expect(failedReport).not.toMatch(/Practical recommendation:|\*\*Target:/);
+  });
+
+  it('describes correlation asymmetry as predictive association, not established causation', () => {
+    const asymmetricReport = generateMarkdownReport({
+      ...result,
+      forwardPearson: -0.8,
+      reversePearson: -0.2,
+      predictivePearson: -0.6,
+    });
+    expect(asymmetricReport).toContain('substantially stronger forward predictive association');
+    expect(asymmetricReport).toContain('does not establish causation');
+    expect(asymmetricReport).not.toMatch(/forward causation|reverse causation|drives outcome|drives predictor/);
   });
 
   it('contains correlation description', () => {

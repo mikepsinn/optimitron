@@ -250,7 +250,7 @@ function BudgetGeneratorTile() {
         ))}
       </ul>
       <p className="mt-5 text-sm leading-6 text-muted-foreground">
-        Spending per person in constant 2017 international dollars (PPP).
+        PPP-adjusted estimates; reference price year unverified.
       </p>
       <div className="mt-auto pt-5">
         <Link className={landingLinkClass} href={ROUTES.obg}>

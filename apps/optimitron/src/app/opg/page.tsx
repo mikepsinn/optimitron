@@ -6,8 +6,12 @@ import { usPolicyAnalysis } from "@/data/us-policy-analysis";
 import { getPolicyPath } from "@/lib/routes";
 import { getNationalBudgetComparisons, type NationalBudgetComparison } from "@/lib/analysis-products";
 import { policyDisplayName, policyEvidenceLabel } from "@/lib/policy-presentation";
+import { PolicyDecisionSummary } from "@/components/budget/DecisionResults";
+import { usDecisionAnalysis } from "@/data/us-decision-analysis";
+import { slugify } from "@/lib/slugify";
 
 const comparisons = new Map(getNationalBudgetComparisons().map((comparison) => [comparison.spendingField, comparison]));
+const modeledOrder = new Map(usDecisionAnalysis.policies.map((policy, index) => [policy.id, index]));
 
 function CountryComparison({ comparison }: { comparison: NationalBudgetComparison }) {
   const { efficiency, oecdBenchmark } = comparison.category;
@@ -57,7 +61,7 @@ function CountryComparison({ comparison }: { comparison: NationalBudgetCompariso
           </div>
         ))}
       </div>
-      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">Spending: constant 2017 international dollars (PPP). Averages over the observation years shown.</p>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">Spending: bundled PPP-adjusted estimates per person per year, averaged over the years shown. Reference price year unverified.</p>
       {incomeOutcome ? <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Income: after-tax household median, adjusted for household size; OECD real PPP, with a different price basis from spending.</p> : null}
     </div>
   );
@@ -65,14 +69,16 @@ function CountryComparison({ comparison }: { comparison: NationalBudgetCompariso
 
 export default function PoliciesPage() {
   const [category, setCategory] = useState("all");
-  const policies = usPolicyAnalysis.policies.filter((policy) => category === "all" || policy.category === category);
+  const policies = usPolicyAnalysis.policies
+    .filter((policy) => category === "all" || policy.category === category)
+    .sort((a, b) => (modeledOrder.get(slugify(a.name)) ?? 99) - (modeledOrder.get(slugify(b.name)) ?? 99));
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8 flex flex-col gap-6 border-b-2 border-foreground pb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="mb-3 text-3xl font-black uppercase tracking-tight md:text-4xl">Policy evidence</h1>
-          <p className="max-w-lg text-muted-foreground">Explore policy proposals for better health and higher incomes.</p>
+          <p className="max-w-lg text-muted-foreground">Compare modeled benefits, funding and uncertainty. Proposals are ordered by expected net benefit at the funding levels shown.</p>
         </div>
         <div className="shrink-0">
           <label className="mb-2 block text-xs font-bold uppercase tracking-wide" htmlFor="policy-category">Category</label>
@@ -87,11 +93,12 @@ export default function PoliciesPage() {
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         {policies.map((policy) => {
+          const decision = usDecisionAnalysis.policies.find(result => result.id === slugify(policy.name));
           const comparison = policy.evidenceKind === "comparison" && policy.oecdSpendingField ? comparisons.get(policy.oecdSpendingField) : undefined;
           return (
             <article key={policy.name} className="flex min-w-0 flex-col border-2 border-foreground bg-card shadow-[3px_3px_0_0_var(--foreground)]">
               <div className="flex-1 p-5 sm:p-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{policyEvidenceLabel(policy.evidenceKind)}</p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{decision ? "Modeled policy scenario" : policyEvidenceLabel(policy.evidenceKind)}</p>
                 <h2 className="text-xl font-black leading-snug tracking-tight">
                   <Link className="underline-offset-4 hover:underline focus-visible:underline" href={getPolicyPath(policy.name)}>{policyDisplayName(policy)}</Link>
                 </h2>
@@ -100,6 +107,7 @@ export default function PoliciesPage() {
                 ) : (
                   <>
                     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{policy.description}</p>
+                    {decision && <PolicyDecisionSummary policy={decision} />}
                     {policy.evidenceKind !== "comparison" ? <dl className="mt-5 space-y-4 border-l-2 border-foreground/20 pl-4">
                       {policy.currentStatus ? (
                         <div>

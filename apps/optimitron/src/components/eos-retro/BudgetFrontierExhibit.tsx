@@ -42,7 +42,7 @@ export function BudgetFrontierExhibit() {
         ))}
       </div>
       <p className="er-caption mt-4">
-        Spending: constant 2017 international dollars per person per year (PPP).
+        PPP-adjusted estimates; reference price year unverified.
         Average of up to three latest available observations per country.
         The comparison does not establish the effect of cutting spending.
       </p>

@@ -31,6 +31,7 @@ export type VisualRoute = {
   openContentShare?: boolean;
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
+  openWishocracySpending?: boolean;
   verifyMcpDisabledAuthorize?: boolean;
   mcpScopeAccess?: "admin" | "non-admin";
   openMenu?: boolean;
@@ -793,11 +794,12 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     covers: [
       "apps/optimitron/src/app/obg/page.tsx",
       "apps/optimitron/src/components/budget/NationalSpendingComparisons.tsx",
+      "apps/optimitron/src/components/budget/DecisionResults.tsx",
     ],
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
-    requiredSelector: "#healthSpendingPerCapitaPpp",
+    requiredSelector: 'main:has(#healthSpendingPerCapitaPpp) section[aria-label="Budget optimization with uncertainty"]',
     requiredHeading: "What can we learn from other countries?",
   },
   {
@@ -819,6 +821,25 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     required: true,
     requiredSelector: "h1",
     requiredHeading: policyDisplayName(healthComparisonPolicy),
+  },
+  {
+    covers: [
+      "apps/optimitron/src/app/opg/[slug]/page.tsx",
+      "apps/optimitron/src/components/budget/DecisionResults.tsx",
+    ],
+    name: "opg-policy-detail-modeled",
+    path: getPolicyPath("Universal Pre-K (Ages 3-4)"),
+    required: true,
+    requiredSelector: 'section[aria-label="Modeled policy benefits"] details > summary',
+    requiredHeading: "Universal Pre-K (Ages 3-4)",
+  },
+  {
+    covers: ["apps/optimitron/src/components/wishocracy/wishocratic-pair-slider.tsx"],
+    name: "wishocracy-spending-expanded",
+    path: `${ROUTES.wishocracy}?logout=1`,
+    required: true,
+    openWishocracySpending: true,
+    requiredSelector: 'main a[href="/obg"]',
   },
   {
     // This proposal has historical evidence; the national comparison above does not.

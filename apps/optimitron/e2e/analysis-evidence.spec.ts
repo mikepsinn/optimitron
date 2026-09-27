@@ -1,15 +1,50 @@
 import { expect, test } from "@playwright/test";
+import { formatDecisionMoney } from "@optimitron/obg";
+import { usDecisionAnalysis } from "../src/data/us-decision-analysis";
 
-test("policy navigation retains assumptions in their declared units", async ({ page }) => {
+test("policy navigation shows calculated uncertainty and retains earlier hypotheses", async ({ page }) => {
   await page.goto("/?logout=1");
   await page.getByRole("main").getByRole("link", { name: "Compare policies", exact: true }).click();
   await expect(page).toHaveURL(/\/opg(?:\?|$)/);
   await page.getByLabel("Category", { exact: true }).selectOption("health_research");
   await page.getByRole("link", { name: "Pragmatic Clinical Trial Funding Reform", exact: true }).click();
+  const estimates = page.getByRole("region", { name: "Modeled policy benefits" });
+  await expect(estimates).toContainText("90% model range:");
+  await expect(estimates).toContainText("US healthy years gained over 20 years");
+  await expect(estimates).not.toContainText("NaN");
+  await estimates.getByText("Inputs, sources and uncertainty", { exact: true }).click();
+  await expect(estimates).toContainText("0 / 0.5 / 1");
+  await page.getByText("Earlier hypotheses retained for comparison", { exact: true }).click();
   const assumptions = page.locator("section").filter({ has: page.getByRole("heading", { name: "Scenario assumptions" }) });
   await expect(assumptions).toBeVisible();
   await expect(assumptions.locator("dd")).toHaveText(["+5%", "+30%"]);
   await expect(page.getByRole("main")).not.toContainText(/\+36mo|\+0\.30 years|\+\$719/);
+});
+
+test("budget report download and website use the same calculated allocation", async ({ page }) => {
+  await page.goto("/obg?logout=1");
+  const result = page.getByRole("region", { name: "Budget optimization with uncertainty" });
+  await expect(result).toContainText("90% model range:");
+  const response = await page.request.get("/reports/us-budget-policy-decision.md");
+  expect(response.ok()).toBeTruthy();
+  const markdown = await response.text();
+  const chosen = usDecisionAnalysis.scenarios.find(scenario => scenario.id === usDecisionAnalysis.recommendedScenarioId)!;
+  await expect(result).toContainText(formatDecisionMoney(chosen.netBenefit.mean));
+  expect(markdown).toContain(`Expected net present benefit: ${formatDecisionMoney(chosen.netBenefit.mean)}`);
+  for (const allocation of chosen.allocations) {
+    const row = result.getByRole("row").filter({ hasText: allocation.name });
+    await expect(row.getByRole("cell").last()).toHaveText(formatDecisionMoney(allocation.amountUsd));
+    expect(markdown).toContain(`| ${allocation.name} | ${formatDecisionMoney(allocation.amountUsd)} |`);
+  }
+  expect(markdown).toContain("Full budget ledger");
+  expect(markdown).toContain("Inputs and sources");
+  expect(markdown).not.toContain("NaN");
+  const policyLinks = await result.getByRole("table").first().getByRole("link").evaluateAll(links => links.map(link => link.getAttribute("href")!));
+  expect(policyLinks).toHaveLength(chosen.allocations.length);
+  for (const href of policyLinks) {
+    await page.goto(href);
+    await expect(page.getByRole("region", { name: "Modeled policy benefits" })).toBeVisible();
+  }
 });
 
 test("budget comparisons cannot turn overlapping national gaps into a dividend", async ({ page }) => {

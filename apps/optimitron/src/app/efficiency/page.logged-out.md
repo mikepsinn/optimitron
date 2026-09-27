@@ -25,7 +25,7 @@
 - Switzerland
 - $389 / person / year
 - Life Expectancy: 83.37
-- Average of up to three latest available annual observations per country. Spending is in constant 2017 international dollars per person per year (PPP); the years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
+- Average of up to three latest available annual observations per country. Spending uses bundled PPP-adjusted estimates per person per year; reference price year unverified. The observation years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
 - Security outcomes and military effectiveness are not measured here.
 - [World Bank military expenditure ↗](https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS)
 - [World Bank life expectancy ↗](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)

@@ -72,7 +72,7 @@ export function NationalSpendingComparison({ comparison }: { comparison: Nationa
             ))}
           </div>
           <p className="mt-3 text-xs font-bold text-muted-foreground">
-            Average of up to three latest available annual observations per country. Spending is in constant 2017 international dollars per person per year (PPP); the years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
+            Average of up to three latest available annual observations per country. Spending uses bundled PPP-adjusted estimates per person per year; reference price year unverified. The observation years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
           </p>
           {incomeOutcome && <p className="mt-2 text-xs font-bold text-muted-foreground">Income uses measured OECD disposable household income, adjusted for household size and OECD real PPP. Its unit and price basis differ from the spending series.</p>}
         </>

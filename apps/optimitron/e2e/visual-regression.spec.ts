@@ -193,6 +193,18 @@ test.describe("route visual regression", () => {
         );
       }
 
+      if (route.openWishocracySpending) {
+        // Exercise a real anonymous pair without posting an allocation or
+        // depending on the randomized introduction/inclusion flow.
+        await page.addInitScript(() => {
+          localStorage.setItem("pendingWishocracy", JSON.stringify({
+            allocations: [],
+            currentPairIndex: 0,
+            includedItemIds: ["MILITARY_OPERATIONS", "EARLY_CHILDHOOD_EDUCATION"],
+            shuffledPairs: [["MILITARY_OPERATIONS", "EARLY_CHILDHOOD_EDUCATION"]],
+          }));
+        });
+      }
       const response = await openVisualRoute(page, route.path);
       const status = response?.status() ?? 0;
 
@@ -214,6 +226,10 @@ test.describe("route visual regression", () => {
       }
 
       await normalizeVisualPage(page);
+      if (route.openWishocracySpending) {
+        await page.getByRole("button", { name: /B\/yr.*▼/ }).first().click();
+        await expect(page.getByRole("link", { name: "See modeled allocations and benefits", exact: true })).toBeVisible();
+      }
       if ("authenticated" in route && route.authenticated) {
         await waitForAuthenticatedVisualSession(page);
       }

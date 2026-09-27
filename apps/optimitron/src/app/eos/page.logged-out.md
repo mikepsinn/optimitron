@@ -45,7 +45,7 @@
 - SOUTH KOREA
 - $3,588 / person / year
 - Life expectancy: 83.6 years · Observations: 2020, 2021, 2022
-- Spending: constant 2017 international dollars per person per year (PPP). Average of up to three latest available observations per country. The comparison does not establish the effect of cutting spending.
+- PPP-adjusted estimates; reference price year unverified. Average of up to three latest available observations per country. The comparison does not establish the effect of cutting spending.
 - [World Bank health expenditure ↗](https://data.worldbank.org/indicator/SH.XPD.CHEX.GD.ZS)
 - [Explore the Budget Generator](/obg)
 #### PART C · THE NINETY-SECOND LEGISLATURE

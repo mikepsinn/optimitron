@@ -61,8 +61,8 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "bradfordHillScores": {},
       "incomeEffect": 0.05,
       "healthEffect": 0.3,
-      "rationale": "NIH spends $48B/yr but 70%+ goes to indirect costs. 85% of findings fail to replicate. UK NIHR model: pragmatic trials embedded in NHS produce actionable evidence at 1/10th the cost. PCORI pragmatic trials show 3x faster clinical adoption.",
-      "currentStatus": "NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate",
+      "rationale": "NIH reported about $9B in indirect costs out of $35B in FY2023 grants, approximately 26%. The widely cited 85% research-waste estimate covers question selection, study methods and reporting; it is not a replication-failure rate. Embedded pragmatic trials can reduce research costs; the scenario model estimates downstream benefits separately from trial capacity. Sources: https://www.grants.nih.gov/grants/guide/notice-files/NOT-OD-25-068.html and https://blogs.bmj.com/bmj/2016/01/14/paul-glasziou-and-iain-chalmers-is-85-of-health-research-really-wasted/",
+      "currentStatus": "NIH reported about $35B in FY2023 grants, including $9B in indirect costs. Pragmatic trial funding is a separate allocation decision.",
       "recommendedTarget": "Mandate 30%+ of research budget for pragmatic trials with open data requirements",
       "blockingFactors": [
         "institutional_resistance",
@@ -201,7 +201,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "oecdSpendingField": "rdSpendingPerCapitaPpp"
     }
   ],
-  "generatedAt": "2026-09-26T22:05:34.370Z",
+  "generatedAt": "2026-09-26T23:55:08.420Z",
   "generatedBy": "@optimitron/opg evidence inventory",
   "note": "Curated fractional effect assumptions and descriptive national spending comparisons. Effects are not calibrated causal estimates, and no causal grade, welfare ranking, time horizon, or uncertainty interval is inferred."
 };

@@ -6,6 +6,8 @@ import { getPolicyPath, optimalPolicyGeneratorPaperLink, opgLink } from "@/lib/r
 import { getRouteMetadata } from "@/lib/metadata";
 import { slugify } from "@/lib/slugify";
 import { formatPolicyEffect, policyDisplayName, policyEvidenceLabel } from "@/lib/policy-presentation";
+import { PolicyDecisionSummary } from "@/components/budget/DecisionResults";
+import { usDecisionAnalysis } from "@/data/us-decision-analysis";
 import { getPolicyEvidence, type MatchedExperiment, type MatchedComparison } from "@/data/policy-evidence-map";
 import { ExperimentTimeSeriesChart } from "@/components/opg/ExperimentTimeSeriesChart";
 import { retiredPolicyRedirectPath } from "./legacy-policy-redirect";
@@ -40,6 +42,7 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
     );
   }
   const evidence = getPolicyEvidence(policy.name, policy.category, policy.description);
+  const decision = usDecisionAnalysis.policies.find(result => result.id === slug);
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
       <NavItemLink item={opgLink} variant="custom" className="inline-block mb-6 font-bold underline">← All policies</NavItemLink>
@@ -56,7 +59,10 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
         </div>
       </section>
 
+      {decision && <div className="mb-8"><PolicyDecisionSummary policy={decision} expanded /></div>}
       {policy.evidenceKind !== "comparison" ? (
+        <details className="mb-8">
+        <summary className="cursor-pointer text-sm font-bold">Earlier hypotheses retained for comparison</summary>
         <section className="border-4 border-primary p-5 sm:p-6 mb-8">
           <h2 className="text-lg font-black mb-3">{policy.evidenceKind === "assumption" ? "Scenario assumptions" : "Reported effect estimates"}</h2>
           <p className="text-sm text-muted-foreground mb-5">
@@ -69,6 +75,7 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ s
             <div><dt className="font-bold text-sm">Median healthy life years</dt><dd className="text-2xl font-black">{formatPolicyEffect(policy.healthEffect)}</dd></div>
           </dl>
         </section>
+        </details>
       ) : (
         <p className="text-sm mb-8">
           <Link href="/obg" className="underline">See spending, outcomes and comparison years →</Link>

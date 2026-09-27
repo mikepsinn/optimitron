@@ -21,14 +21,14 @@
  *   socialSpendingPercentGdp    → OECD SOCX             (Public social spending % GDP)
  *   rdSpendingPercentGdp        → WB GB.XPD.RSDV.GD.ZS  (R&D expenditure % GDP)
  *
- * Derived per-capita PPP (constant 2017 intl $ — PRIMARY for optimizer):
+ * Derived per-capita PPP estimates (reference price year unverified):
  *   *SpendingPerCapitaPpp       = *PercentGdp × gdpPerCapitaPpp / 100
  *   These avoid the GDP-denominator distortion where GDP growth makes
  *   flat real spending look like cuts.
  *
  * Outcome indicators:
  *   lifeExpectancyYears         → WB SP.DYN.LE00.IN      (Life expectancy at birth, total)
- *   gdpPerCapitaPpp             → WB NY.GDP.PCAP.PP.KD   (GDP per capita, PPP constant 2017 intl $)
+ *   gdpPerCapitaPpp             → WB NY.GDP.PCAP.PP.KD   (bundled PPP estimate; reference price year unverified)
  *   infantMortalityPer1000      → WB SP.DYN.IMRT.IN      (Mortality rate, infant per 1000 live births)
  *   giniIndex                   → WB SI.POV.GINI         (Gini index, World Bank estimate)
  *
@@ -36,6 +36,8 @@
  *   - null values indicate data not available for that country-year
  *   - Per-capita PPP fields are derived (percentGdp × gdpPerCapitaPpp / 100),
  *     rounded to nearest integer. Null if either input is null.
+ *   - The compiled snapshot has no archived source vintage or verified PPP
+ *     reference price year. Current indicator metadata cannot date its values.
  *   - Education spending has gaps for many countries in certain years
  *   - Gini index is the sparsest variable (surveys not conducted annually)
  *   - Social spending (OECD SOCX) includes pensions, health (social component),
@@ -65,22 +67,22 @@ export interface OECDBudgetPanelDataPoint {
   rdSpendingPercentGdp: number | null;
 
   // ── Spending per capita PPP (PRIMARY — for optimizer analysis) ─────
-  // Derived: percentGdp × gdpPerCapitaPpp / 100, constant 2017 intl $
-  /** Health spending per capita, PPP constant 2017 intl $ */
+  // Derived: percentGdp × gdpPerCapitaPpp / 100; reference price year unverified.
+  /** Health spending per capita, PPP-adjusted estimate; reference price year unverified */
   healthSpendingPerCapitaPpp: number | null;
-  /** Education spending per capita, PPP constant 2017 intl $ */
+  /** Education spending per capita, PPP-adjusted estimate; reference price year unverified */
   educationSpendingPerCapitaPpp: number | null;
-  /** Military spending per capita, PPP constant 2017 intl $ */
+  /** Military spending per capita, PPP-adjusted estimate; reference price year unverified */
   militarySpendingPerCapitaPpp: number | null;
-  /** Social spending per capita, PPP constant 2017 intl $ */
+  /** Social spending per capita, PPP-adjusted estimate; reference price year unverified */
   socialSpendingPerCapitaPpp: number | null;
-  /** R&D spending per capita, PPP constant 2017 intl $ */
+  /** R&D spending per capita, PPP-adjusted estimate; reference price year unverified */
   rdSpendingPerCapitaPpp: number | null;
 
   // ── Outcome indicators ─────────────────────────────────────────────
   /** Life expectancy at birth, total years (WB SP.DYN.LE00.IN) */
   lifeExpectancyYears: number | null;
-  /** GDP per capita, PPP constant 2017 international $ (WB NY.GDP.PCAP.PP.KD) */
+  /** GDP per capita, bundled PPP estimate; reference price year unverified (WB NY.GDP.PCAP.PP.KD) */
   gdpPerCapitaPpp: number | null;
   /** Infant mortality rate per 1,000 live births (WB SP.DYN.IMRT.IN) */
   infantMortalityPer1000: number | null;
@@ -951,11 +953,11 @@ export const OECD_BUDGET_PANEL_META = {
     socialSpendingPercentGdp: 'OECD SOCX',
     rdSpendingPercentGdp: 'WB GB.XPD.RSDV.GD.ZS',
     // Per-capita PPP (PRIMARY — derived: %GDP × gdpPerCapitaPpp / 100)
-    healthSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    educationSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    militarySpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    socialSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    rdSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    healthSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    educationSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    militarySpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    socialSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    rdSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
     // Outcomes
     lifeExpectancyYears: 'WB SP.DYN.LE00.IN',
     gdpPerCapitaPpp: 'WB NY.GDP.PCAP.PP.KD',

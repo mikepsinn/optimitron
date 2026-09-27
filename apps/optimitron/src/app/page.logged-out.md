@@ -96,7 +96,7 @@
 - Government education spending (all levels) 2.3×US $2,996 · Japan $1,288
 - Total R&D spending (business and government) 1.8×US $1,576 · Ireland $859
 - Public social spending (pensions, health, income support) 1.1×US $10,268 · Ireland $9,709
-- Spending per person in constant 2017 international dollars (PPP).
+- PPP-adjusted estimates; reference price year unverified.
 - [COMPARE SPENDING AND OUTCOMES](/obg)
 #### DECENTRALIZED TO-DO LIST FOR HUMANITY
 - Big goals split into tasks people can claim

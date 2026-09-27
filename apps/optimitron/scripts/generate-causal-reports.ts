@@ -8,6 +8,9 @@
  *    duration of action, change-from-baseline, optimal values, Bradford Hill scoring
  * 3. Aggregate N-of-1 results across countries
  * 4. Generate markdown reports
+ *
+ * Regenerate one country without fetching or rewriting aggregate artifacts:
+ *   pnpm --dir apps/optimitron exec tsx scripts/generate-causal-reports.ts --cache-only --country USA
  * 
  * This is the correct approach: treating each country as a longitudinal subject,
  * looking at how changes in spending over time correlate with changes in outcomes,
@@ -17,6 +20,7 @@
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { parseArgs } from 'node:util';
 import { runFullAnalysis, generateMarkdownReport, type FullAnalysisResult, type AnalysisConfig } from '../../../packages/optimizer/src/index.js';
 import type { TimeSeries, Measurement } from '../../../packages/optimizer/src/types.js';
 import {
@@ -33,9 +37,6 @@ const reportsDir = resolve(__dirname, '..', '..', '..', 'reports');
 const cacheDir = resolve(__dirname, '../.cache');
 const CACHE_FILE = resolve(cacheDir, 'country-data.json');
 const CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
-
-if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true });
-if (!existsSync(cacheDir)) mkdirSync(cacheDir, { recursive: true });
 
 // ─── Country names ───────────────────────────────────────────────────
 
@@ -55,17 +56,19 @@ const COUNTRY_NAMES: Record<string, string> = {
 
 // ─── Fetch or cache ──────────────────────────────────────────────────
 
-async function getCountryData(): Promise<FetchedDataset> {
+async function getCountryData(cacheOnly = false): Promise<FetchedDataset> {
   if (existsSync(CACHE_FILE)) {
     const { statSync } = await import('fs');
     const age = Date.now() - statSync(CACHE_FILE).mtimeMs;
-    if (age < CACHE_MAX_AGE_MS) {
-      console.log(`📦 Using cached data (${Math.round(age / 3600000)}h old)`);
+    if (cacheOnly || age < CACHE_MAX_AGE_MS) {
+      console.log(`📦 Using cached data (${Math.round(age / 3600000)}h since file modification${cacheOnly ? '; cache-only mode, no refresh' : ''})`);
       return datasetFromJSON(JSON.parse(readFileSync(CACHE_FILE, 'utf-8')) as RawDatasetJSON);
     }
   }
+  if (cacheOnly) throw new Error('Cache-only mode requires apps/optimitron/.cache/country-data.json; no data was fetched');
   console.log('🌐 Fetching fresh data from World Bank/WHO...');
   const dataset = await fetchAllCountryData(2000, 2023);
+  if (!existsSync(cacheDir)) mkdirSync(cacheDir, { recursive: true });
   writeFileSync(CACHE_FILE, JSON.stringify(datasetToJSON(dataset), null, 2));
   return dataset;
 }
@@ -77,7 +80,7 @@ function buildSpendingTimeSeries(country: CountryTimeSeries): TimeSeries | null 
   const gdp = country.variables.get('gdp_per_capita');
   if (!hePct || !gdp) return null;
 
-  // Match by year to get spending per capita in USD
+  // NY.GDP.PCAP.PP.CD is GDP per capita in current international dollars (PPP).
   const gdpByYear = new Map<number, number>();
   for (const m of gdp.measurements) {
     const year = new Date(m.timestamp as number).getFullYear();
@@ -92,8 +95,8 @@ function buildSpendingTimeSeries(country: CountryTimeSeries): TimeSeries | null 
       measurements.push({
         // Use mid-year timestamp — annual data
         timestamp: new Date(`${year}-07-01`).getTime(),
-        value: (m.value / 100) * gdpVal, // % GDP → USD per capita
-        unit: 'USD per capita',
+        value: (m.value / 100) * gdpVal, // % GDP → PPP international dollars per capita
+        unit: 'current international dollars (PPP) per capita',
         source: 'World Bank (computed: health_expenditure_pct_gdp × gdp_per_capita)',
       });
     }
@@ -158,7 +161,10 @@ function analyzeCountry(country: CountryTimeSeries): CountryResult | null {
 
   try {
     const analysis = runFullAnalysis(predictor, outcome, config);
-    const report = generateMarkdownReport(analysis);
+    const report = generateMarkdownReport(analysis, {
+      observationPeriod: 'year',
+      outcomeDirection: 'higher',
+    });
     return { iso3: country.iso3, name, analysis, report };
   } catch (e) {
     console.log(`  ⚠️ ${name}: ${(e as Error).message}`);
@@ -399,8 +405,38 @@ function generateAggregateReport(results: CountryResult[], agg: AggregateResult)
 
 // ─── Main ────────────────────────────────────────────────────────────
 
+function countryReport(result: CountryResult, dataset: FetchedDataset, cacheOnly: boolean): string {
+  return [
+    `# ${result.name}: Health Spending → Life Expectancy`, '',
+    `> Data vintage: fetched ${dataset.metadata.fetchedAt}; dataset observation window ${dataset.metadata.yearRange[0]}–${dataset.metadata.yearRange[1]} (annual).`,
+    `> Sources used: ${dataset.metadata.sources.filter(source => source.startsWith('World Bank')).join('; ')}.`,
+    ...(cacheOnly ? ['> Regenerated from the existing cache only; no source data refresh was performed.'] : []), '',
+    result.report,
+  ].join('\n');
+}
+
 async function main() {
-  const dataset = await getCountryData();
+  const { values } = parseArgs({
+    options: { 'cache-only': { type: 'boolean', default: false }, country: { type: 'string' } },
+  });
+  const countryCode = values.country?.toUpperCase();
+  if (countryCode !== undefined && !/^[A-Z]{3}$/.test(countryCode)) throw new Error('--country must be an ISO3 country code such as USA');
+  const dataset = await getCountryData(values['cache-only']);
+
+  if (countryCode) {
+    const country = dataset.countries.get(countryCode);
+    if (!country) throw new Error(`Country ${countryCode} is not present in the dataset`);
+    const result = analyzeCountry(country);
+    if (!result) throw new Error(`Country ${countryCode} has insufficient data for a report`);
+    const countryReportsDir = resolve(reportsDir, 'countries');
+    if (!existsSync(countryReportsDir)) mkdirSync(countryReportsDir, { recursive: true });
+    const file = resolve(countryReportsDir, `${countryCode.toLowerCase()}-health-spending.md`);
+    writeFileSync(file, countryReport(result, dataset, values['cache-only']));
+    console.log(`📝 Regenerated only reports/countries/${countryCode.toLowerCase()}-health-spending.md (data fetched ${dataset.metadata.fetchedAt})`);
+    return;
+  }
+
+  if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true });
 
   console.log('\n🔬 Running N-of-1 causal analysis per country...\n');
 
@@ -437,7 +473,7 @@ async function main() {
 
   for (const r of results) {
     const file = resolve(countryReportsDir, `${r.iso3.toLowerCase()}-health-spending.md`);
-    writeFileSync(file, `# ${r.name}: Health Spending → Life Expectancy\n\n${r.report}`);
+    writeFileSync(file, countryReport(r, dataset, values['cache-only']));
   }
   console.log(`📝 ${results.length} individual country reports in reports/countries/`);
 

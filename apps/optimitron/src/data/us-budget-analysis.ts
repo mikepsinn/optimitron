@@ -4,7 +4,7 @@ import type { BudgetReportJSON } from "@optimitron/obg";
 
 export const usBudgetAnalysis: BudgetReportJSON = {
   "jurisdiction": "United States",
-  "totalSpendingNominal": 6707000000000,
+  "totalSpendingNominal": 6872000000000,
   "categories": [
     {
       "id": "military",
@@ -2650,14 +2650,14 @@ export const usBudgetAnalysis: BudgetReportJSON = {
     "National comparison, government education spending (all levels): United States spends $2996/cap with PISA Math Score 465. Japan spends $1288/cap with PISA Math Score 536. The 2.3x spending ratio is descriptive; it does not estimate an achievable saving or allocation target.",
     "National comparison, total R&D spending (business and government): United States spends $1576/cap with Measured after-tax median disposable income (OECD real PPP, equivalised household) 37444.1. Ireland spends $859/cap with Measured after-tax median disposable income (OECD real PPP, equivalised household) 32668.47. The 1.8x spending ratio is descriptive; it does not estimate an achievable saving or allocation target."
   ],
-  "generatedAt": "2026-09-26T22:05:34.368Z",
+  "generatedAt": "2026-09-26T23:55:08.417Z",
   "generatedBy": "@optimitron/obg descriptive peer comparisons",
   "inflationAdjustment": {
     "method": "CPI-U deflator for US federal spending history",
     "baseYear": 2017,
     "perCapita": true,
     "unit": "constant 2017 USD per capita",
-    "note": "National spending comparisons use constant 2017 PPP international dollars. Income outcomes retain their OECD published real PPP basis; they are not denominators for spending dividends."
+    "note": "Federal historical amounts use constant 2017 USD. National spending comparisons use bundled PPP-adjusted estimates with an unverified reference price year. Income outcomes retain their OECD published real PPP basis; they are not denominators for spending dividends."
   },
   "methodology": {
     "comparisonMethod": "Average the latest three available observations per country; select the lowest-spending country among those at or above the 75th percentile of the selected outcome.",

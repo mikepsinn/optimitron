@@ -1,14 +1,16 @@
 #!/usr/bin/env tsx
 /**
- * Generate descriptive spending comparisons and clearly labeled policy assumptions.
- * This pipeline does not identify causal effects or optimal allocations.
+ * Generate descriptive spending comparisons and explicit policy scenarios.
+ * A separate constrained model selects allocations under stated uncertainty.
  *
  * Run: pnpm --filter @optimitron/web run generate
  */
 
-import { writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { generateDecisionAnalysis } from './analysis/generate-decision-analysis.js';
+import { generateDecisionMarkdown } from '@optimitron/obg';
 
 // OBG imports
 import {
@@ -131,7 +133,7 @@ function describeFinding(finding: FieldEfficiencyFinding): string {
 }
 
 function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: FieldEfficiencyFinding[] } {
-  const totalSpendingNominal = US_FEDERAL_BUDGET.categories.reduce((sum, cat) => sum + cat.spendingBillions * 1e9, 0);
+  const totalSpendingNominal = US_FEDERAL_BUDGET.totalOutlays * 1e9;
   const rows = US_FEDERAL_BUDGET.categories
     .filter(cat => OECD_MAPPINGS[cat.id] && !NON_DISCRETIONARY.has(cat.id))
     .map(cat => {
@@ -209,7 +211,7 @@ function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: 
       baseYear: 2017,
       perCapita: true,
       unit: 'constant 2017 USD per capita',
-      note: 'National spending comparisons use constant 2017 PPP international dollars. Income outcomes retain their OECD published real PPP basis; they are not denominators for spending dividends.',
+      note: 'Federal historical amounts use constant 2017 USD. National spending comparisons use bundled PPP-adjusted estimates with an unverified reference price year. Income outcomes retain their OECD published real PPP basis; they are not denominators for spending dividends.',
     },
     methodology: {
       comparisonMethod: 'Average the latest three available observations per country; select the lowest-spending country among those at or above the 75th percentile of the selected outcome.',
@@ -330,7 +332,7 @@ writeTypedDataFile(
 );
 console.warn(`  ✅ ${budgetAnalysis.categories.length} categories → us-budget-analysis.ts`);
 
-console.warn(`  📊 ${fieldFindings.length} national comparisons; no federal allocation targets estimated`);
+console.warn(`  📊 ${fieldFindings.length} national comparisons; no allocation targets inferred from peer gaps`);
 
 // ── Generate policy analysis ──────────────────────────────────────
 
@@ -350,4 +352,14 @@ writeTypedDataFile(
 );
 console.warn(`  ✅ ${policyAnalysis.policies.length} policies → us-policy-analysis.ts`);
 
-console.warn('\nDone! Descriptive comparisons and curated assumptions generated.');
+const decisionAnalysis = generateDecisionAnalysis();
+writeTypedDataFile('us-decision-analysis.ts', 'usDecisionAnalysis', 'DecisionReport', '@optimitron/obg', decisionAnalysis);
+const reportMarkdown = generateDecisionMarkdown(decisionAnalysis);
+const reportDir = resolve(__dirname, '../../../reports');
+const downloadDir = resolve(__dirname, '../public/reports');
+mkdirSync(reportDir, { recursive: true });
+mkdirSync(downloadDir, { recursive: true });
+writeFileSync(resolve(reportDir, 'us-budget-policy-decision.md'), reportMarkdown);
+writeFileSync(resolve(downloadDir, 'us-budget-policy-decision.md'), reportMarkdown);
+console.warn(`  ✅ ${decisionAnalysis.draws} uncertainty draws → shared website data and Markdown report`);
+console.warn('\nDone! Comparisons, policy scenarios, and constrained allocations generated.');

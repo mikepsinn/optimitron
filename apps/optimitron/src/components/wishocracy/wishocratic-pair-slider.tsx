@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Card } from "@/components/retroui/Card"
 import { Button } from "@/components/retroui/Button"
@@ -19,7 +20,7 @@ function EfficiencyTag({ context, roiRatio, annualBudgetBillions }: {
   const tags: string[] = []
   if (annualBudgetBillions > 0) tags.push(`$${annualBudgetBillions}B/yr`)
   if (roiRatio) tags.push(`ROI: ${roiRatio}`)
-  if (context && context.overspendRatio > 1.2) tags.push(`${context.overspendRatio}x overspend`)
+  if (context && context.overspendRatio > 1.2) tags.push(`${context.overspendRatio}x peer spending`)
 
   if (tags.length === 0) return null
 
@@ -37,8 +38,9 @@ function EfficiencyTag({ context, roiRatio, annualBudgetBillions }: {
           <div>Best: {context.bestCountryName} (${context.bestCountrySpendingPerCapita}/cap)</div>
           <div>US: ${context.usSpendingPerCapita}/cap · Outcome: {context.outcomeName}</div>
           {context.potentialSavingsBillions > 0 && (
-            <div>Potential savings: ${Math.round(context.potentialSavingsBillions)}B/yr</div>
+            <div>National spending difference: ${Math.round(context.potentialSavingsBillions)}B/yr</div>
           )}
+          <Link href="/obg" className="underline">See modeled allocations and benefits</Link>
         </div>
       )}
     </div>
@@ -206,7 +208,7 @@ export function WishocraticPairSlider({
           </div>
           <div className="flex-1 text-center">
             <div className="text-6xl mb-3">{itemB.icon}</div>
-            <div className="text-4xl sm:text-5xl font-black text-background mb-2">
+            <div className="text-4xl sm:text-5xl font-black text-foreground mb-2">
               {allocationB}%
             </div>
             <div className="text-sm sm:text-base font-bold uppercase px-2">

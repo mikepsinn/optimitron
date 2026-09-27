@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BudgetDecisionResults } from "@/components/budget/DecisionResults";
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 import { BudgetComparisonMethod, NationalSpendingComparisons } from "@/components/budget/NationalSpendingComparisons";
 import { getNationalBudgetComparisons } from "@/lib/analysis-products";
@@ -27,6 +28,7 @@ export default function BudgetPage() {
         </p>
       </header>
 
+      <BudgetDecisionResults />
       <section aria-label="National spending comparisons">
         <NationalSpendingComparisons comparisons={comparisons} />
       </section>
