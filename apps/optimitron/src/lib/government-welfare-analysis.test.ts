@@ -32,6 +32,21 @@ describe('recovered government welfare analysis', () => {
     expect(generateGovernmentWelfareMarkdown(report)).toContain('Exploratory summary; Insufficient pairs (<30)');
   });
 
+  it('counts exclusions against the countries each outcome analyzed, not every country with spending data', () => {
+    const cache = sourceCache();
+    for (let year = 2000; year <= 2023; year++) {
+      cache.spending.push({ jurisdictionIso3: 'DDD', jurisdictionName: 'DDD', year, value: 30,
+        source: 'Test source', sourceUrl: 'https://example.org/data' });
+    }
+    for (const outcome of generateGovernmentWelfareAnalysis(cache, { draws: 100 }).outcomes) {
+      // DDD has spending but no HALE or income, so it is never analyzed here.
+      expect(outcome.countries.map(country => country.id), outcome.id).not.toContain('DDD');
+      expect(outcome.excludedCountryCount, outcome.id)
+        .toBe(outcome.countries.filter(country => !country.includedInSummary).length);
+      expect(outcome.excludedCountryCount, outcome.id).toBe(0);
+    }
+  });
+
   it('uses within-country income percentage changes rather than pooling incompatible currency levels', () => {
     const cache = sourceCache();
     const original = generateGovernmentWelfareAnalysis(cache, { draws: 100 }).outcomes[1]!;

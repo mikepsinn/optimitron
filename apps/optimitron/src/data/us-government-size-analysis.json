@@ -26,7 +26,7 @@
       "unit": "years",
       "definition": "WHO expected healthy years at birth, both sexes. HALE is a population expectation, not median individual healthspan.",
       "countryCount": 180,
-      "excludedCountryCount": 18,
+      "excludedCountryCount": 1,
       "sourceObservationCount": 3944,
       "yearRange": [
         2000,
@@ -3128,7 +3128,7 @@
       "unit": "% of lower-spending baseline income",
       "definition": "Survey-based median disposable income after direct taxes and cash transfers, adjusted for prices and purchasing power. One OECD or Eurostat series per country; no spending-derived income or PIP fallback.",
       "countryCount": 35,
-      "excludedCountryCount": 163,
+      "excludedCountryCount": 0,
       "sourceObservationCount": 668,
       "yearRange": [
         2000,

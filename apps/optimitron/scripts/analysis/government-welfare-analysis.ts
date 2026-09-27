@@ -150,7 +150,10 @@ function analyzeOutcome(
   return {
     ...spec,
     countryCount: included.length,
-    excludedCountryCount: predictors.length - included.length,
+    // Count against the countries this outcome actually analyzed, not every
+    // country with spending data: otherwise a spending-only country counts as
+    // an exclusion and the number cannot be reconciled with the rows below.
+    excludedCountryCount: countries.length - included.length,
     sourceObservationCount: includedPoints.length,
     yearRange: years.length ? [Math.min(...years), Math.max(...years)] : null,
     meanCorrelation: countryBootstrap(included.map(country => country.correlation), draws, seed),
