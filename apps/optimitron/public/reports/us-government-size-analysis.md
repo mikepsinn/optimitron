@@ -1,18 +1,19 @@
 # Government spending, health and income
 
-Generated: 2026-09-27T16:29:54.980Z
+Generated: 2026-09-27T19:29:05.602Z
 Source mode: Bundled public source snapshots; no new network fetch
 
 Predictor: General government expenditure (% GDP). IMF Fiscal Monitor: central, state, local government and social security combined.
 
 | Outcome | Countries | Source observations | Years | Within-country correlation, mean [95% interval] | Outcome difference, mean [95% interval] |
 | --- | ---: | ---: | --- | --- | --- |
-| Healthy life expectancy (HALE) | 180 | 3944 | 2000–2021 | 0.172 [0.105, 0.239] | 0.703 [0.416, 1.001] years |
+| Healthy life expectancy (HALE) | 180 | 3944 | 2000–2021 | 0.167 [0.093, 0.241] | 0.708 [0.412, 1.006] years |
 | Real after-tax median income | 35 | 668 | 2000–2023 | 0.081 [-0.066, 0.227] | 0.019 [-9.022, 8.093] % of lower-spending baseline income |
 
 ## Data and calculation
 
-- [Country panel: IMF spending and WHO HALE](https://www.imf.org/external/datamapper/G_X_G01_GDP_PT), snapshot generated 2026-04-04T20:46:12.368Z.
+- [Country panel: IMF spending](https://www.imf.org/external/datamapper/G_X_G01_GDP_PT), snapshot generated 2026-04-04T20:46:12.368Z.
+- [Country panel: WHO HALE (both sexes)](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates), snapshot generated 2026-09-27T19:28:10.009Z.
 - [Strict OECD / Eurostat disposable-income records](https://data-explorer.oecd.org/), snapshot generated 2026-04-04T20:40:15.693Z.
 
 - **Healthy life expectancy (HALE):** WHO expected healthy years at birth, both sexes. HALE is a population expectation, not median individual healthspan.
@@ -31,187 +32,187 @@ Bootstrap draws: 2000; seed: 20260926.
 
 | Country | Survey/source | Paired years | Lower / higher spending (% GDP) | Correlation | Outcome difference | Included in average |
 | --- | --- | ---: | --- | ---: | ---: | --- |
-| Afghanistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 16.911 / 26.37 | 0.911 | 1.877 years | Exploratory summary; Insufficient pairs (<30) |
-| Angola | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.54 / 34.773 | -0.256 | -0.799 years | Exploratory summary; Insufficient pairs (<30) |
-| Albania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.138 / 32.162 | -0.359 | -0.36 years | Exploratory summary; Insufficient pairs (<30) |
-| United Arab Emirates | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.975 / 29.031 | -0.037 | -0.152 years | Exploratory summary; Insufficient pairs (<30) |
-| ARG | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.544 / 38.3 | 0.215 | 0.221 years | Exploratory summary; Insufficient pairs (<30) |
-| Armenia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 16 | 22.338 / 26.825 | 0.292 | 0.668 years | Exploratory summary; Insufficient pairs (<30) |
-| Antigua and Barbuda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.082 / 25.44 | -0.146 | -0.555 years | Exploratory summary; Insufficient pairs (<30) |
-| Australia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.145 / 37.96 | 0.556 | 1.041 years | Exploratory summary; Insufficient pairs (<30) |
-| Austria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 50.533 / 53.311 | -0.145 | -0.006 years | Exploratory summary; Insufficient pairs (<30) |
-| Azerbaijan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.238 / 35.231 | 0.872 | 3.064 years | Exploratory summary; Insufficient pairs (<30) |
-| Burundi | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.87 / 37.836 | 0.189 | -0.28 years | Exploratory summary; Insufficient pairs (<30) |
-| Belgium | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 50.291 / 54.92 | 0.628 | 1.043 years | Exploratory summary; Insufficient pairs (<30) |
-| Benin | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.1 / 16.6 | 0.309 | -0.244 years | Exploratory summary; Insufficient pairs (<30) |
-| Burkina Faso | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.9 / 23.42 | 0.728 | 3.581 years | Exploratory summary; Insufficient pairs (<30) |
-| Bangladesh | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.22 / 12.155 | 0.774 | 3.338 years | Exploratory summary; Insufficient pairs (<30) |
-| Bulgaria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 33.308 / 36.444 | -0.111 | 0.131 years | Exploratory summary; Insufficient pairs (<30) |
-| Bahrain | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.58 / 31.973 | 0.455 | 1.281 years | Exploratory summary; Insufficient pairs (<30) |
-| Bahamas, The | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.9 / 19.67 | -0.529 | -0.525 years | Exploratory summary; Insufficient pairs (<30) |
-| Bosnia and Herzegovina | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 43.082 / 48.67 | -0.229 | 0.403 years | Exploratory summary; Insufficient pairs (<30) |
-| Belarus | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 39.627 / 47.633 | -0.396 | -1.383 years | Exploratory summary; Insufficient pairs (<30) |
-| Belize | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.792 / 27.7 | 0.613 | 1.311 years | Exploratory summary; Insufficient pairs (<30) |
-| Bolivia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.93 / 37.909 | 0.507 | 1.195 years | Exploratory summary; Insufficient pairs (<30) |
-| Brazil | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 40.242 / 44.563 | 0.123 | 0.2 years | Exploratory summary; Insufficient pairs (<30) |
-| Barbados | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.55 / 29.985 | 0.185 | 0.031 years | Exploratory summary; Insufficient pairs (<30) |
-| Brunei Darussalam | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.564 / 36.78 | -0.228 | 0.106 years | Exploratory summary; Insufficient pairs (<30) |
-| Bhutan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.4 / 39.18 | -0.692 | -2.088 years | Exploratory summary; Insufficient pairs (<30) |
-| Botswana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.7 / 46.014 | -0.408 | -4.684 years | Exploratory summary; Insufficient pairs (<30) |
-| Central African Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.182 / 17.29 | 0.259 | 0.694 years | Exploratory summary; Insufficient pairs (<30) |
-| Canada | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.727 / 43.75 | 0.234 | 0.097 years | Exploratory summary; Insufficient pairs (<30) |
-| Switzerland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.15 / 33.091 | 0.09 | 0.01 years | Exploratory summary; Insufficient pairs (<30) |
-| Chile | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.783 / 25.5 | 0.602 | 1.164 years | Exploratory summary; Insufficient pairs (<30) |
-| China | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.8 / 30.155 | 0.808 | 2.285 years | Exploratory summary; Insufficient pairs (<30) |
-| Côte d'Ivoire | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.6 / 17.178 | 0.879 | 5.605 years | Exploratory summary; Insufficient pairs (<30) |
-| Cameroon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.991 / 18.71 | 0.841 | 4.521 years | Exploratory summary; Insufficient pairs (<30) |
-| Congo, Dem. Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 6.7 / 13.292 | 0.841 | 4.549 years | Exploratory summary; Insufficient pairs (<30) |
-| Congo, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.685 / 36.45 | 0.232 | 0.153 years | Exploratory summary; Insufficient pairs (<30) |
-| Colombia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.827 / 31.54 | -0.029 | 0.111 years | Exploratory summary; Insufficient pairs (<30) |
-| Comoros | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.164 / 18.571 | 0.786 | 1.664 years | Exploratory summary; Insufficient pairs (<30) |
-| Cabo Verde | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.986 / 32.9 | 0.557 | 1.275 years | Exploratory summary; Insufficient pairs (<30) |
-| Costa Rica | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.445 / 19.32 | -0.364 | 0.095 years | Exploratory summary; Insufficient pairs (<30) |
-| Cyprus | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 38.333 / 43.889 | 0.664 | 1.271 years | Exploratory summary; Insufficient pairs (<30) |
-| Czechia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 40.985 / 44.713 | -0.435 | -0.682 years | Exploratory summary; Insufficient pairs (<30) |
-| Germany | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.767 / 48.211 | -0.451 | -0.726 years | Exploratory summary; Insufficient pairs (<30) |
-| Djibouti | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.987 / 30.717 | 0.363 | 0.443 years | Exploratory summary; Insufficient pairs (<30) |
-| Denmark | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 51.173 / 55.2 | 0.239 | 0.685 years | Exploratory summary; Insufficient pairs (<30) |
-| Dominican Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.138 / 18.575 | 0.101 | -0.125 years | Exploratory summary; Insufficient pairs (<30) |
-| Algeria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.367 / 37.683 | 0.624 | 0.67 years | Exploratory summary; Insufficient pairs (<30) |
-| Ecuador | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.437 / 40.792 | 0.755 | 1.606 years | Exploratory summary; Insufficient pairs (<30) |
-| Egypt, Arab Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.088 / 31.854 | 0.28 | 0.699 years | Exploratory summary; Insufficient pairs (<30) |
-| Eritrea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 33.81 / 63.022 | -0.741 | -3.698 years | Exploratory summary; Insufficient pairs (<30) |
-| Spain | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.785 / 46.675 | 0.802 | 1.341 years | Exploratory summary; Insufficient pairs (<30) |
-| Estonia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.29 / 40.336 | 0.667 | 3.254 years | Exploratory summary; Insufficient pairs (<30) |
-| Ethiopia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 17.208 / 23.563 | -0.906 | -7.372 years | Exploratory summary; Insufficient pairs (<30) |
-| Finland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.689 / 54.808 | 0.824 | 1.65 years | Exploratory summary; Insufficient pairs (<30) |
-| Fiji | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.762 / 30.475 | -0.56 | -0.705 years | Exploratory summary; Insufficient pairs (<30) |
-| France | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 53.89 / 58.036 | 0.673 | 0.972 years | Exploratory summary; Insufficient pairs (<30) |
-| Micronesia, Fed. Sts. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 58.791 / 66.31 | -0.216 | -0.402 years | Exploratory summary; Insufficient pairs (<30) |
-| Gabon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.733 / 25.111 | -0.121 | 0.304 years | Exploratory summary; Insufficient pairs (<30) |
-| United Kingdom | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 37.642 / 43.422 | 0.724 | 0.798 years | Exploratory summary; Insufficient pairs (<30) |
-| Georgia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.429 / 28.979 | 0.183 | 0.847 years | Exploratory summary; Insufficient pairs (<30) |
-| Ghana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.291 / 21.66 | 0.859 | 3.202 years | Exploratory summary; Insufficient pairs (<30) |
-| Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.75 / 18.1 | 0.521 | 2.322 years | Exploratory summary; Insufficient pairs (<30) |
-| Gambia, The | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.655 / 20.26 | 0.888 | 2.624 years | Exploratory summary; Insufficient pairs (<30) |
-| Guinea-Bissau | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.78 / 22.055 | 0.014 | -0.092 years | Exploratory summary; Insufficient pairs (<30) |
-| Equatorial Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.823 / 33 | 0.476 | 1.687 years | Exploratory summary; Insufficient pairs (<30) |
-| Greece | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.9 / 53.9 | 0.252 | 0.666 years | Exploratory summary; Insufficient pairs (<30) |
-| Grenada | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.54 / 29.8 | -0.154 | -0.05 years | Exploratory summary; Insufficient pairs (<30) |
-| Guatemala | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.118 / 14.32 | 0.035 | 0.014 years | Exploratory summary; Insufficient pairs (<30) |
-| Guyana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.058 / 27.333 | 0.379 | 0.91 years | Exploratory summary; Insufficient pairs (<30) |
-| Honduras | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.767 / 27.017 | -0.113 | -0.018 years | Exploratory summary; Insufficient pairs (<30) |
-| Croatia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 45.964 / 50.13 | -0.402 | -0.859 years | Exploratory summary; Insufficient pairs (<30) |
-| Haiti | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 8.427 / 13.15 | 0.262 | -1.004 years | Exploratory summary; Insufficient pairs (<30) |
-| Hungary | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.333 / 50.117 | -0.123 | -0.068 years | Exploratory summary; Insufficient pairs (<30) |
-| Indonesia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.74 / 18.555 | 0.06 | -0.027 years | Exploratory summary; Insufficient pairs (<30) |
-| India | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.785 / 29.063 | -0.362 | -1.653 years | Exploratory summary; Insufficient pairs (<30) |
-| Ireland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.538 / 44.325 | -0.027 | 0.565 years | Exploratory summary; Insufficient pairs (<30) |
-| Iran, Islamic Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.164 / 16.3 | 0.017 | -0.084 years | Exploratory summary; Insufficient pairs (<30) |
-| Iraq | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 17 | 41.036 / 62.167 | -0.55 | -1.33 years | Exploratory summary; Insufficient pairs (<30) |
-| Iceland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.454 / 50.713 | 0.007 | -0.042 years | Exploratory summary; Insufficient pairs (<30) |
-| Israel | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.142 / 44.222 | -0.776 | -1.542 years | Exploratory summary; Insufficient pairs (<30) |
-| Italy | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.358 / 50.889 | 0.631 | 1.212 years | Exploratory summary; Insufficient pairs (<30) |
-| Jamaica | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.75 / 32.833 | -0.047 | -0.029 years | Exploratory summary; Insufficient pairs (<30) |
-| Jordan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.182 / 36.33 | -0.279 | -0.767 years | Exploratory summary; Insufficient pairs (<30) |
-| Japan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.344 / 38.375 | 0.538 | 2.084 years | Exploratory summary; Insufficient pairs (<30) |
-| Kazakhstan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 20.7 / 23.788 | -0.293 | -1.11 years | Exploratory summary; Insufficient pairs (<30) |
-| Kenya | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.67 / 23.509 | 0.97 | 5.806 years | Exploratory summary; Insufficient pairs (<30) |
-| Kyrgyz Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.608 / 37.644 | 0.541 | 2.029 years | Exploratory summary; Insufficient pairs (<30) |
-| Cambodia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.39 / 16.982 | 0.323 | 2.16 years | Exploratory summary; Insufficient pairs (<30) |
-| Kiribati | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 78.24 / 100.009 | 0.247 | 0.596 years | Exploratory summary; Insufficient pairs (<30) |
-| Korea, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 17.67 / 19.618 | 0.687 | 2.693 years | Exploratory summary; Insufficient pairs (<30) |
-| Kuwait | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.773 / 50.19 | 0.586 | 1.177 years | Exploratory summary; Insufficient pairs (<30) |
-| Lao PDR | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.32 / 22.355 | 0.431 | 1.394 years | Exploratory summary; Insufficient pairs (<30) |
-| Lebanon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.125 / 36.233 | 0.064 | -0.065 years | Exploratory summary; Insufficient pairs (<30) |
-| Liberia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.93 / 32.291 | 0.86 | 3.941 years | Exploratory summary; Insufficient pairs (<30) |
-| Libya | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.579 / 57.829 | -0.597 | -0.778 years | Exploratory summary; Insufficient pairs (<30) |
-| St. Lucia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.946 / 27.138 | -0.053 | 0.119 years | Exploratory summary; Insufficient pairs (<30) |
-| Sri Lanka | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.342 / 20.889 | -0.7 | -2.894 years | Exploratory summary; Insufficient pairs (<30) |
-| Lesotho | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 40.863 / 55.285 | 0.638 | 3.798 years | Exploratory summary; Insufficient pairs (<30) |
-| Lithuania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.543 / 40.543 | -0.065 | -0.107 years | Exploratory summary; Insufficient pairs (<30) |
-| Luxembourg | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.222 / 42.825 | 0.275 | 0.046 years | Exploratory summary; Insufficient pairs (<30) |
-| Latvia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.79 / 40.255 | 0.062 | -0.299 years | Exploratory summary; Insufficient pairs (<30) |
-| Morocco | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.66 / 29.973 | 0.62 | 1.071 years | Exploratory summary; Insufficient pairs (<30) |
-| Moldova | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 32.214 / 39.771 | -0.397 | -2.246 years | Exploratory summary; Insufficient pairs (<30) |
-| Madagascar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.69 / 16.755 | -0.446 | -1.259 years | Exploratory summary; Insufficient pairs (<30) |
-| Maldives | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.927 / 36.88 | 0.202 | 0.732 years | Exploratory summary; Insufficient pairs (<30) |
-| Mexico | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.75 / 26.377 | -0.331 | -0.953 years | Exploratory summary; Insufficient pairs (<30) |
-| North Macedonia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.692 / 35.35 | -0.565 | -0.757 years | Exploratory summary; Insufficient pairs (<30) |
-| Mali | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.427 / 22.51 | 0.345 | 1.121 years | Exploratory summary; Insufficient pairs (<30) |
-| Malta | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.9 / 42.554 | -0.766 | -1.173 years | Exploratory summary; Insufficient pairs (<30) |
-| Myanmar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.03 / 21.3 | 0.545 | 3.489 years | Exploratory summary; Insufficient pairs (<30) |
-| Montenegro | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 41.775 / 48.382 | 0.16 | 0.766 years | Exploratory summary; Insufficient pairs (<30) |
-| Mongolia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.16 / 36.191 | 0.006 | -1.386 years | Exploratory summary; Insufficient pairs (<30) |
-| Mozambique | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.144 / 30.533 | 0.865 | 4.186 years | Exploratory summary; Insufficient pairs (<30) |
-| Mauritania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 17 | 18.918 / 22.85 | -0.05 | -0.233 years | Exploratory summary; Insufficient pairs (<30) |
-| Mauritius | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.708 / 25.644 | 0.391 | -0.014 years | Exploratory summary; Insufficient pairs (<30) |
-| Malawi | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 16.963 / 20.309 | 0.725 | 5.082 years | Exploratory summary; Insufficient pairs (<30) |
-| Malaysia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.409 / 27.72 | -0.522 | -0.309 years | Exploratory summary; Insufficient pairs (<30) |
-| Namibia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.564 / 39.24 | 0.552 | 4.243 years | Exploratory summary; Insufficient pairs (<30) |
-| Niger | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.438 / 21.537 | 0.757 | 3.231 years | Exploratory summary; Insufficient pairs (<30) |
-| Nigeria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 9.15 / 14.711 | -0.872 | -3.581 years | Exploratory summary; Insufficient pairs (<30) |
-| Nicaragua | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.055 / 26.02 | -0.1 | 0.108 years | Exploratory summary; Insufficient pairs (<30) |
-| Netherlands | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 43.583 / 47.311 | 0.128 | 0.309 years | Exploratory summary; Insufficient pairs (<30) |
-| Norway | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 42.6 / 49.078 | 0.53 | 0.811 years | Exploratory summary; Insufficient pairs (<30) |
-| Nepal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.75 / 22.986 | 0.718 | 1.598 years | Exploratory summary; Insufficient pairs (<30) |
-| New Zealand | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.833 / 40.167 | 0.182 | 0.238 years | Exploratory summary; Insufficient pairs (<30) |
-| Oman | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.85 / 41.044 | 0.17 | 0.276 years | Exploratory summary; Insufficient pairs (<30) |
-| Pakistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.712 / 18.585 | 0.865 | 2.376 years | Exploratory summary; Insufficient pairs (<30) |
-| Panama | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.95 / 24 | -0.285 | -0.143 years | Exploratory summary; Insufficient pairs (<30) |
-| Peru | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.95 / 21.933 | -0.35 | -0.196 years | Exploratory summary; Insufficient pairs (<30) |
-| Philippines | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.033 / 21.133 | -0.363 | -0.483 years | Exploratory summary; Insufficient pairs (<30) |
-| Papua New Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.608 / 23.875 | 0.309 | 0.441 years | Exploratory summary; Insufficient pairs (<30) |
-| Poland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 42.218 / 45.04 | -0.402 | -1.302 years | Exploratory summary; Insufficient pairs (<30) |
-| Puerto Rico (U.S.) | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 7 | 21.25 / 22.167 | 0.075 | -0.232 years | Excluded; Insufficient pairs (<30) |
-| Portugal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.492 / 49.644 | 0.593 | 0.955 years | Exploratory summary; Insufficient pairs (<30) |
-| Paraguay | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.767 / 18.583 | -0.522 | -0.514 years | Exploratory summary; Insufficient pairs (<30) |
-| Qatar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.764 / 34.5 | 0.441 | 1.276 years | Exploratory summary; Insufficient pairs (<30) |
-| Romania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 32.667 / 35.567 | -0.601 | -0.923 years | Exploratory summary; Insufficient pairs (<30) |
-| Russian Federation | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.27 / 35.564 | 0.558 | 3.038 years | Exploratory summary; Insufficient pairs (<30) |
-| Rwanda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.19 / 26.518 | 0.772 | 7.033 years | Exploratory summary; Insufficient pairs (<30) |
-| Saudi Arabia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.527 / 35.84 | 0.228 | -0.378 years | Exploratory summary; Insufficient pairs (<30) |
-| Sudan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.433 / 18 | 0.183 | 0.464 years | Exploratory summary; Insufficient pairs (<30) |
-| Senegal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.044 / 24.275 | 0.796 | 3.878 years | Exploratory summary; Insufficient pairs (<30) |
-| Singapore | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.44 / 16.145 | 0.092 | -0.394 years | Exploratory summary; Insufficient pairs (<30) |
-| Solomon Islands | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.533 / 38.144 | 0.649 | 1.169 years | Exploratory summary; Insufficient pairs (<30) |
-| Sierra Leone | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.71 / 13.718 | 0.716 | 4.25 years | Exploratory summary; Insufficient pairs (<30) |
-| El Salvador | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.77 / 27.809 | 0.115 | 0.085 years | Exploratory summary; Insufficient pairs (<30) |
-| Serbia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.113 / 41.708 | 0.587 | 1.978 years | Exploratory summary; Insufficient pairs (<30) |
-| South Sudan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 10 | 30.267 / 66.475 | -0.357 | -0.332 years | Exploratory summary; Insufficient pairs (<30) |
-| São Tomé and Príncipe | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.836 / 49.91 | -0.19 | -1.401 years | Exploratory summary; Insufficient pairs (<30) |
-| Suriname | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.825 / 29.244 | -0.206 | -0.027 years | Exploratory summary; Insufficient pairs (<30) |
-| Slovak Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.429 / 45.6 | -0.083 | -0.211 years | Exploratory summary; Insufficient pairs (<30) |
-| Slovenia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 45.883 / 51.211 | 0.079 | 0.88 years | Exploratory summary; Insufficient pairs (<30) |
-| Sweden | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 49.427 / 51.83 | -0.49 | -0.406 years | Exploratory summary; Insufficient pairs (<30) |
-| Eswatini | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.378 / 33.225 | 0.626 | 5.221 years | Exploratory summary; Insufficient pairs (<30) |
-| Seychelles | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.146 / 46.9 | 0.412 | 1.128 years | Exploratory summary; Insufficient pairs (<30) |
-| Syrian Arab Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 10 | 25.8 / 29.72 | -0.397 | -0.214 years | Exploratory summary; Insufficient pairs (<30) |
-| Chad | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.867 / 15.825 | 0.125 | 0.123 years | Exploratory summary; Insufficient pairs (<30) |
-| Togo | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.2 / 20.09 | 0.846 | 3.806 years | Exploratory summary; Insufficient pairs (<30) |
-| Thailand | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.69 / 22.436 | 0.086 | 0.79 years | Exploratory summary; Insufficient pairs (<30) |
-| Tajikistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.95 / 29.822 | 0.904 | 2.362 years | Exploratory summary; Insufficient pairs (<30) |
-| Turkmenistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.417 / 20.244 | -0.518 | -0.851 years | Exploratory summary; Insufficient pairs (<30) |
-| Timor-Leste | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 74.5 / 114.12 | 0.066 | 0.133 years | Exploratory summary; Insufficient pairs (<30) |
-| Tonga | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.236 / 36.21 | 0.444 | 0.791 years | Exploratory summary; Insufficient pairs (<30) |
-| Trinidad and Tobago | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.513 / 32.092 | 0.336 | 1.282 years | Exploratory summary; Insufficient pairs (<30) |
-| Tunisia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.645 / 29.07 | 0.127 | 0.597 years | Exploratory summary; Insufficient pairs (<30) |
-| Türkiye | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 33.333 / 39.117 | -0.306 | -0.219 years | Exploratory summary; Insufficient pairs (<30) |
-| Tanzania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.857 / 18.221 | 0.65 | 4.323 years | Exploratory summary; Insufficient pairs (<30) |
-| Uganda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.42 / 16.645 | 0.09 | -1.44 years | Exploratory summary; Insufficient pairs (<30) |
-| Ukraine | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.95 / 46.418 | 0.602 | 1.199 years | Exploratory summary; Insufficient pairs (<30) |
-| Uruguay | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.008 / 29.925 | -0.043 | 0.868 years | Exploratory summary; Insufficient pairs (<30) |
-| United States | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 34.579 / 39.833 | -0.105 | 0.358 years | Exploratory summary; Insufficient pairs (<30) |
-| Uzbekistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.154 / 30.138 | -0.806 | -3.932 years | Exploratory summary; Insufficient pairs (<30) |
-| St. Vincent and the Grenadines | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.062 / 30.225 | 0.183 | 0.194 years | Exploratory summary; Insufficient pairs (<30) |
-| Venezuela, RB | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.817 / 34.56 | 0.508 | 0.892 years | Exploratory summary; Insufficient pairs (<30) |
-| Viet Nam | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.242 / 23.378 | 0.055 | 0.229 years | Exploratory summary; Insufficient pairs (<30) |
-| Vanuatu | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22 / 34.989 | 0.454 | 1.41 years | Exploratory summary; Insufficient pairs (<30) |
-| Samoa | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.7 / 31.742 | -0.211 | -0.074 years | Exploratory summary; Insufficient pairs (<30) |
-| Yemen, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.686 / 34.314 | 0.042 | -0.211 years | Exploratory summary; Insufficient pairs (<30) |
-| South Africa | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.656 / 29.825 | 0.888 | 7.808 years | Exploratory summary; Insufficient pairs (<30) |
-| Zambia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.682 / 27.53 | 0.091 | 1.394 years | Exploratory summary; Insufficient pairs (<30) |
-| Zimbabwe | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 16 | 6.957 / 15.267 | 0.699 | 4.433 years | Exploratory summary; Insufficient pairs (<30) |
+| Afghanistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 16.911 / 26.37 | 0.88 | 1.864 years | Exploratory summary; Insufficient pairs (<30) |
+| Angola | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.54 / 34.773 | -0.318 | -1.328 years | Exploratory summary; Insufficient pairs (<30) |
+| Albania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.138 / 32.162 | -0.274 | -0.187 years | Exploratory summary; Insufficient pairs (<30) |
+| United Arab Emirates | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.975 / 29.031 | 0.07 | 0.146 years | Exploratory summary; Insufficient pairs (<30) |
+| ARG | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.544 / 38.3 | 0.631 | 0.801 years | Exploratory summary; Insufficient pairs (<30) |
+| Armenia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 16 | 22.338 / 26.825 | 0.218 | 0.219 years | Exploratory summary; Insufficient pairs (<30) |
+| Antigua and Barbuda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.082 / 25.44 | -0.034 | -0.149 years | Exploratory summary; Insufficient pairs (<30) |
+| Australia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.145 / 37.96 | 0.661 | 1.075 years | Exploratory summary; Insufficient pairs (<30) |
+| Austria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 50.533 / 53.311 | -0.068 | -0.075 years | Exploratory summary; Insufficient pairs (<30) |
+| Azerbaijan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.238 / 35.231 | 0.928 | 3.998 years | Exploratory summary; Insufficient pairs (<30) |
+| Burundi | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.87 / 37.836 | 0.167 | -0.459 years | Exploratory summary; Insufficient pairs (<30) |
+| Belgium | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 50.291 / 54.92 | 0.71 | 1.034 years | Exploratory summary; Insufficient pairs (<30) |
+| Benin | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.1 / 16.6 | 0.438 | 0.206 years | Exploratory summary; Insufficient pairs (<30) |
+| Burkina Faso | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.9 / 23.42 | 0.684 | 3.311 years | Exploratory summary; Insufficient pairs (<30) |
+| Bangladesh | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.22 / 12.155 | 0.775 | 3.565 years | Exploratory summary; Insufficient pairs (<30) |
+| Bulgaria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 33.308 / 36.444 | -0.46 | -0.737 years | Exploratory summary; Insufficient pairs (<30) |
+| Bahrain | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.58 / 31.973 | 0.545 | 1.473 years | Exploratory summary; Insufficient pairs (<30) |
+| Bahamas, The | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.9 / 19.67 | -0.553 | -0.35 years | Exploratory summary; Insufficient pairs (<30) |
+| Bosnia and Herzegovina | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 43.082 / 48.67 | 0.069 | 0.308 years | Exploratory summary; Insufficient pairs (<30) |
+| Belarus | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 39.627 / 47.633 | -0.517 | -2.515 years | Exploratory summary; Insufficient pairs (<30) |
+| Belize | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.792 / 27.7 | 0.158 | 0.449 years | Exploratory summary; Insufficient pairs (<30) |
+| Bolivia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.93 / 37.909 | 0.459 | 1.026 years | Exploratory summary; Insufficient pairs (<30) |
+| Brazil | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 40.242 / 44.563 | 0.031 | 0.04 years | Exploratory summary; Insufficient pairs (<30) |
+| Barbados | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.55 / 29.985 | 0.347 | 0.083 years | Exploratory summary; Insufficient pairs (<30) |
+| Brunei Darussalam | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.564 / 36.78 | -0.616 | -0.188 years | Exploratory summary; Insufficient pairs (<30) |
+| Bhutan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.4 / 39.18 | -0.709 | -2.064 years | Exploratory summary; Insufficient pairs (<30) |
+| Botswana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.7 / 46.014 | -0.406 | -4.784 years | Exploratory summary; Insufficient pairs (<30) |
+| Central African Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.182 / 17.29 | 0.117 | 0.258 years | Exploratory summary; Insufficient pairs (<30) |
+| Canada | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.727 / 43.75 | 0.119 | 0.184 years | Exploratory summary; Insufficient pairs (<30) |
+| Switzerland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.15 / 33.091 | 0.092 | -0.008 years | Exploratory summary; Insufficient pairs (<30) |
+| Chile | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.783 / 25.5 | 0.297 | 0.932 years | Exploratory summary; Insufficient pairs (<30) |
+| China | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.8 / 30.155 | 0.938 | 2.725 years | Exploratory summary; Insufficient pairs (<30) |
+| Côte d'Ivoire | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.6 / 17.178 | 0.892 | 5.917 years | Exploratory summary; Insufficient pairs (<30) |
+| Cameroon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.991 / 18.71 | 0.827 | 4.756 years | Exploratory summary; Insufficient pairs (<30) |
+| Congo, Dem. Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 6.7 / 13.292 | 0.849 | 4.675 years | Exploratory summary; Insufficient pairs (<30) |
+| Congo, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.685 / 36.45 | 0.197 | 0.13 years | Exploratory summary; Insufficient pairs (<30) |
+| Colombia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.827 / 31.54 | 0.414 | 1.35 years | Exploratory summary; Insufficient pairs (<30) |
+| Comoros | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.164 / 18.571 | 0.807 | 1.847 years | Exploratory summary; Insufficient pairs (<30) |
+| Cabo Verde | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.986 / 32.9 | 0.117 | 0.323 years | Exploratory summary; Insufficient pairs (<30) |
+| Costa Rica | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.445 / 19.32 | -0.52 | -0.12 years | Exploratory summary; Insufficient pairs (<30) |
+| Cyprus | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 38.333 / 43.889 | 0.618 | 1.037 years | Exploratory summary; Insufficient pairs (<30) |
+| Czechia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 40.985 / 44.713 | -0.382 | -0.518 years | Exploratory summary; Insufficient pairs (<30) |
+| Germany | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.767 / 48.211 | -0.519 | -0.66 years | Exploratory summary; Insufficient pairs (<30) |
+| Djibouti | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.987 / 30.717 | 0.358 | 0.434 years | Exploratory summary; Insufficient pairs (<30) |
+| Denmark | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 51.173 / 55.2 | 0.15 | 0.506 years | Exploratory summary; Insufficient pairs (<30) |
+| Dominican Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.138 / 18.575 | -0.266 | -0.129 years | Exploratory summary; Insufficient pairs (<30) |
+| Algeria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.367 / 37.683 | 0.783 | 1.088 years | Exploratory summary; Insufficient pairs (<30) |
+| Ecuador | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.437 / 40.792 | 0.711 | 1.408 years | Exploratory summary; Insufficient pairs (<30) |
+| Egypt, Arab Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.088 / 31.854 | 0.548 | 0.619 years | Exploratory summary; Insufficient pairs (<30) |
+| Eritrea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 33.81 / 63.022 | -0.847 | -3.535 years | Exploratory summary; Insufficient pairs (<30) |
+| Spain | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.785 / 46.675 | 0.703 | 0.876 years | Exploratory summary; Insufficient pairs (<30) |
+| Estonia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.29 / 40.336 | 0.568 | 2.863 years | Exploratory summary; Insufficient pairs (<30) |
+| Ethiopia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 17.208 / 23.563 | -0.915 | -7.68 years | Exploratory summary; Insufficient pairs (<30) |
+| Finland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.689 / 54.808 | 0.87 | 1.802 years | Exploratory summary; Insufficient pairs (<30) |
+| Fiji | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.762 / 30.475 | -0.482 | -0.209 years | Exploratory summary; Insufficient pairs (<30) |
+| France | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 53.89 / 58.036 | 0.785 | 1.194 years | Exploratory summary; Insufficient pairs (<30) |
+| Micronesia, Fed. Sts. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 58.791 / 66.31 | -0.45 | -0.255 years | Exploratory summary; Insufficient pairs (<30) |
+| Gabon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.733 / 25.111 | -0.15 | 0.185 years | Exploratory summary; Insufficient pairs (<30) |
+| United Kingdom | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 37.642 / 43.422 | 0.64 | 0.783 years | Exploratory summary; Insufficient pairs (<30) |
+| Georgia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.429 / 28.979 | 0.343 | 0.743 years | Exploratory summary; Insufficient pairs (<30) |
+| Ghana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.291 / 21.66 | 0.834 | 3.262 years | Exploratory summary; Insufficient pairs (<30) |
+| Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.75 / 18.1 | 0.514 | 2.344 years | Exploratory summary; Insufficient pairs (<30) |
+| Gambia, The | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.655 / 20.26 | 0.896 | 2.551 years | Exploratory summary; Insufficient pairs (<30) |
+| Guinea-Bissau | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.78 / 22.055 | -0.023 | -0.331 years | Exploratory summary; Insufficient pairs (<30) |
+| Equatorial Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.823 / 33 | 0.529 | 1.858 years | Exploratory summary; Insufficient pairs (<30) |
+| Greece | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.9 / 53.9 | 0.412 | 0.583 years | Exploratory summary; Insufficient pairs (<30) |
+| Grenada | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.54 / 29.8 | -0.593 | -0.525 years | Exploratory summary; Insufficient pairs (<30) |
+| Guatemala | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.118 / 14.32 | -0.291 | -0.105 years | Exploratory summary; Insufficient pairs (<30) |
+| Guyana | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.058 / 27.333 | -0.064 | 0.417 years | Exploratory summary; Insufficient pairs (<30) |
+| Honduras | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.767 / 27.017 | -0.157 | -0.072 years | Exploratory summary; Insufficient pairs (<30) |
+| Croatia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 45.964 / 50.13 | -0.505 | -0.793 years | Exploratory summary; Insufficient pairs (<30) |
+| Haiti | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 8.427 / 13.15 | 0.365 | -0.383 years | Exploratory summary; Insufficient pairs (<30) |
+| Hungary | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.333 / 50.117 | -0.129 | 0.085 years | Exploratory summary; Insufficient pairs (<30) |
+| Indonesia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.74 / 18.555 | -0.037 | -0.308 years | Exploratory summary; Insufficient pairs (<30) |
+| India | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.785 / 29.063 | -0.372 | -1.734 years | Exploratory summary; Insufficient pairs (<30) |
+| Ireland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.538 / 44.325 | -0.062 | 0.497 years | Exploratory summary; Insufficient pairs (<30) |
+| Iran, Islamic Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.164 / 16.3 | -0.032 | -0.092 years | Exploratory summary; Insufficient pairs (<30) |
+| Iraq | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 17 | 41.036 / 62.167 | -0.722 | -1.06 years | Exploratory summary; Insufficient pairs (<30) |
+| Iceland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.454 / 50.713 | 0.002 | -0.037 years | Exploratory summary; Insufficient pairs (<30) |
+| Israel | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.142 / 44.222 | -0.818 | -1.49 years | Exploratory summary; Insufficient pairs (<30) |
+| Italy | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 47.358 / 50.889 | 0.569 | 1.019 years | Exploratory summary; Insufficient pairs (<30) |
+| Jamaica | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.75 / 32.833 | 0.323 | 0.506 years | Exploratory summary; Insufficient pairs (<30) |
+| Jordan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.182 / 36.33 | -0.252 | -0.48 years | Exploratory summary; Insufficient pairs (<30) |
+| Japan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.344 / 38.375 | 0.586 | 1.24 years | Exploratory summary; Insufficient pairs (<30) |
+| Kazakhstan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 20.7 / 23.788 | 0.025 | 0.152 years | Exploratory summary; Insufficient pairs (<30) |
+| Kenya | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.67 / 23.509 | 0.98 | 6.044 years | Exploratory summary; Insufficient pairs (<30) |
+| Kyrgyz Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.608 / 37.644 | 0.783 | 2.998 years | Exploratory summary; Insufficient pairs (<30) |
+| Cambodia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.39 / 16.982 | 0.456 | 2.541 years | Exploratory summary; Insufficient pairs (<30) |
+| Kiribati | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 78.24 / 100.009 | 0.059 | -0.03 years | Exploratory summary; Insufficient pairs (<30) |
+| Korea, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 17.67 / 19.618 | 0.7 | 1.645 years | Exploratory summary; Insufficient pairs (<30) |
+| Kuwait | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.773 / 50.19 | 0.342 | 0.677 years | Exploratory summary; Insufficient pairs (<30) |
+| Lao PDR | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 16.32 / 22.355 | 0.592 | 2.491 years | Exploratory summary; Insufficient pairs (<30) |
+| Lebanon | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.125 / 36.233 | -0.022 | -0.315 years | Exploratory summary; Insufficient pairs (<30) |
+| Liberia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.93 / 32.291 | 0.823 | 3.623 years | Exploratory summary; Insufficient pairs (<30) |
+| Libya | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.579 / 57.829 | -0.628 | -0.942 years | Exploratory summary; Insufficient pairs (<30) |
+| St. Lucia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.946 / 27.138 | -0.371 | -0.158 years | Exploratory summary; Insufficient pairs (<30) |
+| Sri Lanka | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.342 / 20.889 | -0.565 | -1.403 years | Exploratory summary; Insufficient pairs (<30) |
+| Lesotho | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 40.863 / 55.285 | 0.715 | 4.113 years | Exploratory summary; Insufficient pairs (<30) |
+| Lithuania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.543 / 40.543 | 0.055 | 0.053 years | Exploratory summary; Insufficient pairs (<30) |
+| Luxembourg | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.222 / 42.825 | 0.26 | 0.146 years | Exploratory summary; Insufficient pairs (<30) |
+| Latvia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 35.79 / 40.255 | 0.581 | 1.975 years | Exploratory summary; Insufficient pairs (<30) |
+| Morocco | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 25.66 / 29.973 | 0.712 | 0.918 years | Exploratory summary; Insufficient pairs (<30) |
+| Moldova | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 32.214 / 39.771 | -0.285 | -1.645 years | Exploratory summary; Insufficient pairs (<30) |
+| Madagascar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.69 / 16.755 | -0.425 | -1.246 years | Exploratory summary; Insufficient pairs (<30) |
+| Maldives | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.927 / 36.88 | 0.207 | 0.824 years | Exploratory summary; Insufficient pairs (<30) |
+| Mexico | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.75 / 26.377 | -0.055 | -0.306 years | Exploratory summary; Insufficient pairs (<30) |
+| North Macedonia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.692 / 35.35 | -0.558 | -0.7 years | Exploratory summary; Insufficient pairs (<30) |
+| Mali | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.427 / 22.51 | 0.34 | 1.194 years | Exploratory summary; Insufficient pairs (<30) |
+| Malta | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.9 / 42.554 | -0.774 | -1.342 years | Exploratory summary; Insufficient pairs (<30) |
+| Myanmar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.03 / 21.3 | 0.565 | 2.98 years | Exploratory summary; Insufficient pairs (<30) |
+| Montenegro | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 41.775 / 48.382 | 0.374 | 1.075 years | Exploratory summary; Insufficient pairs (<30) |
+| Mongolia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.16 / 36.191 | -0.046 | -1.54 years | Exploratory summary; Insufficient pairs (<30) |
+| Mozambique | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.144 / 30.533 | 0.854 | 3.669 years | Exploratory summary; Insufficient pairs (<30) |
+| Mauritania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 17 | 18.918 / 22.85 | -0.025 | -0.098 years | Exploratory summary; Insufficient pairs (<30) |
+| Mauritius | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.708 / 25.644 | 0.207 | 0.639 years | Exploratory summary; Insufficient pairs (<30) |
+| Malawi | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 19 | 16.963 / 20.309 | 0.713 | 5.127 years | Exploratory summary; Insufficient pairs (<30) |
+| Malaysia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.409 / 27.72 | -0.233 | 0.02 years | Exploratory summary; Insufficient pairs (<30) |
+| Namibia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.564 / 39.24 | 0.648 | 4.826 years | Exploratory summary; Insufficient pairs (<30) |
+| Niger | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.438 / 21.537 | 0.764 | 3.316 years | Exploratory summary; Insufficient pairs (<30) |
+| Nigeria | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 9.15 / 14.711 | -0.857 | -3.577 years | Exploratory summary; Insufficient pairs (<30) |
+| Nicaragua | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.055 / 26.02 | 0.23 | 0.679 years | Exploratory summary; Insufficient pairs (<30) |
+| Netherlands | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 43.583 / 47.311 | 0.236 | 0.469 years | Exploratory summary; Insufficient pairs (<30) |
+| Norway | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 42.6 / 49.078 | 0.579 | 0.763 years | Exploratory summary; Insufficient pairs (<30) |
+| Nepal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.75 / 22.986 | 0.671 | 1.524 years | Exploratory summary; Insufficient pairs (<30) |
+| New Zealand | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.833 / 40.167 | 0.236 | 0.343 years | Exploratory summary; Insufficient pairs (<30) |
+| Oman | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.85 / 41.044 | 0.541 | 0.676 years | Exploratory summary; Insufficient pairs (<30) |
+| Pakistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.712 / 18.585 | 0.879 | 2.322 years | Exploratory summary; Insufficient pairs (<30) |
+| Panama | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.95 / 24 | -0.356 | -0.218 years | Exploratory summary; Insufficient pairs (<30) |
+| Peru | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.95 / 21.933 | -0.408 | -0.363 years | Exploratory summary; Insufficient pairs (<30) |
+| Philippines | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.033 / 21.133 | -0.889 | -0.658 years | Exploratory summary; Insufficient pairs (<30) |
+| Papua New Guinea | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.608 / 23.875 | 0.355 | 0.631 years | Exploratory summary; Insufficient pairs (<30) |
+| Poland | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 42.218 / 45.04 | -0.478 | -0.771 years | Exploratory summary; Insufficient pairs (<30) |
+| Puerto Rico (U.S.) | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 7 | 21.25 / 22.167 | 0.197 | 0.18 years | Excluded; Insufficient pairs (<30) |
+| Portugal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 44.492 / 49.644 | 0.46 | 1.018 years | Exploratory summary; Insufficient pairs (<30) |
+| Paraguay | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.767 / 18.583 | -0.575 | -0.454 years | Exploratory summary; Insufficient pairs (<30) |
+| Qatar | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.764 / 34.5 | 0.457 | 1.398 years | Exploratory summary; Insufficient pairs (<30) |
+| Romania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 32.667 / 35.567 | 0.024 | 0.332 years | Exploratory summary; Insufficient pairs (<30) |
+| Russian Federation | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 31.27 / 35.564 | 0.573 | 2.562 years | Exploratory summary; Insufficient pairs (<30) |
+| Rwanda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.19 / 26.518 | 0.807 | 7.41 years | Exploratory summary; Insufficient pairs (<30) |
+| Saudi Arabia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 30.527 / 35.84 | 0.218 | -0.424 years | Exploratory summary; Insufficient pairs (<30) |
+| Sudan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.433 / 18 | 0.189 | 0.492 years | Exploratory summary; Insufficient pairs (<30) |
+| Senegal | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 18.044 / 24.275 | 0.798 | 3.887 years | Exploratory summary; Insufficient pairs (<30) |
+| Singapore | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 11.44 / 16.145 | -0.06 | -0.605 years | Exploratory summary; Insufficient pairs (<30) |
+| Solomon Islands | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.533 / 38.144 | 0.919 | 0.922 years | Exploratory summary; Insufficient pairs (<30) |
+| Sierra Leone | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.71 / 13.718 | 0.714 | 4.202 years | Exploratory summary; Insufficient pairs (<30) |
+| El Salvador | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.77 / 27.809 | -0.178 | -0.05 years | Exploratory summary; Insufficient pairs (<30) |
+| Serbia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 36.113 / 41.708 | 0.494 | 1.056 years | Exploratory summary; Insufficient pairs (<30) |
+| South Sudan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 10 | 30.267 / 66.475 | -0.265 | -0.135 years | Exploratory summary; Insufficient pairs (<30) |
+| São Tomé and Príncipe | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 29.836 / 49.91 | -0.192 | -1.424 years | Exploratory summary; Insufficient pairs (<30) |
+| Suriname | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 21.825 / 29.244 | -0.222 | 0.117 years | Exploratory summary; Insufficient pairs (<30) |
+| Slovak Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.429 / 45.6 | -0.323 | -0.554 years | Exploratory summary; Insufficient pairs (<30) |
+| Slovenia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 45.883 / 51.211 | 0.158 | 0.812 years | Exploratory summary; Insufficient pairs (<30) |
+| Sweden | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 49.427 / 51.83 | -0.609 | -0.529 years | Exploratory summary; Insufficient pairs (<30) |
+| Eswatini | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.378 / 33.225 | 0.596 | 4.432 years | Exploratory summary; Insufficient pairs (<30) |
+| Seychelles | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 34.146 / 46.9 | -0.599 | -0.62 years | Exploratory summary; Insufficient pairs (<30) |
+| Syrian Arab Republic | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 10 | 25.8 / 29.72 | -0.307 | -0.224 years | Exploratory summary; Insufficient pairs (<30) |
+| Chad | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 10.867 / 15.825 | 0.081 | -0.002 years | Exploratory summary; Insufficient pairs (<30) |
+| Togo | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 12.2 / 20.09 | 0.854 | 4.188 years | Exploratory summary; Insufficient pairs (<30) |
+| Thailand | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 19.69 / 22.436 | 0.244 | 1.642 years | Exploratory summary; Insufficient pairs (<30) |
+| Tajikistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.95 / 29.822 | 0.906 | 2.587 years | Exploratory summary; Insufficient pairs (<30) |
+| Turkmenistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.417 / 20.244 | -0.818 | -1.601 years | Exploratory summary; Insufficient pairs (<30) |
+| Timor-Leste | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 74.5 / 114.12 | 0.21 | 0.487 years | Exploratory summary; Insufficient pairs (<30) |
+| Tonga | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22.236 / 36.21 | 0.863 | 0.673 years | Exploratory summary; Insufficient pairs (<30) |
+| Trinidad and Tobago | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.513 / 32.092 | 0.531 | 1.189 years | Exploratory summary; Insufficient pairs (<30) |
+| Tunisia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.645 / 29.07 | -0.103 | 0.38 years | Exploratory summary; Insufficient pairs (<30) |
+| Türkiye | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 33.333 / 39.117 | -0.698 | -0.631 years | Exploratory summary; Insufficient pairs (<30) |
+| Tanzania | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 14.857 / 18.221 | 0.644 | 4.277 years | Exploratory summary; Insufficient pairs (<30) |
+| Uganda | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 13.42 / 16.645 | 0.074 | -1.464 years | Exploratory summary; Insufficient pairs (<30) |
+| Ukraine | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 39.95 / 46.418 | 0.503 | 0.499 years | Exploratory summary; Insufficient pairs (<30) |
+| Uruguay | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 27.008 / 29.925 | -0.097 | 0.343 years | Exploratory summary; Insufficient pairs (<30) |
+| United States | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 20 | 34.579 / 39.833 | -0.18 | 0.305 years | Exploratory summary; Insufficient pairs (<30) |
+| Uzbekistan | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 24.154 / 30.138 | -0.849 | -4.439 years | Exploratory summary; Insufficient pairs (<30) |
+| St. Vincent and the Grenadines | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 26.062 / 30.225 | 0.076 | -0.023 years | Exploratory summary; Insufficient pairs (<30) |
+| Venezuela, RB | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.817 / 34.56 | 0.714 | 1.294 years | Exploratory summary; Insufficient pairs (<30) |
+| Viet Nam | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.242 / 23.378 | 0.258 | 0.052 years | Exploratory summary; Insufficient pairs (<30) |
+| Vanuatu | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 22 / 34.989 | 0.589 | 0.613 years | Exploratory summary; Insufficient pairs (<30) |
+| Samoa | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 28.7 / 31.742 | -0.116 | -0.016 years | Exploratory summary; Insufficient pairs (<30) |
+| Yemen, Rep. | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 15.686 / 34.314 | 0.237 | 0.195 years | Exploratory summary; Insufficient pairs (<30) |
+| South Africa | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 23.656 / 29.825 | 0.882 | 7.353 years | Exploratory summary; Insufficient pairs (<30) |
+| Zambia | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 21 | 20.682 / 27.53 | 0.057 | 1.149 years | Exploratory summary; Insufficient pairs (<30) |
+| Zimbabwe | [WHO HALE](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates) | 16 | 6.957 / 15.267 | 0.699 | 4.333 years | Exploratory summary; Insufficient pairs (<30) |
 
 ## Real after-tax median income: country results
 

@@ -8,6 +8,7 @@ export * from './report.js';
 export * from './country-analysis.js';
 export * from './country-report.js';
 export * from './minimum-effective-spending.js';
+export * from './best-practice-budget.js';
 export * from './efficient-frontier.js';
 export * from './overspend-ratio.js';
 export * from './efficiency-analysis.js';

@@ -6,6 +6,7 @@
  *
  * Usage: pnpm --filter @optimitron/data run generate:country-panel
  * Income only, using checked-in sources: append --income-only
+ * WHO healthy life expectancy only: append --health-only
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -91,6 +92,16 @@ function derivePerCapita(
 }
 
 async function main(): Promise<void> {
+  if (process.argv.includes('--health-only')) {
+    const points = await fetchWHOHealthyLifeExpectancy({ period: PERIOD });
+    const lookup = buildLookup(points);
+    if (lookup.size < 3500) throw new Error('WHO refresh incomplete; existing panel was not replaced.');
+    const rows = COUNTRY_PANEL_DATA.map(row => ({ ...row, haleYears: lookup.get(key(row.jurisdictionIso3, row.year)) ?? null }));
+    await writePanel(rows, { ...COUNTRY_PANEL_METADATA, healthRefresh: {
+      refreshedAt: new Date().toISOString(), sex: 'both', sourceUrl: 'https://ghoapi.azureedge.net/api/WHOSIS_000002',
+    } }, false);
+    return;
+  }
   if (process.argv.includes('--income-only')) {
     const rows = refreshCountryPanelIncome(COUNTRY_PANEL_DATA, GENERATED_MEDIAN_INCOME_SERIES);
     await writePanel(rows, COUNTRY_PANEL_METADATA);
@@ -275,15 +286,15 @@ async function main(): Promise<void> {
   await writePanel(rows, metadata);
 }
 
-async function writePanel(rows: CountryPanelRow[], baseMetadata: CountryPanelMetadata): Promise<void> {
+async function writePanel(rows: CountryPanelRow[], baseMetadata: CountryPanelMetadata, refreshIncome = true): Promise<void> {
   const withIncome = rows.filter((row) => Boolean(row.afterTaxMedianIncome));
   const metadata: CountryPanelMetadata = {
     ...baseMetadata,
-    incomeRefresh: {
+    incomeRefresh: refreshIncome ? {
       refreshedAt: new Date().toISOString(),
       sourceGeneratedAt: MEDIAN_INCOME_SERIES_METADATA.generatedAt,
       eligibleObservationCount: withIncome.length,
-    },
+    } : baseMetadata.incomeRefresh,
   };
   const [minYear, maxYear] = metadata.yearRange;
 

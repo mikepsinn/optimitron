@@ -177,6 +177,9 @@ async function fetchIndicatorRecords(url: string, indicatorCode: string): Promis
  */
 export function parseGHORecords(records: GHORecord[], indicatorCode: string): DataPoint[] {
   return records
+    // WHO now prefixes sex codes with SEX_. Never let the unfiltered fallback
+    // overwrite a national observation with a male/female-specific value.
+    .filter((r) => !r.Dim1 || !(/^(SEX_)?(BTSX|MLE|FMLE)$/.test(r.Dim1) || r.Dim1Type === 'SEX') || r.Dim1 === 'BTSX' || r.Dim1 === 'SEX_BTSX')
     .filter((r) => r.NumericValue !== null)
     .map((r) => ({
       jurisdictionIso3: r.SpatialDim,
@@ -194,7 +197,7 @@ export async function fetchGHOIndicator(
   indicatorCode: string,
   options: FetchOptions = {},
 ): Promise<DataPoint[]> {
-  const sexAttempts: Array<string | undefined> = ['BTSX', undefined];
+  const sexAttempts: Array<string | undefined> = ['SEX_BTSX', undefined];
   let selectedRecords: GHORecord[] = [];
 
   for (const sexFilter of sexAttempts) {

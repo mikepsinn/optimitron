@@ -1,0 +1,1778 @@
+{
+  "generatedAt": "2026-09-27T19:26:47.053Z",
+  "period": [
+    2017,
+    2018,
+    2019
+  ],
+  "costUnit": "2021 international dollars (GDP purchasing power parity)",
+  "incomeUnit": "2019 PPS per equivalised person (Eurostat EU-SILC)",
+  "countryCount": 30,
+  "method": {
+    "selection": "Minimum observed cost meeting all category outcome quantiles; linear population scaling.",
+    "scope": "Ten disjoint COFOG categories, all levels of government; 30 European countries.",
+    "assumptions": [
+      "Reference systems can be transferred and combined.",
+      "Costs scale linearly with population."
+    ],
+    "outcomeInterpretation": "Observed reference outcomes, not predicted combined gains. HALE is a population average, not median healthspan.",
+    "ranges": "Up to three cheapest qualifying alternatives per category; not confidence intervals."
+  },
+  "defaultQuantile": 0.8,
+  "outcomeDefinitions": {
+    "hale": {
+      "label": "Healthy life expectancy",
+      "unit": "years (WHO HALE, population average)"
+    },
+    "income": {
+      "label": "Median disposable income",
+      "unit": "2019 PPS per equivalised person (Eurostat EU-SILC)"
+    },
+    "mathProficiency": {
+      "label": "Students reaching basic maths proficiency",
+      "unit": "% of 15-year-olds (PISA 2018, Level 2+)"
+    }
+  },
+  "scenarios": [
+    {
+      "population": 1000000,
+      "outcomeQuantile": 0.8,
+      "complete": true,
+      "lines": [
+        {
+          "id": "GF01",
+          "name": "General public services",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 3659.6461986691465,
+            "selectionCostPerCapita": 3659.6461986691465,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 3659.6461986691465,
+              "selectionCostPerCapita": 3659.6461986691465,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 5424.511458772642,
+              "selectionCostPerCapita": 5424.511458772642,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6760.155765398585,
+              "selectionCostPerCapita": 6760.155765398585,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 3659646198.6691465,
+          "perCapitaRange": [
+            3659.6461986691465,
+            6760.155765398585
+          ]
+        },
+        {
+          "id": "GF02",
+          "name": "Defence",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "ISL",
+            "name": "Iceland",
+            "publicCostPerCapita": 76.19865772369828,
+            "selectionCostPerCapita": 76.19865772369828,
+            "outcomes": {
+              "hale": 71.32509443666666,
+              "income": 23621,
+              "mathProficiency": 79.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 76.19865772369828,
+              "selectionCostPerCapita": 76.19865772369828,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 497.56469246975485,
+              "selectionCostPerCapita": 497.56469246975485,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 635.3181250652575,
+              "selectionCostPerCapita": 635.3181250652575,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            }
+          ],
+          "annualBudget": 76198657.72369827,
+          "perCapitaRange": [
+            76.19865772369828,
+            635.3181250652575
+          ]
+        },
+        {
+          "id": "GF03",
+          "name": "Public order and safety",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "ISL",
+            "name": "Iceland",
+            "publicCostPerCapita": 917.6106531356705,
+            "selectionCostPerCapita": 917.6106531356705,
+            "outcomes": {
+              "hale": 71.32509443666666,
+              "income": 23621,
+              "mathProficiency": 79.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 917.6106531356705,
+              "selectionCostPerCapita": 917.6106531356705,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 1312.1154427352124,
+              "selectionCostPerCapita": 1312.1154427352124,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1478.7751287936264,
+              "selectionCostPerCapita": 1478.7751287936264,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 917610653.1356705,
+          "perCapitaRange": [
+            917.6106531356705,
+            1478.7751287936264
+          ]
+        },
+        {
+          "id": "GF04",
+          "name": "Economic affairs",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 3064.0455695566307,
+            "selectionCostPerCapita": 3064.0455695566307,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 3064.0455695566307,
+              "selectionCostPerCapita": 3064.0455695566307,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 3258.078455071925,
+              "selectionCostPerCapita": 3258.078455071925,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6974.176558158589,
+              "selectionCostPerCapita": 6974.176558158589,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 3064045569.5566306,
+          "perCapitaRange": [
+            3064.0455695566307,
+            6974.176558158589
+          ]
+        },
+        {
+          "id": "GF05",
+          "name": "Environmental protection",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "ISL",
+            "name": "Iceland",
+            "publicCostPerCapita": 417.8726536268902,
+            "selectionCostPerCapita": 417.8726536268902,
+            "outcomes": {
+              "hale": 71.32509443666666,
+              "income": 23621,
+              "mathProficiency": 79.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 417.8726536268902,
+              "selectionCostPerCapita": 417.8726536268902,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 454.4371935177492,
+              "selectionCostPerCapita": 454.4371935177492,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1144.3275493890023,
+              "selectionCostPerCapita": 1144.3275493890023,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 417872653.62689024,
+          "perCapitaRange": [
+            417.8726536268902,
+            1144.3275493890023
+          ]
+        },
+        {
+          "id": "GF06",
+          "name": "Housing and community amenities",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 152.05652630993777,
+            "selectionCostPerCapita": 152.05652630993777,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 152.05652630993777,
+              "selectionCostPerCapita": 152.05652630993777,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 411.5540209496144,
+              "selectionCostPerCapita": 411.5540209496144,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 728.1925172406472,
+              "selectionCostPerCapita": 728.1925172406472,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 152056526.30993778,
+          "perCapitaRange": [
+            152.05652630993777,
+            728.1925172406472
+          ]
+        },
+        {
+          "id": "GF07",
+          "name": "Health",
+          "targets": {
+            "hale": 71.157488558
+          },
+          "outcomeMetrics": [
+            "hale"
+          ],
+          "selectionCost": "totalHealthPerCapita",
+          "eligibleCountryCount": 6,
+          "peer": {
+            "id": "ESP",
+            "name": "Spain",
+            "publicCostPerCapita": 2762.796202866377,
+            "selectionCostPerCapita": 4208.000359288081,
+            "outcomes": {
+              "hale": 71.48699816999999,
+              "income": 16171,
+              "mathProficiency": 75.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ESP",
+              "name": "Spain",
+              "publicCostPerCapita": 2762.796202866377,
+              "selectionCostPerCapita": 4208.000359288081,
+              "outcomes": {
+                "hale": 71.48699816999999,
+                "income": 16171,
+                "mathProficiency": 75.3
+              }
+            },
+            {
+              "id": "ITA",
+              "name": "Italy",
+              "publicCostPerCapita": 3318.7018962546367,
+              "selectionCostPerCapita": 4265.971206190768,
+              "outcomes": {
+                "hale": 71.27254811333334,
+                "income": 17099,
+                "mathProficiency": 76.2
+              }
+            },
+            {
+              "id": "MLT",
+              "name": "Malta",
+              "publicCostPerCapita": 2635.3726842276083,
+              "selectionCostPerCapita": 4458.034423574578,
+              "outcomes": {
+                "hale": 71.18449177666666,
+                "income": 18588,
+                "mathProficiency": 69.8
+              }
+            }
+          ],
+          "annualBudget": 2762796202.866377,
+          "perCapitaRange": [
+            2635.3726842276083,
+            3318.7018962546367
+          ]
+        },
+        {
+          "id": "GF08",
+          "name": "Recreation, culture and religion",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 827.2120009804316,
+            "selectionCostPerCapita": 827.2120009804316,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 827.2120009804316,
+              "selectionCostPerCapita": 827.2120009804316,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1646.3487842685136,
+              "selectionCostPerCapita": 1646.3487842685136,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            },
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 1977.0808806288835,
+              "selectionCostPerCapita": 1977.0808806288835,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            }
+          ],
+          "annualBudget": 827212000.9804317,
+          "perCapitaRange": [
+            827.2120009804316,
+            1977.0808806288835
+          ]
+        },
+        {
+          "id": "GF09",
+          "name": "Education",
+          "targets": {
+            "mathProficiency": 83.72
+          },
+          "outcomeMetrics": [
+            "mathProficiency"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 6,
+          "peer": {
+            "id": "POL",
+            "name": "Poland",
+            "publicCostPerCapita": 1791.4333986675358,
+            "selectionCostPerCapita": 1791.4333986675358,
+            "outcomes": {
+              "hale": 67.48825435,
+              "income": 12335,
+              "mathProficiency": 85.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "POL",
+              "name": "Poland",
+              "publicCostPerCapita": 1791.4333986675358,
+              "selectionCostPerCapita": 1791.4333986675358,
+              "outcomes": {
+                "hale": 67.48825435,
+                "income": 12335,
+                "mathProficiency": 85.3
+              }
+            },
+            {
+              "id": "EST",
+              "name": "Estonia",
+              "publicCostPerCapita": 2401.9767423173976,
+              "selectionCostPerCapita": 2401.9767423173976,
+              "outcomes": {
+                "hale": 68.06573057333333,
+                "income": 14240,
+                "mathProficiency": 89.8
+              }
+            },
+            {
+              "id": "IRL",
+              "name": "Ireland",
+              "publicCostPerCapita": 2792.876597636387,
+              "selectionCostPerCapita": 2792.876597636387,
+              "outcomes": {
+                "hale": 70.32819491,
+                "income": 19692,
+                "mathProficiency": 84.3
+              }
+            }
+          ],
+          "annualBudget": 1791433398.6675358,
+          "perCapitaRange": [
+            1791.4333986675358,
+            2792.876597636387
+          ]
+        },
+        {
+          "id": "GF10",
+          "name": "Social protection",
+          "targets": {
+            "hale": 71.157488558,
+            "income": 22435.4
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "ISL",
+            "name": "Iceland",
+            "publicCostPerCapita": 6556.989745031201,
+            "selectionCostPerCapita": 6556.989745031201,
+            "outcomes": {
+              "hale": 71.32509443666666,
+              "income": 23621,
+              "mathProficiency": 79.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ISL",
+              "name": "Iceland",
+              "publicCostPerCapita": 6556.989745031201,
+              "selectionCostPerCapita": 6556.989745031201,
+              "outcomes": {
+                "hale": 71.32509443666666,
+                "income": 23621,
+                "mathProficiency": 79.3
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 10374.567118015746,
+              "selectionCostPerCapita": 10374.567118015746,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 23716.88455871368,
+              "selectionCostPerCapita": 23716.88455871368,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 6556989745.031201,
+          "perCapitaRange": [
+            6556.989745031201,
+            23716.88455871368
+          ]
+        }
+      ],
+      "totalPerCapita": 20225.86160656752,
+      "annualBudget": 20225861606.56752,
+      "subtotalPerCapita": 20225.86160656752,
+      "alternativePerCapitaRange": [
+        20098.43808792875,
+        49526.489577279295
+      ]
+    },
+    {
+      "population": 1000000,
+      "outcomeQuantile": 0.9,
+      "complete": true,
+      "lines": [
+        {
+          "id": "GF01",
+          "name": "General public services",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 3659.6461986691465,
+            "selectionCostPerCapita": 3659.6461986691465,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 3659.6461986691465,
+              "selectionCostPerCapita": 3659.6461986691465,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6760.155765398585,
+              "selectionCostPerCapita": 6760.155765398585,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 3659646198.6691465,
+          "perCapitaRange": [
+            3659.6461986691465,
+            6760.155765398585
+          ]
+        },
+        {
+          "id": "GF02",
+          "name": "Defence",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 497.56469246975485,
+            "selectionCostPerCapita": 497.56469246975485,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 497.56469246975485,
+              "selectionCostPerCapita": 497.56469246975485,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 635.3181250652575,
+              "selectionCostPerCapita": 635.3181250652575,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            }
+          ],
+          "annualBudget": 497564692.4697549,
+          "perCapitaRange": [
+            497.56469246975485,
+            635.3181250652575
+          ]
+        },
+        {
+          "id": "GF03",
+          "name": "Public order and safety",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 1312.1154427352124,
+            "selectionCostPerCapita": 1312.1154427352124,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 1312.1154427352124,
+              "selectionCostPerCapita": 1312.1154427352124,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1478.7751287936264,
+              "selectionCostPerCapita": 1478.7751287936264,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 1312115442.7352123,
+          "perCapitaRange": [
+            1312.1154427352124,
+            1478.7751287936264
+          ]
+        },
+        {
+          "id": "GF04",
+          "name": "Economic affairs",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 3064.0455695566307,
+            "selectionCostPerCapita": 3064.0455695566307,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 3064.0455695566307,
+              "selectionCostPerCapita": 3064.0455695566307,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6974.176558158589,
+              "selectionCostPerCapita": 6974.176558158589,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 3064045569.5566306,
+          "perCapitaRange": [
+            3064.0455695566307,
+            6974.176558158589
+          ]
+        },
+        {
+          "id": "GF05",
+          "name": "Environmental protection",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 454.4371935177492,
+            "selectionCostPerCapita": 454.4371935177492,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 454.4371935177492,
+              "selectionCostPerCapita": 454.4371935177492,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1144.3275493890023,
+              "selectionCostPerCapita": 1144.3275493890023,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 454437193.51774925,
+          "perCapitaRange": [
+            454.4371935177492,
+            1144.3275493890023
+          ]
+        },
+        {
+          "id": "GF06",
+          "name": "Housing and community amenities",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 152.05652630993777,
+            "selectionCostPerCapita": 152.05652630993777,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 152.05652630993777,
+              "selectionCostPerCapita": 152.05652630993777,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 728.1925172406472,
+              "selectionCostPerCapita": 728.1925172406472,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 152056526.30993778,
+          "perCapitaRange": [
+            152.05652630993777,
+            728.1925172406472
+          ]
+        },
+        {
+          "id": "GF07",
+          "name": "Health",
+          "targets": {
+            "hale": 71.32936775366666
+          },
+          "outcomeMetrics": [
+            "hale"
+          ],
+          "selectionCost": "totalHealthPerCapita",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "ESP",
+            "name": "Spain",
+            "publicCostPerCapita": 2762.796202866377,
+            "selectionCostPerCapita": 4208.000359288081,
+            "outcomes": {
+              "hale": 71.48699816999999,
+              "income": 16171,
+              "mathProficiency": 75.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ESP",
+              "name": "Spain",
+              "publicCostPerCapita": 2762.796202866377,
+              "selectionCostPerCapita": 4208.000359288081,
+              "outcomes": {
+                "hale": 71.48699816999999,
+                "income": 16171,
+                "mathProficiency": 75.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6739.01115103158,
+              "selectionCostPerCapita": 6996.570955329921,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            },
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 1696.5158761668774,
+              "selectionCostPerCapita": 9157.030768169514,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            }
+          ],
+          "annualBudget": 2762796202.866377,
+          "perCapitaRange": [
+            1696.5158761668774,
+            6739.01115103158
+          ]
+        },
+        {
+          "id": "GF08",
+          "name": "Recreation, culture and religion",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 827.2120009804316,
+            "selectionCostPerCapita": 827.2120009804316,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 827.2120009804316,
+              "selectionCostPerCapita": 827.2120009804316,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1646.3487842685136,
+              "selectionCostPerCapita": 1646.3487842685136,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 827212000.9804317,
+          "perCapitaRange": [
+            827.2120009804316,
+            1646.3487842685136
+          ]
+        },
+        {
+          "id": "GF09",
+          "name": "Education",
+          "targets": {
+            "mathProficiency": 85.03
+          },
+          "outcomeMetrics": [
+            "mathProficiency"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 3,
+          "peer": {
+            "id": "POL",
+            "name": "Poland",
+            "publicCostPerCapita": 1791.4333986675358,
+            "selectionCostPerCapita": 1791.4333986675358,
+            "outcomes": {
+              "hale": 67.48825435,
+              "income": 12335,
+              "mathProficiency": 85.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "POL",
+              "name": "Poland",
+              "publicCostPerCapita": 1791.4333986675358,
+              "selectionCostPerCapita": 1791.4333986675358,
+              "outcomes": {
+                "hale": 67.48825435,
+                "income": 12335,
+                "mathProficiency": 85.3
+              }
+            },
+            {
+              "id": "EST",
+              "name": "Estonia",
+              "publicCostPerCapita": 2401.9767423173976,
+              "selectionCostPerCapita": 2401.9767423173976,
+              "outcomes": {
+                "hale": 68.06573057333333,
+                "income": 14240,
+                "mathProficiency": 89.8
+              }
+            },
+            {
+              "id": "DNK",
+              "name": "Denmark",
+              "publicCostPerCapita": 4202.0900746337375,
+              "selectionCostPerCapita": 4202.0900746337375,
+              "outcomes": {
+                "hale": 70.11496919333332,
+                "income": 22371,
+                "mathProficiency": 85.4
+              }
+            }
+          ],
+          "annualBudget": 1791433398.6675358,
+          "perCapitaRange": [
+            1791.4333986675358,
+            4202.0900746337375
+          ]
+        },
+        {
+          "id": "GF10",
+          "name": "Social protection",
+          "targets": {
+            "hale": 71.32936775366666,
+            "income": 23988.900000000005
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "CHE",
+            "name": "Switzerland",
+            "publicCostPerCapita": 10374.567118015746,
+            "selectionCostPerCapita": 10374.567118015746,
+            "outcomes": {
+              "hale": 71.36782760666667,
+              "income": 27268,
+              "mathProficiency": 83.2
+            }
+          },
+          "alternatives": [
+            {
+              "id": "CHE",
+              "name": "Switzerland",
+              "publicCostPerCapita": 10374.567118015746,
+              "selectionCostPerCapita": 10374.567118015746,
+              "outcomes": {
+                "hale": 71.36782760666667,
+                "income": 27268,
+                "mathProficiency": 83.2
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 23716.88455871368,
+              "selectionCostPerCapita": 23716.88455871368,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 10374567118.015745,
+          "perCapitaRange": [
+            10374.567118015746,
+            23716.88455871368
+          ]
+        }
+      ],
+      "totalPerCapita": 24895.87434378852,
+      "annualBudget": 24895874343.78852,
+      "subtotalPerCapita": 24895.87434378852,
+      "alternativePerCapitaRange": [
+        23829.59401708902,
+        54025.28021269322
+      ]
+    },
+    {
+      "population": 1000000,
+      "outcomeQuantile": 0.95,
+      "complete": true,
+      "lines": [
+        {
+          "id": "GF01",
+          "name": "General public services",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 6760.155765398585,
+            "selectionCostPerCapita": 6760.155765398585,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6760.155765398585,
+              "selectionCostPerCapita": 6760.155765398585,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 6760155765.398584,
+          "perCapitaRange": [
+            6760.155765398585,
+            6760.155765398585
+          ]
+        },
+        {
+          "id": "GF02",
+          "name": "Defence",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 497.56469246975485,
+            "selectionCostPerCapita": 497.56469246975485,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 497.56469246975485,
+              "selectionCostPerCapita": 497.56469246975485,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 497564692.4697549,
+          "perCapitaRange": [
+            497.56469246975485,
+            497.56469246975485
+          ]
+        },
+        {
+          "id": "GF03",
+          "name": "Public order and safety",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 1478.7751287936264,
+            "selectionCostPerCapita": 1478.7751287936264,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1478.7751287936264,
+              "selectionCostPerCapita": 1478.7751287936264,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 1478775128.7936265,
+          "perCapitaRange": [
+            1478.7751287936264,
+            1478.7751287936264
+          ]
+        },
+        {
+          "id": "GF04",
+          "name": "Economic affairs",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 6974.176558158589,
+            "selectionCostPerCapita": 6974.176558158589,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6974.176558158589,
+              "selectionCostPerCapita": 6974.176558158589,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 6974176558.158588,
+          "perCapitaRange": [
+            6974.176558158589,
+            6974.176558158589
+          ]
+        },
+        {
+          "id": "GF05",
+          "name": "Environmental protection",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 1144.3275493890023,
+            "selectionCostPerCapita": 1144.3275493890023,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1144.3275493890023,
+              "selectionCostPerCapita": 1144.3275493890023,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 1144327549.3890023,
+          "perCapitaRange": [
+            1144.3275493890023,
+            1144.3275493890023
+          ]
+        },
+        {
+          "id": "GF06",
+          "name": "Housing and community amenities",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 728.1925172406472,
+            "selectionCostPerCapita": 728.1925172406472,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 728.1925172406472,
+              "selectionCostPerCapita": 728.1925172406472,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 728192517.2406472,
+          "perCapitaRange": [
+            728.1925172406472,
+            728.1925172406472
+          ]
+        },
+        {
+          "id": "GF07",
+          "name": "Health",
+          "targets": {
+            "hale": 71.40121176333334
+          },
+          "outcomeMetrics": [
+            "hale"
+          ],
+          "selectionCost": "totalHealthPerCapita",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "ESP",
+            "name": "Spain",
+            "publicCostPerCapita": 2762.796202866377,
+            "selectionCostPerCapita": 4208.000359288081,
+            "outcomes": {
+              "hale": 71.48699816999999,
+              "income": 16171,
+              "mathProficiency": 75.3
+            }
+          },
+          "alternatives": [
+            {
+              "id": "ESP",
+              "name": "Spain",
+              "publicCostPerCapita": 2762.796202866377,
+              "selectionCostPerCapita": 4208.000359288081,
+              "outcomes": {
+                "hale": 71.48699816999999,
+                "income": 16171,
+                "mathProficiency": 75.3
+              }
+            },
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 6739.01115103158,
+              "selectionCostPerCapita": 6996.570955329921,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 2762796202.866377,
+          "perCapitaRange": [
+            2762.796202866377,
+            6739.01115103158
+          ]
+        },
+        {
+          "id": "GF08",
+          "name": "Recreation, culture and religion",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 1646.3487842685136,
+            "selectionCostPerCapita": 1646.3487842685136,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 1646.3487842685136,
+              "selectionCostPerCapita": 1646.3487842685136,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 1646348784.2685134,
+          "perCapitaRange": [
+            1646.3487842685136,
+            1646.3487842685136
+          ]
+        },
+        {
+          "id": "GF09",
+          "name": "Education",
+          "targets": {
+            "mathProficiency": 85.355
+          },
+          "outcomeMetrics": [
+            "mathProficiency"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 2,
+          "peer": {
+            "id": "EST",
+            "name": "Estonia",
+            "publicCostPerCapita": 2401.9767423173976,
+            "selectionCostPerCapita": 2401.9767423173976,
+            "outcomes": {
+              "hale": 68.06573057333333,
+              "income": 14240,
+              "mathProficiency": 89.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "EST",
+              "name": "Estonia",
+              "publicCostPerCapita": 2401.9767423173976,
+              "selectionCostPerCapita": 2401.9767423173976,
+              "outcomes": {
+                "hale": 68.06573057333333,
+                "income": 14240,
+                "mathProficiency": 89.8
+              }
+            },
+            {
+              "id": "DNK",
+              "name": "Denmark",
+              "publicCostPerCapita": 4202.0900746337375,
+              "selectionCostPerCapita": 4202.0900746337375,
+              "outcomes": {
+                "hale": 70.11496919333332,
+                "income": 22371,
+                "mathProficiency": 85.4
+              }
+            }
+          ],
+          "annualBudget": 2401976742.3173976,
+          "perCapitaRange": [
+            2401.9767423173976,
+            4202.0900746337375
+          ]
+        },
+        {
+          "id": "GF10",
+          "name": "Social protection",
+          "targets": {
+            "hale": 71.40121176333334,
+            "income": 27015.1
+          },
+          "outcomeMetrics": [
+            "hale",
+            "income"
+          ],
+          "selectionCost": "public",
+          "eligibleCountryCount": 1,
+          "peer": {
+            "id": "LUX",
+            "name": "Luxembourg",
+            "publicCostPerCapita": 23716.88455871368,
+            "selectionCostPerCapita": 23716.88455871368,
+            "outcomes": {
+              "hale": 71.42852607333334,
+              "income": 28943,
+              "mathProficiency": 72.8
+            }
+          },
+          "alternatives": [
+            {
+              "id": "LUX",
+              "name": "Luxembourg",
+              "publicCostPerCapita": 23716.88455871368,
+              "selectionCostPerCapita": 23716.88455871368,
+              "outcomes": {
+                "hale": 71.42852607333334,
+                "income": 28943,
+                "mathProficiency": 72.8
+              }
+            }
+          ],
+          "annualBudget": 23716884558.71368,
+          "perCapitaRange": [
+            23716.88455871368,
+            23716.88455871368
+          ]
+        }
+      ],
+      "totalPerCapita": 48111.19849961618,
+      "annualBudget": 48111198499.61618,
+      "subtotalPerCapita": 48111.19849961618,
+      "alternativePerCapitaRange": [
+        48111.19849961618,
+        53887.526780097716
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_exp?lang=en&unit=MIO_EUR&sector=S13&na_item=TE&sinceTimePeriod=2017&untilTimePeriod=2019",
+      "retrievedAt": "2026-09-27T19:12:14.969Z",
+      "sha256": "f6250f09540026420df6f4341f3e839eb387465fd6f9dd464fd16234520cbb35"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?lang=en&unit=CP_MEUR&na_item=B1GQ&sinceTimePeriod=2017&untilTimePeriod=2019",
+      "retrievedAt": "2026-09-27T19:12:16.483Z",
+      "sha256": "c983febc0beddcb35bdc671b3b8d5dd355bfd9ec1ee239edd8f2213c21bebb81"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di03?lang=en&unit=PPS&age=TOTAL&sex=T&statinfo=MED_EI&time=2019",
+      "retrievedAt": "2026-09-27T19:12:16.632Z",
+      "sha256": "fda0ad2deb0b481c0b0458eefef19ef66cec3b28bf22e7a838dd99f2acf75f1b"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/educ_outc_pisa?lang=en&field=EF461&sex=T&time=2018",
+      "retrievedAt": "2026-09-27T19:14:37.837Z",
+      "sha256": "175cfa81a688d721c43b3b796666a4c8f8ffceca098fc4bb1a32d70eb3303142"
+    },
+    {
+      "url": "https://ghoapi.azureedge.net/api/WHOSIS_000002?%24filter=TimeDim+ge+2017+and+TimeDim+le+2019+and+Dim1+eq+%27SEX_BTSX%27",
+      "retrievedAt": "2026-09-27T19:26:46.558Z",
+      "sha256": "4c20e94994698da70c668512860db2db27004aeb0df371b8dc3ca95470248202"
+    },
+    {
+      "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.KD?date=2017:2019&format=json&per_page=20000",
+      "retrievedAt": "2026-09-27T19:12:16.714Z",
+      "sha256": "c58b9edddf7d1080118fe96950db04711fbc5bff4298cb6c4d32750ed8207d6d"
+    },
+    {
+      "url": "https://api.worldbank.org/v2/country/all/indicator/SH.XPD.CHEX.GD.ZS?date=2017:2019&format=json&per_page=20000",
+      "retrievedAt": "2026-09-27T19:12:17.467Z",
+      "sha256": "6a27078a040d483cca4b8965a70140706b9ffac3dbad7d566720b6162961336d"
+    }
+  ],
+  "healthSource": {
+    "url": "https://www.who.int/data/gho/data/indicators/indicator-details/GHO/gho-ghe-hale-healthy-life-expectancy",
+    "population": "Both sexes (SEX_BTSX)",
+    "snapshotGeneratedAt": "2026-09-27T19:26:46.558Z"
+  },
+  "educationSource": {
+    "url": "https://ec.europa.eu/eurostat/databrowser/view/educ_outc_pisa/default/table?lang=en",
+    "note": "2018 share reaching at least PISA mathematics Level 2: 100 minus low-achiever percentage."
+  }
+}

@@ -60,7 +60,8 @@ async function loadSources(refresh: boolean): Promise<GovernmentWelfareSourceCac
     schemaVersion: 1,
     sourceMode: "Bundled public source snapshots; no new network fetch",
     sourceSnapshots: [
-      { name: "Country panel: IMF spending and WHO HALE", generatedAt: COUNTRY_PANEL_METADATA.generatedAt, url: urls.imf },
+      { name: "Country panel: IMF spending", generatedAt: COUNTRY_PANEL_METADATA.generatedAt, url: urls.imf },
+      { name: "Country panel: WHO HALE (both sexes)", generatedAt: COUNTRY_PANEL_METADATA.healthRefresh?.refreshedAt ?? COUNTRY_PANEL_METADATA.generatedAt, url: urls.who },
       { name: "Strict OECD / Eurostat disposable-income records", generatedAt: MEDIAN_INCOME_SERIES_METADATA.generatedAt, url: "https://data-explorer.oecd.org/" },
     ],
     spending: panelPoints("totalGovSpendingPctGdp", "IMF Fiscal Monitor", urls.imf),

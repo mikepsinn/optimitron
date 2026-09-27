@@ -3,6 +3,8 @@ import { BudgetDecisionResults } from "@/components/budget/DecisionResults";
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 import { BudgetComparisonMethod, NationalSpendingComparisons } from "@/components/budget/NationalSpendingComparisons";
 import { getNationalBudgetComparisons } from "@/lib/analysis-products";
+import { BestPracticeBudget } from "@/components/budget/BestPracticeBudget";
+import { getBestPracticeBudget } from "@/lib/best-practice-budget";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getBudgetCategoryPath, obgLink, optimalBudgetGeneratorPaperLink, ROUTES } from "@/lib/routes";
 
@@ -28,10 +30,15 @@ export default function BudgetPage() {
         </p>
       </header>
 
-      <section aria-label="National spending comparisons">
+      <BestPracticeBudget report={getBestPracticeBudget()} />
+
+      <details className="mt-8 border-2 border-foreground p-5 sm:p-6">
+        <summary className="mb-4 cursor-pointer text-lg font-black">More international spending comparisons</summary>
+        <section aria-label="National spending comparisons">
         <NationalSpendingComparisons comparisons={comparisons} />
-      </section>
-      <BudgetComparisonMethod />
+        </section>
+        <BudgetComparisonMethod />
+      </details>
 
       <p className="mt-6 text-sm font-bold">
         <Link href="/government-size" className="underline underline-offset-4">Explore spending, health and income over time →</Link>

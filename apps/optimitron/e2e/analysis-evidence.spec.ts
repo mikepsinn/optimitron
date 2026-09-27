@@ -2,6 +2,39 @@ import { expect, test } from "@playwright/test";
 import { formatDecisionMoney } from "@optimitron/obg";
 import { usDecisionAnalysis } from "../src/data/us-decision-analysis";
 
+test("population budget scales, downloads the entered population and updates outcome targets", async ({ page }) => {
+  await page.goto("/obg?logout=1");
+  const region = page.getByRole("region", { name: "Population budget", exact: true });
+  const total = region.getByTestId("population-budget-total");
+  const number = (text: string) => Number(text.replace(/[^0-9]/g, ""));
+  const before = number(await total.innerText());
+  expect(before).toBeGreaterThan(0);
+  await region.getByLabel("Population", { exact: true }).fill("2000000");
+  await expect.poll(async () => Math.abs(number(await total.innerText()) - before * 2)).toBeLessThanOrEqual(1);
+  await region.getByText("Outcome targets and calculation", { exact: true }).click();
+  const downloadEvent = page.waitForEvent("download");
+  await region.getByRole("button", { name: "Download this budget" }).click();
+  const download = await downloadEvent;
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const report = JSON.parse(Buffer.concat(chunks).toString());
+  const selected = report.scenarios.find((s: { outcomeQuantile: number }) => s.outcomeQuantile === report.selectedQuantile);
+  expect(selected.population).toBe(2000000);
+  expect(selected.annualBudget).toBeCloseTo(selected.totalPerCapita * 2000000, 3);
+  await region.getByLabel("Outcome target", { exact: true }).selectOption("0.95");
+  const strict = report.scenarios.find((s: { outcomeQuantile: number }) => s.outcomeQuantile === 0.95);
+  if (strict.complete) {
+    await expect.poll(async () => Math.abs(number(await total.innerText()) - strict.annualBudget)).toBeLessThanOrEqual(1);
+  } else {
+    await expect(total).toHaveText("—");
+    await expect(region.getByRole("status")).toBeVisible();
+  }
+  await region.getByLabel("Population", { exact: true }).fill("-1");
+  await expect(region.getByRole("alert")).toBeVisible();
+  await expect(region.getByRole("button", { name: "Download this budget" })).toBeDisabled();
+});
+
 test("policy navigation shows calculated uncertainty and retains earlier hypotheses", async ({ page }) => {
   await page.goto("/?logout=1");
   await page.getByRole("main").getByRole("link", { name: "Compare policies", exact: true }).click();
@@ -57,6 +90,7 @@ test("program scenarios stay separate from the budget objective and match their 
 
 test("budget comparisons cannot turn overlapping national gaps into a dividend", async ({ page }) => {
   await page.goto("/obg?logout=1");
+  await page.getByText("More international spending comparisons", { exact: true }).click();
   const cards = page.getByRole("region", { name: "National spending comparisons" }).locator("article");
   const fields = await cards.evaluateAll((nodes) => nodes.map((node) => node.id));
   expect(fields.length).toBeGreaterThan(0);

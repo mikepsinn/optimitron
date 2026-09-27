@@ -19,6 +19,7 @@
     "sync:alignment-politicians": "tsx scripts/sync-alignment-politicians.ts",
     "generate:government-size": "tsx scripts/generate-government-size-analysis.ts",
     "generate:welfare-budget": "tsx scripts/generate-welfare-budget.ts",
+    "generate:best-practice-budget": "tsx scripts/generate-best-practice-budget.ts",
     "sync:government-size": "tsx scripts/sync-government-size-analysis.ts",
     "refresh:government-size": "pnpm run generate:government-size && pnpm run sync:government-size",
     "lint": "next lint",

@@ -93,6 +93,7 @@ export interface CountryPanelMetadata {
   countryCount: number;
   yearRange: [number, number];
   sources: string[];
+  healthRefresh?: { refreshedAt: string; sex: 'both'; sourceUrl: string };
   /** Income selection can be refreshed without changing the age of general indicators. */
   incomeRefresh?: {
     refreshedAt: string;

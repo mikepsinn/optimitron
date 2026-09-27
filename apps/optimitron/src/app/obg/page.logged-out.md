@@ -16,13 +16,105 @@
 - BUDGET EVIDENCE
 ## A BUDGET FOR LONGER, HEALTHIER, WEALTHIER LIVES
 - Explore how public spending relates to health and take-home income, and where the US could do better.
+- Population
+- Annual public budget
+- $20,225,861,607
+- $20,226 per resident · national and local government
+- Lowest-cost systems meeting top-20% outcome targets across 30 European countries. 2017–2019 spending, in 2021 purchasing-power-adjusted dollars.
+- Outcome targets and calculation
+- Outcome target
+- Healthcare targets healthy life expectancy; education targets basic maths proficiency. Other categories select countries meeting both health and income targets.
+- National targets: 71.16 healthy years and 22,435 PPS in median disposable income. The default keeps at least three countries meeting both targets.
+- Each annual amount equals the selected country’s public cost per resident × your population. The calculation assumes its system can be adopted and combined with the other selected systems.
+- Health uses WHO average healthy life expectancy. Income is Eurostat’s 2019 median equivalised disposable income in PPS. These are reference outcomes; this calculation does not estimate a combined gain in health or income.
+- Total healthcare cost in Spain: $4,208 per resident, including private spending. The public health allocation below uses government expenditure. Selection compares total costs so private bills count too.
+- Using the three cheapest qualifying alternatives where available gives $20,098–$49,526 in public spending per resident. This is an alternative-country range.
+- Research spending is included within these categories. The program scenarios below estimate additional investments in future improvements.
+- [Full analysis and sources](/data/best-practice-budget.md)
+- Download this budget
+- PUBLIC SPENDING
+- ANNUAL BUDGET
+- PER RESIDENT
+- REFERENCE COUNTRY
+#### General public services
+- $3,659,646,199
+- $3,660
+- Switzerland
+- 3 qualifying countries · outcomes and alternatives
+- Healthy life expectancy: 71.37 (target 71.16). years (WHO HALE, population average).
+- Median disposable income: 27,268 (target 22,435.4). 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Switzerland: $3,660 public spending per resident.
+- Iceland: $5,425 public spending per resident.
+- Luxembourg: $6,760 public spending per resident.
+#### Defence
+- $76,198,658
+- $76
+- Iceland
+- Healthy life expectancy: 71.33 (target 71.16). years (WHO HALE, population average).
+- Median disposable income: 23,621 (target 22,435.4). 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Iceland: $76 public spending per resident.
+- Luxembourg: $498 public spending per resident.
+- Switzerland: $635 public spending per resident.
+#### Public order and safety
+- $917,610,653
+- $918
+- Iceland: $918 public spending per resident.
+- Switzerland: $1,312 public spending per resident.
+- Luxembourg: $1,479 public spending per resident.
+#### Economic affairs
+- $3,064,045,570
+- $3,064
+- Switzerland: $3,064 public spending per resident.
+- Iceland: $3,258 public spending per resident.
+- Luxembourg: $6,974 public spending per resident.
+#### Environmental protection
+- $417,872,654
+- $418
+- Iceland: $418 public spending per resident.
+- Switzerland: $454 public spending per resident.
+- Luxembourg: $1,144 public spending per resident.
+#### Housing and community amenities
+- $152,056,526
+- $152
+- Switzerland: $152 public spending per resident.
+- Iceland: $412 public spending per resident.
+- Luxembourg: $728 public spending per resident.
+#### Health
+- $2,762,796,203
+- $2,763
+- Spain
+- 6 qualifying countries · outcomes and alternatives
+- Healthy life expectancy: 71.49 (target 71.16). years (WHO HALE, population average).
+- Spain: $2,763 public spending per resident; $4,208 total healthcare cost.
+- Italy: $3,319 public spending per resident; $4,266 total healthcare cost.
+- Malta: $2,635 public spending per resident; $4,458 total healthcare cost.
+#### Recreation, culture and religion
+- $827,212,001
+- $827
+- Switzerland: $827 public spending per resident.
+- Luxembourg: $1,646 public spending per resident.
+- Iceland: $1,977 public spending per resident.
+#### Education
+- $1,791,433,399
+- $1,791
+- Poland
+- Students reaching basic maths proficiency: 85.3 (target 83.72). % of 15-year-olds (PISA 2018, Level 2+).
+- Poland: $1,791 public spending per resident.
+- Estonia: $2,402 public spending per resident.
+- Ireland: $2,793 public spending per resident.
+#### Social protection
+- $6,556,989,745
+- $6,557
+- Iceland: $6,557 public spending per resident.
+- Switzerland: $10,375 public spending per resident.
+- Luxembourg: $23,717 public spending per resident.
+- More international spending comparisons
 #### Military spending
 - Switzerland has the lowest spending among countries in the top quarter for Life Expectancy in this 28-country comparison.
 - United States
 - $2,052 / person / year
 - Life Expectancy: 76.93
 - Observations: 2020, 2021, 2022
-- Switzerland
 - $389 / person / year
 - Life Expectancy: 83.37
 - Average of up to three latest available annual observations per country. Spending uses bundled PPP-adjusted estimates per person per year; reference price year unverified. The observation years can differ. This is an observed comparison, with no estimated causal effect or uncertainty interval.
