@@ -46,7 +46,7 @@
 - Switzerland: $3,660 public spending per resident.
 - Iceland: $5,425 public spending per resident.
 - Luxembourg: $6,760 public spending per resident.
-#### Defence
+#### Weapons and Military
 - $76,198,658
 - $76
 - Iceland

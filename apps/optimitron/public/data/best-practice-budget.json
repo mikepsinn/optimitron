@@ -106,7 +106,7 @@
         },
         {
           "id": "GF02",
-          "name": "Defence",
+          "name": "Weapons and Military",
           "targets": {
             "hale": 71.157488558,
             "income": 22435.4
@@ -755,7 +755,7 @@
         },
         {
           "id": "GF02",
-          "name": "Defence",
+          "name": "Weapons and Military",
           "targets": {
             "hale": 71.32936775366666,
             "income": 23988.900000000005
@@ -1316,7 +1316,7 @@
         },
         {
           "id": "GF02",
-          "name": "Defence",
+          "name": "Weapons and Military",
           "targets": {
             "hale": 71.40121176333334,
             "income": 27015.1

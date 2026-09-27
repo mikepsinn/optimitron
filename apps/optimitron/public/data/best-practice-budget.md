@@ -21,7 +21,7 @@ Annual public budget: **$20,225,861,607**; **$20,226 per resident**.
 | Category | Per resident | Annual public budget | Reference | Eligible countries |
 | --- | ---: | ---: | --- | ---: |
 | General public services | $3,660 | $3,659,646,199 | Switzerland | 3 |
-| Defence | $76 | $76,198,658 | Iceland | 3 |
+| Weapons and Military | $76 | $76,198,658 | Iceland | 3 |
 | Public order and safety | $918 | $917,610,653 | Iceland | 3 |
 | Economic affairs | $3,064 | $3,064,045,570 | Switzerland | 3 |
 | Environmental protection | $418 | $417,872,654 | Iceland | 3 |
@@ -39,7 +39,7 @@ Annual public budget: **$20,225,861,607**; **$20,226 per resident**.
 - Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
 - Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Iceland ($5,425 public per resident); Luxembourg ($6,760 public per resident).
 
-**Defence**
+**Weapons and Military**
 
 - Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
 - Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
@@ -98,7 +98,7 @@ Annual public budget: **$24,895,874,344**; **$24,896 per resident**.
 | Category | Per resident | Annual public budget | Reference | Eligible countries |
 | --- | ---: | ---: | --- | ---: |
 | General public services | $3,660 | $3,659,646,199 | Switzerland | 2 |
-| Defence | $498 | $497,564,692 | Luxembourg | 2 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 2 |
 | Public order and safety | $1,312 | $1,312,115,443 | Switzerland | 2 |
 | Economic affairs | $3,064 | $3,064,045,570 | Switzerland | 2 |
 | Environmental protection | $454 | $454,437,194 | Switzerland | 2 |
@@ -116,7 +116,7 @@ Annual public budget: **$24,895,874,344**; **$24,896 per resident**.
 - Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
 - Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Luxembourg ($6,760 public per resident).
 
-**Defence**
+**Weapons and Military**
 
 - Healthy life expectancy: target 71.33; selected reference 71.43 years (WHO HALE, population average).
 - Median disposable income: target 23988.90; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
@@ -175,7 +175,7 @@ Annual public budget: **$48,111,198,500**; **$48,111 per resident**.
 | Category | Per resident | Annual public budget | Reference | Eligible countries |
 | --- | ---: | ---: | --- | ---: |
 | General public services | $6,760 | $6,760,155,765 | Luxembourg | 1 |
-| Defence | $498 | $497,564,692 | Luxembourg | 1 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 1 |
 | Public order and safety | $1,479 | $1,478,775,129 | Luxembourg | 1 |
 | Economic affairs | $6,974 | $6,974,176,558 | Luxembourg | 1 |
 | Environmental protection | $1,144 | $1,144,327,549 | Luxembourg | 1 |
@@ -193,7 +193,7 @@ Annual public budget: **$48,111,198,500**; **$48,111 per resident**.
 - Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
 - Cheapest qualifying alternatives: Luxembourg ($6,760 public per resident).
 
-**Defence**
+**Weapons and Military**
 
 - Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
 - Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).

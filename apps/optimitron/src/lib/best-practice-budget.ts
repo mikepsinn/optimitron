@@ -10,6 +10,7 @@ export const BEST_PRACTICE_OUTCOMES: Record<string, { label: string; unit: strin
 
 const categories: BestPracticeCategory[] = data.categories.map(category => ({
   ...category,
+  name: category.id === 'GF02' ? 'Weapons and Military' : category.name,
   outcomeMetrics: category.id === 'GF07' ? ['hale'] : category.id === 'GF09' ? ['mathProficiency'] : ['hale', 'income'],
   ...(category.id === 'GF07' ? { selectionCost: 'totalHealthPerCapita' as const } : {}),
 }));
