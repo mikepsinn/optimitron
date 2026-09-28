@@ -30,6 +30,7 @@
     "./datasets/leader-activities": "./src/datasets/leader-activities.ts",
     "./datasets/natural-experiments": "./src/datasets/natural-experiments.ts",
     "./datasets/us-wishocratic-items": "./src/datasets/us-wishocratic-items.ts",
+    "./datasets/us-policy-scenario-inputs": "./src/datasets/us-policy-scenario-inputs.ts",
     "./datasets/government-report-cards": "./src/datasets/government-report-cards.ts",
     "./datasets/us-politician-scorecards": "./src/datasets/us-politician-scorecards.ts",
     "./datasets/gpu-compute": "./src/datasets/gpu-compute.ts",

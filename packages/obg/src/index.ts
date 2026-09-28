@@ -14,3 +14,6 @@ export * from './efficiency-analysis.js';
 export * from './efficiency-attribution.js';
 export * from './budget-report-json.js';
 export * from './budget-legislation-brief.js';
+export * from './uncertain-allocation.js';
+export * from './clinical-discovery-scenario.js';
+export * from './decision-report.js';
