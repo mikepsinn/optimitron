@@ -485,6 +485,17 @@ describe('generateMarkdownReport', () => {
     expect(unchanged).not.toMatch(/improvement|worsening/);
   });
 
+  it.each(['higher', 'lower'] as const)('preserves a fractional recommendation for %s outcomes', (outcomeDirection) => {
+    const fractional = generateMarkdownReport({
+      ...result, predictorName: 'Input ratio', predictorUnit: 'fraction',
+      optimalValues: {
+        ...result.optimalValues, optimalDailyValue: 0.05, valuePredictingLowOutcome: 0.05,
+      },
+    }, { outcomeDirection });
+    expect(fractional).toContain('**Optimal Value:** 0.05 fraction (practical recommendation)');
+    expect(fractional).toContain('**Target: 0.05 fraction Input ratio**');
+  });
+
   it('keeps negative-correlation direction scores consistent with their description', () => {
     const asymmetric = generateMarkdownReport({
       ...result, forwardPearson: -0.8, reversePearson: -0.2, predictivePearson: -0.6,

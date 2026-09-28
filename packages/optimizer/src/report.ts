@@ -126,6 +126,7 @@ export function generateMarkdownReport(
   const practicalValue = groupToPracticalValue(options.outcomeDirection === 'lower'
     ? optimalValues.valuePredictingLowOutcome
     : optimalValues.optimalDailyValue);
+  const practicalValueText = fmt(practicalValue, Number.isInteger(practicalValue) ? 0 : 2);
   const pisScore = pis.score * 100; // Display on 0–100 scale
   const bhTotal = bradfordHillTotal(bradfordHill);
 
@@ -147,7 +148,7 @@ export function generateMarkdownReport(
   // --- Key Findings ---
   lines.push('## Key Findings');
   lines.push('');
-  lines.push(`- **Optimal Value:** ${fmt(practicalValue, 0)}${pUnit}${perPeriod} (practical recommendation)`);
+  lines.push(`- **Optimal Value:** ${practicalValueText}${pUnit}${perPeriod} (practical recommendation)`);
   lines.push(
     `- **Outcome Change:** ${outcomeName} is ${change} following high-predictor ${periods} vs baseline`,
   );
@@ -183,7 +184,7 @@ export function generateMarkdownReport(
     `- Low ${predictorName} ${periods} (avg ${fmt(optimalValues.averageDailyLowPredictor)}${pUnit}): ` +
     `${outcomeName} = ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}${oUnit}`,
   );
-  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)}${pUnit} ${predictorName}${perPeriod}**`);
+  lines.push(`- Practical recommendation: **Target: ${practicalValueText}${pUnit} ${predictorName}${perPeriod}**`);
   lines.push('');
 
   // --- Data Quality ---
