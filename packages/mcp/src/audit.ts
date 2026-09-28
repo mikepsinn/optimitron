@@ -41,6 +41,9 @@ export function mcpToolInputSummary(args: Record<string, unknown>) {
     "sourceSystem",
     "artifactType",
     "status",
+    // Admin repairs: the audit must show whether a call wrote or only previewed.
+    "apply",
+    "expectedMeasurementCount",
   ];
   const summary: Record<string, unknown> = { keys: Object.keys(args).sort() };
   for (const key of safeScalarKeys) {

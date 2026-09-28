@@ -486,6 +486,22 @@ It repairs batches of 500 rows and refreshes each affected summary once per vari
 Each variable commits in one transaction with a 60-second timeout. A failed variable rolls back.
 Correct unsupported entries through MCP with the intended amount and a compatible unit.
 
+#### Wrong Canonical Units
+
+A variable can have the wrong canonical unit, for example a 7.5 mg dose stored as `7.5 count`.
+Unit fields on `upsertTrackingReminder` cannot correct it, because all users share the canonical unit.
+An admin corrects it with `relabelVariableUnit` (`earthdata:admin`). The tool changes unit labels and keeps every number.
+
+1. Do a dry run. Pass `globalVariableId`, `fromUnit` (the current canonical unit), and `toUnit`.
+2. Read `counts`. `otherSubjects` is the number of other people whose amounts change label.
+3. Call again with `apply: true` and `expectedMeasurementCount` set to `counts.measurements`.
+
+The tool relabels the canonical unit, personal unit settings in `fromUnit`, and measurements stored in `fromUnit`.
+Reminder presets and receipts have no unit column. They keep their numbers and read in the new unit.
+The tool refuses a measurement that was converted between `fromUnit` and another unit, because a relabel would make that amount wrong.
+
+`count` converts to no other unit. When a new variable's category defaults to `count`, as Treatment does, pass an explicit unit.
+
 ### Answering Tracking Reminders
 
 A reminder has two answers: `TRACKED` records a measurement, `SNOOZED` defers

@@ -126,6 +126,7 @@ import {
   TRACKING_TOOL_DEFINITIONS,
   TRACKING_TOOL_SCOPES,
 } from "@optimitron/tracking";
+import { relabelVariableUnit } from "@optimitron/tracking/relabel-variable-unit";
 import {
   isPrismaUniqueConstraintError,
   optionalString,
@@ -301,6 +302,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   restoreContent: [McpScope.EARTHDATA_ADMIN],
   mergeDuplicatePeople: [McpScope.EARTHDATA_ADMIN],
   resolveContentReport: [McpScope.EARTHDATA_ADMIN],
+  relabelVariableUnit: [McpScope.EARTHDATA_ADMIN],
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   claimSignerReminder: [McpScope.TASKS_PERSONAL],
@@ -387,6 +389,7 @@ const ADMIN_ONLY_TOOLS = new Set([
   "restoreContent",
   "mergeDuplicatePeople",
   "resolveContentReport",
+  "relabelVariableUnit",
 ]);
 
 const DISABLED_TOOLS = new Set([
@@ -654,6 +657,7 @@ const AUDITED_MCP_TOOLS = new Set([
   "restoreContent",
   "mergeDuplicatePeople",
   "resolveContentReport",
+  "relabelVariableUnit",
   ...Object.keys(PRIVATE_EXECUTION_TOOL_SCOPES),
 ]);
 
@@ -3308,6 +3312,37 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         resolutionNote: { type: "string" },
       },
       required: ["id"],
+    },
+  },
+  {
+    name: "relabelVariableUnit",
+    description:
+      "Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedMeasurementCount set to counts.measurements from the dry run. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        fromUnit: {
+          type: "string",
+          description:
+            "The current canonical unit: unit ID or exact abbreviation, for example count.",
+        },
+        toUnit: {
+          type: "string",
+          description:
+            "The correct unit: unit ID or exact abbreviation, for example mg.",
+        },
+        apply: {
+          type: "boolean",
+          description: "Default false: a dry run that changes nothing.",
+        },
+        expectedMeasurementCount: {
+          type: "number",
+          description:
+            "Required with apply: true. Pass counts.measurements from the dry run.",
+        },
+      },
+      required: ["globalVariableId", "fromUnit", "toUnit"],
     },
   },
 ];
@@ -7640,6 +7675,25 @@ export function createMcpServer(
                     ContentReportStatus.RESOLVED,
                   ),
                 }),
+            );
+          }
+
+          case "relabelVariableUnit": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This admin tool corrects a tracking variable's unit.",
+              );
+            const prisma = await getPrisma();
+            return await runAuditedEarthDataTool(
+              name,
+              a,
+              {
+                clientId: options.clientId,
+                oauthGrantId: options.oauthGrantId,
+                userId,
+              },
+              () => relabelVariableUnit(prisma, a, userId),
             );
           }
 

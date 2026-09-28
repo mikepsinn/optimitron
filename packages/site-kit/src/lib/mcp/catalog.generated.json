@@ -876,6 +876,43 @@
       ]
     },
     {
+      "adminOnly": true,
+      "description": "Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedMeasurementCount set to counts.measurements from the dry run. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "globalVariableId": {
+            "type": "string"
+          },
+          "fromUnit": {
+            "type": "string",
+            "description": "The current canonical unit: unit ID or exact abbreviation, for example count."
+          },
+          "toUnit": {
+            "type": "string",
+            "description": "The correct unit: unit ID or exact abbreviation, for example mg."
+          },
+          "apply": {
+            "type": "boolean",
+            "description": "Default false: a dry run that changes nothing."
+          },
+          "expectedMeasurementCount": {
+            "type": "number",
+            "description": "Required with apply: true. Pass counts.measurements from the dry run."
+          }
+        },
+        "required": [
+          "globalVariableId",
+          "fromUnit",
+          "toUnit"
+        ]
+      },
+      "name": "relabelVariableUnit",
+      "requiredScopes": [
+        "earthdata:admin"
+      ]
+    },
+    {
       "adminOnly": false,
       "description": "Record an ad hoc personal dFDA/N-of-1 measurement. To answer, correct, or snooze a due or overdue notification, use respondToTrackingReminderNotifications instead. recordMeasurement does not mark notifications answered. Supported measurements include a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable. Pass value in the supplied unit, or your personal default when omitted. The server preserves the entered value and converts it to the canonical unit. One-time unit choices do not change personal defaults.",
       "inputSchema": {
@@ -1077,7 +1114,7 @@
     },
     {
       "adminOnly": false,
-      "description": "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. Existing reminder amounts and personal limits convert with the preference. Unit changes are blocked if prior reminder receipts contain values without unit metadata. Use explicit units on individual measurements instead. A supplied defaultValue uses the new unit. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.",
+      "description": "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. Treatment and other categories that default to count need an explicit unit, for example mg for a dose. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. Existing reminder amounts and personal limits convert with the preference. Unit changes are blocked if prior reminder receipts contain values without unit metadata. Use explicit units on individual measurements instead. A supplied defaultValue uses the new unit. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.",
       "inputSchema": {
         "type": "object",
         "anyOf": [
@@ -6038,7 +6075,7 @@
         "properties": {
           "site": {
             "type": "string",
-            "description": "Optional domain filter, e.g. optimitron.com, warondisease.org, dfda.earth, dih.earth, or manual.warondisease.org."
+            "description": "Optional domain filter: optimitron.com or manual.warondisease.org."
           }
         }
       },

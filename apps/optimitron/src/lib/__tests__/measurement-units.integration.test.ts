@@ -10,6 +10,7 @@ import {
 } from "@optimitron/tracking";
 import type { TrackingToolName } from "@optimitron/tracking";
 import { normalizeMeasurements } from "@optimitron/tracking/normalize-measurements";
+import { relabelVariableUnit } from "@optimitron/tracking/relabel-variable-unit";
 import { prisma } from "@/lib/prisma";
 
 const PREFIX = "measurement_units_test_";
@@ -19,24 +20,28 @@ const VARIABLE = `${PREFIX}variable`;
 const NOF1 = `${PREFIX}nof1`;
 const SUBJECT = `${PREFIX}subject`;
 const TIME = "2026-09-14T14:00:00.000Z";
+const TEST_VARIABLES = { name: { startsWith: PREFIX } };
 let mg: string;
 let grams: string;
+let count: string;
 
 async function cleanup() {
   await prisma.trackingReminderNotification.deleteMany({
-    where: { trackingReminder: { globalVariableId: VARIABLE } },
+    where: { trackingReminder: { globalVariable: TEST_VARIABLES } },
   });
   await prisma.trackingReminder.deleteMany({
-    where: { globalVariableId: VARIABLE },
+    where: { globalVariable: TEST_VARIABLES },
   });
   await prisma.measurement.deleteMany({
-    where: { globalVariableId: VARIABLE },
+    where: { globalVariable: TEST_VARIABLES },
   });
   await prisma.nOf1Variable.deleteMany({
-    where: { globalVariableId: VARIABLE },
+    where: { globalVariable: TEST_VARIABLES },
   });
-  await prisma.globalVariable.deleteMany({ where: { id: VARIABLE } });
-  await prisma.subject.deleteMany({ where: { id: SUBJECT } });
+  await prisma.globalVariable.deleteMany({ where: TEST_VARIABLES });
+  await prisma.subject.deleteMany({
+    where: { OR: [{ id: SUBJECT }, { userId: { in: [USER, OTHER_USER] } }] },
+  });
   await prisma.user.deleteMany({ where: { id: { in: [USER, OTHER_USER] } } });
   await prisma.variableCategory.deleteMany({
     where: { id: `${PREFIX}category` },
@@ -95,6 +100,7 @@ describe("measurement units through MCP and PostgreSQL", () => {
       ["g", "Grams", "g", "Weight"],
       ["mL", "Milliliters", "mL", "Volume"],
       ["servings", "Servings", "{serving}", "Count"],
+      ["count", "Count", "{count}", "Count"],
     ]) {
       await prisma.unit.upsert({
         where: { abbreviatedName },
@@ -107,6 +113,11 @@ describe("measurement units through MCP and PostgreSQL", () => {
     ).id;
     grams = (
       await prisma.unit.findUniqueOrThrow({ where: { abbreviatedName: "g" } })
+    ).id;
+    count = (
+      await prisma.unit.findUniqueOrThrow({
+        where: { abbreviatedName: "count" },
+      })
     ).id;
     await prisma.user.createMany({
       data: [USER, OTHER_USER].map((id) => ({
@@ -585,5 +596,232 @@ describe("measurement units through MCP and PostgreSQL", () => {
         apply: true,
       }),
     ).toMatchObject({ changed: 0 });
+  });
+
+  describe("relabelVariableUnit", () => {
+    const RELABEL = {
+      globalVariableId: VARIABLE,
+      fromUnit: "count",
+      toUnit: "mg",
+    };
+
+    beforeEach(async () => {
+      await prisma.globalVariable.update({
+        where: { id: VARIABLE },
+        data: { defaultUnitId: count, minimumAllowedValue: 0 },
+      });
+      await prisma.nOf1Variable.update({
+        where: { id: NOF1 },
+        data: { defaultUnitId: count },
+      });
+    });
+
+    it("relabels a dose stored in count as mg for every user and keeps every amount", async () => {
+      const dose = (
+        await call("upsertTrackingReminder", {
+          globalVariableId: VARIABLE,
+          reminderStartTime: "22:30",
+          defaultValue: 7.5,
+          startTrackingDate: "2026-09-01T00:00:00Z",
+        })
+      ).result.reminder;
+      // The reported failure: a user edit cannot leave the canonical unit.
+      await expect(
+        call("upsertTrackingReminder", {
+          trackingReminderId: dose.id,
+          unitAbbreviation: "mg",
+          defaultValue: 7.5,
+        }),
+      ).rejects.toThrow("Cannot convert mg to count");
+      await call("respondToTrackingReminder", {
+        trackingReminderId: dose.id,
+        status: "TRACKED",
+        dateKey: "2026-09-14",
+        trackedAt: TIME,
+      });
+      await call(
+        "recordMeasurement",
+        { globalVariableId: VARIABLE, value: 15, startTime: TIME },
+        OTHER_USER,
+      );
+
+      const dryRun = await relabelVariableUnit(prisma, RELABEL, USER);
+      expect(dryRun).toMatchObject({
+        applied: false,
+        counts: {
+          measurements: 2,
+          nOf1Variables: 2,
+          otherSubjects: 1,
+          subjects: 2,
+          trackedNotifications: 1,
+          trackingReminders: 1,
+        },
+      });
+      expect(
+        await prisma.measurement.count({
+          where: { globalVariableId: VARIABLE, unitId: count },
+        }),
+      ).toBe(2);
+
+      await relabelVariableUnit(
+        prisma,
+        { ...RELABEL, apply: true, expectedMeasurementCount: 2 },
+        USER,
+      );
+      expect(
+        await prisma.globalVariable.findUniqueOrThrow({
+          where: { id: VARIABLE },
+        }),
+      ).toMatchObject({
+        defaultUnitId: mg,
+        mean: 11.25,
+        minimumAllowedValue: 0,
+        numberOfMeasurements: 2,
+      });
+      expect(
+        await prisma.nOf1Variable.findMany({
+          where: { globalVariableId: VARIABLE },
+          select: { defaultUnitId: true },
+        }),
+      ).toEqual([{ defaultUnitId: mg }, { defaultUnitId: mg }]);
+      const rows = await prisma.measurement.findMany({
+        where: { globalVariableId: VARIABLE },
+        orderBy: { value: "asc" },
+      });
+      expect(
+        rows.map((row) => [
+          row.value,
+          row.unitId,
+          row.originalValue,
+          row.originalUnitId,
+        ]),
+      ).toEqual([
+        [7.5, mg, 7.5, mg],
+        [15, mg, 15, mg],
+      ]);
+      expect(
+        await prisma.trackingReminderNotification.findFirstOrThrow({
+          where: { trackingReminderId: dose.id },
+        }),
+      ).toMatchObject({ trackedValue: 7.5 });
+
+      const corrected = await call("upsertTrackingReminder", {
+        trackingReminderId: dose.id,
+        unitAbbreviation: "mg",
+        defaultValue: 7.5,
+      });
+      expect(corrected.result.reminder).toMatchObject({ defaultValue: 7.5 });
+      expect(corrected.result.unit.id).toBe(mg);
+    });
+
+    it("refreshes a personal summary whose legacy rows already use the new unit", async () => {
+      await prisma.measurement.create({
+        data: {
+          subjectId: SUBJECT,
+          nOf1VariableId: NOF1,
+          globalVariableId: VARIABLE,
+          startTime: new Date(TIME),
+          value: 7.5,
+          unitId: mg,
+          originalValue: 7.5,
+          originalUnitId: mg,
+        },
+      });
+      await relabelVariableUnit(
+        prisma,
+        { ...RELABEL, apply: true, expectedMeasurementCount: 0 },
+        USER,
+      );
+      expect(
+        await prisma.nOf1Variable.findUniqueOrThrow({ where: { id: NOF1 } }),
+      ).toMatchObject({ mean: 7.5, numberOfMeasurements: 1 });
+    });
+
+    it("refuses a stale unit, an outdated count, a stranded personal unit, or a converted row and changes nothing", async () => {
+      await record(7.5, "count");
+      await expect(
+        relabelVariableUnit(
+          prisma,
+          { ...RELABEL, fromUnit: "mg", toUnit: "g" },
+          USER,
+        ),
+      ).rejects.toThrow("fromUnit must be the current canonical unit");
+      await expect(
+        relabelVariableUnit(prisma, { ...RELABEL, apply: true }, USER),
+      ).rejects.toThrow("expectedMeasurementCount is required");
+      await expect(
+        relabelVariableUnit(
+          prisma,
+          { ...RELABEL, apply: true, expectedMeasurementCount: 2 },
+          USER,
+        ),
+      ).rejects.toThrow("Run a new dry run");
+      const servings = await prisma.unit.findUniqueOrThrow({
+        where: { abbreviatedName: "servings" },
+      });
+      await prisma.nOf1Variable.update({
+        where: { id: NOF1 },
+        data: { defaultUnitId: servings.id },
+      });
+      await expect(
+        relabelVariableUnit(prisma, RELABEL, USER),
+      ).rejects.toThrow("uses servings, which cannot convert to mg");
+      await prisma.nOf1Variable.update({
+        where: { id: NOF1 },
+        data: { defaultUnitId: count },
+      });
+      await prisma.measurement.create({
+        data: {
+          subjectId: SUBJECT,
+          nOf1VariableId: NOF1,
+          globalVariableId: VARIABLE,
+          startTime: new Date("2026-09-14T15:00:00Z"),
+          value: 2,
+          unitId: count,
+          originalValue: 1,
+          originalUnitId: servings.id,
+        },
+      });
+      await expect(
+        relabelVariableUnit(prisma, RELABEL, USER),
+      ).rejects.toThrow("were converted between count and another unit");
+
+      expect(
+        await prisma.globalVariable.findUniqueOrThrow({
+          where: { id: VARIABLE },
+        }),
+      ).toMatchObject({ defaultUnitId: count });
+      expect(
+        await prisma.measurement.count({
+          where: { globalVariableId: VARIABLE, unitId: count },
+        }),
+      ).toBe(2);
+    });
+  });
+
+  it("requires an explicit unit before a new variable inherits a count default", async () => {
+    await prisma.variableCategory.update({
+      where: { id: `${PREFIX}category` },
+      data: { defaultUnitId: count },
+    });
+    const input = {
+      variableName: `${PREFIX}new dose`,
+      categoryName: `${PREFIX}category`,
+      value: 7.5,
+      startTime: TIME,
+    };
+    await expect(call("recordMeasurement", input)).rejects.toThrow(
+      "defaults to count",
+    );
+    expect(
+      await prisma.globalVariable.count({
+        where: { name: input.variableName },
+      }),
+    ).toBe(0);
+    const created = await call("recordMeasurement", {
+      ...input,
+      unitAbbreviation: "mg",
+    });
+    expect(created.result.globalVariable.defaultUnitId).toBe(mg);
   });
 });
