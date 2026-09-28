@@ -45,6 +45,29 @@ Input definitions live in
 valuation assumptions live in `apps/optimitron/scripts/analysis/`. The OBG
 library accepts supplied values and has no data or filesystem dependency.
 
+## Deferred welfare solver research
+
+`optimizeWelfareBudget()` allocates a fixed total across supplied, additive
+concave response curves for median healthy life years and median real after-tax
+income growth. It reuses the existing diminishing-return functions and OPG
+welfare definition. Paired curve draws select one allocation by expected welfare
+and evaluate that same allocation across all draws.
+
+No calibrated country response curves or national results ship with this branch.
+The tests use synthetic analytical examples. The solver does not power any app
+page, and it does not estimate the total budget itself.
+
+To evaluate a supplied `WelfareBudgetDocument` after building OBG:
+
+```bash
+pnpm --filter @optimitron/web generate:welfare-budget --input document.json --output output/welfare-budget
+```
+
+The document must name the jurisdiction, fiscal year, currency, effect horizon,
+exact median endpoints, and source references for every adjustable category.
+The adapter writes matching JSON and Markdown. Sources document the supplied
+curves; their presence does not establish causal calibration.
+
 ## Tests
 
 Unit-tested — run `pnpm --filter @optimitron/obg test` for the live count.

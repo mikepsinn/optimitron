@@ -17,3 +17,4 @@ export * from './budget-legislation-brief.js';
 export * from './uncertain-allocation.js';
 export * from './clinical-discovery-scenario.js';
 export * from './decision-report.js';
+export * from './welfare-budget.js';
