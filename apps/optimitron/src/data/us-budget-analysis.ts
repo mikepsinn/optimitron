@@ -105,6 +105,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 27,
         "totalCountries": 28,
         "spendingPerCapita": 2052,
@@ -252,6 +257,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 28,
         "totalCountries": 28,
         "spendingPerCapita": 10333,
@@ -310,7 +320,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 2% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 2% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Infrastructure grade (ASCE)",
@@ -392,59 +402,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.018
+        "lineShareOfField": 0.023
       }
     },
     {
@@ -457,7 +470,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is government education spending (all levels), where United States ranks 11 of 11 countries. This line is 8% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is government education spending (all levels), where United States ranks 8 of 8 countries. This line is 8% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "High school graduation rate",
@@ -551,8 +564,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "PISA Math Score"
       },
       "efficiency": {
-        "rank": 11,
-        "totalCountries": 11,
+        "comparisonYears": [
+          2022
+        ],
+        "rank": 8,
+        "totalCountries": 8,
         "spendingPerCapita": 2996,
         "outcome": 465,
         "outcomeName": "PISA Math Score",
@@ -572,18 +588,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
             "rank": 1
           },
           {
-            "code": "TWN",
-            "name": "Taiwan",
-            "spendingPerCapita": 1367,
-            "outcome": 544.33,
-            "rank": 2
-          },
-          {
             "code": "SGP",
             "name": "Singapore",
-            "spendingPerCapita": 2509,
-            "outcome": 569.33,
-            "rank": 3
+            "spendingPerCapita": 2581,
+            "outcome": 575,
+            "rank": 2
           }
         ],
         "floorSpendingPerCapita": 1288,
@@ -693,6 +702,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 28,
         "totalCountries": 28,
         "spendingPerCapita": 10333,
@@ -751,7 +765,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 1% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 2% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Total homeless population",
@@ -828,59 +842,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.013
+        "lineShareOfField": 0.016
       }
     },
     {
@@ -893,7 +910,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 1% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 1% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Foreign aid as % GNI",
@@ -970,59 +987,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.011
+        "lineShareOfField": 0.014
       }
     },
     {
@@ -1119,6 +1139,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 27,
         "totalCountries": 28,
         "spendingPerCapita": 2052,
@@ -1177,7 +1202,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 25 of 28 countries. This line is 6% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 13 of 19 countries. This line is 7% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Renewable energy share of electricity",
@@ -1253,60 +1278,63 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         }
       ],
       "diminishingReturns": {
-        "modelType": "log",
-        "r2": 0.178,
-        "n": 584,
+        "modelType": "saturation",
+        "r2": 0.655,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 25,
-        "totalCountries": 28,
-        "spendingPerCapita": 1991,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 13,
+        "totalCountries": 19,
+        "spendingPerCapita": 1576,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "NLD",
-          "name": "Netherlands",
-          "spendingPerCapita": 1064,
-          "outcome": 31221.39,
+          "code": "NOR",
+          "name": "Norway",
+          "spendingPerCapita": 1091,
+          "outcome": 32725.07,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 1064,
-            "outcome": 31221.39,
+            "code": "NOR",
+            "name": "Norway",
+            "spendingPerCapita": 1091,
+            "outcome": 32725.07,
             "rank": 1
           },
           {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 33589.79,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 1311,
+            "outcome": 28858.58,
             "rank": 2
           },
           {
             "code": "DNK",
             "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 30452.17,
+            "spendingPerCapita": 1324,
+            "outcome": 28283.75,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 1064,
-        "floorOutcome": 31221.39,
-        "overspendRatio": 1.9,
-        "potentialSavingsPerCapita": 927,
-        "potentialSavingsTotal": 314253000000
+        "floorSpendingPerCapita": 1091,
+        "floorOutcome": 32725.07,
+        "overspendRatio": 1.4,
+        "potentialSavingsPerCapita": 485,
+        "potentialSavingsTotal": 164415000000
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
         "fieldLabel": "Total R&D spending (business and government)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.059
+        "lineShareOfField": 0.074
       }
     },
     {
@@ -1319,7 +1347,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 25 of 28 countries. This line is 5% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 13 of 19 countries. This line is 6% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "R&D as % of GDP (federal)",
@@ -1400,60 +1428,63 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         }
       ],
       "diminishingReturns": {
-        "modelType": "log",
-        "r2": 0.178,
-        "n": 584,
+        "modelType": "saturation",
+        "r2": 0.655,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 25,
-        "totalCountries": 28,
-        "spendingPerCapita": 1991,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 13,
+        "totalCountries": 19,
+        "spendingPerCapita": 1576,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "NLD",
-          "name": "Netherlands",
-          "spendingPerCapita": 1064,
-          "outcome": 31221.39,
+          "code": "NOR",
+          "name": "Norway",
+          "spendingPerCapita": 1091,
+          "outcome": 32725.07,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 1064,
-            "outcome": 31221.39,
+            "code": "NOR",
+            "name": "Norway",
+            "spendingPerCapita": 1091,
+            "outcome": 32725.07,
             "rank": 1
           },
           {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 33589.79,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 1311,
+            "outcome": 28858.58,
             "rank": 2
           },
           {
             "code": "DNK",
             "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 30452.17,
+            "spendingPerCapita": 1324,
+            "outcome": 28283.75,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 1064,
-        "floorOutcome": 31221.39,
-        "overspendRatio": 1.9,
-        "potentialSavingsPerCapita": 927,
-        "potentialSavingsTotal": 314253000000
+        "floorSpendingPerCapita": 1091,
+        "floorOutcome": 32725.07,
+        "overspendRatio": 1.4,
+        "potentialSavingsPerCapita": 485,
+        "potentialSavingsTotal": 164415000000
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
         "fieldLabel": "Total R&D spending (business and government)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.05
+        "lineShareOfField": 0.063
       }
     },
     {
@@ -1466,7 +1497,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 0.7% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 0.9% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Labor force participation rate",
@@ -1543,59 +1574,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.007
+        "lineShareOfField": 0.009
       }
     },
     {
@@ -1692,6 +1726,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 25,
         "totalCountries": 26,
         "spendingPerCapita": 12848,
@@ -1750,7 +1789,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 0.7% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 0.8% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Food insecurity rate",
@@ -1827,59 +1866,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.007
+        "lineShareOfField": 0.008
       }
     },
     {
@@ -1892,7 +1934,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 0.5% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 0.7% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "Tax gap (estimated)",
@@ -1964,59 +2006,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.005
+        "lineShareOfField": 0.007
       }
     },
     {
@@ -2029,7 +2074,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 0.3% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 0.4% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "US passport holders",
@@ -2101,59 +2146,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.003
+        "lineShareOfField": 0.004
       }
     },
     {
@@ -2166,7 +2214,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 25 of 28 countries. This line is 2% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is total R&D spending (business and government), where United States ranks 13 of 19 countries. This line is 3% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "GDP growth rate (real)",
@@ -2237,60 +2285,63 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         }
       ],
       "diminishingReturns": {
-        "modelType": "log",
-        "r2": 0.178,
-        "n": 584,
+        "modelType": "saturation",
+        "r2": 0.655,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 25,
-        "totalCountries": 28,
-        "spendingPerCapita": 1991,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 13,
+        "totalCountries": 19,
+        "spendingPerCapita": 1576,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "NLD",
-          "name": "Netherlands",
-          "spendingPerCapita": 1064,
-          "outcome": 31221.39,
+          "code": "NOR",
+          "name": "Norway",
+          "spendingPerCapita": 1091,
+          "outcome": 32725.07,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 1064,
-            "outcome": 31221.39,
+            "code": "NOR",
+            "name": "Norway",
+            "spendingPerCapita": 1091,
+            "outcome": 32725.07,
             "rank": 1
           },
           {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 33589.79,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 1311,
+            "outcome": 28858.58,
             "rank": 2
           },
           {
             "code": "DNK",
             "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 30452.17,
+            "spendingPerCapita": 1324,
+            "outcome": 28283.75,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 1064,
-        "floorOutcome": 31221.39,
-        "overspendRatio": 1.9,
-        "potentialSavingsPerCapita": 927,
-        "potentialSavingsTotal": 314253000000
+        "floorSpendingPerCapita": 1091,
+        "floorOutcome": 32725.07,
+        "overspendRatio": 1.4,
+        "potentialSavingsPerCapita": 485,
+        "potentialSavingsTotal": 164415000000
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
         "fieldLabel": "Total R&D spending (business and government)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.02
+        "lineShareOfField": 0.026
       }
     },
     {
@@ -2303,7 +2354,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       "gap": 0,
       "gapPercent": 0,
       "recommendation": "no_line_benchmark",
-      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 23 of 26 countries. This line is 0.3% of that total, so its overspend ratio is not applied here.",
+      "evidenceSource": "No line-specific benchmark. The only OECD comparison is public social spending (pensions, health, income support), where United States ranks 1 of 19 countries. This line is 0.4% of that total, so its overspend ratio is not applied here.",
       "outcomeMetrics": [
         {
           "name": "National park visits",
@@ -2380,59 +2431,62 @@ export const usBudgetAnalysis: BudgetReportJSON = {
       ],
       "diminishingReturns": {
         "modelType": "saturation",
-        "r2": 0.398,
-        "n": 567,
+        "r2": 0.639,
+        "n": 345,
         "marginalReturn": 0,
         "elasticity": null,
         "outcomeName": "After-Tax Median Income (PPP)"
       },
       "efficiency": {
-        "rank": 23,
-        "totalCountries": 26,
-        "spendingPerCapita": 12848,
-        "outcome": 16287.22,
+        "comparisonYears": [
+          2018
+        ],
+        "rank": 1,
+        "totalCountries": 19,
+        "spendingPerCapita": 10268,
+        "outcome": 37444.1,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "SGP",
-          "name": "Singapore",
-          "spendingPerCapita": 7868,
-          "outcome": 36844.31,
+          "code": "CHE",
+          "name": "Switzerland",
+          "spendingPerCapita": 10051,
+          "outcome": 34937.6,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "SGP",
-            "name": "Singapore",
-            "spendingPerCapita": 7868,
-            "outcome": 36844.31,
+            "code": "CHE",
+            "name": "Switzerland",
+            "spendingPerCapita": 10051,
+            "outcome": 34937.6,
             "rank": 1
           },
           {
-            "code": "NLD",
-            "name": "Netherlands",
-            "spendingPerCapita": 10605,
-            "outcome": 31221.39,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 10268,
+            "outcome": 37444.1,
             "rank": 2
           },
           {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 38815.37,
+            "code": "AUT",
+            "name": "Austria",
+            "spendingPerCapita": 11289,
+            "outcome": 28858.58,
             "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 7868,
-        "floorOutcome": 36844.31,
-        "overspendRatio": 1.6,
-        "potentialSavingsPerCapita": 4980,
-        "potentialSavingsTotal": 1688333000000
+        "floorSpendingPerCapita": 10051,
+        "floorOutcome": 34937.6,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 217,
+        "potentialSavingsTotal": 73563000000
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
         "fieldLabel": "Public social spending (pensions, health, income support)",
         "scope": "national_field_proxy",
-        "lineShareOfField": 0.003
+        "lineShareOfField": 0.004
       }
     },
     {
@@ -2534,6 +2588,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcomeName": "Life Expectancy"
       },
       "efficiency": {
+        "comparisonYears": [
+          2020,
+          2021,
+          2022
+        ],
         "rank": 25,
         "totalCountries": 26,
         "spendingPerCapita": 12848,
@@ -2586,28 +2645,512 @@ export const usBudgetAnalysis: BudgetReportJSON = {
   "topRecommendations": [
     "Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Cutting the $886B line to Switzerland's ratio saves $719B/yr",
     "National comparison, total health spending (public and private): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential national savings: $2.3T/yr",
-    "National comparison, government education spending (all levels): United States spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr",
-    "National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 25/28). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential national savings: $314B/yr",
-    "National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 23/26). Singapore spends $7868/cap with After-Tax Median Income (PPP) 36844.31. Overspend: 1.6x. Potential national savings: $1.7T/yr"
+    "National comparison, government education spending (all levels): United States spends $2996/cap (rank 8/8). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr",
+    "National comparison, total R&D spending (business and government): United States spends $1576/cap (rank 13/19). Norway spends $1091/cap with After-Tax Median Income (PPP) 32725.07. Overspend: 1.4x. Potential national savings: $164B/yr",
+    "National comparison, public social spending (pensions, health, income support): United States spends $10268/cap (rank 1/19). Near floor ($10051/cap). After-Tax Median Income (PPP): 37444.1"
   ],
-  "generatedAt": "2026-09-25T17:18:15.910Z",
+  "generatedAt": "2026-09-28T19:32:42.520Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",
     "baseYear": 2017,
     "perCapita": true,
     "unit": "constant 2017 USD per capita",
-    "note": "Matches OECD cross-country PPP convention for comparable analysis"
+    "note": "Applies to US line-item history. The bundled international spending panel has no verified common reference price year."
   },
   "methodology": {
-    "oslMethod": "Diminishing returns curve fitting (log-linear or saturation model)",
-    "oslThreshold": "OSL where marginal return drops to 50% of cross-country average",
-    "dataClamping": "OSL clamped to [50% min, 150% max] of observed cross-country spending",
-    "lowFitGuard": "Models with R² < 0.3 constrained to [0.5×, 2×] current spending",
+    "oslMethod": "Lowest spending among countries in the top quartile of the selected outcome.",
+    "comparisonPeriod": "Latest target-country year with at least five countries. Average up to three observed target years only when every included country has that exact set; each result records comparisonYears.",
+    "curveFits": "Log-linear or saturation fits describe the full historical panel and do not determine recommendations.",
+    "income": {
+      "eligibility": "Observed real PPP disposable income after direct taxes and cash transfers; no interpolation or government-spending deduction.",
+      "selection": "One source and definition per country, selected by observed-year coverage. No gap-filling from another income definition.",
+      "comparability": "OECD and Eurostat use different equivalence scales, price indices, and PPP conversions. Cross-source income levels are approximate comparisons; original definitions are retained below.",
+      "definitions": [
+        {
+          "source": "OECD IDD",
+          "unit": "Real PPP-adjusted US dollars per equivalised household",
+          "methodology": "METH2012",
+          "definition": "D_CUR",
+          "priceIndexNote": "Deflated with OECD IDD CPI (index, same-year basis as published by OECD).",
+          "pppBasisNote": "Converted with OECD IDD private-consumption PPP (national currency per US dollar)."
+        },
+        {
+          "source": "Eurostat EU-SILC",
+          "unit": "Real PPP-adjusted US dollars per equivalised person",
+          "methodology": "EU-SILC",
+          "definition": "Median equivalised disposable income (MED_E).",
+          "priceIndexNote": "Deflated with Eurostat HICP annual average all-items index.",
+          "pppBasisNote": "Converted with World Bank private-consumption PPP conversion factor (LCU per international $)."
+        }
+      ],
+      "coverage": {
+        "USA": {
+          "source": "OECD IDD",
+          "years": [
+            2018
+          ]
+        },
+        "GBR": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018
+          ]
+        },
+        "FRA": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "DEU": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "CAN": {
+          "source": "OECD IDD",
+          "years": [
+            2000
+          ]
+        },
+        "ITA": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "NLD": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "BEL": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "SWE": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "NOR": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "DNK": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "FIN": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "AUT": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "CHE": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "ESP": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "PRT": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "IRL": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2000,
+            2001,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "NZL": {
+          "source": "OECD IDD",
+          "years": [
+            2020
+          ]
+        },
+        "KOR": {
+          "source": "OECD IDD",
+          "years": [
+            2013
+          ]
+        },
+        "ISR": {
+          "source": "OECD IDD",
+          "years": [
+            2012
+          ]
+        },
+        "CZE": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2005,
+            2006,
+            2007,
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "EST": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2006,
+            2009,
+            2010,
+            2012,
+            2015,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        "POL": {
+          "source": "Eurostat EU-SILC",
+          "years": [
+            2006,
+            2009,
+            2010,
+            2012,
+            2015,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        }
+      }
+    },
     "nonDiscretionary": "Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization",
     "lineAttribution": "An OECD field sets a line's optimal only when the line is at least half of the spending the field measures (oecdBenchmark.scope = category_specific). Every other line is a national_field_proxy: its optimal is null, and its efficiency block describes the national field, not the line."
   },
-  "note": "Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics.",
+  "note": "Spending benchmarks use countries with observations for identical years. Income comparisons retain observed OECD and Eurostat survey definitions.",
   "efficientFrontier": {
     "categories": {
       "health": {

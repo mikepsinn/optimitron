@@ -1,4 +1,5 @@
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
+import { summarizeEfficiencyByField } from "@optimitron/obg";
 
 type BudgetCategoryOutput = (typeof usBudgetAnalysis.categories)[number];
 export type BudgetCategoryWithEfficiency = BudgetCategoryOutput & {
@@ -44,11 +45,11 @@ export interface OptimizationDividendRow {
 }
 
 function getEfficiencyGroup(category: BudgetCategoryOutput): string {
-  return EFFICIENCY_GROUPS[category.id] ?? category.id;
+  return category.oecdBenchmark?.spendingField ?? EFFICIENCY_GROUPS[category.id] ?? category.id;
 }
 
 function hasEfficiency(category: BudgetCategoryOutput): category is BudgetCategoryWithEfficiency {
-  return category.efficiency !== null;
+  return category.efficiency !== null && category.efficiency !== undefined;
 }
 
 export function getBudgetCategoriesWithEfficiency(
@@ -60,9 +61,19 @@ export function getBudgetCategoriesWithEfficiency(
 export function deduplicateEfficiencyCategories(
   categories: readonly BudgetCategoryOutput[] = usBudgetAnalysis.categories,
 ): BudgetCategoryWithEfficiency[] {
+  const eligible = getBudgetCategoriesWithEfficiency(categories);
+  const findings = new Map(summarizeEfficiencyByField(eligible.flatMap(category => {
+    const benchmark = category.oecdBenchmark;
+    return benchmark ? [{
+      id: category.id,
+      spendingField: benchmark.spendingField,
+      lineSpendingPerCapita: category.currentSpendingRealPerCapita,
+      efficiency: category.efficiency,
+    }] : [];
+  })).map(finding => [finding.spendingField, finding]));
   const grouped = new Map<string, BudgetCategoryWithEfficiency>();
 
-  for (const category of getBudgetCategoriesWithEfficiency(categories)) {
+  for (const category of eligible) {
     const group = getEfficiencyGroup(category);
     const current = grouped.get(group);
 
@@ -83,7 +94,14 @@ export function deduplicateEfficiencyCategories(
     }
   }
 
-  return [...grouped.values()];
+  return [...grouped.values()].map(category => {
+    const finding = category.oecdBenchmark ? findings.get(category.oecdBenchmark.spendingField) : undefined;
+    if (!finding) return category;
+    const representative = eligible.find(candidate => candidate.id === finding.categorySpecificLineId)
+      ?? (category.efficiency === finding.efficiency ? category
+        : eligible.find(candidate => candidate.efficiency === finding.efficiency) ?? category);
+    return { ...representative, efficiency: finding.efficiency };
+  });
 }
 
 export function getOptimizationDividendBreakdown(
@@ -97,7 +115,7 @@ export function getOptimizationDividendBreakdown(
 
       return {
         category,
-        label: EFFICIENCY_LABELS[group] ?? category.name,
+        label: category.oecdBenchmark?.fieldLabel ?? EFFICIENCY_LABELS[group] ?? category.name,
         legislationSlug: BUDGET_LEGISLATION_SLUGS[category.id],
         modelCountry: category.efficiency.bestCountry.name,
         overspendRatio: category.efficiency.overspendRatio,

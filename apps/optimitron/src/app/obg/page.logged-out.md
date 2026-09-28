@@ -23,9 +23,9 @@
 ### TOP 5 RECOMMENDATIONS
 - Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Cutting the $886B line to Switzerland's ratio saves $719B/yr
 - National comparison, total health spending (public and private): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential national savings: $2.3T/yr
-- National comparison, government education spending (all levels): United States spends $2996/cap (rank 11/11). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr
-- National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 25/28). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential national savings: $314B/yr
-- National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 23/26). Singapore spends $7868/cap with After-Tax Median Income (PPP) 36844.31. Overspend: 1.6x. Potential national savings: $1.7T/yr
+- National comparison, government education spending (all levels): United States spends $2996/cap (rank 8/8). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr
+- National comparison, total R&D spending (business and government): United States spends $1576/cap (rank 13/19). Norway spends $1091/cap with After-Tax Median Income (PPP) 32725.07. Overspend: 1.4x. Potential national savings: $164B/yr
+- National comparison, public social spending (pensions, health, income support): United States spends $10268/cap (rank 1/19). Near floor ($10051/cap). After-Tax Median Income (PPP): 37444.1
 ### CURRENT VS OPTIMAL SPENDING
 - [Military 5.3× overspend Major Decrease -81.1%Current$886B Optimal$167B](/obg/military)
 - [Veterans Affairs No Line Benchmark Current$325B Optimal No line-specific benchmark. Only comparison: total health spending (public and private).](/obg/veterans-affairs)
@@ -69,7 +69,7 @@
 | [EPA / Environment](/obg/epa-environment) | $12B | — | — | — | No Line Benchmark |
 
 - No line benchmark: the only international comparison for this line covers a whole national system, such as all health spending, public and private. That system's overspend is not this line's, so no line-item target is shown.
-- Generated 9/25/2026 · Source: Optimitron OBG (Optimal Budget Generator)
+- Generated 9/28/2026 · Source: Optimitron OBG (Optimal Budget Generator)
 ### THE EFFICIENT FRONTIER
 - Every country is a data point. The frontier shows what the best-performing countries achieve at each spending level, measured by life expectancy — the metric that actually tells you if people are alive and functional. The US is spending 2.6x what the frontier countries spend — for worse outcomes. On my planet, we call this “paying extra to be worse at things.”
 #### SPENDING VS LIFE EXPECTANCY

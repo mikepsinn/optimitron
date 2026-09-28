@@ -2,9 +2,9 @@
 /**
  * Generate real policy and budget analysis JSON from the OPG/OBG libraries.
  *
- * Budget analysis uses OECD cross-country panel data (23 countries × 23 years)
- * to fit diminishing-returns curves and estimate optimal spending levels (OSL).
- * Categories without OECD mappings fall back to outcome-trend heuristics.
+ * Budget comparisons use the same observation years for every country.
+ * Income retains observed OECD/Eurostat definitions and excludes estimates
+ * derived from government spending. Curves provide descriptive context.
  *
  * Run: pnpm --filter @optimitron/web run generate
  */
@@ -51,24 +51,20 @@ import {
   OECD_CATEGORY_MAPPINGS,
   NON_DISCRETIONARY_CATEGORIES,
   COUNTRY_NAMES,
+  OECD_BUDGET_PANEL,
   type OECDCategoryMapping,
   type OECDSpendingField,
 } from '@optimitron/data';
 import type { OECDBudgetPanelDataPoint } from '@optimitron/data';
-import { getBestAvailableMedianIncomeSeries } from '@optimitron/data/datasets/median-income-series';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dataDir = resolve(__dirname, '../src/data');
 
-// Latest measured after-tax median income (PPP, per person) from the canonical source.
-// The series runs oldest year first. Interpolated years after the last survey are skipped.
-const usIncomeRecords = getBestAvailableMedianIncomeSeries({
-  jurisdictions: ['USA'],
-  isAfterTax: true,
-  purchasingPower: 'ppp',
-  excludeInterpolated: true,
-});
-const latestUsIncomeRecord = usIncomeRecords[usIncomeRecords.length - 1];
+// Keep the survey definition with the income benchmark; never use a value
+// calculated by subtracting government spending from income as an outcome.
+const latestUsIncomeRecord = OECD_BUDGET_PANEL
+  .filter(row => row.jurisdictionIso3 === 'USA' && row.afterTaxMedianIncome)
+  .sort((a, b) => b.year - a.year)[0]?.afterTaxMedianIncome;
 if (!latestUsIncomeRecord) {
   throw new Error('No measured US after-tax median income in the median income series');
 }
@@ -79,8 +75,25 @@ const JURISDICTION = {
   code: 'USA',
   name: 'United States',
   population: 339_000_000,
-  /** Per person, like the savings it is compared with. */
+  /** Equivalised survey-income benchmark; not a per-person income observation. */
   medianIncome: usMedianIncome,
+};
+
+const incomeMethodology = {
+  eligibility: 'Observed real PPP disposable income after direct taxes and cash transfers; no interpolation or government-spending deduction.',
+  selection: 'One source and definition per country, selected by observed-year coverage. No gap-filling from another income definition.',
+  comparability: 'OECD and Eurostat use different equivalence scales, price indices, and PPP conversions. Cross-source income levels are approximate comparisons; original definitions are retained below.',
+  definitions: [...new Map(OECD_BUDGET_PANEL.flatMap(row => {
+    const record = row.afterTaxMedianIncome;
+    if (!record) return [];
+    const { source, unit, methodology, definition, priceIndexNote, pppBasisNote } = record;
+    const details = { source, unit, methodology, definition, priceIndexNote, pppBasisNote };
+    return [[JSON.stringify(details), details] as const];
+  })).values()],
+  coverage: Object.fromEntries([...new Set(OECD_BUDGET_PANEL.map(row => row.jurisdictionIso3))].flatMap(country => {
+    const rows = OECD_BUDGET_PANEL.filter(row => row.jurisdictionIso3 === country && row.afterTaxMedianIncome);
+    return rows.length ? [[country, { source: rows[0]!.afterTaxMedianIncome!.source, years: rows.map(row => row.year) }]] : [];
+  })),
 };
 
 // Use canonical mappings from @optimitron/data (no local duplicates)
@@ -360,17 +373,17 @@ function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: 
       baseYear: 2017,
       perCapita: true,
       unit: 'constant 2017 USD per capita',
-      note: 'Matches OECD cross-country PPP convention for comparable analysis',
+      note: 'Applies to US line-item history. The bundled international spending panel has no verified common reference price year.',
     },
     methodology: {
-      oslMethod: 'Diminishing returns curve fitting (log-linear or saturation model)',
-      oslThreshold: 'OSL where marginal return drops to 50% of cross-country average',
-      dataClamping: 'OSL clamped to [50% min, 150% max] of observed cross-country spending',
-      lowFitGuard: 'Models with R² < 0.3 constrained to [0.5×, 2×] current spending',
+      oslMethod: 'Lowest spending among countries in the top quartile of the selected outcome.',
+      comparisonPeriod: 'Latest target-country year with at least five countries. Average up to three observed target years only when every included country has that exact set; each result records comparisonYears.',
+      curveFits: 'Log-linear or saturation fits describe the full historical panel and do not determine recommendations.',
+      income: incomeMethodology,
       nonDiscretionary: 'Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization',
       lineAttribution: 'An OECD field sets a line\'s optimal only when the line is at least half of the spending the field measures (oecdBenchmark.scope = category_specific). Every other line is a national_field_proxy: its optimal is null, and its efficiency block describes the national field, not the line.',
     },
-    note: 'Budget analysis uses real OECD cross-country data (23 countries × 23 years) for OSL estimation where available. Categories without OECD mappings use outcome-trend heuristics.',
+    note: 'Spending benchmarks use countries with observations for identical years. Income comparisons retain observed OECD and Eurostat survey definitions.',
   };
 
   return { report, findings };
@@ -380,9 +393,9 @@ function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: 
 
 import { STRUCTURAL_POLICY_REFORMS, type PolicyRecommendation } from '@optimitron/data';
 
-type PolicyInput = PolicyRecommendation & { oecdSpendingField?: string };
-type GeneratedPolicy = PolicyOutput & { oecdSpendingField?: string };
-type GeneratedPolicyAnalysis = Omit<PolicyAnalysisOutput, 'policies'> & { policies: GeneratedPolicy[] };
+type PolicyInput = PolicyRecommendation & { oecdSpendingField?: string; modeledAnnualSavingsPerPerson?: number };
+type GeneratedPolicy = PolicyOutput & { oecdSpendingField?: string; modeledAnnualSavingsPerPerson?: number };
+type GeneratedPolicyAnalysis = Omit<PolicyAnalysisOutput, 'policies'> & { policies: GeneratedPolicy[]; methodology: Record<string, unknown> };
 
 // Structural reforms from the data package (jurisdiction-agnostic, evidence-based).
 // Efficiency-derived policies ("reduce spending to cheapest high performer") are
@@ -409,7 +422,8 @@ function generateEfficiencyPolicies(
       const field = OECD_FIELDS[f.spendingField as OECDSpendingField];
       const fieldName = lowerFirst(field.label);
       const lineNames = f.lineIds.map(id => categoryNames.get(id) ?? id).join(', ');
-      // Per person over per person: the median income series is per person.
+      // Scale the modeled cash dividend against observed equivalised income.
+      // This is a benchmark ratio, not an estimated change in the income median.
       const savingsPerPerson = Math.round(e.potentialSavingsTotal / POPULATION);
       const incomeEffect = savingsPerPerson / MEDIAN_INCOME;
 
@@ -436,6 +450,7 @@ function generateEfficiencyPolicies(
         analogyExists: true, // the best-performing country IS the analogy
         outcomeCount: 1,
         incomeEffect: Math.round(incomeEffect * 1000) / 1000,
+        modeledAnnualSavingsPerPerson: savingsPerPerson,
         healthEffect,
         rationale: `Cheapest-high-performer analysis of ${fieldName}: ${e.bestCountry.name} achieves ${e.outcomeName} ${e.bestCountry.outcome} at $${e.bestCountry.spendingPerCapita}/cap. ${JURISDICTION.name} at $${e.spendingPerCapita}/cap (${e.overspendRatio}x overspend). Top 3: ${e.topEfficient.map(t => `${t.name} ($${t.spendingPerCapita})`).join(', ')}. Savings: $${Math.round(e.potentialSavingsTotal / 1e9)}B/yr → $${savingsPerPerson.toLocaleString()}/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: ${lineNames}.`,
         currentStatus: `${JURISDICTION.name} spends $${e.spendingPerCapita}/cap on ${fieldName}, ranks ${e.rank}/${e.totalCountries}. ${e.overspendRatio}x overspend.`,
@@ -506,6 +521,7 @@ function generatePolicyAnalysis(
       recommendedTarget: p.recommendedTarget,
       blockingFactors: p.blockingFactors,
       ...(p.oecdSpendingField ? { oecdSpendingField: p.oecdSpendingField } : {}),
+      ...(p.modeledAnnualSavingsPerPerson !== undefined ? { modeledAnnualSavingsPerPerson: p.modeledAnnualSavingsPerPerson } : {}),
     };
   });
 
@@ -516,6 +532,14 @@ function generatePolicyAnalysis(
     policies,
     generatedAt: new Date().toISOString(),
     generatedBy: '@optimitron/opg',
+    methodology: {
+      incomeReference: latestUsIncomeRecord,
+      incomeEffect: 'Modeled per-person cash dividend divided by the observed equivalised-income benchmark. This assumes transferability and uses the retained income reference year; it is not a measured median-income change.',
+      comparisons: findings.map(({ spendingField, efficiency }) => ({
+        spendingField, years: efficiency.comparisonYears, countries: efficiency.totalCountries,
+        referenceCountry: efficiency.bestCountry.code,
+      })),
+    },
     note: 'Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence.',
   };
 }

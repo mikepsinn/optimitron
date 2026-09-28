@@ -85,7 +85,7 @@ export default function DividendPage() {
                     <td className="px-3 py-3 text-right font-black text-foreground">
                       {row.overspendRatio.toFixed(1)}x
                     </td>
-                    <td className="px-3 py-3 text-right font-black text-background">
+                    <td className="px-3 py-3 text-right font-black text-foreground">
                       {formatCurrency(row.annualSavingsPerAdult)}
                     </td>
                     <td className="px-3 py-3 text-right font-black text-foreground">
