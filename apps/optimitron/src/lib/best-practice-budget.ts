@@ -1,6 +1,18 @@
 import { BEST_PRACTICE_BUDGET_DATA as data } from '@optimitron/data/datasets/best-practice-budget';
 import { calculateBestPracticeBudget, chooseSupportedOutcomeQuantile } from '@optimitron/obg';
-import type { BestPracticeCategory } from '@optimitron/obg';
+import { calculateHealthcareFrontier } from '@optimitron/obg';
+import type { BestPracticeCategory, BestPracticePeer } from '@optimitron/obg';
+import { HEALTHCARE_REFERENCE_POLICIES } from '@optimitron/data/datasets/healthcare-reference-policies';
+import { HEALTHCARE_SERVICES_DATA } from '@optimitron/data/datasets/healthcare-services';
+import { HEALTHCARE_COFOG_DATA } from '@optimitron/data/datasets/healthcare-cofog';
+
+const categoryNames: Record<string, string> = {
+  GF01: 'Government, research and debt', GF02: 'Weapons and Military',
+  GF03: 'Police, courts and fire services', GF04: 'Transport, energy and industry',
+  GF05: 'Waste, pollution and nature', GF06: 'Housing and community services',
+  GF07: 'Healthcare', GF08: 'Culture, recreation and religion',
+  GF09: 'Education', GF10: 'Pensions and social support',
+};
 
 export const BEST_PRACTICE_OUTCOMES: Record<string, { label: string; unit: string }> = {
   hale: { label: 'Healthy life expectancy', unit: 'years (WHO HALE, population average)' },
@@ -10,26 +22,87 @@ export const BEST_PRACTICE_OUTCOMES: Record<string, { label: string; unit: strin
 
 const categories: BestPracticeCategory[] = data.categories.map(category => ({
   ...category,
-  name: category.id === 'GF02' ? 'Weapons and Military' : category.name,
+  name: categoryNames[category.id] ?? category.name,
   outcomeMetrics: category.id === 'GF07' ? ['hale'] : category.id === 'GF09' ? ['mathProficiency'] : ['hale', 'income'],
   ...(category.id === 'GF07' ? { selectionCost: 'totalHealthPerCapita' as const } : {}),
 }));
 
 export function getBestPracticeBudget(population = 1) {
+  // Friendly display names do not alter source identifiers or the saved raw data.
+  const countryName = (id: string, name: string) => id === 'KOR' ? 'South Korea' : name;
+  const healthCountries = data.healthcareCountries.map(country => ({ ...country, name: countryName(country.id, country.name) }));
+  const publicHealth = new Map<string, { publicPerCapita: number; subcategoryCosts: Record<string, number | null> }>([
+    ...data.countries.map(country => [country.id, { publicPerCapita: country.costs.GF07, subcategoryCosts: country.subcategoryCosts }] as const),
+    ...HEALTHCARE_COFOG_DATA.countries.map(country => [country.countryId, country] as const),
+  ]);
   const defaultQuantile = chooseSupportedOutcomeQuantile(data.countries);
+  const healthcareOptions = [1, 0, 0.5, 1.5, 2].map(maxHealthyYearGap => {
+    const { countries: _countries, frontier, ...result } = calculateHealthcareFrontier({ countries: healthCountries, maxHealthyYearGap });
+    return { ...result, frontierIds: frontier.map(country => country.id) };
+  });
+  const scenarios = [0.8, 0.9, 0.95].flatMap(outcomeQuantile => {
+    const base = calculateBestPracticeBudget({ countries: data.countries, categories, population, outcomeQuantile });
+    return healthcareOptions.map(health => {
+      const peer = (country: NonNullable<typeof health.selected>): BestPracticePeer | null => {
+        const allocation = publicHealth.get(country.id);
+        return allocation ? {
+          id: country.id, name: country.name, publicCostPerCapita: allocation.publicPerCapita,
+          selectionCostPerCapita: country.totalPerCapita, outcomes: { hale: country.hale },
+        } : null;
+      };
+      const selectedPeer = health.selected ? peer(health.selected) : null;
+      const healthPeers = health.selected ? [health.selected, ...health.alternatives].flatMap(country => {
+        const reference = peer(country);
+        return reference ? [reference] : [];
+      }).slice(0, 3) : [];
+      const lines = base.lines.map(line => {
+        const updated = line.id === 'GF07' ? {
+          ...line, targets: { hale: health.targetHale }, peer: selectedPeer,
+          eligibleCountryCount: health.eligibleCountryCount, alternatives: healthPeers,
+          annualBudget: selectedPeer ? selectedPeer.publicCostPerCapita * population : null,
+          perCapitaRange: healthPeers.length ? [Math.min(...healthPeers.map(p => p.publicCostPerCapita)), Math.max(...healthPeers.map(p => p.publicCostPerCapita))] as [number, number] : null,
+        } : line;
+        const reference = data.countries.find(country => country.id === updated.peer?.id);
+        const subcategoryCosts = updated.id === 'GF07' ? publicHealth.get(updated.peer?.id ?? '')?.subcategoryCosts : reference?.subcategoryCosts as Record<string, number | null> | undefined;
+        const breakdown = data.subcategories.filter(child => child.parentId === line.id).map(child => ({
+          id: child.id, name: child.name, perCapita: subcategoryCosts?.[child.id] ?? null,
+        }));
+        const known = breakdown.reduce((sum, child) => sum + (child.perCapita ?? 0), 0);
+        const remainder = updated.peer && breakdown.length ? updated.peer.publicCostPerCapita - known : null;
+        return { ...updated, breakdown, breakdownRemainder: remainder };
+      });
+      const complete = lines.every(line => line.peer !== null);
+      const subtotalPerCapita = lines.reduce((sum, line) => sum + (line.peer?.publicCostPerCapita ?? 0), 0);
+      return {
+        ...base, lines, complete, maxHealthyYearGap: health.maxHealthyYearGap, subtotalPerCapita,
+        totalPerCapita: complete ? subtotalPerCapita : null,
+        annualBudget: complete ? subtotalPerCapita * population : null,
+        alternativePerCapitaRange: complete ? [lines.reduce((sum, line) => sum + line.perCapitaRange![0], 0), lines.reduce((sum, line) => sum + line.perCapitaRange![1], 0)] as [number, number] : null,
+      };
+    });
+  });
+  const selectedHealthcareIds = new Set(healthcareOptions.flatMap(option => option.selected ? [option.selected.id] : []));
   return {
-    generatedAt: data.generatedAt, period: data.period, costUnit: data.costUnit,
+    generatedAt: [data.generatedAt, HEALTHCARE_COFOG_DATA.generatedAt, HEALTHCARE_SERVICES_DATA.generatedAt].sort().at(-1)!, period: data.period, costUnit: data.costUnit,
     incomeUnit: data.incomeUnit, countryCount: data.countries.length,
     method: {
-      selection: 'Minimum observed cost meeting all category outcome quantiles; linear population scaling.',
-      scope: `Ten disjoint COFOG categories, all levels of government; ${data.countries.length} European countries.`,
+      selection: 'Healthcare: minimum total current cost within the selected healthy-year gap of the best observed outcome worldwide. Other categories: minimum public cost meeting outcome quantiles. Linear population scaling.',
+      scope: `Ten disjoint COFOG public-spending categories, all levels of government. Non-health references: ${data.countries.length} European countries. Healthcare selection: global current-cost comparisons, with a separately sourced COFOG public budget.`,
       assumptions: ['Reference systems can be transferred and combined.', 'Costs scale linearly with population.'],
       outcomeInterpretation: 'Observed reference outcomes, not predicted combined gains. HALE is a population average, not median healthspan.',
       ranges: 'Up to three cheapest qualifying alternatives per category; not confidence intervals.',
     },
+    populationCountries: data.populationCountries.map(country => ({ ...country, name: countryName(country.id, country.name) })).sort((a, b) => a.name.localeCompare(b.name)),
+    healthcare: {
+      countries: healthCountries, scenarios: healthcareOptions, defaultMaxHealthyYearGap: 1,
+      policies: HEALTHCARE_REFERENCE_POLICIES,
+      services: { ...HEALTHCARE_SERVICES_DATA, countries: HEALTHCARE_SERVICES_DATA.countries.filter(country => selectedHealthcareIds.has(country.countryId)) },
+      governmentBudgets: HEALTHCARE_COFOG_DATA,
+    },
     defaultQuantile, outcomeDefinitions: BEST_PRACTICE_OUTCOMES,
-    scenarios: [0.8, 0.9, 0.95].map(outcomeQuantile => calculateBestPracticeBudget({ countries: data.countries, categories, population, outcomeQuantile })),
+    scenarios,
     sources: data.sources, healthSource: data.healthSource, educationSource: data.educationSource,
+    healthcareSource: data.healthcareSource, healthcareDataIssues: data.healthcareDataIssues, populationSource: data.populationSource,
   };
 }
 
@@ -39,21 +112,47 @@ export function renderBestPracticeBudgetMarkdown(report: BestPracticeBudgetRepor
   const money = (value: number) => `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   const content = [
     '# Best-practice population budget', '',
-    `Reference population: ${report.scenarios[0]!.population.toLocaleString('en-US')}. ${report.countryCount} European countries.`,
+    `Reference population: ${report.scenarios[0]!.population.toLocaleString('en-US')}. Healthcare: ${report.healthcare.countries.length} countries worldwide. Other public spending: ${report.countryCount} European countries.`,
     `Annual public spending: ${report.period.join(', ')} average, in ${report.costUnit}. Includes national and local government.`,
     '', '## Method', '',
-    'For each category, select the lowest-cost observed country meeting every listed outcome target. Multiply its annual public cost per resident by population. Health selects on total public and private current healthcare costs; the budget line retains the selected country’s COFOG public health expenditure.',
+    'Healthcare: find the observed cost/health Pareto frontier. Select the minimum TOTAL current healthcare cost among countries within the chosen number of healthy years of the best observed HALE, with reported public financing. The default gap is one year, an explicit preference rather than a fitted optimum. The public budget line uses the selected country’s COFOG government health expenditure, including health research and investment. The separate care-cost comparison shows WHO domestic public, domestic private and external current costs; these amounts are not added to the budget.',
+    'For every other category, select the lowest public-cost observed country meeting every listed outcome target. Multiply annual public cost per resident by population. Changing country changes population, not the ideal system or inherited spending constraints.',
     'Healthcare uses WHO healthy life expectancy; education uses PISA mathematics proficiency. The remaining eight categories use national healthy life expectancy and median disposable income as a general success screen, not sector-specific evidence of effectiveness.',
-    'Targets are unweighted country quantiles. The default is the highest of the 80th, 90th and 95th percentiles with at least three countries meeting both national outcomes. Stricter targets stay visible even when infeasible.',
+    'Non-health targets are unweighted country quantiles. The default is the highest of the 80th, 90th and 95th percentiles with at least three countries meeting both national outcomes. Healthcare uses an absolute healthy-year gap, so adding countries with poor outcomes cannot weaken its target. Missing financing never lowers that target.',
     'Assumptions: selected systems can be transferred and combined; annual costs scale linearly with population. These assumptions do not establish the combined country’s future health or income.',
     'WHO HALE is average expected healthy years, not median individual healthspan. Income is 2019 Eurostat equivalised disposable income in PPS (survey-year label; income usually refers to the prior year). It is neither GDP nor household income divided by household size.',
-    'The ten COFOG categories are disjoint. R&D and pensions are already included; existing research investment scenarios are not added again. General public services includes debt transactions. This benchmark has no current-budget constraint or inherited military spending floor.',
+    'All ten budget categories use COFOG government accounts and retain the selected country’s reported service breakdown where available. Children are components of the parent, never additional allocations. R&D and pensions are already included; research investment scenarios are not added again. Government, research and debt includes basic research, foreign aid, administration and debt transactions. This benchmark has no current-budget constraint or inherited military spending floor.',
+    'SHA current health and COFOG health have different accounting boundaries, not merely different capital coverage. No capital amount is inferred by subtracting the two series. The COFOG ledger prevents adding SHA healthcare on top of overlapping COFOG social care.',
     'Costs = Eurostat spending in million euros / same-year GDP in million euros × World Bank GDP per capita in constant 2021 international dollars, averaged across 2017–2019. This uses GDP purchasing power parity for all categories, not sector-specific PPPs.',
     'Alternative ranges use up to three cheapest qualifying countries per category, not sampling confidence intervals. The public-health cost range can include lower amounts from systems with larger private bills. Missing observations never become zero spending.',
+    report.healthcareSource.conversion,
+    report.healthcareSource.uncertainty,
+    report.populationSource.note,
+    report.healthcare.governmentBudgets.method,
     '',
   ];
-  for (const scenario of report.scenarios) {
-    content.push(`## Top ${Math.round((1 - scenario.outcomeQuantile) * 100)}% outcomes${scenario.outcomeQuantile === report.defaultQuantile ? ' (default)' : ''}`, '',
+  content.push('## Global healthcare frontier', '', 'The care columns show WHO recurring costs. The final column is the whole public COFOG budget at the default non-health outcome target.', '', '| Maximum healthy-year gap | Reference | HALE | Public care / resident | Private care / resident | Total care / resident | Whole public budget / resident |', '| ---: | --- | ---: | ---: | ---: | ---: | ---: |');
+  for (const option of report.healthcare.scenarios) {
+    const reference = option.selected;
+    const budget = report.scenarios.find(scenario => scenario.outcomeQuantile === report.defaultQuantile && scenario.maxHealthyYearGap === option.maxHealthyYearGap)!;
+    content.push(`| ${option.maxHealthyYearGap} | ${reference?.name ?? 'Unavailable'} | ${reference?.hale.toFixed(2) ?? 'Unavailable'} | ${reference?.publicPerCapita != null ? money(reference.publicPerCapita) : 'Unavailable'} | ${reference?.privatePerCapita != null ? money(reference.privatePerCapita) : 'Unavailable'} | ${reference ? money(reference.totalPerCapita) : 'Unavailable'} | ${budget.totalPerCapita === null ? 'Unavailable' : money(budget.totalPerCapita)} |`);
+  }
+  content.push('', 'The frontier removes countries for which another observed country is no more expensive and no worse in health, with at least one strict improvement. This is an observed comparison, not a causal estimate of healthcare policy effects. National HALE also reflects conditions outside healthcare.', '');
+  for (const option of report.healthcare.scenarios) {
+    content.push(`Year sensitivity at gap ${option.maxHealthyYearGap}: ${option.selectionByYear.map(year => `${year.year}: ${report.healthcare.countries.find(country => country.id === year.selectedId)?.name ?? 'unavailable'} (${year.countryCount} countries)`).join('; ')}.`, '');
+  }
+  for (const system of report.healthcare.policies) {
+    content.push(`### ${system.countryName} policies`, '', ...system.policies.map(policy => `- [${policy.name}](${policy.url}): ${policy.description} ${policy.periodNote}`), '');
+  }
+  for (const id of new Set(report.healthcare.scenarios.flatMap(option => option.selected ? [option.selected.id] : []))) {
+    const services = report.healthcare.services.countries.find(country => country.countryId === id);
+    if (!services) continue;
+    content.push(`### ${services.countryName} healthcare services`, '', 'Percent of all current healthcare spending, public and private. These are the observed system’s shares, not separately optimized allocations.', '', '| Service | Share |', '| --- | ---: |',
+      ...services.services.map(service => `| ${service.name} | ${service.sharePercent === null ? 'Unreported' : `${service.sharePercent.toFixed(3)}%`} |`),
+      `| Unallocated | ${services.unallocatedSharePercent?.toFixed(3) ?? 'Unreported'}% |`, `| Source rounding | ${services.roundingAdjustmentPercent?.toFixed(3) ?? 'Unreported'}% |`, '');
+  }
+  for (const scenario of report.scenarios.filter(scenario => scenario.maxHealthyYearGap === report.healthcare.defaultMaxHealthyYearGap)) {
+    content.push(`## Top ${Math.round((1 - scenario.outcomeQuantile) * 100)}% non-health targets; healthcare within ${scenario.maxHealthyYearGap} healthy years${scenario.outcomeQuantile === report.defaultQuantile && scenario.maxHealthyYearGap === report.healthcare.defaultMaxHealthyYearGap ? ' (default)' : ''}`, '',
       scenario.complete ? `Annual public budget: **${money(scenario.annualBudget!)}**; **${money(scenario.totalPerCapita!)} per resident**.` : 'No complete budget: one or more categories have no qualifying country. Targets were not relaxed.', '',
       '| Category | Per resident | Annual public budget | Reference | Eligible countries |', '| --- | ---: | ---: | --- | ---: |');
     for (const line of scenario.lines) {
@@ -65,11 +164,19 @@ export function renderBestPracticeBudgetMarkdown(report: BestPracticeBudgetRepor
         const definition = report.outcomeDefinitions[metric]!;
         return `- ${definition.label}: target ${line.targets[metric]?.toFixed(2) ?? 'unavailable'}; selected reference ${line.peer?.outcomes[metric]?.toFixed(2) ?? 'unavailable'} ${definition.unit}.`;
       }), `- Cheapest qualifying alternatives: ${line.alternatives.map(peer => `${peer.name} (${money(peer.publicCostPerCapita)} public per resident)`).join('; ') || 'None'}.`, '');
+      if (line.breakdown.length) {
+        content.push('| Service | Annual cost per resident |', '| --- | ---: |', ...line.breakdown.map(child => `| ${child.name} | ${child.perCapita === null ? 'Unavailable' : money(child.perCapita)} |`));
+        if (line.breakdownRemainder !== null && Math.abs(line.breakdownRemainder) > 0.005) content.push(`| Unallocated / source rounding | ${money(line.breakdownRemainder)} |`);
+        content.push('');
+      }
     }
   }
   content.push('## Sources', '', `Snapshot generated ${report.generatedAt}.`, '',
     ...report.sources.map(source => `- [Source API](${source.url}); retrieved ${source.retrievedAt}; SHA-256 \`${source.sha256}\`.`),
     `- [WHO HALE](${report.healthSource.url}); both-sex observations retrieved ${report.healthSource.snapshotGeneratedAt}.`,
     `- [PISA mathematics proficiency](${report.educationSource.url}).`, '');
+  content.push(`- [WHO health expenditure definitions](${report.healthcareSource.url}).`, `- [World Bank population](${report.populationSource.url}).`, '', '### Data quality exclusions', '', ...report.healthcareDataIssues.map(issue => `- ${issue.countryId} ${issue.year}: ${issue.issue}`), '');
+  content.push('### Healthcare service sources', '', report.healthcare.services.methodology, '', ...report.healthcare.services.sources.map(source => `- [OECD source](${source.url}); retrieved ${source.retrievedAt}; SHA-256 \`${source.sha256}\`.`), '');
+  content.push('### Government healthcare budget sources', '', ...report.healthcare.governmentBudgets.countries.map(country => `- ${country.name}: ${country.accountingBasis}`), '', ...report.healthcare.governmentBudgets.sources.map(source => `- [COFOG or GDP source](${source.url}); retrieved ${source.retrievedAt}; SHA-256 \`${source.sha256}\`.`), '');
   return content.join('\n');
 }

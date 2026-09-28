@@ -10,6 +10,7 @@ export * from './country-report.js';
 export * from './minimum-effective-spending.js';
 export * from './best-practice-budget.js';
 export * from './efficient-frontier.js';
+export * from './healthcare-frontier.js';
 export * from './overspend-ratio.js';
 export * from './efficiency-analysis.js';
 export * from './efficiency-attribution.js';

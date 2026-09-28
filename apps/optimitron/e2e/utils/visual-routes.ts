@@ -795,6 +795,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     covers: [
       "apps/optimitron/src/app/obg/page.tsx",
       "apps/optimitron/src/components/budget/BestPracticeBudget.tsx",
+      "apps/optimitron/src/components/budget/HealthcareFrontier.tsx",
       "apps/optimitron/src/components/budget/NationalSpendingComparisons.tsx",
       "apps/optimitron/src/components/budget/DecisionResults.tsx",
     ],

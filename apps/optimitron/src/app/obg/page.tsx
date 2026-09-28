@@ -10,7 +10,7 @@ import { getBudgetCategoryPath, obgLink, optimalBudgetGeneratorPaperLink, ROUTES
 
 const populationBudget = getBestPracticeBudget();
 const title = "The Optimal Budget Generator";
-const description = `We've compared ${populationBudget.period.length} years of data from ${populationBudget.countryCount} countries to build a budget with one goal: maximize median health and wealth.`;
+const description = `We've compared ${populationBudget.period.length} years of healthcare data from ${populationBudget.healthcare.countries.length} countries and other public spending from ${populationBudget.countryCount} countries to build a budget with one goal: maximize median health and wealth.`;
 
 export const metadata = getRouteMetadata({ ...obgLink, label: title, description });
 
