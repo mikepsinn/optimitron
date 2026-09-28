@@ -57,7 +57,8 @@
     "report:next-action": "tsx scripts/report-next-action.ts",
     "draft:legislation": "tsx scripts/draft-legislation.ts",
     "media:upload": "tsx scripts/upload-media-to-r2.ts",
-    "check:r2-upload": "tsx scripts/check-r2-upload.ts"
+    "check:r2-upload": "tsx scripts/check-r2-upload.ts",
+    "generate:optimal-budget": "tsx scripts/generate-optimal-budget.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1037.0",

@@ -36,6 +36,22 @@ const NAMES: Record<string, string> = {
 };
 
 describe('analyzeEfficiency (cheapest high performer)', () => {
+  it('preserves the original percentile, stable ties and rounded output when sharing reference selection', () => {
+    const data = [
+      { jurisdiction: 'USA', spending: 10, outcome: 1, year: 2020 },
+      { jurisdiction: 'B', spending: 8, outcome: 2, year: 2020 },
+      { jurisdiction: 'C', spending: 7, outcome: 3, year: 2020 },
+      { jurisdiction: 'D', spending: 6, outcome: 4, year: 2020 },
+      { jurisdiction: 'Z', spending: 2.4, outcome: 5.123, year: 2020 },
+      { jurisdiction: 'A', spending: 2.4, outcome: 5.123, year: 2020 },
+    ];
+    const result = analyzeEfficiency(data, { population: 10 })!;
+    expect(result.topEfficient.map(country => country.code)).toEqual(['Z', 'A']);
+    expect(result.floorSpendingPerCapita).toBe(2);
+    expect(result.floorOutcome).toBe(5.12);
+    expect(result.potentialSavingsTotal).toBe(76);
+  });
+
   it('returns null with insufficient data', () => {
     expect(analyzeEfficiency([
       { spending: 100, outcome: 80, jurisdiction: 'USA', year: 2022 },

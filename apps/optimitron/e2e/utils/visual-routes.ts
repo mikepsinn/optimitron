@@ -773,12 +773,12 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     requiredText: /^Military$/,
   },
   {
-    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    covers: ["apps/optimitron/src/app/obg/page.tsx", "apps/optimitron/src/components/budget/OptimalBudgetGenerator.tsx", "apps/optimitron/src/components/budget/HealthcareFrontier.tsx"],
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
     requiredSelector: "h1",
-    requiredText: /^The US Federal Budget, Diagnosed$/,
+    requiredText: /^The Optimal Budget Generator$/,
   },
   {
     covers: ["apps/optimitron/src/app/opg/page.tsx"],

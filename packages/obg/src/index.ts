@@ -14,3 +14,8 @@ export * from './efficiency-analysis.js';
 export * from './efficiency-attribution.js';
 export * from './budget-report-json.js';
 export * from './budget-legislation-brief.js';
+
+export * from './budget-references.js';
+export * from './optimal-budget-generator.js';
+export * from './optimal-budget-scaling.js';
+export * from './healthcare-frontier.js';

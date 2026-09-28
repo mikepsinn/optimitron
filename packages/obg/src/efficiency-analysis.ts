@@ -1,3 +1,5 @@
+import { selectLowestCostReferences } from './reference-selection.js';
+
 /**
  * Efficiency Analysis — "Cheapest High Performer"
  *
@@ -133,9 +135,8 @@ export function analyzeEfficiency(
   const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1] ?? 0;
 
   // 2. High performers: at or above 75th percentile, sorted by spending (cheapest first)
-  const highPerformers = countries
-    .filter(c => c.outcome >= p75)
-    .sort((a, b) => a.spending - b.spending);
+  const highPerformers = selectLowestCostReferences(countries, { outcome: p75 },
+    country => ({ cost: country.spending, outcomes: { outcome: country.outcome } }));
 
   if (highPerformers.length === 0) return null;
 

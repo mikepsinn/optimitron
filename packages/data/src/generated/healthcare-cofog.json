@@ -1,0 +1,224 @@
+{
+  "generatedAt": "2026-09-27T23:47:51.516Z",
+  "period": [
+    2017,
+    2018,
+    2019
+  ],
+  "costUnit": "2021 international dollars (GDP purchasing power parity)",
+  "method": "For each year, general-government COFOG GF07 total expenditure in national currency / World Bank GDP in current national currency × World Bank GDP per capita in constant 2021 international dollars. Average annual amounts across 2017–2019. OECD currency observations use their UNIT_MULT; IMF CSV observations are already in actual units.",
+  "scope": "Functional public healthcare budgets include capital and medical R&D. They are distinct from the SHA current healthcare total used to rank systems and its financing-source split. Cash/accrual and source revision differences remain visible in source metadata. Missing subgroups are null, not zero.",
+  "countries": [
+    {
+      "countryId": "JPN",
+      "name": "Japan",
+      "currency": "JPY",
+      "sourceUrl": "https://sdmx.oecd.org/public/rest/v1/data/OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1/A.JPN+KOR.S13...OTE..GF07+GF0701+GF0702+GF0703+GF0704+GF0705+GF0706...V..?startPeriod=2017&endPeriod=2019",
+      "accountingBasis": "OECD national accounts; general government total expenditure, including capital and health R&D.",
+      "observations": [
+        {
+          "year": 2017,
+          "publicPerCapita": 3369.7227637122755,
+          "subcategoryCosts": {
+            "GF0701": 554.7059075037299,
+            "GF0702": 1299.1328139822647,
+            "GF0703": 1228.254264842598,
+            "GF0704": 206.87868563626657,
+            "GF0705": 7.834966246445021,
+            "GF0706": 72.90803988048994
+          },
+          "expenditureNationalCurrency": 41675500000000,
+          "gdpNationalCurrency": 565119000000000,
+          "gdpPerCapitaPpp": 45693.3776080987
+        },
+        {
+          "year": 2018,
+          "publicPerCapita": 3402.677547356942,
+          "subcategoryCosts": {
+            "GF0701": 538.3057991859598,
+            "GF0702": 1316.9330559408008,
+            "GF0703": 1257.7625395573534,
+            "GF0704": 209.35825584494003,
+            "GF0705": 5.163235470719997,
+            "GF0706": 75.17087245754671
+          },
+          "expenditureNationalCurrency": 41979600000000,
+          "gdpNationalCurrency": 569153500000000,
+          "gdpPerCapitaPpp": 46133.0225978718
+        },
+        {
+          "year": 2019,
+          "publicPerCapita": 3466.29251780499,
+          "subcategoryCosts": {
+            "GF0701": 556.5980529408137,
+            "GF0702": 1339.4064332333273,
+            "GF0703": 1274.387172624851,
+            "GF0704": 215.25700214080837,
+            "GF0705": 7.006906568732117,
+            "GF0706": 73.63695029645719
+          },
+          "expenditureNationalCurrency": 43038600000000,
+          "gdpNationalCurrency": 571838000000000,
+          "gdpPerCapitaPpp": 46055.3498672487
+        }
+      ],
+      "publicPerCapita": 3412.8976096247357,
+      "subcategoryCosts": {
+        "GF0701": 549.8699198768344,
+        "GF0702": 1318.4907677187975,
+        "GF0703": 1253.4679923416008,
+        "GF0704": 210.4979812073383,
+        "GF0705": 6.668369428632378,
+        "GF0706": 73.90528754483127
+      }
+    },
+    {
+      "countryId": "KOR",
+      "name": "South Korea",
+      "currency": "KRW",
+      "sourceUrl": "https://sdmx.oecd.org/public/rest/v1/data/OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1/A.JPN+KOR.S13...OTE..GF07+GF0701+GF0702+GF0703+GF0704+GF0705+GF0706...V..?startPeriod=2017&endPeriod=2019",
+      "accountingBasis": "OECD national accounts; general government total expenditure, including capital and health R&D.",
+      "observations": [
+        {
+          "year": 2017,
+          "publicPerCapita": 1945.9488522858023,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 79179100000000,
+          "gdpNationalCurrency": 1934233900000000,
+          "gdpPerCapitaPpp": 47536.7898568851
+        },
+        {
+          "year": 2018,
+          "publicPerCapita": 2164.405720903844,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 88951700000000,
+          "gdpNationalCurrency": 2006974500000000,
+          "gdpPerCapitaPpp": 48834.4471157733
+        },
+        {
+          "year": 2019,
+          "publicPerCapita": 2433.8227826403,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 99746100000000,
+          "gdpNationalCurrency": 2040594300000000,
+          "gdpPerCapitaPpp": 49790.8679884821
+        }
+      ],
+      "publicPerCapita": 2181.3924519433153,
+      "subcategoryCosts": {
+        "GF0701": null,
+        "GF0702": null,
+        "GF0703": null,
+        "GF0704": null,
+        "GF0705": null,
+        "GF0706": null
+      }
+    },
+    {
+      "countryId": "SGP",
+      "name": "Singapore",
+      "currency": "SGD",
+      "sourceUrl": "https://api.imf.org/external/sdmx/2.1/data/IMF.STA,GFS_COFOG,11.0.0/SGP.S13.G2MF.GF07_T.POGDP_PT+XDC.A?startPeriod=2017&endPeriod=2019",
+      "accountingBasis": "IMF Government Finance Statistics; general government expenditure, cash basis (CA), including capital.",
+      "observations": [
+        {
+          "year": 2017,
+          "publicPerCapita": 2516.097912444769,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 10196400000,
+          "gdpNationalCurrency": 476136200000,
+          "gdpPerCapitaPpp": 117492.967994526
+        },
+        {
+          "year": 2018,
+          "publicPerCapita": 2471.946091450969,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 10444061247.99,
+          "gdpNationalCurrency": 509830400000,
+          "gdpPerCapitaPpp": 120668.888726158
+        },
+        {
+          "year": 2019,
+          "publicPerCapita": 2653.7386914479343,
+          "subcategoryCosts": {
+            "GF0701": null,
+            "GF0702": null,
+            "GF0703": null,
+            "GF0704": null,
+            "GF0705": null,
+            "GF0706": null
+          },
+          "expenditureNationalCurrency": 11304099184.86,
+          "gdpNationalCurrency": 514052100000,
+          "gdpPerCapitaPpp": 120678.341978557
+        }
+      ],
+      "publicPerCapita": 2547.2608984478907,
+      "subcategoryCosts": {
+        "GF0701": null,
+        "GF0702": null,
+        "GF0703": null,
+        "GF0704": null,
+        "GF0705": null,
+        "GF0706": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://sdmx.oecd.org/public/rest/v1/data/OECD.SDD.NAD,DSD_NASEC10@DF_TABLE11,1.1/A.JPN+KOR.S13...OTE..GF07+GF0701+GF0702+GF0703+GF0704+GF0705+GF0706...V..?startPeriod=2017&endPeriod=2019",
+      "retrievedAt": "2026-09-27T23:47:50.073Z",
+      "sha256": "f08950e0b38263d690a052b531798d0bd68f0e8554df7e0dcde8884096901fb6"
+    },
+    {
+      "url": "https://api.imf.org/external/sdmx/2.1/data/IMF.STA,GFS_COFOG,11.0.0/SGP.S13.G2MF.GF07_T.POGDP_PT+XDC.A?startPeriod=2017&endPeriod=2019",
+      "retrievedAt": "2026-09-27T23:47:51.044Z",
+      "sha256": "d5bfcc65dc86c38d01857b717f8732f754bd4cb78d2c54de613b244264428c3b"
+    },
+    {
+      "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.CN?date=2017:2019&format=json&per_page=20000",
+      "retrievedAt": "2026-09-27T23:47:51.516Z",
+      "sha256": "8d0b372954dac65637ba05e497dbdd1222aed783caf7e0a1812aecf144658f26"
+    },
+    {
+      "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.KD?date=2017:2019&format=json&per_page=20000",
+      "retrievedAt": "2026-09-27T19:12:16.714Z",
+      "sha256": "c58b9edddf7d1080118fe96950db04711fbc5bff4298cb6c4d32750ed8207d6d"
+    }
+  ]
+}
