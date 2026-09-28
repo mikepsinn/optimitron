@@ -27,6 +27,15 @@ const observed: MedianIncomeSeriesRecord = {
   sourceUrl: 'https://data-explorer.oecd.org',
 };
 
+const eurostat: MedianIncomeSeriesRecord = {
+  ...observed,
+  source: 'Eurostat EU-SILC',
+  unit: 'Real PPP-adjusted US dollars per equivalised person',
+  methodology: 'EU-SILC',
+  definition: 'Median equivalised disposable income (MED_E).',
+  sourceUrl: 'https://ec.europa.eu/eurostat',
+};
+
 describe('country panel income boundary', () => {
   it('keeps the measured equivalised income and provenance without a household ratio', () => {
     const lookup = buildCountryPanelIncomeLookup([observed]);
@@ -79,6 +88,55 @@ describe('country panel income boundary', () => {
     expect(resolveCountryPanelIncome({
       jurisdictionIso3: 'CAN', year: 2018, afterTaxMedianIncome: observed,
     }).afterTaxMedianIncome).toBeNull();
+  });
+
+  it('uses the longest observed definition without source switches or gap filling', () => {
+    const records = [
+      ...[2017, 2018, 2020].map(year => ({ ...eurostat, year, value: 20000 })),
+      ...[2018, 2019, 2019, 2019].map(year => ({ ...observed, year, value: 40000 })),
+    ];
+    for (const input of [records, [...records].reverse()]) {
+      const lookup = buildCountryPanelIncomeLookup(input);
+      expect([...lookup.values()].map(record => record.year).sort()).toEqual([2017, 2018, 2020]);
+      expect(lookup.get('USA:2018')?.value).toBe(20000);
+      expect(lookup.has('USA:2019')).toBe(false);
+      expect([...lookup.values()].every(record => record.source === 'Eurostat EU-SILC')).toBe(true);
+    }
+  });
+
+  it('prefers OECD only when comparable observed coverage ties', () => {
+    const records = [eurostat, { ...observed, year: 2019 }];
+    for (const input of [records, [...records].reverse()]) {
+      const lookup = buildCountryPanelIncomeLookup(input);
+      expect([...lookup.keys()]).toEqual(['USA:2019']);
+      expect(lookup.get('USA:2019')?.source).toBe('OECD IDD');
+    }
+  });
+
+  it('does not splice changed definitions or PPP bases within the same source', () => {
+    const lookup = buildCountryPanelIncomeLookup([
+      { ...eurostat, year: 2017 },
+      { ...eurostat, year: 2018 },
+      { ...eurostat, year: 2019, definition: 'Changed equivalence definition' },
+      { ...eurostat, year: 2020, pppBasisNote: 'Changed purchasing-power base' },
+    ]);
+    expect([...lookup.keys()]).toEqual(['USA:2017', 'USA:2018']);
+  });
+
+  it('publishes one income definition for every bundled country', () => {
+    const definitions = new Map<string, Set<string>>();
+    for (const row of COUNTRY_PANEL_DATA) {
+      const record = row.afterTaxMedianIncome;
+      if (!record) continue;
+      const countryDefinitions = definitions.get(row.jurisdictionIso3) ?? new Set<string>();
+      countryDefinitions.add(JSON.stringify([
+        record.source, record.unit, record.methodology, record.definition,
+        record.priceIndexNote, record.pppBasisNote,
+      ]));
+      definitions.set(row.jurisdictionIso3, countryDefinitions);
+    }
+    expect(definitions.size).toBeGreaterThan(0);
+    expect([...definitions].filter(([, sources]) => sources.size > 1)).toEqual([]);
   });
 
   it('preserves the bundled US real-income gap rather than splicing nominal and inferred income', () => {

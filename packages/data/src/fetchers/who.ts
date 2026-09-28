@@ -45,6 +45,11 @@ export const GHO_INDICATOR_CODES = {
 
 export type GHOIndicatorKey = keyof typeof GHO_INDICATOR_CODES;
 
+export interface WHOFetchOptions extends FetchOptions {
+  /** Throw on an incomplete paginated response before replacing a saved dataset. */
+  requireComplete?: boolean;
+}
+
 /** Shape of a single GHO OData value record */
 export interface GHORecord {
   Id: number;
@@ -199,7 +204,7 @@ export function parseGHORecords(records: GHORecord[], indicatorCode: string): Da
  */
 export async function fetchGHOIndicator(
   indicatorCode: string,
-  options: FetchOptions = {},
+  options: WHOFetchOptions = {},
 ): Promise<DataPoint[]> {
   const sexAttempts: Array<string | undefined> = ['SEX_BTSX', undefined];
   let selectedRecords: GHORecord[] = [];
@@ -209,6 +214,10 @@ export async function fetchGHOIndicator(
     const attemptUrl = buildIndicatorUrl(indicatorCode, filter);
     const attempt = await fetchIndicatorRecords(attemptUrl, indicatorCode);
     const hasRecords = attempt.records.length > 0;
+
+    if (!attempt.ok && options.requireComplete && (hasRecords || !sexFilter)) {
+      throw new Error(`WHO GHO incomplete fetch (${indicatorCode}); received ${attempt.records.length} records before a page failed.`);
+    }
 
     // Prefer both-sex rows when available, but fall back when Dim1 isn't present.
     if (attempt.ok && hasRecords) {
@@ -246,7 +255,7 @@ export async function fetchWHOLifeExpectancy(options: FetchOptions = {}): Promis
  * Fetch healthy life expectancy (HALE) at birth by country.
  */
 export async function fetchWHOHealthyLifeExpectancy(
-  options: FetchOptions = {},
+  options: WHOFetchOptions = {},
 ): Promise<DataPoint[]> {
   return fetchGHOIndicator(GHO_INDICATOR_CODES.HEALTHY_LIFE_EXPECTANCY, options);
 }

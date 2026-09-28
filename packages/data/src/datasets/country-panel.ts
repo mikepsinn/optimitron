@@ -99,6 +99,7 @@ export interface CountryPanelMetadata {
     refreshedAt: string;
     sourceGeneratedAt: string;
     eligibleObservationCount: number;
+    selection?: string;
   };
 }
 

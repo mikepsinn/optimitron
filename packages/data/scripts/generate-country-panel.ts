@@ -130,7 +130,7 @@ function derivePerCapita(
 
 async function main(): Promise<void> {
   if (process.argv.includes('--health-only')) {
-    const points = await fetchWHOHealthyLifeExpectancy({ period: PERIOD });
+    const points = await fetchWHOHealthyLifeExpectancy({ period: PERIOD, requireComplete: true });
     const lookup = buildLookup(points);
     if (lookup.size < 3500) throw new Error('WHO refresh incomplete; existing panel was not replaced.');
     const rows = COUNTRY_PANEL_DATA.map(row => ({ ...row, haleYears: lookup.get(key(row.jurisdictionIso3, row.year)) ?? null }));
@@ -178,7 +178,7 @@ async function main(): Promise<void> {
   console.log(`  IMF gov exp: ${imfGovExpPoints.length} points`);
 
   console.log('Fetching WHO HALE...');
-  const halePoints = await fetchWHOHealthyLifeExpectancy({ period: PERIOD });
+  const halePoints = await fetchWHOHealthyLifeExpectancy({ period: PERIOD, requireComplete: true });
   console.log(`  WHO HALE: ${halePoints.length} points`);
 
   console.log('Fetching PIP median income...');
@@ -335,6 +335,7 @@ async function writePanel(rows: CountryPanelRow[], baseMetadata: CountryPanelMet
       refreshedAt: new Date().toISOString(),
       sourceGeneratedAt: MEDIAN_INCOME_SERIES_METADATA.generatedAt,
       eligibleObservationCount: withIncome.length,
+      selection: 'One definition per country, maximizing distinct observed years; OECD wins coverage ties. Missing years are not filled from other definitions.',
     } : baseMetadata.incomeRefresh,
   };
   const [minYear, maxYear] = metadata.yearRange;

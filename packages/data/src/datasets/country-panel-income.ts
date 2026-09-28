@@ -30,20 +30,40 @@ export function isEligibleCountryPanelIncomeRecord(
 }
 
 /**
- * Never fill a missing year with nominal income, PIP or an after-government
- * estimate. OECD and Eurostat observations retain their distinct source/unit
- * metadata; analyses must not splice these definitions into one time series.
+ * Use one comparable definition per country: most distinct observed years,
+ * then OECD when coverage ties, then a stable definition key. Missing years
+ * stay missing rather than borrowing another source's unit or price basis.
  */
 export function buildCountryPanelIncomeLookup(
   records: readonly MedianIncomeSeriesRecord[],
 ): Map<string, MedianIncomeSeriesRecord> {
-  const lookup = new Map<string, MedianIncomeSeriesRecord>();
+  const countries = new Map<string, Map<string, Map<number, MedianIncomeSeriesRecord>>>();
   for (const record of records) {
     if (!isEligibleCountryPanelIncomeRecord(record)) continue;
-    const key = `${record.jurisdictionIso3}:${record.year}`;
-    const existing = lookup.get(key);
-    if (!existing || (record.source === 'OECD IDD' && existing.source !== 'OECD IDD')) {
-      lookup.set(key, record);
+    const definition = JSON.stringify([
+      record.source, record.unit, record.methodology, record.definition,
+      record.priceIndexNote, record.pppBasisNote,
+      record.consumptionTaxTreatment, record.inKindTransferTreatment,
+    ]);
+    const series = countries.get(record.jurisdictionIso3)
+      ?? new Map<string, Map<number, MedianIncomeSeriesRecord>>();
+    const years = series.get(definition) ?? new Map<number, MedianIncomeSeriesRecord>();
+    if (!years.has(record.year)) years.set(record.year, record);
+    series.set(definition, years);
+    countries.set(record.jurisdictionIso3, series);
+  }
+
+  const lookup = new Map<string, MedianIncomeSeriesRecord>();
+  for (const [country, series] of countries) {
+    const [selected] = [...series.entries()].sort(([leftKey, left], [rightKey, right]) => {
+      const leftIsOecd = left.values().next().value?.source === 'OECD IDD';
+      const rightIsOecd = right.values().next().value?.source === 'OECD IDD';
+      return right.size - left.size || Number(rightIsOecd) - Number(leftIsOecd)
+        || (leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0);
+    });
+    if (!selected) continue;
+    for (const [year, record] of selected[1]) {
+      lookup.set(`${country}:${year}`, record);
     }
   }
   return lookup;
