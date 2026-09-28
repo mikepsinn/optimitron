@@ -39,10 +39,10 @@ function describeCorrelation(r: number): string {
  */
 function describePredictiveDirection(forwardR: number, reverseR: number): string {
   const absDelta = Math.abs(forwardR) - Math.abs(reverseR);
-  if (absDelta > 0.2) return 'strong forward causation — predictor drives outcome';
-  if (absDelta > 0.05) return 'weak forward causation';
-  if (absDelta < -0.2) return 'strong reverse causation — outcome drives predictor';
-  if (absDelta < -0.05) return 'weak reverse causation — outcome may drive predictor';
+  if (absDelta > 0.2) return 'substantially stronger forward predictive association';
+  if (absDelta > 0.05) return 'stronger forward predictive association';
+  if (absDelta < -0.2) return 'substantially stronger reverse predictive association';
+  if (absDelta < -0.05) return 'stronger reverse predictive association';
   return 'no clear directionality';
 }
 
@@ -67,6 +67,11 @@ function bradfordHillTotal(bh: FullAnalysisResult['bradfordHill']): number {
 // Main generator
 // ---------------------------------------------------------------------------
 
+export interface MarkdownReportOptions {
+  observationPeriod?: 'day' | 'week' | 'month' | 'year';
+  outcomeDirection?: 'higher' | 'lower';
+}
+
 /**
  * Generate a human-readable markdown report from a FullAnalysisResult.
  *
@@ -80,13 +85,15 @@ function bradfordHillTotal(bh: FullAnalysisResult['bradfordHill']): number {
  * @param result - Complete analysis result from runFullAnalysis
  * @returns Markdown-formatted report string
  */
-export function generateMarkdownReport(result: FullAnalysisResult): string {
+export function generateMarkdownReport(
+  result: FullAnalysisResult,
+  options: MarkdownReportOptions = {},
+): string {
   const {
     predictorName,
     outcomeName,
     forwardPearson,
     reversePearson,
-    predictivePearson,
     pValue,
     baselineFollowup,
     optimalValues,
@@ -101,12 +108,24 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
 
   const pUnit = predictorUnit ? ` ${predictorUnit}` : '';
   const oUnit = outcomeUnit ? ` ${outcomeUnit}` : '';
+  const periods = options.observationPeriod ? `${options.observationPeriod}s` : 'observations';
+  const perPeriod = options.observationPeriod ? ` per ${options.observationPeriod}` : '';
 
   const percentChange = baselineFollowup.outcomeFollowUpPercentChangeFromBaseline;
-  const direction = percentChange >= 0 ? 'improvement' : 'worsening';
-  const absPercentChange = Math.abs(percentChange);
+  const absoluteChange = baselineFollowup.outcomeFollowUpAverage - baselineFollowup.outcomeBaselineAverage;
+  const direction = absoluteChange > 0 ? 'higher' : 'lower';
+  const change = absoluteChange === 0
+    ? 'unchanged'
+    : baselineFollowup.outcomeBaselineAverage === 0
+      ? `${fmt(Math.abs(absoluteChange))}${oUnit} ${direction}`
+      : `${fmt(Math.abs(percentChange), 1)}% ${direction}`;
+  const interpretation = options.outcomeDirection && absoluteChange !== 0
+    ? ` (${direction === options.outcomeDirection ? 'improvement' : 'worsening'})`
+    : '';
 
-  const practicalValue = groupToPracticalValue(optimalValues.optimalDailyValue);
+  const practicalValue = groupToPracticalValue(options.outcomeDirection === 'lower'
+    ? optimalValues.valuePredictingLowOutcome
+    : optimalValues.optimalDailyValue);
   const pisScore = pis.score * 100; // Display on 0–100 scale
   const bhTotal = bradfordHillTotal(bradfordHill);
 
@@ -120,18 +139,17 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('## Summary');
   lines.push('');
   lines.push(
-    `A daily average of **${fmt(practicalValue, 0)}${pUnit} ${predictorName}** is associated ` +
-    `with a **${fmt(absPercentChange, 1)}% ${direction}** in ${outcomeName}.`,
+    `${outcomeName} was **${change}** following high-${predictorName} ${periods} ` +
+    `compared with low-${predictorName} baseline ${periods}${interpretation}.`,
   );
   lines.push('');
 
   // --- Key Findings ---
   lines.push('## Key Findings');
   lines.push('');
-  lines.push(`- **Optimal Daily Value:** ${fmt(practicalValue, 0)}${pUnit} (practical recommendation)`);
+  lines.push(`- **Optimal Value:** ${fmt(practicalValue, 0)}${pUnit}${perPeriod} (practical recommendation)`);
   lines.push(
-    `- **Outcome Change:** ${outcomeName} is ${fmt(absPercentChange, 1)}% ` +
-    `${percentChange >= 0 ? 'higher' : 'lower'} on treatment days vs baseline`,
+    `- **Outcome Change:** ${outcomeName} is ${change} following high-predictor ${periods} vs baseline`,
   );
   lines.push(
     `- **Correlation:** r = ${fmt(forwardPearson)} (${describeCorrelation(forwardPearson)})`,
@@ -148,7 +166,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push(`- Forward Pearson (predictor → outcome): ${fmt(forwardPearson)}`);
   lines.push(`- Reverse Pearson (outcome → predictor): ${fmt(reversePearson)}`);
   lines.push(
-    `- Causal Direction Score (forward − reverse): ${fmt(predictivePearson)} (${describePredictiveDirection(forwardPearson, reversePearson)})`,
+    `- Predictive Direction Score (|forward| − |reverse|): ${fmt(Math.abs(forwardPearson) - Math.abs(reversePearson))} (${describePredictiveDirection(forwardPearson, reversePearson)})`,
   );
   lines.push(`- Bradford Hill Score: ${fmt(bhTotal, 1)}/9`);
   lines.push(`- p-value: ${pValue < 0.001 ? '< 0.001' : fmt(pValue, 4)}`);
@@ -158,14 +176,14 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('## Optimal Values');
   lines.push('');
   lines.push(
-    `- High ${predictorName} days (avg ${fmt(optimalValues.averageDailyHighPredictor)}${pUnit}): ` +
+    `- High ${predictorName} ${periods} (avg ${fmt(optimalValues.averageDailyHighPredictor)}${pUnit}): ` +
     `${outcomeName} = ${fmt(optimalValues.averageOutcomeFollowingHighPredictor)}${oUnit}`,
   );
   lines.push(
-    `- Low ${predictorName} days (avg ${fmt(optimalValues.averageDailyLowPredictor)}${pUnit}): ` +
+    `- Low ${predictorName} ${periods} (avg ${fmt(optimalValues.averageDailyLowPredictor)}${pUnit}): ` +
     `${outcomeName} = ${fmt(optimalValues.averageOutcomeFollowingLowPredictor)}${oUnit}`,
   );
-  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)}${pUnit} ${predictorName} daily**`);
+  lines.push(`- Practical recommendation: **Target: ${fmt(practicalValue, 0)}${pUnit} ${predictorName}${perPeriod}**`);
   lines.push('');
 
   // --- Data Quality ---
@@ -173,6 +191,7 @@ export function generateMarkdownReport(result: FullAnalysisResult): string {
   lines.push('');
   lines.push(`- Pairs analyzed: ${numberOfPairs}`);
   lines.push(`- Date range: ${dateRange.start} to ${dateRange.end}`);
+  lines.push(`- Observation period: ${options.observationPeriod ?? 'unspecified'}`);
   lines.push(`- Evidence grade: ${pis.evidenceGrade}`);
   lines.push(`- Data quality: ${dataQuality.isValid ? 'PASS' : 'FAIL'}`);
 

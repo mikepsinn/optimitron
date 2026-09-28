@@ -102,6 +102,22 @@ describe('WHO GHO Fetcher', () => {
   });
 
   describe('fetchGHOIndicator', () => {
+    it('keeps both-sex observations when the fallback response also contains sex-specific rows', async () => {
+      const record = mockRecords[0]!;
+      globalThis.fetch = vi.fn()
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ value: [] }) })
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ value: [
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_BTSX', NumericValue: 70 },
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_MLE', NumericValue: 65 },
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_FMLE', NumericValue: 75 },
+        ] }) });
+      const result = await fetchGHOIndicator('WHOSIS_000002');
+      expect(result.map(r => r.value)).toEqual([70]);
+    });
+    it('does not substitute a sex-specific outcome when both-sex data are absent', () => {
+      expect(parseGHORecords([{ ...mockRecords[0]!, Dim1: 'MLE' }], 'WHOSIS_000002')).toEqual([]);
+      expect(parseGHORecords([{ ...mockRecords[0]!, Dim1: 'BTSX' }], 'WHOSIS_000002')).toHaveLength(1);
+    });
     it('returns parsed data on success (single page)', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -198,7 +214,7 @@ describe('WHO GHO Fetcher', () => {
 
       await fetchGHOIndicator('WHOSIS_000001');
       const callUrl3 = decodeURIComponent((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string);
-      expect(callUrl3).toContain("Dim1 eq 'BTSX'");
+      expect(callUrl3).toContain("Dim1 eq 'SEX_BTSX'");
     });
 
     it('falls back without sex filter when Dim1 query returns empty rows', async () => {
@@ -220,8 +236,8 @@ describe('WHO GHO Fetcher', () => {
 
       const firstUrl = decodeURIComponent(fetchMock.mock.calls[0]?.[0] as string);
       const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
-      expect(firstUrl).toContain("Dim1 eq 'BTSX'");
-      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
+      expect(firstUrl).toContain("Dim1 eq 'SEX_BTSX'");
+      expect(secondUrl).not.toContain("Dim1 eq 'SEX_BTSX'");
     });
 
     it('falls back without sex filter when Dim1 query fails', async () => {
@@ -243,7 +259,7 @@ describe('WHO GHO Fetcher', () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
 
       const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
-      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
+      expect(secondUrl).not.toContain("Dim1 eq 'SEX_BTSX'");
     });
   });
 

@@ -382,7 +382,7 @@ describe('generateMarkdownReport', () => {
   });
 
   it('contains Predictive Pearson value', () => {
-    expect(report).toContain('Causal Direction Score (forward − reverse)');
+    expect(report).toContain('Predictive Direction Score (|forward| − |reverse|)');
   });
 
   it('contains Bradford Hill Score', () => {
@@ -411,16 +411,88 @@ describe('generateMarkdownReport', () => {
 
   it('contains practical recommendation', () => {
     expect(report).toContain('Practical recommendation:');
-    expect(report).toContain('daily');
+    expect(report).toContain('**Target:');
+    expect(report).not.toContain('daily');
   });
 
   it('uses consistent predictor-split labels in optimal values section', () => {
     // Should show predictor-split: "High <predictor> days (avg X): Outcome = Y"
-    expect(report).toContain('High Vitamin D days (avg');
-    expect(report).toContain('Low Vitamin D days (avg');
+    expect(report).toContain('High Vitamin D observations (avg');
+    expect(report).toContain('Low Vitamin D observations (avg');
     // Should NOT mix outcome-split with predictor-split
     expect(report).not.toContain('Value predicting high outcome');
     expect(report).not.toContain('Value predicting low outcome');
+  });
+
+  it('keeps annual units and explicit cadence without turning values into daily inputs', () => {
+    const annual = generateMarkdownReport({
+      ...result, predictorName: 'Annual input', predictorUnit: 'USD per capita',
+    }, { observationPeriod: 'year' });
+    expect(annual).toContain('High Annual input years (avg');
+    expect(annual).toContain(`${result.optimalValues.averageDailyHighPredictor.toFixed(2)} USD per capita`);
+    expect(annual).toContain('Observation period: year');
+    expect(annual).not.toMatch(/daily|treatment/);
+    expect(generateMarkdownReport(result, { observationPeriod: 'day' }))
+      .toContain('High Vitamin D days (avg');
+  });
+
+  it('shows an absolute difference instead of a percentage when the baseline is zero', () => {
+    const zeroBaseline = generateMarkdownReport({
+      ...result, outcomeUnit: 'points',
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 0, outcomeFollowUpAverage: 4,
+        outcomeFollowUpPercentChangeFromBaseline: 4,
+      },
+    });
+    expect(zeroBaseline).toContain('**4.00 points higher**');
+    expect(zeroBaseline).not.toContain('4.0%');
+  });
+
+  it.each([
+    [20, 'lower', 'higher', 'worsening'],
+    [-20, 'lower', 'lower', 'improvement'],
+    [20, 'higher', 'higher', 'improvement'],
+    [-20, 'higher', 'lower', 'worsening'],
+  ] as const)('interprets change %s when %s outcomes are desired', (change, desired, numericDirection, interpretation) => {
+    const directional = generateMarkdownReport({
+      ...result,
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 100, outcomeFollowUpAverage: 100 + change,
+        outcomeFollowUpPercentChangeFromBaseline: change,
+      },
+      optimalValues: {
+        ...result.optimalValues,
+        optimalDailyValue: 125, valuePredictingHighOutcome: 125, valuePredictingLowOutcome: 50,
+      },
+    }, { outcomeDirection: desired });
+    expect(directional).toContain(`**20.0% ${numericDirection}**`);
+    expect(directional).toContain(`(${interpretation})`);
+    expect(directional).toContain(`**Optimal Value:** ${desired === 'lower' ? '50' : '150'}`);
+  });
+
+  it('does not call zero change an improvement', () => {
+    const unchanged = generateMarkdownReport({
+      ...result,
+      baselineFollowup: {
+        ...result.baselineFollowup,
+        outcomeBaselineAverage: 100, outcomeFollowUpAverage: 100,
+        outcomeFollowUpPercentChangeFromBaseline: 0,
+      },
+    }, { outcomeDirection: 'higher' });
+    expect(unchanged).toContain('**unchanged**');
+    expect(unchanged).not.toMatch(/improvement|worsening/);
+  });
+
+  it('keeps negative-correlation direction scores consistent with their description', () => {
+    const asymmetric = generateMarkdownReport({
+      ...result, forwardPearson: -0.8, reversePearson: -0.2, predictivePearson: -0.6,
+    });
+    expect(asymmetric).toContain(
+      'Predictive Direction Score (|forward| − |reverse|): 0.60 (substantially stronger forward predictive association)',
+    );
+    expect(asymmetric).not.toMatch(/forward causation|reverse causation/);
   });
 
   it('contains correlation description', () => {

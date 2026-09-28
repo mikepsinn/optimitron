@@ -162,6 +162,7 @@ export type {
 export {
   generateMarkdownReport,
 } from './report.js';
+export type { MarkdownReportOptions } from './report.js';
 
 // Shared report formatting utilities (used by opg and obg)
 export {
