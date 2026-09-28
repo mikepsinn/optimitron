@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { scaleOptimalBudgetScenario } from "@optimitron/obg";
 import { Input } from "@/components/retroui/Input";
 import { HealthcareFrontier } from "./HealthcareFrontier";
-import type { BestPracticeBudgetReport } from "@/lib/best-practice-budget";
+import type { OptimalBudgetReport } from "@/lib/optimal-budget-generator";
 
 function money(value: number): string {
   return `$${(Math.round(value) || 0).toLocaleString("en-US")}`;
@@ -13,7 +14,7 @@ function compactMoney(value: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 2 }).format(value);
 }
 
-export function BestPracticeBudget({ report }: { report: BestPracticeBudgetReport }) {
+export function OptimalBudgetGenerator({ report }: { report: OptimalBudgetReport }) {
   const [populationText, setPopulationText] = useState("1000000");
   const [countryId, setCountryId] = useState(report.populationCountries.some(country => country.id === "USA") ? "USA" : "custom");
   const [quantile, setQuantile] = useState(report.defaultQuantile);
@@ -21,7 +22,8 @@ export function BestPracticeBudget({ report }: { report: BestPracticeBudgetRepor
   const country = report.populationCountries.find(item => item.id === countryId);
   const population = country?.population ?? Number(populationText);
   const validPopulation = (country !== undefined || populationText.trim() !== "") && Number.isSafeInteger(population) && population > 0;
-  const scenario = report.scenarios.find(item => item.outcomeQuantile === quantile && item.maxHealthyYearGap === healthGap)!;
+  const referenceScenario = report.scenarios.find(item => item.outcomeQuantile === quantile && item.maxHealthyYearGap === healthGap)!;
+  const scenario = validPopulation ? scaleOptimalBudgetScenario(referenceScenario, population) : referenceScenario;
   const defaultScenario = report.scenarios.find(item => item.outcomeQuantile === report.defaultQuantile && item.maxHealthyYearGap === healthGap)!;
   const nationalTargets = scenario.lines.find(line => line.id === "GF02")!.targets;
 
@@ -48,11 +50,7 @@ export function BestPracticeBudget({ report }: { report: BestPracticeBudgetRepor
       selectedQuantile: quantile,
       selectedMaxHealthyYearGap: healthGap,
       selectedCountry: country ?? null,
-      scenarios: report.scenarios.map(item => ({
-        ...item, population,
-        annualBudget: item.totalPerCapita === null ? null : item.totalPerCapita * population,
-        lines: item.lines.map(line => ({ ...line, annualBudget: line.peer ? line.peer.publicCostPerCapita * population : null })),
-      })),
+      scenarios: report.scenarios.map(item => scaleOptimalBudgetScenario(item, population)),
     };
     const url = URL.createObjectURL(new Blob([JSON.stringify(scaled, null, 2)], { type: "application/json" }));
     const link = document.createElement("a");
@@ -82,8 +80,8 @@ export function BestPracticeBudget({ report }: { report: BestPracticeBudgetRepor
         </div>
         <div aria-live="polite" className="min-w-0">
           <p className="text-sm font-bold text-muted-foreground">Annual public spending</p>
-          <p className="break-words text-3xl font-black md:text-4xl" data-testid="population-budget-total" data-amount={validPopulation && scenario.totalPerCapita !== null ? scenario.totalPerCapita * population : undefined}>
-            {validPopulation && scenario.totalPerCapita !== null ? compactMoney(scenario.totalPerCapita * population) : "—"}
+          <p className="break-words text-3xl font-black md:text-4xl" data-testid="population-budget-total" data-amount={validPopulation && scenario.totalPerCapita !== null ? scenario.annualBudget! : undefined}>
+            {validPopulation && scenario.totalPerCapita !== null ? compactMoney(scenario.annualBudget!) : "—"}
           </p>
           {scenario.totalPerCapita !== null && <p className="mt-1 text-sm font-bold">{money(scenario.totalPerCapita)} per resident · national and local government</p>}
         </div>
@@ -110,7 +108,7 @@ export function BestPracticeBudget({ report }: { report: BestPracticeBudgetRepor
           {scenario.alternativePerCapitaRange && <p>Using the three cheapest qualifying alternatives where available gives {money(scenario.alternativePerCapitaRange[0])}–{money(scenario.alternativePerCapitaRange[1])} in public spending per resident. This is an alternative-country range.</p>}
           <p>Service breakdowns retain each selected country’s spending mix. They are parts of the parent amount, not extra allocations. Research spending is already included. The program scenarios below estimate additional investments in future improvements.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2 font-bold">
-            <a className="underline" href="/data/best-practice-budget.md">Full analysis and sources</a>
+            <a className="underline" href="/data/optimal-budget.md">Full analysis and sources</a>
             <button type="button" onClick={download} disabled={!validPopulation} className="border-2 border-foreground px-3 py-1 disabled:opacity-50">Download this budget</button>
           </div>
         </div>
@@ -125,7 +123,7 @@ export function BestPracticeBudget({ report }: { report: BestPracticeBudgetRepor
           <div key={line.id} className="border-b border-foreground/25 py-4" data-testid={`budget-line-${line.id}`}>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-[2fr_1fr_1fr_1fr] sm:items-center">
               <h3 className="font-bold">{line.name}</h3>
-              <p className="text-right font-black tabular-nums" data-testid={`budget-annual-${line.id}`} title={line.peer && validPopulation ? money(line.peer.publicCostPerCapita * population) : undefined}>{line.peer && validPopulation ? compactMoney(line.peer.publicCostPerCapita * population) : "—"}</p>
+              <p className="text-right font-black tabular-nums" data-testid={`budget-annual-${line.id}`} title={line.peer && validPopulation ? money(line.annualBudget!) : undefined}>{line.peer && validPopulation ? compactMoney(line.annualBudget!) : "—"}</p>
               <p className="text-sm tabular-nums sm:text-right">{line.peer ? <>{money(line.peer.publicCostPerCapita)}<span className="sm:hidden"> / resident</span></> : "No qualifying country"}</p>
               <p className="text-right text-sm sm:text-left">{line.peer?.name}</p>
             </div>

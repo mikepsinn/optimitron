@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
-import type { BestPracticeBudgetReport } from "@/lib/best-practice-budget";
+import type { OptimalBudgetReport } from "@/lib/optimal-budget-generator";
 
-type Healthcare = BestPracticeBudgetReport["healthcare"];
+type Healthcare = OptimalBudgetReport["healthcare"];
 const money = (value: number | null) => value === null ? "Unavailable" : `$${Math.round(value).toLocaleString("en-US")}`;
 
 export function HealthcareFrontier({ data, gap, onGapChange, countryId }: {

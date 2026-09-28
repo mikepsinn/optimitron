@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { BEST_PRACTICE_BUDGET_DATA as data } from '../datasets/best-practice-budget.js';
+import { OPTIMAL_BUDGET_DATA as data } from '../datasets/optimal-budget.js';
 
-describe('best-practice budget source snapshot', () => {
+describe('optimal budget source snapshot', () => {
   it('includes global healthcare systems without requiring European income or spending accounts', () => {
     expect(data.healthcareCountries.length).toBeGreaterThan(150);
     for (const id of ['JPN', 'KOR', 'SGP']) {

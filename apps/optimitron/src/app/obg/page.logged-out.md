@@ -31,7 +31,7 @@
 - The healthcare budget uses government health accounts, including research and investment. The comparison below uses total recurring care costs, including private bills, to choose a system. Its care-cost figures have a different accounting boundary and are not added to the public budget.
 - Using the three cheapest qualifying alternatives where available gives $20,010–$49,621 in public spending per resident. This is an alternative-country range.
 - Service breakdowns retain each selected country’s spending mix. They are parts of the parent amount, not extra allocations. Research spending is already included. The program scenarios below estimate additional investments in future improvements.
-- [Full analysis and sources](/data/best-practice-budget.md)
+- [Full analysis and sources](/data/optimal-budget.md)
 - Download this budget
 - PUBLIC SPENDING
 - ANNUAL BUDGET

@@ -1,4 +1,4 @@
-# Best-practice population budget
+# Optimal Budget Generator
 
 Reference population: 1,000,000. Healthcare: 178 countries worldwide. Other public spending: 30 European countries.
 Annual public spending: 2017, 2018, 2019 average, in 2021 international dollars (GDP purchasing power parity). Includes national and local government.

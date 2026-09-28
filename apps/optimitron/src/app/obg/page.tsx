@@ -3,12 +3,12 @@ import { BudgetDecisionResults } from "@/components/budget/DecisionResults";
 import { usBudgetAnalysis } from "@/data/us-budget-analysis";
 import { BudgetComparisonMethod, NationalSpendingComparisons } from "@/components/budget/NationalSpendingComparisons";
 import { getNationalBudgetComparisons } from "@/lib/analysis-products";
-import { BestPracticeBudget } from "@/components/budget/BestPracticeBudget";
-import { getBestPracticeBudget } from "@/lib/best-practice-budget";
+import { OptimalBudgetGenerator } from "@/components/budget/OptimalBudgetGenerator";
+import { getOptimalBudgetReport } from "@/lib/optimal-budget-generator";
 import { getRouteMetadata } from "@/lib/metadata";
 import { getBudgetCategoryPath, obgLink, optimalBudgetGeneratorPaperLink, ROUTES } from "@/lib/routes";
 
-const populationBudget = getBestPracticeBudget();
+const populationBudget = getOptimalBudgetReport();
 const title = "The Optimal Budget Generator";
 const description = `We've compared ${populationBudget.period.length} years of healthcare data from ${populationBudget.healthcare.countries.length} countries and other public spending from ${populationBudget.countryCount} countries to build a budget with one goal: maximize median health and wealth.`;
 
@@ -34,7 +34,7 @@ export default function BudgetPage() {
         </p>
       </header>
 
-      <BestPracticeBudget report={populationBudget} />
+      <OptimalBudgetGenerator report={populationBudget} />
 
       <details className="mt-8 border-2 border-foreground p-5 sm:p-6">
         <summary className="mb-4 cursor-pointer text-lg font-black">More international spending comparisons</summary>

@@ -190,6 +190,6 @@ const snapshot = {
   healthSource: { url: 'https://www.who.int/data/gho/data/indicators/indicator-details/GHO/gho-ghe-hale-healthy-life-expectancy', population: 'Both sexes (SEX_BTSX)', snapshotGeneratedAt: sources.find(s => s.url === healthUrl.toString())!.retrievedAt },
   educationSource: { url: 'https://ec.europa.eu/eurostat/databrowser/view/educ_outc_pisa/default/table?lang=en', note: '2018 share reaching at least PISA mathematics Level 2: 100 minus low-achiever percentage.' },
 };
-const output = resolve(root, 'src/generated/best-practice-budget.json');
+const output = resolve(root, 'src/generated/optimal-budget.json');
 writeFileSync(output, `${JSON.stringify(snapshot, null, 2)}\n`);
 console.log(JSON.stringify({ countries: countries.length, excluded, output, outcomes: countries.map(c => ({ country: c.name, ...c.outcomes })) }, null, 2));

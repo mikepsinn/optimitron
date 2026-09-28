@@ -1,87 +1,13 @@
-import { BEST_PRACTICE_BUDGET_DATA as data } from '@optimitron/data/datasets/best-practice-budget';
-import { calculateBestPracticeBudget, chooseSupportedOutcomeQuantile } from '@optimitron/obg';
-import { calculateHealthcareFrontier } from '@optimitron/obg';
-import type { BestPracticeCategory, BestPracticePeer } from '@optimitron/obg';
+import { OPTIMAL_BUDGET_DATA as data } from '@optimitron/data/datasets/optimal-budget';
+import { generateOptimalBudget } from '@optimitron/obg';
 import { HEALTHCARE_REFERENCE_POLICIES } from '@optimitron/data/datasets/healthcare-reference-policies';
 import { HEALTHCARE_SERVICES_DATA } from '@optimitron/data/datasets/healthcare-services';
 import { HEALTHCARE_COFOG_DATA } from '@optimitron/data/datasets/healthcare-cofog';
 
-const categoryNames: Record<string, string> = {
-  GF01: 'Government, research and debt', GF02: 'Weapons and Military',
-  GF03: 'Police, courts and fire services', GF04: 'Transport, energy and industry',
-  GF05: 'Waste, pollution and nature', GF06: 'Housing and community services',
-  GF07: 'Healthcare', GF08: 'Culture, recreation and religion',
-  GF09: 'Education', GF10: 'Pensions and social support',
-};
-
-export const BEST_PRACTICE_OUTCOMES: Record<string, { label: string; unit: string }> = {
-  hale: { label: 'Healthy life expectancy', unit: 'years (WHO HALE, population average)' },
-  income: { label: 'Median disposable income', unit: data.incomeUnit },
-  mathProficiency: { label: 'Students reaching basic maths proficiency', unit: '% of 15-year-olds (PISA 2018, Level 2+)' },
-};
-
-const categories: BestPracticeCategory[] = data.categories.map(category => ({
-  ...category,
-  name: categoryNames[category.id] ?? category.name,
-  outcomeMetrics: category.id === 'GF07' ? ['hale'] : category.id === 'GF09' ? ['mathProficiency'] : ['hale', 'income'],
-  ...(category.id === 'GF07' ? { selectionCost: 'totalHealthPerCapita' as const } : {}),
-}));
-
-export function getBestPracticeBudget(population = 1) {
-  // Friendly display names do not alter source identifiers or the saved raw data.
+export function getOptimalBudgetReport(population = 1) {
+  const result = generateOptimalBudget({ ...data, healthcareBudgets: HEALTHCARE_COFOG_DATA.countries, population });
   const countryName = (id: string, name: string) => id === 'KOR' ? 'South Korea' : name;
-  const healthCountries = data.healthcareCountries.map(country => ({ ...country, name: countryName(country.id, country.name) }));
-  const publicHealth = new Map<string, { publicPerCapita: number; subcategoryCosts: Record<string, number | null> }>([
-    ...data.countries.map(country => [country.id, { publicPerCapita: country.costs.GF07, subcategoryCosts: country.subcategoryCosts }] as const),
-    ...HEALTHCARE_COFOG_DATA.countries.map(country => [country.countryId, country] as const),
-  ]);
-  const defaultQuantile = chooseSupportedOutcomeQuantile(data.countries);
-  const healthcareOptions = [1, 0, 0.5, 1.5, 2].map(maxHealthyYearGap => {
-    const { countries: _countries, frontier, ...result } = calculateHealthcareFrontier({ countries: healthCountries, maxHealthyYearGap });
-    return { ...result, frontierIds: frontier.map(country => country.id) };
-  });
-  const scenarios = [0.8, 0.9, 0.95].flatMap(outcomeQuantile => {
-    const base = calculateBestPracticeBudget({ countries: data.countries, categories, population, outcomeQuantile });
-    return healthcareOptions.map(health => {
-      const peer = (country: NonNullable<typeof health.selected>): BestPracticePeer | null => {
-        const allocation = publicHealth.get(country.id);
-        return allocation ? {
-          id: country.id, name: country.name, publicCostPerCapita: allocation.publicPerCapita,
-          selectionCostPerCapita: country.totalPerCapita, outcomes: { hale: country.hale },
-        } : null;
-      };
-      const selectedPeer = health.selected ? peer(health.selected) : null;
-      const healthPeers = health.selected ? [health.selected, ...health.alternatives].flatMap(country => {
-        const reference = peer(country);
-        return reference ? [reference] : [];
-      }).slice(0, 3) : [];
-      const lines = base.lines.map(line => {
-        const updated = line.id === 'GF07' ? {
-          ...line, targets: { hale: health.targetHale }, peer: selectedPeer,
-          eligibleCountryCount: health.eligibleCountryCount, alternatives: healthPeers,
-          annualBudget: selectedPeer ? selectedPeer.publicCostPerCapita * population : null,
-          perCapitaRange: healthPeers.length ? [Math.min(...healthPeers.map(p => p.publicCostPerCapita)), Math.max(...healthPeers.map(p => p.publicCostPerCapita))] as [number, number] : null,
-        } : line;
-        const reference = data.countries.find(country => country.id === updated.peer?.id);
-        const subcategoryCosts = updated.id === 'GF07' ? publicHealth.get(updated.peer?.id ?? '')?.subcategoryCosts : reference?.subcategoryCosts as Record<string, number | null> | undefined;
-        const breakdown = data.subcategories.filter(child => child.parentId === line.id).map(child => ({
-          id: child.id, name: child.name, perCapita: subcategoryCosts?.[child.id] ?? null,
-        }));
-        const known = breakdown.reduce((sum, child) => sum + (child.perCapita ?? 0), 0);
-        const remainder = updated.peer && breakdown.length ? updated.peer.publicCostPerCapita - known : null;
-        return { ...updated, breakdown, breakdownRemainder: remainder };
-      });
-      const complete = lines.every(line => line.peer !== null);
-      const subtotalPerCapita = lines.reduce((sum, line) => sum + (line.peer?.publicCostPerCapita ?? 0), 0);
-      return {
-        ...base, lines, complete, maxHealthyYearGap: health.maxHealthyYearGap, subtotalPerCapita,
-        totalPerCapita: complete ? subtotalPerCapita : null,
-        annualBudget: complete ? subtotalPerCapita * population : null,
-        alternativePerCapitaRange: complete ? [lines.reduce((sum, line) => sum + line.perCapitaRange![0], 0), lines.reduce((sum, line) => sum + line.perCapitaRange![1], 0)] as [number, number] : null,
-      };
-    });
-  });
-  const selectedHealthcareIds = new Set(healthcareOptions.flatMap(option => option.selected ? [option.selected.id] : []));
+  const selectedHealthcareIds = new Set(result.healthcare.scenarios.flatMap(option => option.selected ? [option.selected.id] : []));
   return {
     generatedAt: [data.generatedAt, HEALTHCARE_COFOG_DATA.generatedAt, HEALTHCARE_SERVICES_DATA.generatedAt].sort().at(-1)!, period: data.period, costUnit: data.costUnit,
     incomeUnit: data.incomeUnit, countryCount: data.countries.length,
@@ -94,24 +20,24 @@ export function getBestPracticeBudget(population = 1) {
     },
     populationCountries: data.populationCountries.map(country => ({ ...country, name: countryName(country.id, country.name) })).sort((a, b) => a.name.localeCompare(b.name)),
     healthcare: {
-      countries: healthCountries, scenarios: healthcareOptions, defaultMaxHealthyYearGap: 1,
+      ...result.healthcare,
       policies: HEALTHCARE_REFERENCE_POLICIES,
       services: { ...HEALTHCARE_SERVICES_DATA, countries: HEALTHCARE_SERVICES_DATA.countries.filter(country => selectedHealthcareIds.has(country.countryId)) },
       governmentBudgets: HEALTHCARE_COFOG_DATA,
     },
-    defaultQuantile, outcomeDefinitions: BEST_PRACTICE_OUTCOMES,
-    scenarios,
+    defaultQuantile: result.defaultQuantile, outcomeDefinitions: result.outcomeDefinitions,
+    scenarios: result.scenarios,
     sources: data.sources, healthSource: data.healthSource, educationSource: data.educationSource,
     healthcareSource: data.healthcareSource, healthcareDataIssues: data.healthcareDataIssues, populationSource: data.populationSource,
   };
 }
 
-export type BestPracticeBudgetReport = ReturnType<typeof getBestPracticeBudget>;
+export type OptimalBudgetReport = ReturnType<typeof getOptimalBudgetReport>;
 
-export function renderBestPracticeBudgetMarkdown(report: BestPracticeBudgetReport): string {
+export function renderOptimalBudgetMarkdown(report: OptimalBudgetReport): string {
   const money = (value: number) => `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   const content = [
-    '# Best-practice population budget', '',
+    '# Optimal Budget Generator', '',
     `Reference population: ${report.scenarios[0]!.population.toLocaleString('en-US')}. Healthcare: ${report.healthcare.countries.length} countries worldwide. Other public spending: ${report.countryCount} European countries.`,
     `Annual public spending: ${report.period.join(', ')} average, in ${report.costUnit}. Includes national and local government.`,
     '', '## Method', '',

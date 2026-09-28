@@ -1,5 +1,5 @@
 /** Minimum observed cost subject to explicit outcome targets, then linear population scaling. */
-export interface BestPracticeCountry {
+export interface BudgetReferenceCountry {
   id: string;
   name: string;
   costs: Record<string, number | null>;
@@ -8,22 +8,22 @@ export interface BestPracticeCountry {
   totalHealthPerCapita?: number | null;
 }
 
-export interface BestPracticeCategory {
+export interface BudgetReferenceCategory {
   id: string;
   name: string;
   outcomeMetrics: string[];
   selectionCost?: 'totalHealthPerCapita';
 }
 
-export interface BestPracticeBudgetInput {
-  countries: BestPracticeCountry[];
-  categories: BestPracticeCategory[];
+export interface BudgetReferenceInput {
+  countries: BudgetReferenceCountry[];
+  categories: BudgetReferenceCategory[];
   population: number;
   /** Quantile in [0, 1]. All outcome metrics must be oriented higher-is-better. */
   outcomeQuantile: number;
 }
 
-export interface BestPracticePeer {
+export interface BudgetReferencePeer {
   id: string;
   name: string;
   publicCostPerCapita: number;
@@ -31,16 +31,16 @@ export interface BestPracticePeer {
   outcomes: Record<string, number | undefined>;
 }
 
-export interface BestPracticeBudgetLine {
+export interface BudgetReferenceLine {
   id: string;
   name: string;
   targets: Record<string, number | null>;
   outcomeMetrics: string[];
   selectionCost: 'public' | 'totalHealthPerCapita';
   eligibleCountryCount: number;
-  peer: BestPracticePeer | null;
+  peer: BudgetReferencePeer | null;
   /** Up to three cheapest qualifying alternatives, including the selected peer. */
-  alternatives: BestPracticePeer[];
+  alternatives: BudgetReferencePeer[];
   annualBudget: number | null;
   perCapitaRange: [number, number] | null;
 }
@@ -54,18 +54,18 @@ function quantile(values: number[], q: number): number | null {
 }
 
 /** Targets use the full outcome sample, independent of spending-data availability. */
-export function calculateBestPracticeBudget(input: BestPracticeBudgetInput) {
+export function selectBudgetReferences(input: BudgetReferenceInput) {
   const { countries, categories, population, outcomeQuantile } = input;
   if (!Number.isSafeInteger(population) || population <= 0) throw new Error('Population must be a positive safe integer.');
   if (!Number.isFinite(outcomeQuantile) || outcomeQuantile < 0 || outcomeQuantile > 1) throw new Error('Outcome quantile must be between zero and one.');
   if (!categories.length || new Set(categories.map(c => c.id)).size !== categories.length) throw new Error('Budget categories must be nonempty and unique.');
   if (new Set(countries.map(c => c.id)).size !== countries.length) throw new Error('Use one observation per country, averaged over the reference period.');
-  const lines: BestPracticeBudgetLine[] = categories.map(category => {
+  const lines: BudgetReferenceLine[] = categories.map(category => {
     if (!category.outcomeMetrics.length) throw new Error(`Outcome targets are required for ${category.id}.`);
     const targets = Object.fromEntries(category.outcomeMetrics.map(metric => [metric, quantile(
       countries.map(c => c.outcomes[metric]).filter((n): n is number => n !== undefined && Number.isFinite(n)), outcomeQuantile,
     )]));
-    const peers: BestPracticePeer[] = countries.flatMap(country => {
+    const peers: BudgetReferencePeer[] = countries.flatMap(country => {
       const cost = country.costs[category.id];
       const selectionCost = category.selectionCost ? country[category.selectionCost] : cost;
       if (cost === null || cost === undefined || !Number.isFinite(cost) || cost < 0 || selectionCost === null || selectionCost === undefined || !Number.isFinite(selectionCost) || selectionCost < 0) return [];
@@ -104,9 +104,9 @@ export function calculateBestPracticeBudget(input: BestPracticeBudgetInput) {
 }
 
 /** Highest preset supported by three jointly high-health/high-income reference countries. */
-export function chooseSupportedOutcomeQuantile(countries: BestPracticeCountry[]): number {
+export function chooseSupportedOutcomeQuantile(countries: BudgetReferenceCountry[]): number {
   for (const q of [0.95, 0.9, 0.8]) {
-    const result = calculateBestPracticeBudget({ countries: countries.map(c => ({ ...c, costs: { screening: 0 } })),
+    const result = selectBudgetReferences({ countries: countries.map(c => ({ ...c, costs: { screening: 0 } })),
       categories: [{ id: 'screening', name: 'Health and income', outcomeMetrics: ['hale', 'income'] }], population: 1, outcomeQuantile: q });
     if (result.lines[0]!.eligibleCountryCount >= 3) return q;
   }
