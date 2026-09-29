@@ -1,0 +1,36 @@
+{
+  "retrievedAt": "2026-09-29",
+  "priceReferenceYear": 2021,
+  "files": {
+    "oecd-raw-median-all-dimensions.json": {
+      "url": "https://sdmx.oecd.org/public/rest/v1/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,1.0/.A.INC_DISP.MEDIAN.XDC_HH_EQ._T.METH2012.D_CUR.?startPeriod=1995&endPeriod=2025&dimensionAtObservation=AllDimensions",
+      "accept": "application/vnd.sdmx.data+json;version=2.0.0",
+      "retrievedAt": "2026-09-29T00:45:25.354Z",
+      "sha256": "fdd2e76ec91b2893046a70360129e927cbff725265d29a19f01a4b71d085dfcd"
+    },
+    "oecd-raw-cpi-all-dimensions.json": {
+      "url": "https://sdmx.oecd.org/public/rest/v1/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,1.0/.A.CPI._Z.IX._T.METH2012.D_CUR.?startPeriod=1995&endPeriod=2025&dimensionAtObservation=AllDimensions",
+      "retrievedAt": "2026-09-29T00:46:08.087Z",
+      "sha256": "27352eb3436b88599a03e7c2d472004c2dc9060b694cc63b7145a1cf39f2bd66"
+    },
+    "oecd-raw-ppp-all-dimensions.json": {
+      "url": "https://sdmx.oecd.org/public/rest/v1/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,1.0/.A.PPP_PRC._Z.XDC_USD._T.METH2012.D_CUR.?startPeriod=1995&endPeriod=2025&dimensionAtObservation=AllDimensions",
+      "retrievedAt": "2026-09-29T00:46:08.924Z",
+      "sha256": "36a2fa3b829b492d0466eeaca759f126ae88bd70026bbd1e855511c9e43e9f57"
+    },
+    "eurostat-median-nac.json": {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di03?lang=EN&age=TOTAL&sex=T&statinfo=MED_EI&unit=NAC&sinceTimePeriod=1995&untilTimePeriod=2025",
+      "retrievedAt": "2026-09-29T00:49:20.037Z",
+      "sha256": "4ff28c4e39c60e7edc8a668d3cfc9591c5c8a0c043eb5f527af6ecbfc94704b5"
+    },
+    "eurostat-hicp.json": {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_aind?lang=EN&unit=INX_A_AVG&coicop=CP00&sinceTimePeriod=1995&untilTimePeriod=2025",
+      "retrievedAt": "2026-09-29T00:49:20.079Z",
+      "sha256": "2a8d725c1167564a8630e3934917c6f35381176393dc0cb89f762ba066436db9"
+    },
+    "wb-eurostat-ppp.json": {
+      "url": "https://api.worldbank.org/v2/country/ALB;AUT;BEL;BGR;CHE;CYP;CZE;DEU;DNK;EST;GRC;ESP;FIN;FRA;HRV;HUN;IRL;ISL;ITA;LTU;LUX;LVA;MNE;MKD;MLT;NLD;NOR;POL;PRT;ROU;SRB;SWE;SVN;SVK;TUR;GBR;XKX/indicator/PA.NUS.PRVT.PP?date=1995:2025&format=json&per_page=2000",
+      "sha256": "e151ce03ad7b12fdfd421db2bb38d1046b5e19af5538d9120600780d92020203"
+    }
+  }
+}

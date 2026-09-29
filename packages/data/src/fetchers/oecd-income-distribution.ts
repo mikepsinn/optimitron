@@ -1,8 +1,8 @@
-/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
-
 import type { DataPoint, FetchOptions } from '../types';
+import { INCOME_PRICE_REFERENCE_YEAR, positiveValue, toReferenceYearIncome } from './income-price-basis';
+import type { IncomePriceBasis } from './income-price-basis';
 
-const OECD_IDD_BASE = 'https://sdmx.oecd.org/public/rest/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,';
+const OECD_IDD_BASE = 'https://sdmx.oecd.org/public/rest/v1/data/OECD.WISE.INE,DSD_WISE_IDD@DF_IDD,1.0';
 
 export interface OecdIddDimensionValue {
   id: string;
@@ -21,6 +21,8 @@ export interface OecdIddSeries {
 export interface OecdIddResponse {
   data?: {
     dataSets?: Array<{
+      structure?: number;
+      observations?: Record<string, [number, ...unknown[]]>;
       series?: Record<string, OecdIddSeries>;
     }>;
     structures?: Array<{
@@ -31,6 +33,8 @@ export interface OecdIddResponse {
     }>;
   };
   dataSets?: Array<{
+    structure?: number;
+    observations?: Record<string, [number, ...unknown[]]>;
     series?: Record<string, OecdIddSeries>;
   }>;
   structure?: {
@@ -69,7 +73,7 @@ export interface OecdIddPoint {
   sourceUrl: string;
 }
 
-export interface DerivedOecdMedianDisposableIncomePoint {
+export interface DerivedOecdMedianDisposableIncomePoint extends IncomePriceBasis {
   jurisdictionIso3: string;
   jurisdictionName?: string;
   year: number;
@@ -239,6 +243,27 @@ export function extractOecdIddPoints(
   selector: OecdIddSelector = {},
   source = 'OECD IDD',
 ): OecdIddPoint[] {
+  // AllDimensions avoids duplicate series keys returned by the IDD API's
+  // TIME_PERIOD layout, which JSON.parse would silently overwrite.
+  const dataSets = json.data?.dataSets ?? json.dataSets ?? [];
+  if (dataSets.some(dataSet => dataSet.observations)) {
+    const points: OecdIddPoint[] = [];
+    for (const dataSet of dataSets) {
+      const dimensions = (json.data?.structures?.[dataSet.structure ?? 0]
+        ?? json.structure)?.dimensions?.observation ?? [];
+      const timeIndex = dimensions.findIndex(dimension => dimension.id === 'TIME_PERIOD');
+      if (timeIndex < 0) continue;
+      for (const [key, observation] of Object.entries(dataSet.observations ?? {})) {
+        const decoded = decodeSeriesPoint(key, dimensions);
+        const year = Number(dimensions[timeIndex]?.values?.[Number(key.split(':')[timeIndex])]?.id);
+        const value = observation[0];
+        if (!decoded || !Number.isInteger(year) || !Number.isFinite(value)) continue;
+        const point = { ...decoded, year, value, source, sourceUrl: 'https://data-explorer.oecd.org' };
+        if (selectorMatches(point, selector)) points.push(point);
+      }
+    }
+    return points.sort((a, b) => a.jurisdictionIso3.localeCompare(b.jurisdictionIso3) || a.year - b.year);
+  }
   const series = getOecdIddSeries(json);
   const dimensions = getOecdIddDimensions(json);
   const timeDimension = dimensions.observation.find(
@@ -326,27 +351,12 @@ export function selectPreferredOecdIddPoints(
   });
 }
 
-/**
- * Look up the nearest available value for a country, trying exact year first,
- * then ±1, ±2 years.
- */
-function getNearestValue(
-  byKey: Map<string, number>,
-  iso3: string,
-  year: number,
-): number | null {
-  for (const offset of [0, -1, 1, -2, 2]) {
-    const val = byKey.get(`${iso3}:${year + offset}`);
-    if (val != null && val !== 0) return val;
-  }
-  return null;
-}
-
 export function deriveOecdRealMedianDisposableIncome(
   medianPoints: OecdIddPoint[],
   cpiPoints: OecdIddPoint[],
   pppPoints: OecdIddPoint[],
   fallbackPppPoints?: DataPoint[],
+  options: { referenceYear?: number; fallbackCpiPoints?: DataPoint[] } = {},
 ): DerivedOecdMedianDisposableIncomePoint[] {
   const selectedMedianPoints = selectPreferredOecdIddPoints(medianPoints);
   const selectedCpiPoints = selectPreferredOecdIddPoints(cpiPoints);
@@ -359,29 +369,29 @@ export function deriveOecdRealMedianDisposableIncome(
     selectedPppPoints.map((point) => [`${point.jurisdictionIso3}:${point.year}`, point]),
   );
 
-  // World Bank PPP fallback (keyed by iso3:year for nearest-year lookup)
-  const wbPppByKey = new Map<string, number>();
-  if (fallbackPppPoints) {
-    for (const p of fallbackPppPoints) {
-      wbPppByKey.set(`${p.jurisdictionIso3}:${p.year}`, p.value);
-    }
-  }
+  const wbPppByKey = new Map((fallbackPppPoints ?? []).map(p => [`${p.jurisdictionIso3}:${p.year}`, p]));
+  const wbCpiByKey = new Map((options.fallbackCpiPoints ?? []).map(p => [`${p.jurisdictionIso3}:${p.year}`, p]));
+  const referenceYear = options.referenceYear ?? INCOME_PRICE_REFERENCE_YEAR;
 
   return selectedMedianPoints.map((point) => {
     const key = `${point.jurisdictionIso3}:${point.year}`;
-    const cpiPoint = cpiByKey.get(key);
-    const pppPoint = pppByKey.get(key);
-    const cpi = cpiPoint?.value ?? null;
-    // OECD PPP first, then World Bank PPP (nearest year) as fallback
-    const ppp = pppPoint?.value
-      ?? getNearestValue(wbPppByKey, point.jurisdictionIso3, point.year)
-      ?? null;
-    const realMedianLocalCurrency =
-      cpi && cpi !== 0 ? point.value / (cpi / 100) : null;
+    const referenceKey = `${point.jurisdictionIso3}:${referenceYear}`;
+    // Never mix CPI index bases within a country. Fall back as a pair.
+    const hasOecdPair = positiveValue(cpiByKey.get(key)?.value) !== null
+      && positiveValue(cpiByKey.get(referenceKey)?.value) !== null;
+    const cpiPoint = hasOecdPair ? cpiByKey.get(key) : wbCpiByKey.get(key);
+    const referenceCpiPoint = hasOecdPair ? cpiByKey.get(referenceKey) : wbCpiByKey.get(referenceKey);
+    const pppPoint = pppByKey.get(key) ?? wbPppByKey.get(key);
+    const referencePppPoint = pppByKey.get(referenceKey) ?? wbPppByKey.get(referenceKey);
+    const cpi = positiveValue(cpiPoint?.value);
+    const referenceCpi = positiveValue(referenceCpiPoint?.value);
+    const referencePpp = positiveValue(referencePppPoint?.value);
+    const ppp = positiveValue(pppPoint?.value);
+    const realMedianLocalCurrency = toReferenceYearIncome(point.value, cpi, referenceCpi);
     const nominalMedianPppUsd = ppp && ppp !== 0 ? point.value / ppp : null;
     const realMedianPppUsd =
-      realMedianLocalCurrency !== null && ppp && ppp !== 0
-        ? realMedianLocalCurrency / ppp
+      realMedianLocalCurrency !== null && referencePpp !== null
+        ? realMedianLocalCurrency / referencePpp
         : null;
 
     return {
@@ -394,6 +404,12 @@ export function deriveOecdRealMedianDisposableIncome(
       realMedianLocalCurrency,
       nominalMedianPppUsd,
       realMedianPppUsd,
+      priceReferenceYear: referenceYear,
+      referenceCpi,
+      referencePpp,
+      priceIndexSource: cpiPoint?.source ?? '',
+      pppSource: referencePppPoint?.source ?? '',
+      nominalPppSource: pppPoint?.source ?? '',
       methodology: point.methodology,
       definition: point.definition,
       source: point.source,
@@ -410,17 +426,17 @@ export function buildOECDIDDUrl(
     ? Array.isArray(selector.refArea)
       ? selector.refArea.join('+')
       : selector.refArea
-    : 'all';
+    : '';
   const filter = [
     refArea,
     selector.frequency ?? 'A',
-    selector.measure ?? 'all',
-    selector.statisticalOperation ?? 'all',
-    selector.unitMeasure ?? 'all',
-    selector.age ?? 'all',
-    selector.methodology ?? 'all',
-    selector.definition ?? 'all',
-    selector.povertyLine ?? 'all',
+    selector.measure ?? '',
+    selector.statisticalOperation ?? '',
+    selector.unitMeasure ?? '',
+    selector.age ?? '',
+    selector.methodology ?? '',
+    selector.definition ?? '',
+    selector.povertyLine ?? '',
   ].join('.');
   const startYear = options.period?.startYear;
   const endYear = options.period?.endYear;
@@ -429,7 +445,7 @@ export function buildOECDIDDUrl(
     params.set('startPeriod', String(startYear));
     params.set('endPeriod', String(endYear));
   }
-  params.set('dimensionAtObservation', 'TIME_PERIOD');
+  params.set('dimensionAtObservation', 'AllDimensions');
   return `${OECD_IDD_BASE}/${filter}?${params.toString()}`;
 }
 
@@ -442,7 +458,7 @@ export async function fetchOECDIDDPoints(
   try {
     const response = await fetch(url, {
       headers: {
-        Accept: 'application/vnd.sdmx.data+json',
+        Accept: 'application/vnd.sdmx.data+json;version=2.0.0',
         'Accept-Language': 'en',
       },
     });

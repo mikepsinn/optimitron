@@ -1,6 +1,7 @@
 import {
   fetchEurostatMedianDisposableIncomeSeries,
 } from '../fetchers/eurostat-income';
+import { INCOME_PRICE_REFERENCE_YEAR } from '../fetchers/income-price-basis';
 import {
   deriveOecdRealMedianDisposableIncome,
   fetchOECDIDDPoints,
@@ -236,6 +237,10 @@ export async function fetchStrictAfterTaxMedianIncomeSeries(
     fetchEurostatMedianDisposableIncomeSeries;
   const refArea = query.jurisdictions?.length ? query.jurisdictions : undefined;
   const fetchOptions = query.period ? { period: query.period } : {};
+  const priceOptions = query.period ? { period: {
+    startYear: Math.min(query.period.startYear, INCOME_PRICE_REFERENCE_YEAR),
+    endYear: Math.max(query.period.endYear, INCOME_PRICE_REFERENCE_YEAR),
+  } } : {};
   const bundledStrictRecords = getMedianIncomeSeries({
     ...query,
     strictAfterTaxOnly: true,
@@ -247,11 +252,11 @@ export async function fetchStrictAfterTaxMedianIncomeSeries(
     ),
     fetchOecdIddPoints(
       { ...OECD_IDD_SELECTORS.CPI_TOTAL, refArea },
-      fetchOptions,
+      priceOptions,
     ),
     fetchOecdIddPoints(
       { ...OECD_IDD_SELECTORS.PPP_PRIVATE_CONSUMPTION_TOTAL, refArea },
-      fetchOptions,
+      priceOptions,
     ),
     query.source === 'OECD IDD'
       ? Promise.resolve([])

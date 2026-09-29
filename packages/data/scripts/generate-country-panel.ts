@@ -335,7 +335,7 @@ async function writePanel(rows: CountryPanelRow[], baseMetadata: CountryPanelMet
       refreshedAt: new Date().toISOString(),
       sourceGeneratedAt: MEDIAN_INCOME_SERIES_METADATA.generatedAt,
       eligibleObservationCount: withIncome.length,
-      selection: 'One definition per country, maximizing distinct observed years; OECD wins coverage ties. Missing years are not filled from other definitions.',
+      selection: 'OECD IDD METH2012/D_CUR, square-root equivalence, constant 2021 prices and private-consumption PPP for all countries; no interpolation or cross-source filling.',
     } : baseMetadata.incomeRefresh,
   };
   const [minYear, maxYear] = metadata.yearRange;

@@ -4,60 +4,33 @@ import type { MedianIncomeSeriesRecord } from '../../datasets/median-income-type
 import { MEDIAN_INCOME_SERIES } from '../../datasets/median-income-series';
 
 const observed: MedianIncomeSeriesRecord = {
-  jurisdictionIso3: 'USA', jurisdictionName: 'United States', year: 2018, value: 37444,
+  jurisdictionIso3: 'USA', jurisdictionName: 'United States', year: 2018, value: 42000,
   unit: 'Real PPP-adjusted US dollars per equivalised household',
   concept: 'after_tax_median_disposable_income', priceBasis: 'real', purchasingPower: 'ppp',
-  source: 'OECD IDD', derivation: 'derived', // Survey income converted with CPI and PPP.
+  source: 'OECD IDD', derivation: 'derived',
   isAfterTax: true, taxScope: 'after_direct_taxes_and_cash_transfers',
   methodology: 'METH2012', definition: 'D_CUR', sourceUrl: 'https://data-explorer.oecd.org',
-};
-
-const eurostat: MedianIncomeSeriesRecord = {
-  ...observed,
-  jurisdictionIso3: 'ESP', jurisdictionName: 'Spain',
-  source: 'Eurostat EU-SILC',
-  unit: 'Real PPP-adjusted US dollars per equivalised person',
-  methodology: 'EU-SILC',
-  definition: 'Median equivalised disposable income (MED_E).',
-  sourceUrl: 'https://ec.europa.eu/eurostat/databrowser/view/ilc_di03/default/table?lang=en',
+  priceReferenceYear: 2021, pppReferenceYear: 2021, equivalenceScale: 'square_root',
+  priceIndexSource: 'OECD IDD', pppSource: 'OECD IDD',
 };
 
 describe('income eligibility for national spending comparisons', () => {
-  it('keeps observed survey income without filling later years or missing countries', () => {
+  it('keeps comparable survey income without filling missing years or countries', () => {
     const lookup = buildMedianIncomeLookup([observed]);
-    expect(lookup.get('USA:2018')).toBe(37444);
+    expect(lookup.get('USA:2018')).toBe(42000);
     expect(lookup.has('USA:2022')).toBe(false);
     expect(lookup.has('SGP:2018')).toBe(false);
-  });
-
-  it('retains valid Eurostat observations without a household conversion', () => {
-    const lookup = buildMedianIncomeLookup([observed, eurostat]);
-    expect(lookup.get('USA:2018')).toBe(observed.value);
-    expect(lookup.get('ESP:2018')).toBe(eurostat.value);
-  });
-
-  it('selects one country definition by observed coverage instead of splicing sources', () => {
-    const records = [
-      ...[2017, 2018, 2020].map(year => ({ ...eurostat, year, value: 20000 })),
-      ...[2018, 2019, 2019, 2019].map(year => ({
-        ...observed, jurisdictionIso3: 'ESP', jurisdictionName: 'Spain', year,
-      })),
-      { ...eurostat, year: 2021, pppBasisNote: 'Changed PPP conversion basis' },
-    ];
-    for (const input of [records, [...records].reverse()]) {
-      const lookup = buildMedianIncomeLookup(input);
-      expect([...lookup.entries()].sort()).toEqual([
-        ['ESP:2017', 20000], ['ESP:2018', 20000], ['ESP:2020', 20000],
-      ]);
-    }
   });
 
   it.each<Partial<MedianIncomeSeriesRecord>>([
     { source: 'World Bank PIP + IMF Gov Exp (derived)', taxScope: 'derived_from_gov_spending' },
     { source: 'World Bank PIP', concept: 'median_income', taxScope: 'unknown' },
-    { source: 'Eurostat EU-SILC', unit: 'Real PPP-adjusted US dollars per equivalised person' },
+    { source: 'Eurostat EU-SILC', unit: 'Real PPP-adjusted US dollars per equivalised person', methodology: 'EU-SILC' },
     { priceBasis: 'nominal' }, { purchasingPower: 'national_currency' },
     { isAfterTax: false }, { isInterpolated: true }, { welfareType: 'consumption' },
+    { priceReferenceYear: undefined }, { pppReferenceYear: 2015 }, { equivalenceScale: undefined },
+    { equivalenceScale: 'modified_oecd' },
+    { priceIndexSource: undefined }, { pppSource: undefined },
     { unit: 'PPP-adjusted dollars per year' }, { methodology: 'METH2011' },
     { definition: 'D_OLD' }, { value: Number.NaN }, { value: 0 },
   ])('does not admit an incompatible replacement: %j', (incompatible) => {
@@ -65,43 +38,37 @@ describe('income eligibility for national spending comparisons', () => {
       observed,
       { ...observed, ...incompatible, year: 2022, value: incompatible.value ?? 100000 },
     ]);
-    expect([...lookup.entries()]).toEqual([['USA:2018', 37444]]);
+    expect([...lookup.entries()]).toEqual([['USA:2018', 42000]]);
   });
 
-  it('restores bundled Eurostat coverage with the original source and conversion metadata', () => {
-    const eligibleRows = OECD_BUDGET_PANEL.filter(row => row.afterTaxMedianIncome !== null);
-    expect(eligibleRows).toHaveLength(345);
-    expect(eligibleRows.filter(row => row.afterTaxMedianIncome?.source === 'Eurostat EU-SILC'))
-      .toHaveLength(340);
-    expect(new Set(eligibleRows.map(row => row.jurisdictionIso3)).size).toBe(23);
-
-    const spain = OECD_BUDGET_PANEL.find(row => row.jurisdictionIso3 === 'ESP' && row.year === 2022)!;
-    const source = MEDIAN_INCOME_SERIES.find(record => record.jurisdictionIso3 === 'ESP'
-      && record.year === 2022 && record.source === 'Eurostat EU-SILC'
-      && record.priceBasis === 'real' && record.purchasingPower === 'ppp')!;
-    expect(spain.afterTaxMedianIncome).toEqual(source);
-    expect(spain.afterTaxMedianIncomePpp).toBe(source.value);
-    expect(spain.afterTaxMedianIncome?.methodology).toBe('EU-SILC');
-    expect(spain.afterTaxMedianIncome?.priceIndexNote).toContain('HICP');
-    expect(spain.afterTaxMedianIncome?.pppBasisNote).toContain('World Bank');
-
-    for (const country of new Set(eligibleRows.map(row => row.jurisdictionIso3))) {
-      const definitions = new Set(eligibleRows.filter(row => row.jurisdictionIso3 === country)
-        .map(row => {
-          const record = row.afterTaxMedianIncome!;
-          return JSON.stringify([
-            record.source, record.unit, record.methodology, record.definition,
-            record.priceIndexNote, record.pppBasisNote,
-          ]);
-        }));
-      expect(definitions.size).toBe(1);
+  it('retains broad bundled coverage on one common source and conversion basis', () => {
+    const records = OECD_BUDGET_PANEL.flatMap(row => row.afterTaxMedianIncome ? [row.afterTaxMedianIncome] : []);
+    expect(records.length).toBeGreaterThan(300);
+    expect(new Set(records.map(record => record.jurisdictionIso3)).size).toBeGreaterThanOrEqual(20);
+    const definitions = new Set(records.map(record => JSON.stringify([
+      record.source, record.unit, record.methodology, record.definition,
+      record.priceReferenceYear, record.pppReferenceYear, record.equivalenceScale,
+      record.priceIndexSource, record.pppSource,
+    ])));
+    expect([...definitions]).toEqual([JSON.stringify([
+      'OECD IDD', observed.unit, 'METH2012', 'D_CUR',
+      2021, 2021, 'square_root', observed.priceIndexSource, observed.pppSource,
+    ])]);
+    for (const country of ['USA', 'CHE']) {
+      const panel = OECD_BUDGET_PANEL.find(row => row.jurisdictionIso3 === country && row.year === 2021)!;
+      const source = MEDIAN_INCOME_SERIES.find(record => record.jurisdictionIso3 === country
+        && record.year === 2021 && record.source === 'OECD IDD'
+        && record.priceBasis === 'real' && record.purchasingPower === 'ppp'
+        && record.priceReferenceYear === 2021 && record.pppReferenceYear === 2021)!;
+      expect(source).toBeDefined();
+      expect(panel.afterTaxMedianIncome).toEqual(source);
+      expect(panel.afterTaxMedianIncomePpp).toBe(source.value);
+      expect(panel.afterTaxMedianIncomePpp).toBeGreaterThan(0);
     }
   });
 
-  it('preserves missing bundled US and Singapore observations as null', () => {
-    expect(OECD_BUDGET_PANEL.find(r => r.jurisdictionIso3 === 'USA' && r.year === 2018)?.afterTaxMedianIncomePpp).toBeGreaterThan(0);
-    expect(OECD_BUDGET_PANEL.find(r => r.jurisdictionIso3 === 'USA' && r.year === 2022)?.afterTaxMedianIncomePpp).toBeNull();
-    expect(OECD_BUDGET_PANEL.filter(r => r.jurisdictionIso3 === 'SGP').every(r => r.afterTaxMedianIncomePpp === null)).toBe(true);
-    expect(OECD_BUDGET_PANEL.filter(r => r.jurisdictionIso3 === 'SGP').every(r => r.afterTaxMedianIncome === null)).toBe(true);
+  it('keeps Singapore missing rather than filling its income from a different source family', () => {
+    expect(OECD_BUDGET_PANEL.filter(row => row.jurisdictionIso3 === 'SGP').every(row => row.afterTaxMedianIncomePpp === null)).toBe(true);
+    expect(OECD_BUDGET_PANEL.filter(row => row.jurisdictionIso3 === 'SGP').every(row => row.afterTaxMedianIncome === null)).toBe(true);
   });
 });

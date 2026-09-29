@@ -878,10 +878,8 @@ import {
 } from './country-panel-income';
 
 /**
- * Accept observed OECD and Eurostat disposable income with published CPI/PPP
- * conversions. Subtracting government spending from PIP income is not an
- * observed after-tax measure. Eligibility does not make different equivalence
- * definitions or price bases interchangeable.
+ * Accept OECD disposable income with a common square-root equivalence scale
+ * and constant 2021 price/PPP basis. No cross-source mixing or inferred taxes.
  */
 export function isEligiblePanelIncomeRecord(record: MedianIncomeSeriesRecord): boolean {
   return isEligibleCountryPanelIncomeRecord(record);
@@ -913,10 +911,9 @@ const enrichedData = data.map(row => {
  * Extended cross-country budget/outcome panel (28 countries, 2000–2022+).
  *
  * Includes 23 OECD core + 5 high-performing non-OECD countries (SGP, EST, VNM, TWN, POL).
- * Income uses observed OECD IDD or Eurostat EU-SILC real PPP disposable income,
- * with one source/definition per country. Missing observations stay null.
- * Source-specific equivalence and price bases remain attached to each record;
- * they are not converted to a common equivalence scale or claimed to be 2017 dollars.
+ * Income uses OECD IDD METH2012/D_CUR, square-root household equivalence, and
+ * constant 2021 prices and private-consumption PPPs for every country.
+ * Missing observations stay null. Spending price vintage remains unverified.
  */
 export const OECD_BUDGET_PANEL: readonly OECDBudgetPanelDataPoint[] = Object.freeze(enrichedData);
 
@@ -933,7 +930,6 @@ export const OECD_BUDGET_PANEL_META = {
     'OECD Social Expenditure Database (SOCX)',
     'OECD StatExtracts',
     'OECD Income Distribution Database (strict disposable-income observations)',
-    'Eurostat EU-SILC (strict disposable-income observations)',
   ],
   indicators: {
     // % GDP (context/comparison)

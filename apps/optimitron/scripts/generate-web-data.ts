@@ -3,7 +3,7 @@
  * Generate real policy and budget analysis JSON from the OPG/OBG libraries.
  *
  * Budget comparisons use the same observation years for every country.
- * Income retains observed OECD/Eurostat definitions and excludes estimates
+ * Income uses OECD disposable income at constant 2021 prices and excludes estimates
  * derived from government spending. Curves provide descriptive context.
  *
  * Run: pnpm --filter @optimitron/web run generate
@@ -81,13 +81,13 @@ const JURISDICTION = {
 
 const incomeMethodology = {
   eligibility: 'Observed real PPP disposable income after direct taxes and cash transfers; no interpolation or government-spending deduction.',
-  selection: 'One source and definition per country, selected by observed-year coverage. No gap-filling from another income definition.',
-  comparability: 'OECD and Eurostat use different equivalence scales, price indices, and PPP conversions. Cross-source income levels are approximate comparisons; original definitions are retained below.',
+  selection: 'One OECD IDD METH2012/D_CUR definition and square-root household equivalence scale across all countries; no interpolation.',
+  comparability: 'Constant 2021 international dollars: nominal income times OECD CPI(2021)/CPI(observation year), divided by OECD 2021 private-consumption PPP. Income comparisons use identical observation years.',
   definitions: [...new Map(OECD_BUDGET_PANEL.flatMap(row => {
     const record = row.afterTaxMedianIncome;
     if (!record) return [];
-    const { source, unit, methodology, definition, priceIndexNote, pppBasisNote } = record;
-    const details = { source, unit, methodology, definition, priceIndexNote, pppBasisNote };
+    const { source, unit, methodology, definition, priceIndexNote, pppBasisNote, equivalenceScale, priceReferenceYear, pppReferenceYear } = record;
+    const details = { source, unit, methodology, definition, priceIndexNote, pppBasisNote, equivalenceScale, priceReferenceYear, pppReferenceYear };
     return [[JSON.stringify(details), details] as const];
   })).values()],
   coverage: Object.fromEntries([...new Set(OECD_BUDGET_PANEL.map(row => row.jurisdictionIso3))].flatMap(country => {
@@ -383,7 +383,7 @@ function generateBudgetAnalysis(): { report: GeneratedBudgetAnalysis; findings: 
       nonDiscretionary: 'Social Security, Medicare, Interest on Debt, Other Mandatory excluded from optimization',
       lineAttribution: 'An OECD field sets a line\'s optimal only when the line is at least half of the spending the field measures (oecdBenchmark.scope = category_specific). Every other line is a national_field_proxy: its optimal is null, and its efficiency block describes the national field, not the line.',
     },
-    note: 'Spending benchmarks use countries with observations for identical years. Income comparisons retain observed OECD and Eurostat survey definitions.',
+    note: 'Spending benchmarks use countries with observations for identical years. Income comparisons use the same OECD definition and constant 2021 price basis across countries.',
   };
 
   return { report, findings };

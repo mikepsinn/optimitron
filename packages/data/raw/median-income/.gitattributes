@@ -1,0 +1,2 @@
+# Keep archived JSON checksums stable across operating systems.
+*.json text eol=lf

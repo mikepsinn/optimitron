@@ -13,7 +13,7 @@ const observed: MedianIncomeSeriesRecord = {
   jurisdictionIso3: 'USA',
   jurisdictionName: 'United States',
   year: 2018,
-  value: 37444.09814185905,
+  value: 42000,
   unit: 'Real PPP-adjusted US dollars per equivalised household',
   concept: 'after_tax_median_disposable_income',
   priceBasis: 'real',
@@ -24,6 +24,11 @@ const observed: MedianIncomeSeriesRecord = {
   taxScope: 'after_direct_taxes_and_cash_transfers',
   methodology: 'METH2012',
   definition: 'D_CUR',
+  priceReferenceYear: 2021,
+  pppReferenceYear: 2021,
+  equivalenceScale: 'square_root',
+  priceIndexSource: 'OECD IDD',
+  pppSource: 'OECD IDD',
   sourceUrl: 'https://data-explorer.oecd.org',
 };
 
@@ -37,7 +42,7 @@ const eurostat: MedianIncomeSeriesRecord = {
 };
 
 describe('country panel income boundary', () => {
-  it('keeps the measured equivalised income and provenance without a household ratio', () => {
+  it('keeps comparable measured income and provenance without a household ratio', () => {
     const lookup = buildCountryPanelIncomeLookup([observed]);
     const fields = resolveCountryPanelIncome({
       jurisdictionIso3: 'USA',
@@ -55,10 +60,23 @@ describe('country panel income boundary', () => {
     { purchasingPower: 'national_currency' },
     { unit: 'PPP-adjusted dollars per year' },
     { methodology: 'METH2011' },
+    { definition: 'D_OLD' },
+    { priceReferenceYear: undefined },
+    { priceReferenceYear: 2015 },
+    { pppReferenceYear: undefined },
+    { pppReferenceYear: 2015 },
+    { equivalenceScale: undefined },
+    { equivalenceScale: 'modified_oecd' },
+    { priceIndexSource: undefined },
+    { priceIndexSource: 'OECD IDD CPI' },
+    { pppSource: undefined },
+    { pppSource: 'OECD IDD private-consumption PPP' },
+    { isAfterTax: false },
     { isInterpolated: true },
     { welfareType: 'consumption' },
     { value: Number.NaN },
-  ])('does not turn an incompatible later observation into income change: %j', (patch) => {
+    { value: 0 },
+  ])('rejects an incompatible later observation instead of fabricating income change: %j', (patch) => {
     const lookup = buildCountryPanelIncomeLookup([
       observed,
       { ...observed, year: 2019, ...patch },
@@ -66,19 +84,19 @@ describe('country panel income boundary', () => {
     expect([...lookup.keys()]).toEqual(['USA:2018']);
   });
 
-  it('keeps Eurostat equivalence and methodology visible instead of relabeling it OECD', () => {
-    const eurostat: MedianIncomeSeriesRecord = {
-      ...observed,
-      jurisdictionIso3: 'FRA',
-      jurisdictionName: 'France',
-      source: 'Eurostat EU-SILC',
-      unit: 'Real PPP-adjusted US dollars per equivalised person',
-      methodology: 'EU-SILC',
-      definition: 'Median equivalised disposable income (MED_E).',
-      sourceUrl: 'https://ec.europa.eu/eurostat',
-    };
-    const lookup = buildCountryPanelIncomeLookup([eurostat]);
-    expect(lookup.get('FRA:2018')).toEqual(eurostat);
+  it('does not choose a longer Eurostat series or use it to fill OECD gaps', () => {
+    const records = [
+      ...[2017, 2018, 2019, 2020].map(year => ({ ...eurostat, year, value: 20000 })),
+      observed,
+      { ...observed, year: 2020, value: 44000 },
+      { ...eurostat, jurisdictionIso3: 'FRA', jurisdictionName: 'France' },
+    ];
+    for (const input of [records, [...records].reverse()]) {
+      const lookup = buildCountryPanelIncomeLookup(input);
+      expect([...lookup.entries()].sort(([left], [right]) => left.localeCompare(right))).toEqual([
+        ['USA:2018', observed], ['USA:2020', { ...observed, year: 2020, value: 44000 }],
+      ]);
+    }
   });
 
   it('rejects a carried-forward observation or the wrong jurisdiction', () => {
@@ -90,63 +108,26 @@ describe('country panel income boundary', () => {
     }).afterTaxMedianIncome).toBeNull();
   });
 
-  it('uses the longest observed definition without source switches or gap filling', () => {
-    const records = [
-      ...[2017, 2018, 2020].map(year => ({ ...eurostat, year, value: 20000 })),
-      ...[2018, 2019, 2019, 2019].map(year => ({ ...observed, year, value: 40000 })),
-    ];
-    for (const input of [records, [...records].reverse()]) {
-      const lookup = buildCountryPanelIncomeLookup(input);
-      expect([...lookup.values()].map(record => record.year).sort()).toEqual([2017, 2018, 2020]);
-      expect(lookup.get('USA:2018')?.value).toBe(20000);
-      expect(lookup.has('USA:2019')).toBe(false);
-      expect([...lookup.values()].every(record => record.source === 'Eurostat EU-SILC')).toBe(true);
+  it('publishes one comparable income family across all bundled countries', () => {
+    const records = COUNTRY_PANEL_DATA.flatMap(row => row.afterTaxMedianIncome ? [row.afterTaxMedianIncome] : []);
+    expect(records.length).toBeGreaterThan(400);
+    expect(new Set(records.map(record => record.jurisdictionIso3)).size).toBeGreaterThanOrEqual(20);
+    const definitions = new Set(records.map(record => JSON.stringify([
+      record.source, record.unit, record.methodology, record.definition,
+      record.priceReferenceYear, record.pppReferenceYear, record.equivalenceScale,
+      record.priceIndexSource, record.pppSource,
+    ])));
+    expect([...definitions]).toEqual([JSON.stringify([
+      'OECD IDD', observed.unit, 'METH2012', 'D_CUR',
+      2021, 2021, 'square_root', observed.priceIndexSource, observed.pppSource,
+    ])]);
+    for (const country of ['USA', 'CHE']) {
+      expect(records.find(record => record.jurisdictionIso3 === country && record.year === 2021)?.value)
+        .toBeGreaterThan(0);
     }
   });
 
-  it('prefers OECD only when comparable observed coverage ties', () => {
-    const records = [eurostat, { ...observed, year: 2019 }];
-    for (const input of [records, [...records].reverse()]) {
-      const lookup = buildCountryPanelIncomeLookup(input);
-      expect([...lookup.keys()]).toEqual(['USA:2019']);
-      expect(lookup.get('USA:2019')?.source).toBe('OECD IDD');
-    }
-  });
-
-  it('does not splice changed definitions or PPP bases within the same source', () => {
-    const lookup = buildCountryPanelIncomeLookup([
-      { ...eurostat, year: 2017 },
-      { ...eurostat, year: 2018 },
-      { ...eurostat, year: 2019, definition: 'Changed equivalence definition' },
-      { ...eurostat, year: 2020, pppBasisNote: 'Changed purchasing-power base' },
-    ]);
-    expect([...lookup.keys()]).toEqual(['USA:2017', 'USA:2018']);
-  });
-
-  it('publishes one income definition for every bundled country', () => {
-    const definitions = new Map<string, Set<string>>();
-    for (const row of COUNTRY_PANEL_DATA) {
-      const record = row.afterTaxMedianIncome;
-      if (!record) continue;
-      const countryDefinitions = definitions.get(row.jurisdictionIso3) ?? new Set<string>();
-      countryDefinitions.add(JSON.stringify([
-        record.source, record.unit, record.methodology, record.definition,
-        record.priceIndexNote, record.pppBasisNote,
-      ]));
-      definitions.set(row.jurisdictionIso3, countryDefinitions);
-    }
-    expect(definitions.size).toBeGreaterThan(0);
-    expect([...definitions].filter(([, sources]) => sources.size > 1)).toEqual([]);
-  });
-
-  it('preserves the bundled US real-income gap rather than splicing nominal and inferred income', () => {
-    const lookup = buildCountryPanelIncomeLookup(GENERATED_MEDIAN_INCOME_SERIES);
-    expect(lookup.get('USA:2018')?.value).toBeCloseTo(observed.value);
-    expect(lookup.has('USA:2023')).toBe(false);
-    expect(lookup.has('USA:2024')).toBe(false);
-  });
-
-  it('refreshes only income fields without carrying a valid observation into a missing year', () => {
+  it('refreshes only income fields without carrying an observation into a missing year', () => {
     const input = [2018, 2019].map(year => ({
       jurisdictionIso3: 'USA', year, haleYears: 63.9, population: 123,
       afterTaxMedianIncomePerCapitaPpp: 16000,
@@ -166,20 +147,13 @@ describe('country panel income boundary', () => {
     expect(refreshCountryPanelIncome(refreshed, [observed])).toEqual(refreshed);
   });
 
-  it('publishes strict observations without changing legacy estimates or other indicators', () => {
-    const before = COUNTRY_PANEL_DATA.find(row => row.jurisdictionIso3 === 'USA' && row.year === 2023)!;
-    const after = COUNTRY_PANEL_DATA.find(row => row.jurisdictionIso3 === 'USA' && row.year === 2024)!;
-    expect(GENERATED_MEDIAN_INCOME_SERIES.some(record =>
-      record.jurisdictionIso3 === 'USA' && record.year === 2024
-      && record.taxScope === 'derived_from_gov_spending',
-    )).toBe(true);
-
+  it('publishes refreshed observations without changing legacy estimates or other indicators', () => {
+    const lookup = buildCountryPanelIncomeLookup(GENERATED_MEDIAN_INCOME_SERIES);
     const publicRows = getCountryPanelByCountry('USA');
-    expect(publicRows.find(row => row.year === 2018)?.afterTaxMedianIncome?.value)
-      .toBeCloseTo(observed.value);
-    for (const raw of [before, after]) {
+    expect(publicRows.find(row => row.year === 2021)?.afterTaxMedianIncome?.value).toBeGreaterThan(0);
+    for (const raw of COUNTRY_PANEL_DATA.filter(row => row.jurisdictionIso3 === 'USA')) {
       const row = publicRows.find(candidate => candidate.year === raw.year)!;
-      expect(row.afterTaxMedianIncome).toBeNull();
+      expect(row.afterTaxMedianIncome).toEqual(lookup.get(`USA:${raw.year}`) ?? null);
       expect(row.afterTaxMedianIncomePerCapitaPpp).toBe(raw.afterTaxMedianIncomePerCapitaPpp);
       expect(row.afterTaxMedianIncomeSource).toBe(raw.afterTaxMedianIncomeSource);
       expect(row.afterTaxMedianIncomeIsAfterTax).toBe(raw.afterTaxMedianIncomeIsAfterTax);

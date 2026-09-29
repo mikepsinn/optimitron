@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { VISUAL_ROUTES } from "../../../e2e/utils/visual-routes";
 
 import {
   ROUTES,
@@ -12,6 +13,7 @@ import {
   feedbackLink,
   gameLink,
   getSignInPath,
+  getRouteReviewSpecs,
   humanityVGovernmentLink,
   editProfileLink,
   isNavItemActive,
@@ -38,6 +40,18 @@ function requireLink<T extends { href: string }>(href: string, links: T[]): T {
 }
 
 describe("navigation routes", () => {
+  it.each([ROUTES.efficiency, ROUTES.dividend])("covers the rendered %s analysis table in visual review", (routePath) => {
+    for (const mode of ["screenshot", "copyPreview"] as const) {
+      expect(getRouteReviewSpecs(mode).filter(spec => spec.path === routePath)).toHaveLength(1);
+    }
+    const visualRoute = VISUAL_ROUTES.find(route => route.path === routePath);
+    expect(visualRoute).toMatchObject({
+      required: true,
+      requiredSelector: "table tbody tr",
+      covers: [`apps/optimitron/src/app${routePath}/page.tsx`],
+    });
+  });
+
   it("keeps route metadata off the root data barrel", () => {
     const source = readFileSync(
       new URL("../routes.ts", import.meta.url),

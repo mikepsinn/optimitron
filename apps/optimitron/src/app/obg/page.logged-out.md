@@ -23,9 +23,9 @@
 ### TOP 5 RECOMMENDATIONS
 - Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Cutting the $886B line to Switzerland's ratio saves $719B/yr
 - National comparison, total health spending (public and private): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential national savings: $2.3T/yr
+- National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 20/22). Canada spends $729/cap with After-Tax Median Income (PPP) 41856.33. Overspend: 2.7x. Potential national savings: $428B/yr
 - National comparison, government education spending (all levels): United States spends $2996/cap (rank 8/8). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr
-- National comparison, total R&D spending (business and government): United States spends $1576/cap (rank 13/19). Norway spends $1091/cap with After-Tax Median Income (PPP) 32725.07. Overspend: 1.4x. Potential national savings: $164B/yr
-- National comparison, public social spending (pensions, health, income support): United States spends $10268/cap (rank 1/19). Near floor ($10051/cap). After-Tax Median Income (PPP): 37444.1
+- National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 8/22). Canada spends $8699/cap with After-Tax Median Income (PPP) 41856.33. Overspend: 1.5x. Potential national savings: $1.4T/yr
 ### CURRENT VS OPTIMAL SPENDING
 - [Military 5.3× overspend Major Decrease -81.1%Current$886B Optimal$167B](/obg/military)
 - [Veterans Affairs No Line Benchmark Current$325B Optimal No line-specific benchmark. Only comparison: total health spending (public and private).](/obg/veterans-affairs)

@@ -41,6 +41,12 @@ export interface MedianIncomeSeriesRecord {
   inKindTransferTreatment?: MedianIncomeTreatment;
   priceIndexNote?: string;
   pppBasisNote?: string;
+  /** Common price year; independent of the arbitrary CPI index base. */
+  priceReferenceYear?: number;
+  pppReferenceYear?: number;
+  equivalenceScale?: 'square_root' | 'modified_oecd';
+  priceIndexSource?: string;
+  pppSource?: string;
   welfareType?: 'income' | 'consumption';
   methodology?: string;
   definition?: string;

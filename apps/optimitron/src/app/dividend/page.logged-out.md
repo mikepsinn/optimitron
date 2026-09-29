@@ -22,26 +22,26 @@
 | CATEGORY | MODEL | OVERSPEND | SAVINGS / ADULT | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- |
 | [Total health spending (public and private)](/obg/veterans-affairs) | South Korea | 2.9x | $8,863 | $2.3T |
+| [Public social spending (pensions, health, income support)](/obg/transportation) | Canada | 1.5x | $5,452 | $1.4T |
 | [Government education spending (all levels)](/obg/education) [VIEW MODEL LEGISLATION](/legislation/education-reform) | Japan | 2.3x | $2,244 | $579B |
 | [Military spending](/obg/military) [VIEW MODEL LEGISLATION](/legislation/military-reform) | Switzerland | 5.3x | $2,186 | $564B |
-| [Total R&D spending (business and government)](/obg/energy) | Norway | 1.4x | $637 | $164B |
-| [Public social spending (pensions, health, income support)](/obg/transportation) | Switzerland | 1.0x | $285 | $74B |
+| [Total R&D spending (business and government)](/obg/energy) | Canada | 2.7x | $1,657 | $428B |
 
 #### YOUR MONTHLY DIVIDEND
 - If the US matched the spending efficiency of top OECD countries, the savings could fund a Universal Dividend for every adult citizen.
 - INCLUDE SAVINGS FROM:
 - Total health spending (public and private)(2.9x vs South Korea → $8,863/yr per adult)
+- Public social spending (pensions, health, income support)(1.5x vs Canada → $5,452/yr per adult)
 - Government education spending (all levels)(2.3x vs Japan → $2,244/yr per adult)
 - Military spending(5.3x vs Switzerland → $2,186/yr per adult)
-- Total R&D spending (business and government)(1.4x vs Norway → $637.00/yr per adult)
-- Public social spending (pensions, health, income support)(1.0x vs Switzerland → $285.00/yr per adult)
+- Total R&D spending (business and government)(2.7x vs Canada → $1,657/yr per adult)
 - ADULTS IN HOUSEHOLD
 - Your monthly dividend
-- $2,369/mo
+- $3,400/mo
 - Annual household total
-- $28,430/yr
+- $40,804/yr
 - Total national savings
-- $3667.5B/yr
+- $5263.7B/yr
 - Don't like a reform? Redirect your dividend back to any program you choose. Your money, your call.
 - [BUDGET ANALYSIS Every category, every number, every country that does it cheaper. The receipts.](/obg)
 - [EFFICIENCY RANKINGS Who delivers more for less, and where the US actually ranks in each category.](/efficiency)
