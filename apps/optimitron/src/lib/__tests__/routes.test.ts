@@ -47,7 +47,7 @@ describe("navigation routes", () => {
     const visualRoute = VISUAL_ROUTES.find(route => route.path === routePath);
     expect(visualRoute).toMatchObject({
       required: true,
-      requiredSelector: "table tbody tr",
+      requiredSelector: "table tbody tr:first-child",
       covers: [`apps/optimitron/src/app${routePath}/page.tsx`],
     });
   });
