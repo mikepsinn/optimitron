@@ -5,11 +5,11 @@
 - Page title: About us
 - Meta description: About the Institute for Accelerated Medicine
 - Canonical: https://acceleratedmedicine.org/about
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Institute for Accelerated Medicine
+- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Institute for Accelerated Medicine
+- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -44,12 +44,13 @@
 - SECRETARY
 #### KATHRYN BORTKO
 ### HELP BRING RIGHT TO TRIAL TO YOUR STATE
-- [TAKE THE SURVEY](/#state-support)
+- [TAKE THE SURVEY](/right-to-trial#state-support)
 - [READ THE PROPOSED LAW](/model-act)
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
+- [YOUR STATE](/right-to-trial#state-support)
 - [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
@@ -58,7 +59,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [PRIVACY POLICY](/privacy)

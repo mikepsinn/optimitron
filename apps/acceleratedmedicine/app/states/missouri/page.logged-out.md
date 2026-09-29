@@ -5,11 +5,11 @@
 - Page title: Missouri Right to Trial
 - Meta description: Help bring pragmatic trials, shared results, and more treatment options to patients in Missouri.
 - Canonical: https://acceleratedmedicine.org/states/missouri
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Institute for Accelerated Medicine
+- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Institute for Accelerated Medicine
+- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -53,8 +53,9 @@
 - Estimates: national counts scaled to Missouri's share of the US population (Census 2025). Each condition links to its national source.
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
+- [YOUR STATE](/right-to-trial#state-support)
 - [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
@@ -63,7 +64,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

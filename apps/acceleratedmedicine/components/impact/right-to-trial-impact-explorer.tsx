@@ -612,7 +612,7 @@ export function RightToTrialImpactExplorer() {
                 className={`${buttonClass} bg-brutal-yellow`}
                 size="lg"
               >
-                <Link href="/#state-support">
+                <Link href="/right-to-trial#state-support">
                   Bring Right to Trial to my state{" "}
                   <ArrowRight className="h-5 w-5" />
                 </Link>

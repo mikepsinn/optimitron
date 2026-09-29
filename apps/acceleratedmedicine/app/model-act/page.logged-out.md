@@ -47,8 +47,9 @@
 - NO
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
+- [YOUR STATE](/right-to-trial#state-support)
 - [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
@@ -57,7 +58,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

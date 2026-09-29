@@ -5,11 +5,11 @@
 - Page title: Right to Trial Survey
 - Meta description: Answer three questions about patient access, trial funding, and public priorities. Verify your email to save your response.
 - Canonical: https://acceleratedmedicine.org/survey
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Institute for Accelerated Medicine
+- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Institute for Accelerated Medicine
+- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -23,8 +23,9 @@
 - NO
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
+- [YOUR STATE](/right-to-trial#state-support)
 - [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
@@ -33,7 +34,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

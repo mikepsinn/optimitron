@@ -58,7 +58,7 @@
 - Reported by [MIT Technology Review (July 30, 2026)](https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/) · Board details at [montanaetrb.org](https://montanaetrb.org)
 ### THE LAW OPENS ACCESS. BETTER OUTCOME DATA MAKES THE ACCESS LEARN.
 - SB 535 establishes access, licensing, consent, and oversight. The Institute's decentralized FDA proposal would add standardized outcome measures and pooled public evidence across participating patients and centers.
-- [SEE THE EVIDENCE MODEL](/#evidence)
+- [SEE THE EVIDENCE MODEL](/right-to-trial#evidence)
 ### OFFICIAL MONTANA SOURCES
 - [SB 535 ENROLLED BILL](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - [SB 422 ENROLLED BILL](https://leg.mt.gov/bills/2023/SB0499/SB0422_X.pdf)
@@ -73,8 +73,9 @@
 - NO
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
+- [YOUR STATE](/right-to-trial#state-support)
 - [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
@@ -83,7 +84,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

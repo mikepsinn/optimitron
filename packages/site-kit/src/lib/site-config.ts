@@ -1244,19 +1244,18 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // ============================================================================
   // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Right to Trial education, pragmatic trials, and public evidence
-  // Audience: Patients, caregivers, clinicians, researchers, and state educators
-  // Goal: Measure support, explain the Montana precedent, and equip state campaigns
+  // Purpose: Institute overview; the Right to Trial campaign lives at /right-to-trial
+  // Audience: Patients, caregivers, clinicians, researchers, funders, and state educators
+  // Goal: Explain the evidence, access, and funding plan and send visitors to the global survey
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "RTT",
-    title: "Right to Trial Initiative",
-    // The site lives at acceleratedmedicine.org, so the wordmark names the
-    // organization. `title` stays "Right to Trial Initiative" because the
-    // per-page metadata titles are written against it.
+    title: "Institute for Accelerated Medicine",
+    // The homepage is the institute overview. Right to Trial pages set their
+    // own "| Right to Trial Initiative" titles.
     headerBrandLabel: "Accelerated Medicine",
     description:
-      "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
+      "A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1307,7 +1306,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     sidebarVoteCtaEnabled: false,
     footerBranding: {
-      title: "RIGHT TO TRIAL INITIATIVE",
+      title: "INSTITUTE FOR ACCELERATED MEDICINE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     contactInfo: {
@@ -1330,7 +1329,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
+      alt: "Institute for Accelerated Medicine — open treatment evidence, Right to Trial, and the 1% Treaty.",
     },
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",

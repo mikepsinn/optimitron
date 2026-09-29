@@ -197,7 +197,7 @@ export default function MontanaPage() {
             patients and centers.
           </p>
           <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <Link href="/#evidence">
+            <Link href="/right-to-trial#evidence">
               See the evidence model <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>
