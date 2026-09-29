@@ -1,0 +1,127 @@
+{
+  "data": {
+    "dataSets": [
+      {
+        "structure": 0,
+        "observations": {
+          "0:0:0:0:0:0:0:0:0:0": [
+            46600
+          ],
+          "1:0:0:0:0:0:0:0:0:0": [
+            53624.15687
+          ],
+          "1:0:0:0:0:0:0:0:0:1": [
+            53758.40625
+          ]
+        }
+      }
+    ],
+    "structures": [
+      {
+        "dimensions": {
+          "series": [],
+          "observation": [
+            {
+              "id": "REF_AREA",
+              "values": [
+                {
+                  "id": "USA",
+                  "name": "United States"
+                },
+                {
+                  "id": "CHE",
+                  "name": "Switzerland"
+                }
+              ]
+            },
+            {
+              "id": "FREQ",
+              "values": [
+                {
+                  "id": "A",
+                  "name": "Annual"
+                }
+              ]
+            },
+            {
+              "id": "MEASURE",
+              "values": [
+                {
+                  "id": "INC_DISP",
+                  "name": "Disposable income"
+                }
+              ]
+            },
+            {
+              "id": "STATISTICAL_OPERATION",
+              "values": [
+                {
+                  "id": "MEDIAN",
+                  "name": "Median"
+                }
+              ]
+            },
+            {
+              "id": "UNIT_MEASURE",
+              "values": [
+                {
+                  "id": "XDC_HH_EQ",
+                  "name": "National currency per equivalised household"
+                }
+              ]
+            },
+            {
+              "id": "AGE",
+              "values": [
+                {
+                  "id": "_T",
+                  "name": "Total"
+                }
+              ]
+            },
+            {
+              "id": "METHODOLOGY",
+              "values": [
+                {
+                  "id": "METH2012",
+                  "name": "Income definition since 2012"
+                }
+              ]
+            },
+            {
+              "id": "DEFINITION",
+              "values": [
+                {
+                  "id": "D_CUR",
+                  "name": "Current definition"
+                }
+              ]
+            },
+            {
+              "id": "POVERTY_LINE",
+              "values": [
+                {
+                  "id": "_Z",
+                  "name": "Not applicable"
+                }
+              ]
+            },
+            {
+              "id": "TIME_PERIOD",
+              "values": [
+                {
+                  "id": "2021",
+                  "name": "2021"
+                },
+                {
+                  "id": "2022",
+                  "name": "2022"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

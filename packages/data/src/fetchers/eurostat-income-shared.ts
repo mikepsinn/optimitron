@@ -1,3 +1,5 @@
+import type { IncomePriceBasis } from './income-price-basis';
+
 export const EUROSTAT_API_BASE =
   'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data';
 export const EUROSTAT_MEDIAN_INCOME_DATASET = 'ilc_di03';
@@ -86,7 +88,7 @@ export interface EurostatHicpPoint {
   hicpAnnualAverage: number;
 }
 
-export interface DerivedEurostatMedianDisposableIncomePoint {
+export interface DerivedEurostatMedianDisposableIncomePoint extends IncomePriceBasis {
   jurisdictionIso3: string;
   jurisdictionName: string;
   year: number;
@@ -96,6 +98,9 @@ export interface DerivedEurostatMedianDisposableIncomePoint {
   realMedianLocalCurrency: number | null;
   nominalMedianPppUsd: number | null;
   realMedianPppUsd: number | null;
+  /** False when NAC is still a legacy currency but WDI PPP is euro-denominated. */
+  pppCurrencyCompatible?: boolean;
+  pppCurrencyCompatibilityNote?: string;
   estimateType?: string;
   source: string;
   sourceUrl: string;

@@ -18,6 +18,16 @@ describe("retiredPolicyRedirectPath", () => {
     expect(retiredPolicyRedirectPath("labor-adopt-singapore-s-approach", [])).toBe("/opg");
   });
 
+  it.each([
+    ["national-randd-spending-adopt-netherlands-s-approach", "rdSpendingPerCapitaPpp"],
+    ["public-social-spending-adopt-singapore-s-approach", "socialSpendingPerCapitaPpp"],
+  ])("keeps the retired field policy %s reachable", (slug, field) => {
+    expect(retiredPolicyRedirectPath(slug, [])).toBe("/opg");
+    expect(retiredPolicyRedirectPath(slug, [
+      { name: "A successor policy", oecdSpendingField: field },
+    ])).toBe("/opg/a-successor-policy");
+  });
+
   it("leaves slugs that were never retired alone", () => {
     expect(retiredPolicyRedirectPath("no-such-policy", [])).toBeNull();
   });

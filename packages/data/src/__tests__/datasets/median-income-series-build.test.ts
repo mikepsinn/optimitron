@@ -71,6 +71,12 @@ const oecdRecords: DerivedOecdMedianDisposableIncomePoint[] = [
     realMedianLocalCurrency: 200,
     nominalMedianPppUsd: 100,
     realMedianPppUsd: 100,
+    priceReferenceYear: 2021,
+    referenceCpi: 100,
+    referencePpp: 2,
+    priceIndexSource: 'OECD IDD',
+    pppSource: 'OECD IDD',
+    nominalPppSource: 'OECD IDD',
     methodology: 'METH2012',
     definition: 'D_CUR',
     source: 'OECD IDD',
@@ -89,6 +95,12 @@ const eurostatRecords: DerivedEurostatMedianDisposableIncomePoint[] = [
     realMedianLocalCurrency: 25000,
     nominalMedianPppUsd: 31250,
     realMedianPppUsd: 31250,
+    priceReferenceYear: 2021,
+    referenceCpi: 100,
+    referencePpp: 0.8,
+    priceIndexSource: 'Eurostat HICP',
+    pppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
+    nominalPppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
     estimateType: 'b',
     source: 'Eurostat EU-SILC',
     sourceUrl: 'https://ec.europa.eu/eurostat/databrowser/view/ilc_di03/default/table?lang=en',
@@ -129,6 +141,11 @@ describe('Median Income Dataset Build Helpers', () => {
           taxScope: 'after_direct_taxes_and_cash_transfers',
           consumptionTaxTreatment: 'excluded',
           inKindTransferTreatment: 'excluded',
+          equivalenceScale: 'square_root',
+          priceReferenceYear: 2021,
+          pppReferenceYear: 2021,
+          priceIndexSource: 'OECD IDD',
+          pppSource: 'OECD IDD',
         }),
       ]),
     );
@@ -149,9 +166,46 @@ describe('Median Income Dataset Build Helpers', () => {
           methodology: 'EU-SILC',
           surveyAcronym: 'EU-SILC',
           estimateType: 'b',
+          equivalenceScale: 'modified_oecd',
+          priceReferenceYear: 2021,
+          pppReferenceYear: 2021,
+          priceIndexSource: 'Eurostat HICP',
+          pppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
         }),
       ]),
     );
+  });
+
+  it('retains fallback provenance and distinguishes fixed-year real from same-year nominal PPP', () => {
+    const records = buildOecdMedianIncomeSeries([{
+      ...oecdRecords[0]!,
+      year: 2020,
+      priceIndexSource: 'World Bank WDI (FP.CPI.TOTL)',
+      pppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
+      nominalPppSource: 'OECD IDD',
+    }]);
+    const real = records.find(record => record.priceBasis === 'real' && record.purchasingPower === 'ppp')!;
+    expect(real).toMatchObject({
+      priceReferenceYear: 2021, pppReferenceYear: 2021,
+      priceIndexSource: 'World Bank WDI (FP.CPI.TOTL)',
+      pppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
+    });
+    expect(real.priceIndexNote).toContain('World Bank WDI (FP.CPI.TOTL)');
+    expect(real.pppBasisNote).toContain('2021 World Bank WDI (PA.NUS.PRVT.PP)');
+    const nominal = records.find(record => record.priceBasis === 'nominal' && record.purchasingPower === 'ppp')!;
+    expect(nominal).toMatchObject({ pppReferenceYear: 2020, pppSource: 'OECD IDD' });
+    expect(nominal.priceReferenceYear).toBeUndefined();
+    expect(nominal.priceIndexSource).toBeUndefined();
+  });
+
+  it('does not publish real observations when reference conversions are unavailable', () => {
+    const records = buildOecdMedianIncomeSeries([{
+      ...oecdRecords[0]!, referenceCpi: null, referencePpp: null,
+      realMedianLocalCurrency: null, realMedianPppUsd: null,
+    }]);
+    expect(records.map(record => [record.priceBasis, record.purchasingPower, record.value])).toEqual([
+      ['nominal', 'national_currency', 200], ['nominal', 'ppp', 100],
+    ]);
   });
 
   it('renderGeneratedMedianIncomeModule embeds metadata and records', () => {

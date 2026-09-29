@@ -17,6 +17,7 @@ const RETIRED_POLICY_SLUG_FIELDS: Record<string, string> = {
   "energy-adopt-netherlands-s-approach": "rdSpendingPerCapitaPpp",
   "science-nasa-adopt-netherlands-s-approach": "rdSpendingPerCapitaPpp",
   "commerce-economic-development-adopt-netherlands-s-approach": "rdSpendingPerCapitaPpp",
+  "national-randd-spending-adopt-netherlands-s-approach": "rdSpendingPerCapitaPpp",
   "education-adopt-japan-s-approach": "educationSpendingPerCapitaPpp",
   "transportation-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
   "hud-housing-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
@@ -26,6 +27,7 @@ const RETIRED_POLICY_SLUG_FIELDS: Record<string, string> = {
   "treasury-general-government-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
   "state-department-diplomacy-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
   "interior-natural-resources-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
+  "public-social-spending-adopt-singapore-s-approach": "socialSpendingPerCapitaPpp",
 };
 
 /**

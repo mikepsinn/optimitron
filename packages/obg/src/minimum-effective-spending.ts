@@ -2,7 +2,7 @@
  * Minimum Effective Spending (Floor) Detection
  *
  * Given spending deciles and outcomes, find the lowest spending level
- * that performs within tolerance of the highest-spending decile.
+ * that performs within tolerance of the best observed outcome.
  */
 
 export interface SpendingDecile {
@@ -101,9 +101,12 @@ export function findMinimumEffectiveSpending(
 
     const top = deciles[deciles.length - 1];
     if (!top) return emptyResult(category);
+    const best = deciles.reduce((a, b) =>
+      (direction === 'higher' ? b.outcome > a.outcome : b.outcome < a.outcome) ? b : a,
+    );
     const floor = deciles.find(d =>
-      isWithinTolerance(d.outcome, top.outcome, direction, tolerance),
-    ) ?? top;
+      isWithinTolerance(d.outcome, best.outcome, direction, tolerance),
+    ) ?? best;
 
     return {
       categoryId: category.categoryId,
