@@ -1205,12 +1205,12 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
+  // acceleratedmedicine.org serves its survey on the Right to Trial page.
+  const surveyPath =
+    siteVariant === VARIANTS.ACCELERATED_MEDICINE ? "/right-to-trial" : "/";
   if ([VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
     const surveyComponent =
       "packages/site-kit/src/components/landing/trial-abundance-survey-section.tsx";
-    // acceleratedmedicine.org serves its survey on the Right to Trial page.
-    const surveyPath =
-      siteVariant === VARIANTS.ACCELERATED_MEDICINE ? "/right-to-trial" : "/";
     const surveyRouteName = surveyPath === "/" ? "home" : "right-to-trial";
     const landingRoute = routes.find(({ routePath }) => routePath === surveyPath);
     if (landingRoute) {
@@ -1279,8 +1279,8 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       authenticated: true,
       authRole: "user",
       label: "Saved response and dashboard link",
-      routeName: "home-saved",
-      routePath: "/?visual=saved",
+      routeName: `${surveyRouteName}-saved`,
+      routePath: `${surveyPath}?visual=saved`,
       covers: [
         surveyComponent,
         "packages/site-kit/src/lib/trial-abundance-visual.ts",
@@ -1327,7 +1327,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     routes.push({
       label: "Pragmatic clinical trials explanation",
       routeName: "pragmatic-trials-dialog",
-      routePath: siteVariant === VARIANTS.WAR_ON_DISEASE ? "/" : "/?visual=question",
+      routePath: siteVariant === VARIANTS.WAR_ON_DISEASE ? "/" : `${surveyPath}?visual=question`,
       openDialog: siteVariant === VARIANTS.WAR_ON_DISEASE ? "pragmatic clinical trials" : "pragmatic clinical trial",
       captureSelector: '[role="dialog"]',
       covers: [
