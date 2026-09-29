@@ -362,8 +362,10 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
 ]);
 
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
-  [ROUTES.efficiency, "table tbody tr"],
-  [ROUTES.dividend, "table tbody tr"],
+  // The spec asserts visibility on the raw locator, so a required selector has
+  // to resolve to exactly one element; `table tbody tr` matches every data row.
+  [ROUTES.efficiency, "table tbody tr:first-child"],
+  [ROUTES.dividend, "table tbody tr:first-child"],
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
   [ROUTES.dashboard, "h1"],
   [ROUTES.donate, "h1"],
