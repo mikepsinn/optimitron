@@ -16,7 +16,7 @@ export const appNavigation: AppNavigation = {
       "id": "rightToTrial",
       "label": "Right to Trial",
       "path": "/right-to-trial",
-      "description": "Let every patient join a pragmatic trial for a promising treatment through their own doctor.",
+      "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
       "emoji": "🩺"
     },
     {
@@ -54,7 +54,7 @@ export const appNavigation: AppNavigation = {
           "id": "rightToTrial",
           "label": "Right to Trial",
           "path": "/right-to-trial",
-          "description": "Let every patient join a pragmatic trial for a promising treatment through their own doctor.",
+          "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
           "emoji": "🩺"
         },
         {
@@ -75,7 +75,7 @@ export const appNavigation: AppNavigation = {
         },
         {
           "id": "rightToTrySurvey",
-          "label": "Survey",
+          "label": "Right to Trial Survey",
           "path": "/survey",
           "description": "Record your answer and put your state on the map.",
           "emoji": "🗳️"
@@ -102,7 +102,7 @@ export const appNavigation: AppNavigation = {
         },
         {
           "id": "research",
-          "label": "Research & Evidence",
+          "label": "1% Treaty Research",
           "path": "https://warondisease.org/research",
           "description": "Comprehensive economic analysis showing pragmatic trials deliver 637:1 ROI with $172B+ recurring annual benefits. Peer-reviewed methodology and sensitivity testing",
           "emoji": "📚",

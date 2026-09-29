@@ -10,16 +10,17 @@ import type { Metadata } from "next";
 
 import Layout from "@/components/layout";
 import { RightToTrySupportForm } from "@/components/right-to-try-support-form";
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = rightToTrialMetadata({
   title: "Volunteer for Right to Trial | Right to Trial Initiative",
   description:
     "Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.",
-  alternates: { canonical: "https://acceleratedmedicine.org/contact" },
-};
+  path: "/contact",
+});
 
 const roles = [
   {

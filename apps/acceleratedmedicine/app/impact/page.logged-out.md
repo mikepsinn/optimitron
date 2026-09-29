@@ -5,11 +5,11 @@
 - Page title: Right to Trial Impact | Right to Trial Initiative
 - Meta description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Canonical: https://acceleratedmedicine.org/impact
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Open Graph title: Right to Trial Impact | Right to Trial Initiative
+- Open Graph description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Twitter title: Right to Trial Impact | Right to Trial Initiative
+- Twitter description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 
 ## Visible Page Copy
 
@@ -272,11 +272,11 @@
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
-- [SURVEY](/survey)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT

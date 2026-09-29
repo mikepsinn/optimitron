@@ -2,12 +2,14 @@ import { ArrowRight, Lightbulb, Vote } from "lucide-react"
 import Link from "next/link"
 
 import { GLOBAL_SURVEY_NAME } from "@optimitron/data/campaign"
+import { TREATY_REDUCTION_PCT } from "@optimitron/data/parameters"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 
 import Layout from "@/components/layout"
 import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
+import { ParameterValue } from "@/components/shared/ParameterValue"
 import {
   COURT_OF_HUMANITY_LINK,
   DECENTRALIZED_FDA_LINK,
@@ -20,7 +22,7 @@ import {
   type OrgLink,
 } from "@/components/org-links"
 
-// The 1% Treaty vote on warondisease.org is the global survey.
+// warondisease.org opens with the Global Survey.
 const GLOBAL_SURVEY_URL = ONE_PERCENT_TREATY_LINK.href
 
 /** One plan in three parts: evidence, access, and funding. */
@@ -28,13 +30,12 @@ const PLAN: OrgLink[] = [
   {
     ...DECENTRALIZED_FDA_LINK,
     label: "1 · Evidence",
-    title: "Open Treatment Evidence Network",
-    text: "We are building an open network that ranks treatments by what happened to real patients and publishes an Outcome Label for each one.",
+    text: "We are building an open treatment evidence network. It ranks treatments by what happened to real patients and gives each one an Outcome Label, like a Nutrition Facts label for drugs.",
   },
   {
     ...RIGHT_TO_TRIAL_LINK,
     label: "2 · Access",
-    text: "A model state law that lets every patient join a pragmatic trial for a promising treatment through their own clinician.",
+    text: "A model state law based on Montana's enacted framework. It would let every patient join a pragmatic trial of a promising treatment with a clinician at a licensed treatment center.",
     href: "/right-to-trial",
     action: "See Right to Trial",
     color: "bg-background",
@@ -83,8 +84,10 @@ export function HomePage() {
             Find out which treatments work, and get them to patients faster.
           </h1>
           <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-            We are a nonprofit with one plan in three parts: evidence, access,
-            and funding.
+            We are a nonprofit. Our plan: rank treatments by what happened to
+            real patients, let every patient join a trial, and redirect{" "}
+            <ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} /> of
+            military spending to pragmatic clinical trials.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Button asChild className={`${buttonShadow} bg-brutal-pink`} size="lg">

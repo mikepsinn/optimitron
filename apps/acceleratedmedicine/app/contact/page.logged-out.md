@@ -5,11 +5,11 @@
 - Page title: Volunteer for Right to Trial | Right to Trial Initiative
 - Meta description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Canonical: https://acceleratedmedicine.org/contact
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Open Graph title: Volunteer for Right to Trial | Right to Trial Initiative
+- Open Graph description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Twitter title: Volunteer for Right to Trial | Right to Trial Initiative
+- Twitter description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 
 ## Visible Page Copy
 
@@ -46,11 +46,11 @@
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
-- [SURVEY](/survey)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT

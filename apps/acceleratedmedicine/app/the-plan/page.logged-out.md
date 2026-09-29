@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Meta description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 - Canonical: https://acceleratedmedicine.org/the-plan
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Open Graph description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Twitter description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -159,11 +159,11 @@
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
-- [SURVEY](/survey)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT

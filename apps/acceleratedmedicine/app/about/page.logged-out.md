@@ -6,10 +6,10 @@
 - Meta description: About the Institute for Accelerated Medicine
 - Canonical: https://acceleratedmedicine.org/about
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Open Graph description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Twitter description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -20,7 +20,7 @@
 - We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial for a promising treatment, with a clinician, at a licensed center, and so every result is published.
 ### OUR INITIATIVES
 - [ACCELERATEDMEDICINE.ORG RIGHT TO TRIAL A model state law that starts from Montana's enacted framework and lets every patient join a pragmatic trial through their clinician. SEE THE MONTANA MODEL](/montana)
-- [WARONDISEASE.ORG 1% TREATY A global referendum on a proposed treaty. Each signing nation redirects 1% of its military budget, mostly to pragmatic clinical trials. VOTE ON THE TREATY](https://warondisease.org)
+- [WARONDISEASE.ORG 1% TREATY A proposed treaty. Each nation that signs would redirect 1% of its military budget, mostly to pragmatic clinical trials. TAKE THE GLOBAL SURVEY](https://warondisease.org)
 - [DFDA.EARTH DECENTRALIZED FDA We are building an open protocol that ranks treatments by real-world patient outcomes and publishes an Outcome Label for each drug. VISIT DFDA.EARTH](https://dfda.earth)
 - [WISHOCRACY.ORG WISHOCRACY People split $100 between two spending priorities at a time. The answers combine into public budget priorities. VISIT WISHOCRACY.ORG](https://wishocracy.org)
 - [COURTOFHUMANITY.ORG COURT OF HUMANITY A public case, Humanity v. Government. Read the claim and the cited evidence, register affected people as plaintiffs, and render a verdict. VISIT THE COURT](https://courtofhumanity.org)
@@ -51,11 +51,11 @@
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
-- [SURVEY](/survey)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT

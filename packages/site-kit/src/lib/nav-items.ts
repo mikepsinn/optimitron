@@ -431,7 +431,7 @@ export const NAV_ITEMS_MAP = {
     label: "Right to Trial",
     path: ROUTES.rightToTrial,
     description:
-      "Let every patient join a pragmatic trial for a promising treatment through their own doctor.",
+      "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
     emoji: "🩺",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],

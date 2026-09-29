@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Meta description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Open Graph description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.
+- Twitter description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
@@ -17,13 +17,13 @@
 - [Go to Dashboard](/dashboard)
 - INSTITUTE FOR ACCELERATED MEDICINE
 ## FIND OUT WHICH TREATMENTS WORK, AND GET THEM TO PATIENTS FASTER.
-- We are a nonprofit with one plan in three parts: evidence, access, and funding.
+- We are a nonprofit. Our plan: rank treatments by what happened to real patients, let every patient join a trial, and redirect [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of military spending to pragmatic clinical trials.
 - [TAKE THE GLOBAL SURVEY](https://warondisease.org)
 - [SEE THE PLAN](#initiatives)
 ### ONE PLAN, THREE PARTS
-- [1 · EVIDENCE OPEN TREATMENT EVIDENCE NETWORK We are building an open network that ranks treatments by what happened to real patients and publishes an Outcome Label for each one. VISIT DFDA.EARTH](https://dfda.earth)
-- [2 · ACCESS RIGHT TO TRIAL A model state law that lets every patient join a pragmatic trial for a promising treatment through their own clinician. SEE RIGHT TO TRIAL](/right-to-trial)
-- [3 · FUNDING 1% TREATY A global referendum on a proposed treaty. Each signing nation redirects 1% of its military budget, mostly to pragmatic clinical trials. READ THE TREATY](https://warondisease.org/treaty)
+- [1 · EVIDENCE DECENTRALIZED FDA We are building an open treatment evidence network. It ranks treatments by what happened to real patients and gives each one an Outcome Label, like a Nutrition Facts label for drugs. VISIT DFDA.EARTH](https://dfda.earth)
+- [2 · ACCESS RIGHT TO TRIAL A model state law based on Montana's enacted framework. It would let every patient join a pragmatic trial of a promising treatment with a clinician at a licensed treatment center. SEE RIGHT TO TRIAL](/right-to-trial)
+- [3 · FUNDING 1% TREATY A proposed treaty. Each nation that signs would redirect 1% of its military budget, mostly to pragmatic clinical trials. READ THE TREATY](https://warondisease.org/treaty)
 - Access puts more patients in trials. Trials create evidence. Evidence shows what to fund.
 ### HOW YOU CAN HELP
 - [TAKE THE SURVEY GLOBAL SURVEY TO END WAR AND DISEASE Show how you would split public money between weapons and clinical trials. Then send the survey to two friends. TAKE THE SURVEY](https://warondisease.org)
@@ -45,11 +45,11 @@
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
-- [SURVEY](/survey)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT

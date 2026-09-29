@@ -25,37 +25,14 @@ import {
   UniversalRightToTryFinalCTA,
   UniversalRightToTryHero,
 } from "@/components/landing/right-to-try-sections";
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 
-const title = "Right to Trial Initiative";
-const description =
-  "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.";
-const url = "https://acceleratedmedicine.org/right-to-trial";
-const ogImage = "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png";
-
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: url },
-  openGraph: {
-    title,
-    description,
-    images: [
-      {
-        alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
-        height: 630,
-        url: ogImage,
-        width: 1200,
-      },
-    ],
-    url,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: [ogImage],
-  },
-};
+export const metadata: Metadata = rightToTrialMetadata({
+  title: "Right to Trial Initiative",
+  description:
+    "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
+  path: "/right-to-trial",
+});
 
 /**
  * Right to Trial Initiative — patient access, shared evidence, and

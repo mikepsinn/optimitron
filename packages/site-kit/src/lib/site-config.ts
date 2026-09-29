@@ -1252,10 +1252,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     name: "RTT",
     title: "Institute for Accelerated Medicine",
     // The homepage is the institute overview. Right to Trial pages set their
-    // own "| Right to Trial Initiative" titles.
+    // own titles and share metadata.
     headerBrandLabel: "Accelerated Medicine",
     description:
-      "A nonprofit that finds out which treatments work and gets them to patients faster: open treatment evidence, Right to Trial, and the 1% Treaty.",
+      "A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1329,7 +1329,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "Institute for Accelerated Medicine — open treatment evidence, Right to Trial, and the 1% Treaty.",
+      alt: "The Right to Trial poster: patients and a doctor beside a sign that reads \"Montana proved it. Now it's your state.\"",
     },
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",

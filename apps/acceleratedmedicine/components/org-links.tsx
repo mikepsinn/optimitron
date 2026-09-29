@@ -47,9 +47,9 @@ export const ONE_PERCENT_TREATY_LINK: OrgLink = {
   icon: Landmark,
   label: "warondisease.org",
   title: "1% Treaty",
-  text: "A global referendum on a proposed treaty. Each signing nation redirects 1% of its military budget, mostly to pragmatic clinical trials.",
+  text: "A proposed treaty. Each nation that signs would redirect 1% of its military budget, mostly to pragmatic clinical trials.",
   href: "https://warondisease.org",
-  action: "Vote on the treaty",
+  action: "Take the Global Survey",
   color: "bg-brutal-yellow",
 }
 
