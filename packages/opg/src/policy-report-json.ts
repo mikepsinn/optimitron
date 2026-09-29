@@ -16,6 +16,8 @@ export interface PolicyReportPolicy {
   policyImpactScore: number;
   welfareScore: number;
   incomeEffect: number;
+  /** Exact modeled cash dividend; do not reconstruct dollars from a rounded ratio. */
+  modeledAnnualSavingsPerPerson?: number;
   healthEffect: number;
   bradfordHillScores: Record<string, number>;
   rationale: string;
@@ -68,6 +70,8 @@ export interface PolicyReportJSON {
   generatedAt: string;
   generatedBy?: string;
   note?: string;
+  /** Source definitions and assumptions used by generated benefit estimates. */
+  methodology?: Record<string, unknown>;
   /** Real-world natural experiments with before/after outcomes */
   naturalExperiments?: NaturalExperiment[];
 }

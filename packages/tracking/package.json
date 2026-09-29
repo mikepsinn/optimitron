@@ -18,7 +18,8 @@
     "./time-zone": "./src/time-zone.ts",
     "./subject": "./src/subject.ts",
     "./measurement-summaries": "./src/measurement-summaries.ts",
-    "./normalize-measurements": "./src/normalize-measurements.ts"
+    "./normalize-measurements": "./src/normalize-measurements.ts",
+    "./relabel-variable-unit": "./src/relabel-variable-unit.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

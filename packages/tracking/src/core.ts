@@ -424,26 +424,36 @@ function normalizeTrackingUnitAlias(value: string, servingUnit: string) {
     : value;
 }
 
+async function resolveExistingTrackingVariable(
+  db: TrackingDbClient,
+  globalVariableId: string,
+  input: TrackingVariableArgs,
+) {
+  // relabelVariableUnit can change the canonical unit until this lock is held.
+  await lockTrackingVariable(db, globalVariableId);
+  const variable = await db.globalVariable.findFirst({
+    select: TRACKING_VARIABLE_SELECT,
+    where: { deletedAt: null, id: globalVariableId },
+  });
+  if (!variable) {
+    throw new Error(`GlobalVariable not found: ${globalVariableId}`);
+  }
+  const requestedUnit = await resolveTrackingUnit(db, input);
+  if (
+    (input.unitAbbreviation || input.unitId || input.unitName) &&
+    !requestedUnit
+  ) {
+    throw new Error("Requested unit was not found.");
+  }
+  return { unit: requestedUnit ?? variable.defaultUnit, variable };
+}
+
 async function resolveTrackingVariable(
   db: TrackingDbClient,
   input: TrackingVariableArgs,
 ) {
   if (input.globalVariableId) {
-    const variable = await db.globalVariable.findFirst({
-      select: TRACKING_VARIABLE_SELECT,
-      where: { deletedAt: null, id: input.globalVariableId },
-    });
-    if (!variable) {
-      throw new Error(`GlobalVariable not found: ${input.globalVariableId}`);
-    }
-    const requestedUnit = await resolveTrackingUnit(db, input);
-    if (
-      (input.unitAbbreviation || input.unitId || input.unitName) &&
-      !requestedUnit
-    ) {
-      throw new Error("Requested unit was not found.");
-    }
-    return { unit: requestedUnit ?? variable.defaultUnit, variable };
+    return resolveExistingTrackingVariable(db, input.globalVariableId, input);
   }
 
   if (!input.variableName) {
@@ -451,18 +461,11 @@ async function resolveTrackingVariable(
   }
 
   const existing = await db.globalVariable.findFirst({
-    select: TRACKING_VARIABLE_SELECT,
+    select: { id: true },
     where: { deletedAt: null, name: input.variableName },
   });
   if (existing) {
-    const requestedUnit = await resolveTrackingUnit(db, input);
-    if (
-      (input.unitAbbreviation || input.unitId || input.unitName) &&
-      !requestedUnit
-    ) {
-      throw new Error("Requested unit was not found.");
-    }
-    return { unit: requestedUnit ?? existing.defaultUnit, variable: existing };
+    return resolveExistingTrackingVariable(db, existing.id, input);
   }
 
   if (!input.categoryName) {
@@ -500,6 +503,13 @@ async function resolveTrackingVariable(
     !requestedUnit
   ) {
     throw new Error("Requested unit was not found.");
+  }
+  // Count converts to no other unit, so an implicit count default would lock
+  // the canonical unit of the new variable (#375).
+  if (!requestedUnit && category.defaultUnit?.abbreviatedName === "count") {
+    throw new Error(
+      `Pass unitAbbreviation when you create the new tracking variable "${input.variableName}". The ${category.name} category defaults to count, and count amounts cannot convert to another unit later. Use mg, g, mcg, IU, or mL for a dose amount. Use count for tablets, capsules, or events.`,
+    );
   }
   const unit = requestedUnit ?? category.defaultUnit;
   if (!unit) {
@@ -579,12 +589,35 @@ async function ensureTrackingNOf1Variable(
   return variable;
 }
 
+/**
+ * Every unit writer shares this lock before its subject lock and reads the
+ * canonical unit only while it holds the lock. relabelVariableUnit takes it
+ * exclusively, so no writer keeps a canonical unit that a relabel changed.
+ */
+export async function lockTrackingVariable(
+  tx: TrackingDbClient,
+  globalVariableId: string,
+  mode: "exclusive" | "shared" = "shared",
+) {
+  const lock = PrismaSql.raw(
+    mode === "exclusive"
+      ? "pg_advisory_xact_lock"
+      : "pg_advisory_xact_lock_shared",
+  );
+  await tx.$queryRaw(PrismaSql.sql`
+    SELECT ${lock}(hashtextextended(
+      'tracking-variable:' || ${globalVariableId}, 0
+    ))::text
+  `);
+}
+
 /** Serialize reads and writes of amounts that inherit one personal unit. */
 async function lockTrackingUnits(
   tx: TrackingDbClient,
   subjectId: string,
   globalVariableId: string,
 ) {
+  await lockTrackingVariable(tx, globalVariableId);
   await tx.$queryRaw(PrismaSql.sql`
     SELECT pg_advisory_xact_lock(hashtextextended(
       'tracking-units:' || ${subjectId} || ':' || ${globalVariableId}, 0
@@ -597,6 +630,12 @@ async function lockReminderUnits(
   reminderId: string,
   userId: string,
 ) {
+  await tx.$queryRaw(PrismaSql.sql`
+    SELECT pg_advisory_xact_lock_shared(hashtextextended(
+      'tracking-variable:' || "globalVariableId", 0
+    ))::text
+    FROM "TrackingReminder" WHERE "id" = ${reminderId} AND "userId" = ${userId}
+  `);
   await tx.$queryRaw(PrismaSql.sql`
     SELECT pg_advisory_xact_lock(hashtextextended(
       'tracking-units:' || v."subjectId" || ':' || v."globalVariableId", 0
@@ -612,9 +651,37 @@ async function lockNOf1TrackingUnits(
   nOf1VariableId: string,
 ) {
   await tx.$queryRaw(PrismaSql.sql`
+    SELECT pg_advisory_xact_lock_shared(hashtextextended(
+      'tracking-variable:' || "globalVariableId", 0
+    ))::text FROM "NOf1Variable" WHERE "id" = ${nOf1VariableId}
+  `);
+  await tx.$queryRaw(PrismaSql.sql`
     SELECT pg_advisory_xact_lock(hashtextextended(
       'tracking-units:' || "subjectId" || ':' || "globalVariableId", 0
     ))::text FROM "NOf1Variable" WHERE "id" = ${nOf1VariableId}
+  `);
+}
+
+async function lockMeasurementUnits(
+  tx: TrackingDbClient,
+  measurementId: string,
+  userId: string,
+) {
+  await tx.$queryRaw(PrismaSql.sql`
+    SELECT pg_advisory_xact_lock_shared(hashtextextended(
+      'tracking-variable:' || m."globalVariableId", 0
+    ))::text
+    FROM "Measurement" m
+    JOIN "Subject" s ON s."id" = m."subjectId"
+    WHERE m."id" = ${measurementId} AND s."userId" = ${userId}
+  `);
+  await tx.$queryRaw(PrismaSql.sql`
+    SELECT pg_advisory_xact_lock(hashtextextended(
+      'tracking-units:' || m."subjectId" || ':' || m."globalVariableId", 0
+    ))::text
+    FROM "Measurement" m
+    JOIN "Subject" s ON s."id" = m."subjectId"
+    WHERE m."id" = ${measurementId} AND s."userId" = ${userId}
   `);
 }
 
@@ -820,6 +887,7 @@ export async function updateMeasurementForUser(
   );
   const prisma = await getPrisma();
   return prisma.$transaction(async (tx) => {
+    await lockMeasurementUnits(tx, measurementId, userId);
     const existing = await findOwnedMeasurementForMutation(
       tx,
       measurementId,

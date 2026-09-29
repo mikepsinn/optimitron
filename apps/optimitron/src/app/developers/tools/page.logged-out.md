@@ -15,7 +15,7 @@
 
 - DEVELOPERS
 ## MCP TOOL REFERENCE
-- Every tool the Optimitron MCP server exposes — 163 tools (32 admin-gated) — generated from the same registry the live server enforces, so this page cannot drift from reality. The machine-readable version is [/api/mcp/tools](/api/mcp/tools); connection instructions live at [/mcp](/mcp).
+- Every tool the Optimitron MCP server exposes — 164 tools (33 admin-gated) — generated from the same registry the live server enforces, so this page cannot drift from reality. The machine-readable version is [/api/mcp/tools](/api/mcp/tools); connection instructions live at [/mcp](/mcp).
 - Each tool is listed once, under its primary scope; many accept more than one scope, so the badges on a tool name every scope that can call it.
 ### OAUTH SCOPES
 ### PUBLIC (NO SCOPE) (15)
@@ -160,7 +160,7 @@
 #### deleteMeasurement tasks:personal
 - Soft-delete one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. The tool rejects measurements owned by another user and refreshes cached summaries.
 #### upsertTrackingReminder tasks:personal
-- Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. Existing reminder amounts and personal limits convert with the preference. Unit changes are blocked if prior reminder receipts contain values without unit metadata. Use explicit units on individual measurements instead. A supplied defaultValue uses the new unit. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.
+- Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. Treatment and other categories that default to count need an explicit unit, for example mg for a dose. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. Existing reminder amounts and personal limits convert with the preference. Unit changes are blocked if prior reminder receipts contain values without unit metadata. Use explicit units on individual measurements instead. A supplied defaultValue uses the new unit. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.
 - trackingReminderId (string) — Existing reminder ID to edit in place. Patchable: active, defaultValue, instructions, reminderStartTime, reminderEndTime, reminderFrequency, startTrackingDate, stopTrackingDate, unit fields, and fillingType. Fixed at creation: the tracked variable (variableName, globalVariableId, categoryName, combinationOperation) — to change it, create a new reminder and set active: false on this one.
 - defaultValue (number | null) — Pre-filled value, such as a normal medication dose or symptom rating. Pass null to clear it when editing.
 - unitAbbreviation (string) — Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings. Sets your personal recording unit for this variable, on create or on edit.
@@ -914,7 +914,7 @@
 - role (enum, required) — New role.
 #### listOrganizationMembers earthdata:write
 - List members of an Organization with their roles, emails, and display names. Caller must be an owner/admin of the org.
-### ADMIN-ONLY (32)
+### ADMIN-ONLY (33)
 #### hideContent ADMIN earthdata:admin
 - Admin-only: hide or soft-delete a supported public Earth-data record.
 #### restoreContent ADMIN earthdata:admin
@@ -923,6 +923,13 @@
 - Admin-only: mark a content report as resolved or dismissed.
 - id (string, required)
 - resolutionNote (string)
+#### relabelVariableUnit ADMIN earthdata:admin
+- Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedCounts set to the counts object from the dry run. The tool refuses if any count changed. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.
+- globalVariableId (string, required)
+- fromUnit (string, required) — The current canonical unit: unit ID or exact abbreviation, for example count.
+- toUnit (string, required) — The correct unit: unit ID or exact abbreviation, for example mg.
+- apply (boolean) — Default false: a dry run that changes nothing.
+- expectedCounts (object) — Required with apply: true. Pass the counts object from the dry run without changes.
 #### getTaskTreeAudit ADMIN tasks:admin
 - Admin-only complete audit of the task graph rooted at Optimize Earth. Pages stable findings—not tasks—so a steward can inspect every structural, duplicate, routing, provenance, estimate, and bounded-agent-work issue without the listTasks result cap. Treat requiresApproval=true findings as proposals only.
 - cursor (string) — Stable issue cursor returned by the preceding page. Omit for the first page.

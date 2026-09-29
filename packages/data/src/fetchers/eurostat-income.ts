@@ -1,5 +1,3 @@
-/* eslint-disable eqeqeq -- intentional nullish checks while normalizing sparse external data */
-
 import { fetchPrivateConsumptionPpp } from './world-bank';
 import {
   EUROSTAT_API_BASE,
@@ -16,11 +14,30 @@ import type {
   EurostatMedianIncomeLocalPoint,
 } from './eurostat-income-shared';
 import type { DataPoint, FetchOptions } from '../types';
+import { INCOME_PRICE_REFERENCE_YEAR, positiveValue, toReferenceYearIncome } from './income-price-basis';
 interface EurostatObservation {
   dimensions: Record<string, string>;
   value: number;
   status?: string;
 }
+
+// Audited ilc_di03 NAC currency breaks in the September 2026 source snapshot,
+// not euro-adoption dates. WDI's refreshed PPP series use the current euro unit
+// for these countries, while earlier NAC observations retain legacy currencies.
+// Cyprus and Malta's published breaks differ from their adoption dates; Latvia
+// and Estonia already back-convert NAC history and must not be excluded here.
+// See ilc_di03 and WDI PA.NUS.PRVT.PP; do not use historical market exchange rates
+// to bridge the mismatch. Retain the source observation until a verified currency
+// conversion is available.
+const EUROSTAT_NAC_EURO_UNIT_START_YEAR: Readonly<Record<string, number>> = {
+  BGR: 2026,
+  HRV: 2023,
+  LTU: 2015,
+  CYP: 2009,
+  MLT: 2007,
+  SVN: 2007,
+  SVK: 2009,
+};
 
 export {
   EUROSTAT_HICP_SOURCE_URL,
@@ -145,6 +162,7 @@ export function deriveEurostatRealMedianDisposableIncome(
   medianPoints: EurostatMedianIncomeLocalPoint[],
   hicpPoints: EurostatHicpPoint[],
   pppPoints: DataPoint[],
+  referenceYear = INCOME_PRICE_REFERENCE_YEAR,
 ): DerivedEurostatMedianDisposableIncomePoint[] {
   const hicpByKey = new Map<string, number>(
     hicpPoints.map((point) => [`${point.jurisdictionIso3}:${point.year}`, point.hicpAnnualAverage]),
@@ -156,27 +174,28 @@ export function deriveEurostatRealMedianDisposableIncome(
   return medianPoints.map((point) => {
     const key = `${point.jurisdictionIso3}:${point.year}`;
     const hicpAnnualAverage = hicpByKey.get(key) ?? null;
-    // Try exact year first, then nearest available year (fixes Turkey hyperinflation gap)
-    let pppPrivateConsumption = pppByKey.get(key) ?? null;
-    if (pppPrivateConsumption === null) {
-      for (const offset of [-1, 1, -2, 2]) {
-        const val = pppByKey.get(`${point.jurisdictionIso3}:${point.year + offset}`);
-        if (val != null && val !== 0) { pppPrivateConsumption = val; break; }
-      }
-    }
-    const realMedianLocalCurrency =
-      hicpAnnualAverage && hicpAnnualAverage !== 0
-        ? point.nominalMedianLocalCurrency / (hicpAnnualAverage / 100)
-        : null;
+    const referenceKey = `${point.jurisdictionIso3}:${referenceYear}`;
+    const pppPrivateConsumption = positiveValue(pppByKey.get(key));
+    const referenceCpi = positiveValue(hicpByKey.get(referenceKey));
+    const referencePpp = positiveValue(pppByKey.get(referenceKey));
+    const euroUnitStartYear = EUROSTAT_NAC_EURO_UNIT_START_YEAR[point.jurisdictionIso3];
+    const pppCurrencyCompatible = euroUnitStartYear === undefined || point.year >= euroUnitStartYear;
+    const pppCurrencyCompatibilityNote = pppCurrencyCompatible
+      ? undefined
+      : `Eurostat NAC before ${euroUnitStartYear} retains a legacy national currency, while the refreshed World Bank PPP series is euro-denominated. Nominal NAC is retained; real and PPP conversions are withheld until currency units can be verified.`;
+    // A CPI ratio adjusts prices, not currency denominations. Suppress real NAC
+    // too, rather than label legacy-currency amounts as reference-year currency.
+    const realMedianLocalCurrency = pppCurrencyCompatible
+      ? toReferenceYearIncome(point.nominalMedianLocalCurrency, hicpAnnualAverage, referenceCpi)
+      : null;
     const nominalMedianPppUsd =
-      pppPrivateConsumption && pppPrivateConsumption !== 0
+      pppCurrencyCompatible && pppPrivateConsumption !== null
         ? point.nominalMedianLocalCurrency / pppPrivateConsumption
         : null;
     const realMedianPppUsd =
       realMedianLocalCurrency !== null &&
-      pppPrivateConsumption &&
-      pppPrivateConsumption !== 0
-        ? realMedianLocalCurrency / pppPrivateConsumption
+      referencePpp !== null
+        ? realMedianLocalCurrency / referencePpp
         : null;
 
     return {
@@ -189,6 +208,14 @@ export function deriveEurostatRealMedianDisposableIncome(
       realMedianLocalCurrency,
       nominalMedianPppUsd,
       realMedianPppUsd,
+      pppCurrencyCompatible,
+      pppCurrencyCompatibilityNote,
+      priceReferenceYear: referenceYear,
+      referenceCpi,
+      referencePpp,
+      priceIndexSource: 'Eurostat HICP',
+      pppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
+      nominalPppSource: 'World Bank WDI (PA.NUS.PRVT.PP)',
       estimateType: point.estimateType,
       source: 'Eurostat EU-SILC',
       sourceUrl: point.sourceUrl,
@@ -206,14 +233,17 @@ export async function fetchEurostatMedianDisposableIncomeSeries(
   try {
     const [incomeResponse, hicpResponse, pppPoints] = await Promise.all([
       fetch(
-        `${EUROSTAT_API_BASE}/${EUROSTAT_MEDIAN_INCOME_DATASET}?lang=EN&age=TOTAL&sex=T&indic_il=MED_E&unit=NAC`,
+        `${EUROSTAT_API_BASE}/${EUROSTAT_MEDIAN_INCOME_DATASET}?lang=EN&age=TOTAL&sex=T&statinfo=MED_EI&unit=NAC`,
       ),
       fetch(
         `${EUROSTAT_API_BASE}/${EUROSTAT_HICP_DATASET}?lang=EN&unit=INX_A_AVG&coicop=CP00`,
       ),
       fetchPrivateConsumptionPpp({
         jurisdictions: eurostatJurisdictions,
-        period: options.period,
+        period: options.period ? {
+          startYear: Math.min(options.period.startYear, INCOME_PRICE_REFERENCE_YEAR),
+          endYear: Math.max(options.period.endYear, INCOME_PRICE_REFERENCE_YEAR),
+        } : undefined,
       }),
     ]);
 
@@ -246,6 +276,7 @@ export async function fetchEurostatMedianDisposableIncomeSeries(
       ) {
         return false;
       }
+      if (point.year === INCOME_PRICE_REFERENCE_YEAR) return true;
       if (options.period && point.year < options.period.startYear) return false;
       if (options.period && point.year > options.period.endYear) return false;
       return true;

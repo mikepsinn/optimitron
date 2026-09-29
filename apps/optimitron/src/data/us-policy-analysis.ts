@@ -76,7 +76,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "causalConfidenceScore": 0.739,
       "policyImpactScore": 0.595,
       "welfareScore": 38,
-      "incomeEffect": 0.102,
+      "incomeEffect": 0.039,
       "healthEffect": 0.049,
       "bradfordHillScores": {
         "strength": 0.971,
@@ -95,7 +95,8 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "blockingFactors": [
         "political_opposition"
       ],
-      "oecdSpendingField": "militarySpendingPerCapitaPpp"
+      "oecdSpendingField": "militarySpendingPerCapitaPpp",
+      "modeledAnnualSavingsPerPerson": 1663
     },
     {
       "name": "National Health Spending: Adopt South Korea's Approach",
@@ -105,9 +106,9 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
       "causalConfidenceScore": 0.722,
-      "policyImpactScore": 0.586,
+      "policyImpactScore": 0.585,
       "welfareScore": 38,
-      "incomeEffect": 0.413,
+      "incomeEffect": 0.157,
       "healthEffect": 0.05,
       "bradfordHillScores": {
         "strength": 0.855,
@@ -126,7 +127,8 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "blockingFactors": [
         "political_opposition"
       ],
-      "oecdSpendingField": "healthSpendingPerCapitaPpp"
+      "oecdSpendingField": "healthSpendingPerCapitaPpp",
+      "modeledAnnualSavingsPerPerson": 6745
     },
     {
       "name": "Shift Drug Policy from Criminal to Health Approach",
@@ -189,97 +191,36 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     },
     {
-      "name": "National R&D Spending: Adopt Netherlands's Approach",
-      "type": "budget_allocation",
-      "category": "research_and_development",
-      "description": "Reduce total R&D spending (business and government) to the cheapest high-performer floor. Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap; United States gets 16287.22 at $1991/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.652,
-      "policyImpactScore": 0.541,
-      "welfareScore": 38,
-      "incomeEffect": 0.057,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.718,
-        "consistency": 0.939,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.996,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis of total R&D spending (business and government): Netherlands achieves After-Tax Median Income (PPP) 31221.39 at $1064/cap. United States at $1991/cap (1.9x overspend). Top 3: Netherlands ($1064), Norway ($1214), Denmark ($1317). Savings: $314B/yr → $927/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Energy, Science / NASA, Commerce / Economic Development.",
-      "currentStatus": "United States spends $1991/cap on total R&D spending (business and government), ranks 25/28. 1.9x overspend.",
-      "recommendedTarget": "Netherlands model ($1064/cap floor). $314B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ],
-      "oecdSpendingField": "rdSpendingPerCapitaPpp"
-    },
-    {
       "name": "Public Education Spending: Adopt Japan's Approach",
       "type": "budget_allocation",
       "category": "education",
       "description": "Reduce government education spending (all levels) to the cheapest high-performer floor. Japan achieves PISA Math Score 536 at $1288/cap; United States gets 465 at $2996/cap.",
       "recommendationType": "reallocate",
       "evidenceGrade": "B",
-      "causalConfidenceScore": 0.649,
-      "policyImpactScore": 0.54,
+      "causalConfidenceScore": 0.618,
+      "policyImpactScore": 0.521,
       "welfareScore": 38,
-      "incomeEffect": 0.105,
+      "incomeEffect": 0.04,
       "healthEffect": 0,
       "bradfordHillScores": {
         "strength": 0.784,
-        "consistency": 0.667,
+        "consistency": 0.551,
         "temporality": 1,
         "gradient": 0.662,
         "experiment": 0.25,
         "plausibility": 1,
-        "coherence": 0.889,
+        "coherence": 0.798,
         "analogy": 0.85,
         "specificity": 0.591
       },
-      "rationale": "Cheapest-high-performer analysis of government education spending (all levels): Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Taiwan ($1367), Singapore ($2509). Savings: $579B/yr → $1,708/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Education.",
-      "currentStatus": "United States spends $2996/cap on government education spending (all levels), ranks 11/11. 2.3x overspend.",
+      "rationale": "Cheapest-high-performer analysis of government education spending (all levels): Japan achieves PISA Math Score 536 at $1288/cap. United States at $2996/cap (2.3x overspend). Top 3: Japan ($1288), Singapore ($2581). Savings: $579B/yr → $1,708/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Education.",
+      "currentStatus": "United States spends $2996/cap on government education spending (all levels), ranks 8/8. 2.3x overspend.",
       "recommendedTarget": "Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.",
       "blockingFactors": [
         "political_opposition"
       ],
-      "oecdSpendingField": "educationSpendingPerCapitaPpp"
-    },
-    {
-      "name": "Public Social Spending: Adopt Singapore's Approach",
-      "type": "budget_allocation",
-      "category": "social_spending",
-      "description": "Reduce public social spending (pensions, health, income support) to the cheapest high-performer floor. Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap; United States gets 16287.22 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.639,
-      "policyImpactScore": 0.535,
-      "welfareScore": 38,
-      "incomeEffect": 0.305,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.656,
-        "consistency": 0.926,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.994,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis of public social spending (pensions, health, income support): Singapore achieves After-Tax Median Income (PPP) 36844.31 at $7868/cap. United States at $12848/cap (1.6x overspend). Top 3: Singapore ($7868), Netherlands ($10605), Switzerland ($10699). Savings: $1688B/yr → $4,980/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Transportation, HUD / Housing, Foreign Aid / International Affairs, Justice / Law Enforcement, Agriculture, EPA / Environment, Labor, Interior / Natural Resources, Treasury / General Government, State Department / Diplomacy.",
-      "currentStatus": "United States spends $12848/cap on public social spending (pensions, health, income support), ranks 23/26. 1.6x overspend.",
-      "recommendedTarget": "Singapore model ($7868/cap floor). $1688B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ],
-      "oecdSpendingField": "socialSpendingPerCapitaPpp"
+      "oecdSpendingField": "educationSpendingPerCapitaPpp",
+      "modeledAnnualSavingsPerPerson": 1708
     },
     {
       "name": "Right to Trial & FDA Upgrade Act",
@@ -313,7 +254,86 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     }
   ],
-  "generatedAt": "2026-09-25T23:14:50.147Z",
+  "generatedAt": "2026-09-29T09:11:49.699Z",
   "generatedBy": "@optimitron/opg",
+  "methodology": {
+    "incomeReference": {
+      "jurisdictionIso3": "USA",
+      "jurisdictionName": "United States",
+      "year": 2022,
+      "concept": "after_tax_median_disposable_income",
+      "source": "OECD IDD",
+      "isAfterTax": true,
+      "taxScope": "after_direct_taxes_and_cash_transfers",
+      "consumptionTaxTreatment": "excluded",
+      "inKindTransferTreatment": "excluded",
+      "equivalenceScale": "square_root",
+      "methodology": "METH2012",
+      "definition": "D_CUR",
+      "sourceUrl": "https://data-explorer.oecd.org",
+      "value": 42971.10830134192,
+      "unit": "Real PPP-adjusted US dollars per equivalised household",
+      "priceBasis": "real",
+      "purchasingPower": "ppp",
+      "derivation": "derived",
+      "priceReferenceYear": 2021,
+      "priceIndexSource": "OECD IDD",
+      "priceIndexNote": "Income multiplied by OECD IDD CPI(2021) / CPI(observation year).",
+      "pppReferenceYear": 2021,
+      "pppSource": "OECD IDD",
+      "pppBasisNote": "Converted with 2021 OECD IDD private-consumption PPP (national currency per US dollar)."
+    },
+    "incomeEffect": "Modeled per-person cash dividend divided by the observed equivalised-income benchmark. This assumes transferability and uses the retained income reference year; it is not a measured median-income change.",
+    "comparisons": [
+      {
+        "spendingField": "militarySpendingPerCapitaPpp",
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "countries": 28,
+        "referenceCountry": "CHE"
+      },
+      {
+        "spendingField": "healthSpendingPerCapitaPpp",
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "countries": 28,
+        "referenceCountry": "KOR"
+      },
+      {
+        "spendingField": "socialSpendingPerCapitaPpp",
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "countries": 22,
+        "referenceCountry": "USA"
+      },
+      {
+        "spendingField": "educationSpendingPerCapitaPpp",
+        "years": [
+          2022
+        ],
+        "countries": 8,
+        "referenceCountry": "JPN"
+      },
+      {
+        "spendingField": "rdSpendingPerCapitaPpp",
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "countries": 22,
+        "referenceCountry": "USA"
+      }
+    ]
+  },
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 };

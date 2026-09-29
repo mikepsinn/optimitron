@@ -74,7 +74,7 @@ export default function EfficiencyPage() {
                   <td className="px-3 py-3 font-bold text-foreground">
                     <div className="flex flex-col gap-1">
                       <Link href={getBudgetCategoryPath(row.name)} className="underline underline-offset-4">
-                        {row.name}
+                        {row.oecdBenchmark?.fieldLabel ?? row.name}
                       </Link>
                       {legislationSlug ? (
                         <Link
@@ -101,7 +101,7 @@ export default function EfficiencyPage() {
                   <td className="px-3 py-3 text-right font-black text-foreground">
                     {row.efficiency.rank}/{row.efficiency.totalCountries}
                   </td>
-                  <td className="px-3 py-3 text-right font-black text-background">
+                  <td className="px-3 py-3 text-right font-black text-foreground">
                     {row.efficiency.overspendRatio.toFixed(1)}x
                   </td>
                   <td className="px-3 py-3 text-right font-black text-foreground">

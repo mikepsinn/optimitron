@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   chooseBestMedianIncomeRecord,
   fetchPreferredMedianIncomeSeries,
+  fetchStrictAfterTaxMedianIncomeSeries,
   filterMedianIncomeSeries,
   getBestAvailableMedianIncomeSeriesFromRecords,
   isStrictAfterTaxMedianIncomeRecord,
@@ -69,6 +70,28 @@ const sampleRecords: MedianIncomeSeriesRecord[] = [
 ];
 
 describe('Median Income Dataset Helpers', () => {
+  it('fetches reference-year prices outside the requested income period', async () => {
+    const records = await fetchStrictAfterTaxMedianIncomeSeries({
+      jurisdictions: ['TST'], source: 'OECD IDD',
+      period: { startYear: 2024, endYear: 2024 },
+      priceBasis: 'real', purchasingPower: 'ppp',
+    }, {
+      fetchOecdIddPoints: async (selector = {}, options = {}) => {
+        const values = selector.measure === 'INC_DISP' ? [[2024, 200]]
+          : selector.measure === 'CPI' ? [[2021, 100], [2024, 125]] : [[2021, 2]];
+        return values.filter(([year]) => !options.period
+          || (year! >= options.period.startYear && year! <= options.period.endYear))
+          .map(([year, value]) => ({
+            jurisdictionIso3: 'TST', jurisdictionName: 'Test', year: year!, value: value!,
+            measure: selector.measure!, statisticalOperation: selector.statisticalOperation!,
+            unitMeasure: selector.unitMeasure!, age: '_T', methodology: 'METH2012',
+            definition: 'D_CUR', povertyLine: '_Z', source: 'OECD IDD', sourceUrl: 'https://data-explorer.oecd.org',
+          }));
+      },
+    });
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({ year: 2024, value: 80, priceReferenceYear: 2021 });
+  });
   it('filterMedianIncomeSeries filters by jurisdiction and period', () => {
     const filtered = filterMedianIncomeSeries(sampleRecords, {
       jurisdictions: ['AUS'],
