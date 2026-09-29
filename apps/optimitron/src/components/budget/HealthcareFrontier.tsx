@@ -94,7 +94,7 @@ export function HealthcareFrontier({ data, gap, onGapChange, countryId }: {
           <p>This comparison uses recurring healthcare costs. The budget above uses government health expenditure, including research and investment, under the same classification as the other budget lines. It is a different accounting boundary: these care costs are not added again.</p>
           {data.governmentBudgets.countries.find(country => country.countryId === selected?.id) && <p>Budget source: {data.governmentBudgets.countries.find(country => country.countryId === selected?.id)!.accountingBasis}</p>}
           <p>Private spending includes voluntary insurance and out-of-pocket payments. External funding is shown separately. The financing split follows WHO domestic funding definitions; OECD compulsory-financing shares can use a different boundary.</p>
-          {selected?.haleLow !== null && selected?.haleHigh !== null && <p>Mean annual WHO lower and upper estimates: {selected?.haleLow?.toFixed(2)}–{selected?.haleHigh?.toFixed(2)} years. These are averaged source bounds, not a confidence interval for the three-year mean or for adopting the system.</p>}
+          {selected && selected.haleLow != null && selected.haleHigh != null && <p>Mean annual WHO lower and upper estimates: {selected.haleLow.toFixed(2)}–{selected.haleHigh.toFixed(2)} years. These are averaged source bounds, not a confidence interval for the three-year mean or for adopting the system.</p>}
           {policies?.policies.some(policy => policy.periodNote) && <p>Policy dates: {policies.policies.map(policy => policy.periodNote).filter(Boolean).join(" ")}</p>}
         </div>
       </details>

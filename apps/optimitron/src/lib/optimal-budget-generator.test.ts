@@ -37,6 +37,27 @@ describe('published population budget', () => {
     // Substituting current-care finance would lose R&D and overlap social-care accounts.
     expect(health.peer!.publicCostPerCapita).not.toBe(source.publicPerCapita);
   });
+  it('includes each selectable healthcare budget and explains the alternative ranking cost', () => {
+    const report = getOptimalBudgetReport(1_000_000);
+    const sections = renderOptimalBudgetMarkdown(report).split('\n## Top ').slice(1);
+    expect(sections).toHaveLength(report.scenarios.length);
+    for (const scenario of report.scenarios) {
+      const label = `${Math.round((1 - scenario.outcomeQuantile) * 100)}% non-health targets; healthcare within ${scenario.maxHealthyYearGap} healthy years`;
+      const section = sections.find(text => text.startsWith(label))!;
+      expect(section).toBeDefined();
+      for (const line of scenario.lines) {
+        expect(section).toContain(`| ${line.name} |`);
+        for (const child of line.breakdown) expect(section).toContain(`| ${child.name} |`);
+      }
+      const health = scenario.lines.find(line => line.id === 'GF07')!;
+      expect(section).toContain('Qualifying alternatives, ordered by total care cost:');
+      for (const peer of health.alternatives) {
+        const total = peer.selectionCostPerCapita.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        const publicBudget = peer.publicCostPerCapita.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        expect(section).toContain(`${peer.name} ($${total} total care; $${publicBudget} public budget per resident)`);
+      }
+    }
+  });
   it('reconciles every target and service breakdown without adding child or private spending twice', () => {
     const report = getOptimalBudgetReport(2_000_000);
     for (const scenario of report.scenarios) {

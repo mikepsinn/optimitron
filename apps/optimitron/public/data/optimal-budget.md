@@ -181,7 +181,7 @@ Annual public budget: **$20,875,963,013**; **$20,876 per resident**.
 **Healthcare**
 
 - Healthy life expectancy: target 72.52; selected reference 73.48 years (WHO HALE, population average).
-- Cheapest qualifying alternatives: Japan ($3,413 public per resident); Singapore ($2,547 public per resident).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
 
 | Service | Annual cost per resident |
 | --- | ---: |
@@ -191,6 +191,729 @@ Annual public budget: **$20,875,963,013**; **$20,876 per resident**.
 | Public health services | $210 |
 | R&D Health | $7 |
 | Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident); Iceland ($1,977 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 83.72; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Ireland ($2,793 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($6,557 public per resident); Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $1,974 |
+| Old age | $2,017 |
+| Survivors | $9 |
+| Family and children | $1,354 |
+| Unemployment | $396 |
+| Housing | $251 |
+| Social exclusion n.e.c. | $311 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $245 |
+| Unallocated / source rounding | $0 |
+
+## Top 20% non-health targets; healthcare within 0 healthy years
+
+Annual public budget: **$20,010,326,302**; **$20,010 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 3 |
+| Weapons and Military | $76 | $76,198,658 | Iceland | 3 |
+| Police, courts and fire services | $918 | $917,610,653 | Iceland | 3 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 3 |
+| Waste, pollution and nature | $418 | $417,872,654 | Iceland | 3 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 3 |
+| Healthcare | $2,547 | $2,547,260,898 | Singapore | 1 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 3 |
+| Education | $1,791 | $1,791,433,399 | Poland | 6 |
+| Pensions and social support | $6,557 | $6,556,989,745 | Iceland | 3 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Iceland ($5,425 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($76 public per resident); Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $0 |
+| Civil defence | $72 |
+| Foreign military aid | $4 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($918 public per resident); Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $472 |
+| Fire-protection services | $63 |
+| Law courts | $156 |
+| Prisons | $48 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $178 |
+| Unallocated / source rounding | $0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Iceland ($3,258 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($418 public per resident); Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $251 |
+| Waste water management | $0 |
+| Pollution abatement | $0 |
+| Protection of biodiversity and landscape | $133 |
+| R&D Environmental protection | $3 |
+| Environmental protection n.e.c. | $31 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Iceland ($412 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.52; selected reference 73.52 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,547 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident); Iceland ($1,977 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 83.72; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Ireland ($2,793 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($6,557 public per resident); Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $1,974 |
+| Old age | $2,017 |
+| Survivors | $9 |
+| Family and children | $1,354 |
+| Unemployment | $396 |
+| Housing | $251 |
+| Social exclusion n.e.c. | $311 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $245 |
+| Unallocated / source rounding | $0 |
+
+## Top 20% non-health targets; healthcare within 0.5 healthy years
+
+Annual public budget: **$20,875,963,013**; **$20,876 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 3 |
+| Weapons and Military | $76 | $76,198,658 | Iceland | 3 |
+| Police, courts and fire services | $918 | $917,610,653 | Iceland | 3 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 3 |
+| Waste, pollution and nature | $418 | $417,872,654 | Iceland | 3 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 3 |
+| Healthcare | $3,413 | $3,412,897,610 | Japan | 2 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 3 |
+| Education | $1,791 | $1,791,433,399 | Poland | 6 |
+| Pensions and social support | $6,557 | $6,556,989,745 | Iceland | 3 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Iceland ($5,425 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($76 public per resident); Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $0 |
+| Civil defence | $72 |
+| Foreign military aid | $4 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($918 public per resident); Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $472 |
+| Fire-protection services | $63 |
+| Law courts | $156 |
+| Prisons | $48 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $178 |
+| Unallocated / source rounding | $0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Iceland ($3,258 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($418 public per resident); Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $251 |
+| Waste water management | $0 |
+| Pollution abatement | $0 |
+| Protection of biodiversity and landscape | $133 |
+| R&D Environmental protection | $3 |
+| Environmental protection n.e.c. | $31 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Iceland ($412 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.02; selected reference 73.48 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | $550 |
+| Outpatient services | $1,318 |
+| Hospital services | $1,253 |
+| Public health services | $210 |
+| R&D Health | $7 |
+| Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident); Iceland ($1,977 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 83.72; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Ireland ($2,793 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($6,557 public per resident); Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $1,974 |
+| Old age | $2,017 |
+| Survivors | $9 |
+| Family and children | $1,354 |
+| Unemployment | $396 |
+| Housing | $251 |
+| Social exclusion n.e.c. | $311 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $245 |
+| Unallocated / source rounding | $0 |
+
+## Top 20% non-health targets; healthcare within 1.5 healthy years
+
+Annual public budget: **$19,644,457,856**; **$19,644 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 3 |
+| Weapons and Military | $76 | $76,198,658 | Iceland | 3 |
+| Police, courts and fire services | $918 | $917,610,653 | Iceland | 3 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 3 |
+| Waste, pollution and nature | $418 | $417,872,654 | Iceland | 3 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 3 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 3 |
+| Education | $1,791 | $1,791,433,399 | Poland | 6 |
+| Pensions and social support | $6,557 | $6,556,989,745 | Iceland | 3 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Iceland ($5,425 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($76 public per resident); Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $0 |
+| Civil defence | $72 |
+| Foreign military aid | $4 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($918 public per resident); Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $472 |
+| Fire-protection services | $63 |
+| Law courts | $156 |
+| Prisons | $48 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $178 |
+| Unallocated / source rounding | $0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Iceland ($3,258 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($418 public per resident); Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $251 |
+| Waste water management | $0 |
+| Pollution abatement | $0 |
+| Protection of biodiversity and landscape | $133 |
+| R&D Environmental protection | $3 |
+| Environmental protection n.e.c. | $31 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Iceland ($412 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 72.02; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident); Iceland ($1,977 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 83.72; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Ireland ($2,793 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($6,557 public per resident); Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $1,974 |
+| Old age | $2,017 |
+| Survivors | $9 |
+| Family and children | $1,354 |
+| Unemployment | $396 |
+| Housing | $251 |
+| Social exclusion n.e.c. | $311 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $245 |
+| Unallocated / source rounding | $0 |
+
+## Top 20% non-health targets; healthcare within 2 healthy years
+
+Annual public budget: **$19,644,457,856**; **$19,644 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 3 |
+| Weapons and Military | $76 | $76,198,658 | Iceland | 3 |
+| Police, courts and fire services | $918 | $917,610,653 | Iceland | 3 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 3 |
+| Waste, pollution and nature | $418 | $417,872,654 | Iceland | 3 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 3 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 3 |
+| Education | $1,791 | $1,791,433,399 | Poland | 6 |
+| Pensions and social support | $6,557 | $6,556,989,745 | Iceland | 3 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Iceland ($5,425 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($76 public per resident); Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $0 |
+| Civil defence | $72 |
+| Foreign military aid | $4 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($918 public per resident); Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $472 |
+| Fire-protection services | $63 |
+| Law courts | $156 |
+| Prisons | $48 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $178 |
+| Unallocated / source rounding | $0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Iceland ($3,258 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.16; selected reference 71.33 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 23621.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Iceland ($418 public per resident); Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $251 |
+| Waste water management | $0 |
+| Pollution abatement | $0 |
+| Protection of biodiversity and landscape | $133 |
+| R&D Environmental protection | $3 |
+| Environmental protection n.e.c. | $31 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.16; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 22435.40; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Iceland ($412 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 71.52; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
 
 **Culture, recreation and religion**
 
@@ -359,7 +1082,7 @@ Annual public budget: **$25,545,975,751**; **$25,546 per resident**.
 **Healthcare**
 
 - Healthy life expectancy: target 72.52; selected reference 73.48 years (WHO HALE, population average).
-- Cheapest qualifying alternatives: Japan ($3,413 public per resident); Singapore ($2,547 public per resident).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
 
 | Service | Annual cost per resident |
 | --- | ---: |
@@ -369,6 +1092,721 @@ Annual public budget: **$25,545,975,751**; **$25,546 per resident**.
 | Public health services | $210 |
 | R&D Health | $7 |
 | Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.03; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $2,269 |
+| Old age | $5,237 |
+| Survivors | $238 |
+| Family and children | $365 |
+| Unemployment | $866 |
+| Housing | $27 |
+| Social exclusion n.e.c. | $1,365 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $7 |
+| Unallocated / source rounding | $-0 |
+
+## Top 10% non-health targets; healthcare within 0 healthy years
+
+Annual public budget: **$24,680,339,039**; **$24,680 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 2 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 2 |
+| Police, courts and fire services | $1,312 | $1,312,115,443 | Switzerland | 2 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 2 |
+| Waste, pollution and nature | $454 | $454,437,194 | Switzerland | 2 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 2 |
+| Healthcare | $2,547 | $2,547,260,898 | Singapore | 1 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 2 |
+| Education | $1,791 | $1,791,433,399 | Poland | 3 |
+| Pensions and social support | $10,375 | $10,374,567,118 | Switzerland | 2 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.33; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $550 |
+| Fire-protection services | $95 |
+| Law courts | $224 |
+| Prisons | $152 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $292 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $116 |
+| Waste water management | $204 |
+| Pollution abatement | $46 |
+| Protection of biodiversity and landscape | $36 |
+| R&D Environmental protection | $7 |
+| Environmental protection n.e.c. | $45 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.52; selected reference 73.52 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,547 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.03; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $2,269 |
+| Old age | $5,237 |
+| Survivors | $238 |
+| Family and children | $365 |
+| Unemployment | $866 |
+| Housing | $27 |
+| Social exclusion n.e.c. | $1,365 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $7 |
+| Unallocated / source rounding | $-0 |
+
+## Top 10% non-health targets; healthcare within 0.5 healthy years
+
+Annual public budget: **$25,545,975,751**; **$25,546 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 2 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 2 |
+| Police, courts and fire services | $1,312 | $1,312,115,443 | Switzerland | 2 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 2 |
+| Waste, pollution and nature | $454 | $454,437,194 | Switzerland | 2 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 2 |
+| Healthcare | $3,413 | $3,412,897,610 | Japan | 2 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 2 |
+| Education | $1,791 | $1,791,433,399 | Poland | 3 |
+| Pensions and social support | $10,375 | $10,374,567,118 | Switzerland | 2 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.33; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $550 |
+| Fire-protection services | $95 |
+| Law courts | $224 |
+| Prisons | $152 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $292 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $116 |
+| Waste water management | $204 |
+| Pollution abatement | $46 |
+| Protection of biodiversity and landscape | $36 |
+| R&D Environmental protection | $7 |
+| Environmental protection n.e.c. | $45 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.02; selected reference 73.48 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | $550 |
+| Outpatient services | $1,318 |
+| Hospital services | $1,253 |
+| Public health services | $210 |
+| R&D Health | $7 |
+| Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.03; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $2,269 |
+| Old age | $5,237 |
+| Survivors | $238 |
+| Family and children | $365 |
+| Unemployment | $866 |
+| Housing | $27 |
+| Social exclusion n.e.c. | $1,365 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $7 |
+| Unallocated / source rounding | $-0 |
+
+## Top 10% non-health targets; healthcare within 1.5 healthy years
+
+Annual public budget: **$24,314,470,593**; **$24,314 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 2 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 2 |
+| Police, courts and fire services | $1,312 | $1,312,115,443 | Switzerland | 2 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 2 |
+| Waste, pollution and nature | $454 | $454,437,194 | Switzerland | 2 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 2 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 2 |
+| Education | $1,791 | $1,791,433,399 | Poland | 3 |
+| Pensions and social support | $10,375 | $10,374,567,118 | Switzerland | 2 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.33; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $550 |
+| Fire-protection services | $95 |
+| Law courts | $224 |
+| Prisons | $152 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $292 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $116 |
+| Waste water management | $204 |
+| Pollution abatement | $46 |
+| Protection of biodiversity and landscape | $36 |
+| R&D Environmental protection | $7 |
+| Environmental protection n.e.c. | $45 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 72.02; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($827 public per resident); Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $282 |
+| Cultural services | $318 |
+| Broadcasting and publishing services | $191 |
+| Religious and other community services | $35 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.03; selected reference 85.30 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Poland ($1,791 public per resident); Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $746 |
+| Secondary education | $412 |
+| Post-secondary non-tertiary education | $1 |
+| Tertiary education | $438 |
+| Education not definable by level | $36 |
+| Subsidiary services to education | $101 |
+| R&D Education | $28 |
+| Education n.e.c. | $30 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($10,375 public per resident); Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $2,269 |
+| Old age | $5,237 |
+| Survivors | $238 |
+| Family and children | $365 |
+| Unemployment | $866 |
+| Housing | $27 |
+| Social exclusion n.e.c. | $1,365 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $7 |
+| Unallocated / source rounding | $-0 |
+
+## Top 10% non-health targets; healthcare within 2 healthy years
+
+Annual public budget: **$24,314,470,593**; **$24,314 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $3,660 | $3,659,646,199 | Switzerland | 2 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 2 |
+| Police, courts and fire services | $1,312 | $1,312,115,443 | Switzerland | 2 |
+| Transport, energy and industry | $3,064 | $3,064,045,570 | Switzerland | 2 |
+| Waste, pollution and nature | $454 | $454,437,194 | Switzerland | 2 |
+| Housing and community services | $152 | $152,056,526 | Switzerland | 2 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $827 | $827,212,001 | Switzerland | 2 |
+| Education | $1,791 | $1,791,433,399 | Poland | 3 |
+| Pensions and social support | $10,375 | $10,374,567,118 | Switzerland | 2 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,660 public per resident); Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $701 |
+| Foreign economic aid | $309 |
+| General services | $903 |
+| Basic research | $1,428 |
+| R&D General public services | $1 |
+| General public services n.e.c. | $0 |
+| Public debt transactions | $318 |
+| Transfers of a general character between different levels of government | $0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.33; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident); Switzerland ($635 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($1,312 public per resident); Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $550 |
+| Fire-protection services | $95 |
+| Law courts | $224 |
+| Prisons | $152 |
+| R&D Public order and safety | $0 |
+| Public order and safety n.e.c. | $292 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($3,064 public per resident); Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $79 |
+| Agriculture, forestry, fishing and hunting | $537 |
+| Fuel and energy | $257 |
+| Mining, manufacturing and construction | $0 |
+| Transport | $1,974 |
+| Communication | $7 |
+| Other industries | $114 |
+| R&D Economic affairs | $92 |
+| Economic affairs n.e.c. | $3 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($454 public per resident); Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $116 |
+| Waste water management | $204 |
+| Pollution abatement | $46 |
+| Protection of biodiversity and landscape | $36 |
+| R&D Environmental protection | $7 |
+| Environmental protection n.e.c. | $45 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.33; selected reference 71.37 years (WHO HALE, population average).
+- Median disposable income: target 23988.90; selected reference 27268.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Switzerland ($152 public per resident); Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $0 |
+| Community development | $52 |
+| Water supply | $100 |
+| Street lighting | $0 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 71.52; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
 
 **Culture, recreation and religion**
 
@@ -541,7 +1979,7 @@ Annual public budget: **$48,761,299,906**; **$48,761 per resident**.
 **Healthcare**
 
 - Healthy life expectancy: target 72.52; selected reference 73.48 years (WHO HALE, population average).
-- Cheapest qualifying alternatives: Japan ($3,413 public per resident); Singapore ($2,547 public per resident).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
 
 | Service | Annual cost per resident |
 | --- | ---: |
@@ -551,6 +1989,745 @@ Annual public budget: **$48,761,299,906**; **$48,761 per resident**.
 | Public health services | $210 |
 | R&D Health | $7 |
 | Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $688 |
+| Cultural services | $693 |
+| Broadcasting and publishing services | $123 |
+| Religious and other community services | $127 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.36; selected reference 89.80 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $940 |
+| Secondary education | $613 |
+| Post-secondary non-tertiary education | $33 |
+| Tertiary education | $462 |
+| Education not definable by level | $117 |
+| Subsidiary services to education | $111 |
+| R&D Education | $46 |
+| Education n.e.c. | $81 |
+| Unallocated / source rounding | $0 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $3,946 |
+| Old age | $12,635 |
+| Survivors | $2 |
+| Family and children | $4,659 |
+| Unemployment | $1,227 |
+| Housing | $99 |
+| Social exclusion n.e.c. | $948 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $198 |
+| Unallocated / source rounding | $0 |
+
+## Top 5% non-health targets; healthcare within 0 healthy years
+
+Annual public budget: **$47,895,663,195**; **$47,896 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $6,760 | $6,760,155,765 | Luxembourg | 1 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 1 |
+| Police, courts and fire services | $1,479 | $1,478,775,129 | Luxembourg | 1 |
+| Transport, energy and industry | $6,974 | $6,974,176,558 | Luxembourg | 1 |
+| Waste, pollution and nature | $1,144 | $1,144,327,549 | Luxembourg | 1 |
+| Housing and community services | $728 | $728,192,517 | Luxembourg | 1 |
+| Healthcare | $2,547 | $2,547,260,898 | Singapore | 1 |
+| Culture, recreation and religion | $1,646 | $1,646,348,784 | Luxembourg | 1 |
+| Education | $2,402 | $2,401,976,742 | Estonia | 2 |
+| Pensions and social support | $23,717 | $23,716,884,559 | Luxembourg | 1 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $2,349 |
+| Foreign economic aid | $787 |
+| General services | $2,299 |
+| Basic research | $595 |
+| R&D General public services | $2 |
+| General public services n.e.c. | $57 |
+| Public debt transactions | $671 |
+| Transfers of a general character between different levels of government | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $636 |
+| Fire-protection services | $247 |
+| Law courts | $289 |
+| Prisons | $200 |
+| R&D Public order and safety | $25 |
+| Public order and safety n.e.c. | $82 |
+| Unallocated / source rounding | $-0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $941 |
+| Agriculture, forestry, fishing and hunting | $407 |
+| Fuel and energy | $127 |
+| Mining, manufacturing and construction | $139 |
+| Transport | $4,480 |
+| Communication | $72 |
+| Other industries | $199 |
+| R&D Economic affairs | $595 |
+| Economic affairs n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $230 |
+| Waste water management | $558 |
+| Pollution abatement | $170 |
+| Protection of biodiversity and landscape | $131 |
+| R&D Environmental protection | $2 |
+| Environmental protection n.e.c. | $53 |
+| Unallocated / source rounding | $-0 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $260 |
+| Community development | $201 |
+| Water supply | $158 |
+| Street lighting | $43 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $66 |
+| Unallocated / source rounding | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.52; selected reference 73.52 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,547 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $688 |
+| Cultural services | $693 |
+| Broadcasting and publishing services | $123 |
+| Religious and other community services | $127 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.36; selected reference 89.80 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $940 |
+| Secondary education | $613 |
+| Post-secondary non-tertiary education | $33 |
+| Tertiary education | $462 |
+| Education not definable by level | $117 |
+| Subsidiary services to education | $111 |
+| R&D Education | $46 |
+| Education n.e.c. | $81 |
+| Unallocated / source rounding | $0 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $3,946 |
+| Old age | $12,635 |
+| Survivors | $2 |
+| Family and children | $4,659 |
+| Unemployment | $1,227 |
+| Housing | $99 |
+| Social exclusion n.e.c. | $948 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $198 |
+| Unallocated / source rounding | $0 |
+
+## Top 5% non-health targets; healthcare within 0.5 healthy years
+
+Annual public budget: **$48,761,299,906**; **$48,761 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $6,760 | $6,760,155,765 | Luxembourg | 1 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 1 |
+| Police, courts and fire services | $1,479 | $1,478,775,129 | Luxembourg | 1 |
+| Transport, energy and industry | $6,974 | $6,974,176,558 | Luxembourg | 1 |
+| Waste, pollution and nature | $1,144 | $1,144,327,549 | Luxembourg | 1 |
+| Housing and community services | $728 | $728,192,517 | Luxembourg | 1 |
+| Healthcare | $3,413 | $3,412,897,610 | Japan | 2 |
+| Culture, recreation and religion | $1,646 | $1,646,348,784 | Luxembourg | 1 |
+| Education | $2,402 | $2,401,976,742 | Estonia | 2 |
+| Pensions and social support | $23,717 | $23,716,884,559 | Luxembourg | 1 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $2,349 |
+| Foreign economic aid | $787 |
+| General services | $2,299 |
+| Basic research | $595 |
+| R&D General public services | $2 |
+| General public services n.e.c. | $57 |
+| Public debt transactions | $671 |
+| Transfers of a general character between different levels of government | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $636 |
+| Fire-protection services | $247 |
+| Law courts | $289 |
+| Prisons | $200 |
+| R&D Public order and safety | $25 |
+| Public order and safety n.e.c. | $82 |
+| Unallocated / source rounding | $-0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $941 |
+| Agriculture, forestry, fishing and hunting | $407 |
+| Fuel and energy | $127 |
+| Mining, manufacturing and construction | $139 |
+| Transport | $4,480 |
+| Communication | $72 |
+| Other industries | $199 |
+| R&D Economic affairs | $595 |
+| Economic affairs n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $230 |
+| Waste water management | $558 |
+| Pollution abatement | $170 |
+| Protection of biodiversity and landscape | $131 |
+| R&D Environmental protection | $2 |
+| Environmental protection n.e.c. | $53 |
+| Unallocated / source rounding | $-0 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $260 |
+| Community development | $201 |
+| Water supply | $158 |
+| Street lighting | $43 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $66 |
+| Unallocated / source rounding | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 73.02; selected reference 73.48 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | $550 |
+| Outpatient services | $1,318 |
+| Hospital services | $1,253 |
+| Public health services | $210 |
+| R&D Health | $7 |
+| Health n.e.c. | $74 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $688 |
+| Cultural services | $693 |
+| Broadcasting and publishing services | $123 |
+| Religious and other community services | $127 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.36; selected reference 89.80 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $940 |
+| Secondary education | $613 |
+| Post-secondary non-tertiary education | $33 |
+| Tertiary education | $462 |
+| Education not definable by level | $117 |
+| Subsidiary services to education | $111 |
+| R&D Education | $46 |
+| Education n.e.c. | $81 |
+| Unallocated / source rounding | $0 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $3,946 |
+| Old age | $12,635 |
+| Survivors | $2 |
+| Family and children | $4,659 |
+| Unemployment | $1,227 |
+| Housing | $99 |
+| Social exclusion n.e.c. | $948 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $198 |
+| Unallocated / source rounding | $0 |
+
+## Top 5% non-health targets; healthcare within 1.5 healthy years
+
+Annual public budget: **$47,529,794,749**; **$47,530 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $6,760 | $6,760,155,765 | Luxembourg | 1 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 1 |
+| Police, courts and fire services | $1,479 | $1,478,775,129 | Luxembourg | 1 |
+| Transport, energy and industry | $6,974 | $6,974,176,558 | Luxembourg | 1 |
+| Waste, pollution and nature | $1,144 | $1,144,327,549 | Luxembourg | 1 |
+| Housing and community services | $728 | $728,192,517 | Luxembourg | 1 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $1,646 | $1,646,348,784 | Luxembourg | 1 |
+| Education | $2,402 | $2,401,976,742 | Estonia | 2 |
+| Pensions and social support | $23,717 | $23,716,884,559 | Luxembourg | 1 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $2,349 |
+| Foreign economic aid | $787 |
+| General services | $2,299 |
+| Basic research | $595 |
+| R&D General public services | $2 |
+| General public services n.e.c. | $57 |
+| Public debt transactions | $671 |
+| Transfers of a general character between different levels of government | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $636 |
+| Fire-protection services | $247 |
+| Law courts | $289 |
+| Prisons | $200 |
+| R&D Public order and safety | $25 |
+| Public order and safety n.e.c. | $82 |
+| Unallocated / source rounding | $-0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $941 |
+| Agriculture, forestry, fishing and hunting | $407 |
+| Fuel and energy | $127 |
+| Mining, manufacturing and construction | $139 |
+| Transport | $4,480 |
+| Communication | $72 |
+| Other industries | $199 |
+| R&D Economic affairs | $595 |
+| Economic affairs n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $230 |
+| Waste water management | $558 |
+| Pollution abatement | $170 |
+| Protection of biodiversity and landscape | $131 |
+| R&D Environmental protection | $2 |
+| Environmental protection n.e.c. | $53 |
+| Unallocated / source rounding | $-0 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $260 |
+| Community development | $201 |
+| Water supply | $158 |
+| Street lighting | $43 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $66 |
+| Unallocated / source rounding | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 72.02; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
+
+**Culture, recreation and religion**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,646 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Recreational and sporting services | $688 |
+| Cultural services | $693 |
+| Broadcasting and publishing services | $123 |
+| Religious and other community services | $127 |
+| R&D Recreation, culture and religion | $1 |
+| Recreation, culture and religion n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Education**
+
+- Students reaching basic maths proficiency: target 85.36; selected reference 89.80 % of 15-year-olds (PISA 2018, Level 2+).
+- Cheapest qualifying alternatives: Estonia ($2,402 public per resident); Denmark ($4,202 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Pre-primary and primary education | $940 |
+| Secondary education | $613 |
+| Post-secondary non-tertiary education | $33 |
+| Tertiary education | $462 |
+| Education not definable by level | $117 |
+| Subsidiary services to education | $111 |
+| R&D Education | $46 |
+| Education n.e.c. | $81 |
+| Unallocated / source rounding | $0 |
+
+**Pensions and social support**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($23,717 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Sickness and disability | $3,946 |
+| Old age | $12,635 |
+| Survivors | $2 |
+| Family and children | $4,659 |
+| Unemployment | $1,227 |
+| Housing | $99 |
+| Social exclusion n.e.c. | $948 |
+| R&D Social protection | $0 |
+| Social protection n.e.c. | $198 |
+| Unallocated / source rounding | $0 |
+
+## Top 5% non-health targets; healthcare within 2 healthy years
+
+Annual public budget: **$47,529,794,749**; **$47,530 per resident**.
+
+| Category | Per resident | Annual public budget | Reference | Eligible countries |
+| --- | ---: | ---: | --- | ---: |
+| Government, research and debt | $6,760 | $6,760,155,765 | Luxembourg | 1 |
+| Weapons and Military | $498 | $497,564,692 | Luxembourg | 1 |
+| Police, courts and fire services | $1,479 | $1,478,775,129 | Luxembourg | 1 |
+| Transport, energy and industry | $6,974 | $6,974,176,558 | Luxembourg | 1 |
+| Waste, pollution and nature | $1,144 | $1,144,327,549 | Luxembourg | 1 |
+| Housing and community services | $728 | $728,192,517 | Luxembourg | 1 |
+| Healthcare | $2,181 | $2,181,392,452 | South Korea | 3 |
+| Culture, recreation and religion | $1,646 | $1,646,348,784 | Luxembourg | 1 |
+| Education | $2,402 | $2,401,976,742 | Estonia | 2 |
+| Pensions and social support | $23,717 | $23,716,884,559 | Luxembourg | 1 |
+
+### Reference outcomes and alternatives
+
+**Government, research and debt**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,760 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Executive and legislative organs, financial and fiscal affairs, external affairs | $2,349 |
+| Foreign economic aid | $787 |
+| General services | $2,299 |
+| Basic research | $595 |
+| R&D General public services | $2 |
+| General public services n.e.c. | $57 |
+| Public debt transactions | $671 |
+| Transfers of a general character between different levels of government | $0 |
+| Unallocated / source rounding | $-0 |
+
+**Weapons and Military**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($498 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Military defence | $397 |
+| Civil defence | $0 |
+| Foreign military aid | $99 |
+| R&D Defence | $0 |
+| Defence n.e.c. | $2 |
+
+**Police, courts and fire services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,479 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Police services | $636 |
+| Fire-protection services | $247 |
+| Law courts | $289 |
+| Prisons | $200 |
+| R&D Public order and safety | $25 |
+| Public order and safety n.e.c. | $82 |
+| Unallocated / source rounding | $-0 |
+
+**Transport, energy and industry**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($6,974 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| General economic, commercial and labour affairs | $941 |
+| Agriculture, forestry, fishing and hunting | $407 |
+| Fuel and energy | $127 |
+| Mining, manufacturing and construction | $139 |
+| Transport | $4,480 |
+| Communication | $72 |
+| Other industries | $199 |
+| R&D Economic affairs | $595 |
+| Economic affairs n.e.c. | $15 |
+| Unallocated / source rounding | $0 |
+
+**Waste, pollution and nature**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($1,144 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Waste management | $230 |
+| Waste water management | $558 |
+| Pollution abatement | $170 |
+| Protection of biodiversity and landscape | $131 |
+| R&D Environmental protection | $2 |
+| Environmental protection n.e.c. | $53 |
+| Unallocated / source rounding | $-0 |
+
+**Housing and community services**
+
+- Healthy life expectancy: target 71.40; selected reference 71.43 years (WHO HALE, population average).
+- Median disposable income: target 27015.10; selected reference 28943.00 2019 PPS per equivalised person (Eurostat EU-SILC).
+- Cheapest qualifying alternatives: Luxembourg ($728 public per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Housing development | $260 |
+| Community development | $201 |
+| Water supply | $158 |
+| Street lighting | $43 |
+| R&D Housing and community amenities | $0 |
+| Housing and community amenities n.e.c. | $66 |
+| Unallocated / source rounding | $0 |
+
+**Healthcare**
+
+- Healthy life expectancy: target 71.52; selected reference 72.22 years (WHO HALE, population average).
+- Qualifying alternatives, ordered by total care cost: South Korea ($3,517 total care; $2,181 public budget per resident); Japan ($4,959 total care; $3,413 public budget per resident); Singapore ($5,119 total care; $2,547 public budget per resident).
+
+| Service | Annual cost per resident |
+| --- | ---: |
+| Medical products, appliances and equipment | Unavailable |
+| Outpatient services | Unavailable |
+| Hospital services | Unavailable |
+| Public health services | Unavailable |
+| R&D Health | Unavailable |
+| Health n.e.c. | Unavailable |
+| Unallocated / source rounding | $2,181 |
 
 **Culture, recreation and religion**
 

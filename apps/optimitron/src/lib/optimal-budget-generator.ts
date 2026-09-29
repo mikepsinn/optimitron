@@ -67,7 +67,7 @@ export function renderOptimalBudgetMarkdown(report: OptimalBudgetReport): string
   for (const system of report.healthcare.policies) {
     content.push(`### ${system.countryName} policies`, '', ...system.policies.map(policy => `- [${policy.name}](${policy.url}): ${policy.description} ${policy.periodNote}`), '');
   }
-  for (const scenario of report.scenarios.filter(scenario => scenario.maxHealthyYearGap === report.healthcare.defaultMaxHealthyYearGap)) {
+  for (const scenario of report.scenarios) {
     content.push(`## Top ${Math.round((1 - scenario.outcomeQuantile) * 100)}% non-health targets; healthcare within ${scenario.maxHealthyYearGap} healthy years${scenario.outcomeQuantile === report.defaultQuantile && scenario.maxHealthyYearGap === report.healthcare.defaultMaxHealthyYearGap ? ' (default)' : ''}`, '',
       scenario.complete ? `Annual public budget: **${money(scenario.annualBudget!)}**; **${money(scenario.totalPerCapita!)} per resident**.` : 'No complete budget: one or more categories have no qualifying country. Targets were not relaxed.', '',
       '| Category | Per resident | Annual public budget | Reference | Eligible countries |', '| --- | ---: | ---: | --- | ---: |');
@@ -79,7 +79,9 @@ export function renderOptimalBudgetMarkdown(report: OptimalBudgetReport): string
       content.push(`**${line.name}**`, '', ...line.outcomeMetrics.map(metric => {
         const definition = report.outcomeDefinitions[metric]!;
         return `- ${definition.label}: target ${line.targets[metric]?.toFixed(2) ?? 'unavailable'}; selected reference ${line.peer?.outcomes[metric]?.toFixed(2) ?? 'unavailable'} ${definition.unit}.`;
-      }), `- Cheapest qualifying alternatives: ${line.alternatives.map(peer => `${peer.name} (${money(peer.publicCostPerCapita)} public per resident)`).join('; ') || 'None'}.`, '');
+      }), line.selectionCost === 'totalHealthPerCapita'
+        ? `- Qualifying alternatives, ordered by total care cost: ${line.alternatives.map(peer => `${peer.name} (${money(peer.selectionCostPerCapita)} total care; ${money(peer.publicCostPerCapita)} public budget per resident)`).join('; ') || 'None'}.`
+        : `- Cheapest qualifying alternatives: ${line.alternatives.map(peer => `${peer.name} (${money(peer.publicCostPerCapita)} public per resident)`).join('; ') || 'None'}.`, '');
       if (line.breakdown.length) {
         content.push('| Service | Annual cost per resident |', '| --- | ---: |', ...line.breakdown.map(child => `| ${child.name} | ${child.perCapita === null ? 'Unavailable' : money(child.perCapita)} |`));
         if (line.breakdownRemainder !== null && Math.abs(line.breakdownRemainder) > 0.005) content.push(`| Unallocated / source rounding | ${money(line.breakdownRemainder)} |`);

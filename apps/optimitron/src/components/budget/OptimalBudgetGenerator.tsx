@@ -57,7 +57,7 @@ export function OptimalBudgetGenerator({ report }: { report: OptimalBudgetReport
     link.href = url;
     link.download = `budget-${population}.json`;
     link.click();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   return (
