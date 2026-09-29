@@ -3317,7 +3317,7 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
   {
     name: "relabelVariableUnit",
     description:
-      "Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedMeasurementCount set to counts.measurements from the dry run. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.",
+      "Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedCounts set to the counts object from the dry run. The tool refuses if any count changed. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -3336,10 +3336,10 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
           type: "boolean",
           description: "Default false: a dry run that changes nothing.",
         },
-        expectedMeasurementCount: {
-          type: "number",
+        expectedCounts: {
+          type: "object",
           description:
-            "Required with apply: true. Pass counts.measurements from the dry run.",
+            "Required with apply: true. Pass the counts object from the dry run without changes.",
         },
       },
       required: ["globalVariableId", "fromUnit", "toUnit"],

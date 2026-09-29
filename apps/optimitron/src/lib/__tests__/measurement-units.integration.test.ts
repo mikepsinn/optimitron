@@ -665,7 +665,7 @@ describe("measurement units through MCP and PostgreSQL", () => {
 
       await relabelVariableUnit(
         prisma,
-        { ...RELABEL, apply: true, expectedMeasurementCount: 2 },
+        { ...RELABEL, apply: true, expectedCounts: dryRun.counts },
         USER,
       );
       expect(
@@ -727,9 +727,10 @@ describe("measurement units through MCP and PostgreSQL", () => {
           originalUnitId: mg,
         },
       });
+      const { counts } = await relabelVariableUnit(prisma, RELABEL, USER);
       await relabelVariableUnit(
         prisma,
-        { ...RELABEL, apply: true, expectedMeasurementCount: 0 },
+        { ...RELABEL, apply: true, expectedCounts: counts },
         USER,
       );
       expect(
@@ -737,7 +738,7 @@ describe("measurement units through MCP and PostgreSQL", () => {
       ).toMatchObject({ mean: 7.5, numberOfMeasurements: 1 });
     });
 
-    it("refuses a stale unit, an outdated count, a stranded personal unit, or a converted row and changes nothing", async () => {
+    it("refuses a stale unit, changed counts, a stranded personal unit, or a converted row and changes nothing", async () => {
       await record(7.5, "count");
       await expect(
         relabelVariableUnit(
@@ -748,14 +749,27 @@ describe("measurement units through MCP and PostgreSQL", () => {
       ).rejects.toThrow("fromUnit must be the current canonical unit");
       await expect(
         relabelVariableUnit(prisma, { ...RELABEL, apply: true }, USER),
-      ).rejects.toThrow("expectedMeasurementCount is required");
+      ).rejects.toThrow("expectedCounts is required");
+      const { counts } = await relabelVariableUnit(prisma, RELABEL, USER);
+      // Another user starts a reminder after the dry run. That adds no
+      // measurement, but the apply would relabel that user's preset.
+      await call(
+        "upsertTrackingReminder",
+        {
+          globalVariableId: VARIABLE,
+          reminderStartTime: "08:00",
+          defaultValue: 1,
+          startTrackingDate: "2026-09-01T00:00:00Z",
+        },
+        OTHER_USER,
+      );
       await expect(
         relabelVariableUnit(
           prisma,
-          { ...RELABEL, apply: true, expectedMeasurementCount: 2 },
+          { ...RELABEL, apply: true, expectedCounts: counts },
           USER,
         ),
-      ).rejects.toThrow("Run a new dry run");
+      ).rejects.toThrow("otherSubjects is 1, not 0");
       const servings = await prisma.unit.findUniqueOrThrow({
         where: { abbreviatedName: "servings" },
       });

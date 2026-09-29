@@ -494,7 +494,7 @@ An admin corrects it with `relabelVariableUnit` (`earthdata:admin`). The tool ch
 
 1. Do a dry run. Pass `globalVariableId`, `fromUnit` (the current canonical unit), and `toUnit`.
 2. Read `counts`. `otherSubjects` is the number of other people whose amounts change label.
-3. Call again with `apply: true` and `expectedMeasurementCount` set to `counts.measurements`.
+3. Call again with `apply: true` and `expectedCounts` set to `counts`. The tool refuses if any count changed after the dry run.
 
 The tool relabels the canonical unit, personal unit settings in `fromUnit`, and measurements stored in `fromUnit`.
 Reminder presets and receipts have no unit column. They keep their numbers and read in the new unit.

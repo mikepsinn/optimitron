@@ -19,10 +19,38 @@ const RELABEL_UNIT_SELECT = {
   name: true,
 } satisfies Prisma.UnitSelect;
 
+const RELABEL_COUNT_KEYS = [
+  "measurements",
+  "nOf1Variables",
+  "otherSubjects",
+  "subjects",
+  "trackedNotifications",
+  "trackingReminders",
+] as const;
+
+type RelabelCounts = Record<(typeof RELABEL_COUNT_KEYS)[number], number>;
+
 function requiredString(input: Record<string, unknown>, fieldName: string) {
   const value = optionalString(input[fieldName]);
   if (!value) throw new Error(`${fieldName} is required.`);
   return value;
+}
+
+function parseExpectedCounts(value: unknown) {
+  const counts =
+    value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {};
+  if (
+    !RELABEL_COUNT_KEYS.every(
+      (key) => Number.isInteger(counts[key]) && (counts[key] as number) >= 0,
+    )
+  ) {
+    throw new Error(
+      "expectedCounts is required with apply: true. Run a dry run first and pass its counts.",
+    );
+  }
+  return counts as RelabelCounts;
 }
 
 async function findUnit(
@@ -66,8 +94,8 @@ async function lockVariableUnits(
 
 /**
  * Relabel every amount stored in a variable's canonical unit as another unit,
- * for all subjects. Dry run by default; `apply: true` needs the measurement
- * count from the dry run so the admin approves exactly what the dry run showed.
+ * for all subjects. Dry run by default; `apply: true` needs every count from
+ * the dry run, so the admin approves exactly what the dry run showed.
  *
  * Reminder presets and notification receipts have no unit column. They read
  * in the personal unit, else the canonical unit, so they follow the relabel
@@ -85,19 +113,9 @@ export async function relabelVariableUnit(
     throw new Error("apply must be a boolean.");
   }
   const apply = input.apply === true;
-  const expectedMeasurementCount = input.expectedMeasurementCount;
-  if (
-    apply &&
-    !(
-      typeof expectedMeasurementCount === "number" &&
-      Number.isInteger(expectedMeasurementCount) &&
-      expectedMeasurementCount >= 0
-    )
-  ) {
-    throw new Error(
-      "expectedMeasurementCount is required with apply: true. Run a dry run first and pass its counts.measurements.",
-    );
-  }
+  const expectedCounts = apply
+    ? parseExpectedCounts(input.expectedCounts)
+    : null;
 
   return db.$transaction(
     async (tx) => {
@@ -210,10 +228,28 @@ export async function relabelVariableUnit(
         },
       );
 
-      if (apply) {
-        if (measurements !== expectedMeasurementCount) {
+      const counts: RelabelCounts = {
+        measurements,
+        nOf1Variables,
+        otherSubjects: subjectCounts.otherSubjects,
+        subjects: subjectCounts.subjects,
+        trackedNotifications,
+        trackingReminders,
+      };
+
+      if (expectedCounts) {
+        // A new reminder or unit setting adds no measurement, but it adds a
+        // person or a record that the dry run did not show.
+        const changed = RELABEL_COUNT_KEYS.filter(
+          (key) => counts[key] !== expectedCounts[key],
+        );
+        if (changed.length > 0) {
           throw new Error(
-            `${measurements} measurements now match, not ${expectedMeasurementCount}. Run a new dry run.`,
+            `The counts changed after the dry run: ${changed
+              .map(
+                (key) => `${key} is ${counts[key]}, not ${expectedCounts[key]}`,
+              )
+              .join("; ")}. Run a new dry run.`,
           );
         }
         await tx.globalVariable.update({
@@ -247,14 +283,7 @@ export async function relabelVariableUnit(
 
       return {
         applied: apply,
-        counts: {
-          measurements,
-          nOf1Variables,
-          otherSubjects: subjectCounts.otherSubjects,
-          subjects: subjectCounts.subjects,
-          trackedNotifications,
-          trackingReminders,
-        },
+        counts,
         fromUnit,
         globalVariable: { id: variable.id, name: variable.name },
         toUnit,

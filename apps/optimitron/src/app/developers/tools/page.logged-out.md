@@ -924,12 +924,12 @@
 - id (string, required)
 - resolutionNote (string)
 #### relabelVariableUnit ADMIN earthdata:admin
-- Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedMeasurementCount set to counts.measurements from the dry run. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.
+- Admin-only: correct the unit of a tracking variable for all users, with no numeric conversion. Use this when amounts are correct but the unit is wrong, for example a 7.5 mg dose stored as 7.5 count. The default is a dry run that returns counts only. To apply, call again with apply: true and expectedCounts set to the counts object from the dry run. The tool refuses if any count changed. Measurements, personal unit settings, reminder presets, and tracked notification values keep their numbers and then read in toUnit. The tool refuses a measurement that was converted between fromUnit and another unit.
 - globalVariableId (string, required)
 - fromUnit (string, required) — The current canonical unit: unit ID or exact abbreviation, for example count.
 - toUnit (string, required) — The correct unit: unit ID or exact abbreviation, for example mg.
 - apply (boolean) — Default false: a dry run that changes nothing.
-- expectedMeasurementCount (number) — Required with apply: true. Pass counts.measurements from the dry run.
+- expectedCounts (object) — Required with apply: true. Pass the counts object from the dry run without changes.
 #### getTaskTreeAudit ADMIN tasks:admin
 - Admin-only complete audit of the task graph rooted at Optimize Earth. Pages stable findings—not tasks—so a steward can inspect every structural, duplicate, routing, provenance, estimate, and bounded-agent-work issue without the listTasks result cap. Treat requiresApproval=true findings as proposals only.
 - cursor (string) — Stable issue cursor returned by the preceding page. Omit for the first page.
