@@ -420,40 +420,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -862,40 +848,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -1009,40 +981,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -1303,40 +1261,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 729,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 1991,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 729,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 1991,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 44972.66,
-            "rank": 2
-          },
-          {
-            "code": "DNK",
-            "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 37568.36,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 729,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 2.7,
-        "potentialSavingsPerCapita": 1261,
-        "potentialSavingsTotal": 427592000000
+        "floorSpendingPerCapita": 1991,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
@@ -1455,40 +1399,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 729,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 1991,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 729,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 1991,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 44972.66,
-            "rank": 2
-          },
-          {
-            "code": "DNK",
-            "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 37568.36,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 729,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 2.7,
-        "potentialSavingsPerCapita": 1261,
-        "potentialSavingsTotal": 427592000000
+        "floorSpendingPerCapita": 1991,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
@@ -1602,40 +1532,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -1896,40 +1812,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -2038,40 +1940,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -2180,40 +2068,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -2322,40 +2196,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 729,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 1991,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 729,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 1991,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "NOR",
-            "name": "Norway",
-            "spendingPerCapita": 1214,
-            "outcome": 44972.66,
-            "rank": 2
-          },
-          {
-            "code": "DNK",
-            "name": "Denmark",
-            "spendingPerCapita": 1317,
-            "outcome": 37568.36,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 729,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 2.7,
-        "potentialSavingsPerCapita": 1261,
-        "potentialSavingsTotal": 427592000000
+        "floorSpendingPerCapita": 1991,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "rdSpendingPerCapitaPpp",
@@ -2469,40 +2329,26 @@ export const usBudgetAnalysis: BudgetReportJSON = {
         "outcome": 45655.94,
         "outcomeName": "After-Tax Median Income (PPP)",
         "bestCountry": {
-          "code": "CAN",
-          "name": "Canada",
-          "spendingPerCapita": 8699,
-          "outcome": 41856.33,
+          "code": "USA",
+          "name": "United States",
+          "spendingPerCapita": 12848,
+          "outcome": 45655.94,
           "rank": 1
         },
         "topEfficient": [
           {
-            "code": "CAN",
-            "name": "Canada",
-            "spendingPerCapita": 8699,
-            "outcome": 41856.33,
+            "code": "USA",
+            "name": "United States",
+            "spendingPerCapita": 12848,
+            "outcome": 45655.94,
             "rank": 1
-          },
-          {
-            "code": "CHE",
-            "name": "Switzerland",
-            "spendingPerCapita": 10699,
-            "outcome": 42411.11,
-            "rank": 2
-          },
-          {
-            "code": "AUT",
-            "name": "Austria",
-            "spendingPerCapita": 12314,
-            "outcome": 41341.23,
-            "rank": 3
           }
         ],
-        "floorSpendingPerCapita": 8699,
-        "floorOutcome": 41856.33,
-        "overspendRatio": 1.5,
-        "potentialSavingsPerCapita": 4149,
-        "potentialSavingsTotal": 1406511000000
+        "floorSpendingPerCapita": 12848,
+        "floorOutcome": 45655.94,
+        "overspendRatio": 1,
+        "potentialSavingsPerCapita": 0,
+        "potentialSavingsTotal": 0
       },
       "oecdBenchmark": {
         "spendingField": "socialSpendingPerCapitaPpp",
@@ -2667,11 +2513,11 @@ export const usBudgetAnalysis: BudgetReportJSON = {
   "topRecommendations": [
     "Military: United States spends $2052/cap (rank 27/28). Switzerland spends $389/cap with Life Expectancy 83.37. Overspend: 5.3x. Cutting the $886B line to Switzerland's ratio saves $719B/yr",
     "National comparison, total health spending (public and private): United States spends $10333/cap (rank 28/28). South Korea spends $3588/cap with Life Expectancy 83.57. Overspend: 2.9x. Potential national savings: $2.3T/yr",
-    "National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 20/22). Canada spends $729/cap with After-Tax Median Income (PPP) 41856.33. Overspend: 2.7x. Potential national savings: $428B/yr",
     "National comparison, government education spending (all levels): United States spends $2996/cap (rank 8/8). Japan spends $1288/cap with PISA Math Score 536. Overspend: 2.3x. Potential national savings: $579B/yr",
-    "National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 8/22). Canada spends $8699/cap with After-Tax Median Income (PPP) 41856.33. Overspend: 1.5x. Potential national savings: $1.4T/yr"
+    "National comparison, public social spending (pensions, health, income support): United States spends $12848/cap (rank 8/22). Near floor ($12848/cap). After-Tax Median Income (PPP): 45655.94",
+    "National comparison, total R&D spending (business and government): United States spends $1991/cap (rank 20/22). Near floor ($1991/cap). After-Tax Median Income (PPP): 45655.94"
   ],
-  "generatedAt": "2026-09-29T00:52:12.076Z",
+  "generatedAt": "2026-09-29T09:11:49.688Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

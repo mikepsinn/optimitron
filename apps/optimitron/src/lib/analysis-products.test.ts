@@ -73,11 +73,19 @@ describe("national efficiency and dividend totals", () => {
     expect(deduplicateEfficiencyCategories([{ ...sample, efficiency: undefined }])).toEqual([]);
   });
 
-  it("publishes one dividend row for each bundled national spending field", () => {
+  it("publishes one dividend row per national field, only where a cheaper country matches the outcome", () => {
     const summary = getOptimizationDividendSummary();
     const fields = summary.breakdown.map(row => row.category.oecdBenchmark!.spendingField);
-    expect(fields).toHaveLength(5);
-    expect(new Set(fields).size).toBe(5);
+    expect(fields.length).toBeGreaterThan(0);
+    expect(new Set(fields).size).toBe(fields.length);
     expect(summary.breakdown.every(row => row.label === row.category.oecdBenchmark!.fieldLabel)).toBe(true);
+    // /efficiency and /dividend both tell the reader the model country matches
+    // the US outcome for less. A field whose only qualifying floor is the US
+    // itself must not be published rather than claim a phantom overspend.
+    for (const { category } of summary.breakdown) {
+      const { efficiency } = category;
+      expect(efficiency.bestCountry.outcome, category.id).toBeGreaterThanOrEqual(efficiency.outcome);
+      expect(efficiency.bestCountry.spendingPerCapita, category.id).toBeLessThan(efficiency.spendingPerCapita);
+    }
   });
 });

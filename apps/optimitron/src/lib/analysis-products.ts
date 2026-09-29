@@ -94,14 +94,21 @@ export function deduplicateEfficiencyCategories(
     }
   }
 
+  // A field whose cheapest qualifying performer is the US itself yields a
+  // US-vs-US row at 1x and no savings. /efficiency and /dividend both state
+  // that every row is a country matching the outcome for less, so drop it.
   return [...grouped.values()].map(category => {
     const finding = category.oecdBenchmark ? findings.get(category.oecdBenchmark.spendingField) : undefined;
     if (!finding) return category;
+    // The grouping loop above gives a legislation-linked line a 1e15 bonus, so
+    // keep that winner for proxy-only fields; the identity match below would
+    // otherwise swap in the first line sharing the finding and drop the link.
     const representative = eligible.find(candidate => candidate.id === finding.categorySpecificLineId)
+      ?? (BUDGET_LEGISLATION_SLUGS[category.id] ? category : undefined)
       ?? (category.efficiency === finding.efficiency ? category
         : eligible.find(candidate => candidate.efficiency === finding.efficiency) ?? category);
     return { ...representative, efficiency: finding.efficiency };
-  });
+  }).filter(category => category.efficiency.potentialSavingsTotal > 0);
 }
 
 export function getOptimizationDividendBreakdown(

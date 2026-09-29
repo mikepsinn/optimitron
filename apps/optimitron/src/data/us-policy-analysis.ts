@@ -131,38 +131,6 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "modeledAnnualSavingsPerPerson": 6745
     },
     {
-      "name": "National R&D Spending: Adopt Canada's Approach",
-      "type": "budget_allocation",
-      "category": "research_and_development",
-      "description": "Reduce total R&D spending (business and government) to the cheapest high-performer floor. Canada achieves After-Tax Median Income (PPP) 41856.33 at $729/cap; United States gets 45655.94 at $1991/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.708,
-      "policyImpactScore": 0.575,
-      "welfareScore": 38,
-      "incomeEffect": 0.029,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.835,
-        "consistency": 0.889,
-        "temporality": 1,
-        "gradient": 0.662,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.988,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis of total R&D spending (business and government): Canada achieves After-Tax Median Income (PPP) 41856.33 at $729/cap. United States at $1991/cap (2.7x overspend). Top 3: Canada ($729), Norway ($1214), Denmark ($1317). Savings: $428B/yr → $1,261/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Energy, Science / NASA, Commerce / Economic Development.",
-      "currentStatus": "United States spends $1991/cap on total R&D spending (business and government), ranks 20/22. 2.7x overspend.",
-      "recommendedTarget": "Canada model ($729/cap floor). $428B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ],
-      "oecdSpendingField": "rdSpendingPerCapitaPpp",
-      "modeledAnnualSavingsPerPerson": 1261
-    },
-    {
       "name": "Shift Drug Policy from Criminal to Health Approach",
       "type": "regulation",
       "category": "health",
@@ -221,38 +189,6 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "blockingFactors": [
         "political_opposition"
       ]
-    },
-    {
-      "name": "Public Social Spending: Adopt Canada's Approach",
-      "type": "budget_allocation",
-      "category": "social_spending",
-      "description": "Reduce public social spending (pensions, health, income support) to the cheapest high-performer floor. Canada achieves After-Tax Median Income (PPP) 41856.33 at $8699/cap; United States gets 45655.94 at $12848/cap.",
-      "recommendationType": "reallocate",
-      "evidenceGrade": "B",
-      "causalConfidenceScore": 0.628,
-      "policyImpactScore": 0.527,
-      "welfareScore": 38,
-      "incomeEffect": 0.097,
-      "healthEffect": 0,
-      "bradfordHillScores": {
-        "strength": 0.632,
-        "consistency": 0.889,
-        "temporality": 1,
-        "gradient": 0.265,
-        "experiment": 0.25,
-        "plausibility": 1,
-        "coherence": 0.988,
-        "analogy": 0.85,
-        "specificity": 0.591
-      },
-      "rationale": "Cheapest-high-performer analysis of public social spending (pensions, health, income support): Canada achieves After-Tax Median Income (PPP) 41856.33 at $8699/cap. United States at $12848/cap (1.5x overspend). Top 3: Canada ($8699), Switzerland ($10699), Austria ($12314). Savings: $1407B/yr → $4,149/person/yr as Optimization Dividend. Federal budget lines benchmarked against this field: Transportation, HUD / Housing, Foreign Aid / International Affairs, Justice / Law Enforcement, Agriculture, EPA / Environment, Labor, Interior / Natural Resources, Treasury / General Government, State Department / Diplomacy.",
-      "currentStatus": "United States spends $12848/cap on public social spending (pensions, health, income support), ranks 8/22. 1.5x overspend.",
-      "recommendedTarget": "Canada model ($8699/cap floor). $1407B/yr savings → Optimization Dividend.",
-      "blockingFactors": [
-        "political_opposition"
-      ],
-      "oecdSpendingField": "socialSpendingPerCapitaPpp",
-      "modeledAnnualSavingsPerPerson": 4149
     },
     {
       "name": "Public Education Spending: Adopt Japan's Approach",
@@ -318,7 +254,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       ]
     }
   ],
-  "generatedAt": "2026-09-29T00:52:12.089Z",
+  "generatedAt": "2026-09-29T09:11:49.699Z",
   "generatedBy": "@optimitron/opg",
   "methodology": {
     "incomeReference": {
@@ -377,7 +313,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
           2022
         ],
         "countries": 22,
-        "referenceCountry": "CAN"
+        "referenceCountry": "USA"
       },
       {
         "spendingField": "educationSpendingPerCapitaPpp",
@@ -395,7 +331,7 @@ export const usPolicyAnalysis: PolicyReportJSON = {
           2022
         ],
         "countries": 22,
-        "referenceCountry": "CAN"
+        "referenceCountry": "USA"
       }
     ]
   },

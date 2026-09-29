@@ -11,7 +11,11 @@ import { GLOBAL_AVG_INCOME_2025, GLOBAL_HALE_CURRENT } from "@optimitron/data/pa
 // All types flow from @optimitron/opg via the generated .ts file.
 const data = usPolicyAnalysis;
 
-const MEDIAN_INCOME = GLOBAL_AVG_INCOME_2025.value;
+// Modeled policies report dollars against the report's own US income reference,
+// so the fallback has to use the same base or the "Income Benefit ($)" sort
+// compares figures scaled three times apart.
+const incomeReference = (data.methodology?.incomeReference as { value?: number } | undefined)?.value;
+const MEDIAN_INCOME = incomeReference ?? GLOBAL_AVG_INCOME_2025.value;
 const HALE_YEARS = GLOBAL_HALE_CURRENT.value;
 
 /** Translate abstract effect percentages into dollar/year amounts per person */

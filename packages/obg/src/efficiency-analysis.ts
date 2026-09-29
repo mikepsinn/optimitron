@@ -152,8 +152,11 @@ export function analyzeEfficiency(
   const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1] ?? 0;
 
   // 2. High performers: at or above 75th percentile, sorted by spending (cheapest first)
+  // A country at or above the 75th percentile can still score below the target,
+  // and the output claims the target "pays more and ranks lower". Only accept a
+  // floor that does at least as well as the target, so the claim stays true.
   const highPerformers = countries
-    .filter(c => c.outcome >= p75)
+    .filter(c => c.outcome >= p75 && (c.code === jurisdictionCode || c.outcome >= target.outcome))
     .sort((a, b) => a.spending - b.spending || a.code.localeCompare(b.code));
 
   if (highPerformers.length === 0) return null;

@@ -38,7 +38,7 @@
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
 | Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
 
-- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
+- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 8 policies deep.
 - [Explore the Policy Generator](/opg)
 #### PART B · THE BUDGET, SOLVED LIKE AN EQUATION
 - 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone and costs nothing.
