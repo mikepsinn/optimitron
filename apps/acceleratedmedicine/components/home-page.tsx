@@ -84,8 +84,8 @@ export function HomePage() {
             Find out which treatments work, and get them to patients faster.
           </h1>
           <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-            We are a nonprofit. Our plan: rank treatments by what happened to
-            real patients, let every patient join a trial, and redirect{" "}
+            Our plan: rank treatments by what happened to real patients, let
+            every patient join a trial, and redirect{" "}
             <ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} /> of
             military spending to pragmatic clinical trials.
           </p>

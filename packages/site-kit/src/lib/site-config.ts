@@ -151,7 +151,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
-const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. The Accelerated Medicine Foundation Inc is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. and is a 501(c)(3) nonprofit. EIN: 41-2555651.`;
 const DFDA_NON_AFFILIATION_NOTICE =
   "dFDA (Decentralized Framework for Drug Assessment) is an independent open-source project. It is not affiliated with, endorsed by, or acting on behalf of the U.S. Food and Drug Administration.";
 
@@ -1255,7 +1255,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // own titles and share metadata.
     headerBrandLabel: "Accelerated Medicine",
     description:
-      "A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.",
+      "Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1332,7 +1332,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       alt: "The Right to Trial poster: patients and a doctor beside a sign that reads \"Montana proved it. Now it's your state.\"",
     },
     copyrightText:
-      "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",
+      "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 

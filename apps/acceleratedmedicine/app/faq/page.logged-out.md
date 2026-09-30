@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
+- Meta description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 - Canonical: https://acceleratedmedicine.org/faq
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
+- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: A nonprofit working to find out which treatments work and get them to patients faster: the Decentralized FDA, Right to Trial, and the 1% Treaty.
+- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 
