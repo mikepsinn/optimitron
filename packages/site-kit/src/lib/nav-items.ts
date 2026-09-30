@@ -426,6 +426,21 @@ export const NAV_ITEMS_MAP = {
       "transparent giving",
     ],
   },
+  rightToTrial: {
+    id: "rightToTrial",
+    label: "Right to Trial",
+    path: ROUTES.rightToTrial,
+    description:
+      "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
+    emoji: "🩺",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Right to Trial",
+      "pragmatic clinical trials",
+      "patient access",
+    ],
+  },
   rightToTryMontana: {
     id: "rightToTryMontana",
     label: "Montana Model",
@@ -473,7 +488,7 @@ export const NAV_ITEMS_MAP = {
   rightToTryStates: {
     id: "rightToTryStates",
     label: "Your State",
-    path: `${ROUTES.home}#state-support`,
+    path: `${ROUTES.rightToTrial}#state-support`,
     description: "Put your state on the Right to Trial map.",
     emoji: "🗺️",
     isHashLink: true,

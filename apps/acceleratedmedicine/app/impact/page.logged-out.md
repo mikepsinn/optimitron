@@ -5,11 +5,11 @@
 - Page title: Right to Trial Impact | Right to Trial Initiative
 - Meta description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Canonical: https://acceleratedmedicine.org/impact
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Right to Trial Impact | Right to Trial Initiative
+- Open Graph description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Right to Trial Impact | Right to Trial Initiative
+- Twitter description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 
 ## Visible Page Copy
 
@@ -79,7 +79,7 @@
 - 44.1× LOWER COST PER PARTICIPANT
 ### HELP YOUR STATE FIND TREATMENTS FASTER.
 - Tell us where you live and why this matters. We will use every response to show patients, clinicians, and state leaders how many lives faster trials can change.
-- [BRING RIGHT TO TRIAL TO MY STATE](/#state-support)
+- [BRING RIGHT TO TRIAL TO MY STATE](/right-to-trial#state-support)
 ### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
 - Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how the dFDA proposal (Decentralized Framework for Drug Assessment) would make all three easier.
 #### How it Works For Patients
@@ -269,17 +269,19 @@
 - [Create a Trial](https://dfda.earth/contact)
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
-- [SURVEY](/survey)
+- [YOUR STATE](/right-to-trial#state-support)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

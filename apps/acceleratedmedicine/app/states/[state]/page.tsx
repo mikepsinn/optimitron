@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import { StateCampaignPage } from "@/components/state-campaign-page";
 import { getStateCampaign, STATE_CAMPAIGNS } from "@/lib/right-to-try";
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 
 export const dynamicParams = false;
 
@@ -26,13 +27,11 @@ export async function generateMetadata({
   const campaign = getStateCampaign(state);
   if (!campaign) return {};
 
-  return {
+  return rightToTrialMetadata({
     title: `${campaign.name} Right to Trial`,
     description: campaign.summary,
-    alternates: {
-      canonical: `https://acceleratedmedicine.org/states/${campaign.slug}`,
-    },
-  };
+    path: `/states/${campaign.slug}`,
+  });
 }
 
 export default async function StatePage({

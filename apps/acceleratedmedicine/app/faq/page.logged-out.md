@@ -2,14 +2,14 @@
 
 ## Metadata
 
-- Page title: Right to Trial Initiative
-- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Page title: Institute for Accelerated Medicine
+- Meta description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 - Canonical: https://acceleratedmedicine.org/faq
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Institute for Accelerated Medicine
+- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Institute for Accelerated Medicine
+- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
 
 ## Visible Page Copy
 

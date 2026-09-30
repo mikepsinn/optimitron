@@ -41,6 +41,7 @@ export const ROUTES = {
   references: '/references',
 
   // Universal Right to Try education
+  rightToTrial: '/right-to-trial',
   montana: '/montana',
   modelAct: '/model-act',
   states: '/states',

@@ -55,8 +55,10 @@ test.afterAll(async () => {
 })
 
 async function answerSurvey(page: Page) {
-  await page.goto("/")
-  const survey = page.locator(process.env.AUTH_E2E_APP === "acceleratedmedicine" ? "#state-support" : "#vote")
+  // acceleratedmedicine.org serves its survey on the Right to Trial page.
+  const acceleratedMedicine = process.env.AUTH_E2E_APP === "acceleratedmedicine"
+  await page.goto(acceleratedMedicine ? "/right-to-trial" : "/")
+  const survey = page.locator(acceleratedMedicine ? "#state-support" : "#vote")
   await survey.getByRole("button", { name: "Yes", exact: true }).click()
   await expect(survey.getByText("Question 2 of 3", { exact: true })).toBeVisible()
   await survey.getByRole("button", { name: "Not sure", exact: true }).click()

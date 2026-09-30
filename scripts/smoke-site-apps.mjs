@@ -311,7 +311,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             ? lane.authenticatedPage
             : lane.loggedOutPage;
           const pageUrl = new URL(routePath, baseUrl);
-          if (appName === "acceleratedmedicine" && routeName === "home") {
+          if (appName === "acceleratedmedicine" && routeName === "right-to-trial") {
             pageUrl.searchParams.set("visual", "1");
           }
           const captureLabel = `${projectName}/${routeName}`;
