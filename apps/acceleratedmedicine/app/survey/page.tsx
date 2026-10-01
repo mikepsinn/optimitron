@@ -10,15 +10,14 @@ import {
   type StateAbbreviation,
   type SupporterRole,
 } from "@/lib/right-to-try";
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = rightToTrialMetadata({
   title: "Right to Trial Survey",
   description:
     "Answer three questions about patient access, trial funding, and public priorities. Verify your email to save your response.",
-  alternates: {
-    canonical: "https://acceleratedmedicine.org/survey",
-  },
-};
+  path: "/survey",
+});
 
 /**
  * `?state=` accepts every form the survey itself accepts ("MO", "US-MO",

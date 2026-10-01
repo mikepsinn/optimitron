@@ -54,18 +54,11 @@ function getCampaignHomeFiles(appName) {
   if (appName === "acceleratedmedicine") {
     return [
       "apps/acceleratedmedicine/app/page.tsx",
-      "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
-      "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-      "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-      "apps/acceleratedmedicine/lib/right-to-try.ts",
-      "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
-      "packages/site-kit/src/components/landing/problem-statement.tsx",
-      "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
-      "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
-      "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-      "packages/site-kit/src/components/landing/death-clock.tsx",
+      "apps/acceleratedmedicine/components/home-page.tsx",
+      "apps/acceleratedmedicine/components/org-links.tsx",
+      "apps/acceleratedmedicine/components/legacy-home-hash-redirect.tsx",
+      "apps/acceleratedmedicine/lib/legacy-home-hash.ts",
       "packages/site-kit/src/lib/site-config.ts",
-      ...dfdaHowItWorksFiles,
     ];
   }
 
@@ -75,6 +68,25 @@ function getCampaignHomeFiles(appName) {
     ...(appName === "warondisease"
       ? ["packages/site-kit/src/components/landing/treaty-vote-section.tsx"]
       : []),
+  ];
+}
+
+/** The Right to Trial campaign page, which was the acceleratedmedicine.org homepage. */
+function getRightToTrialPageFiles() {
+  return [
+    "apps/acceleratedmedicine/app/right-to-trial/page.tsx",
+    "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
+    "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+    "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+    "apps/acceleratedmedicine/lib/right-to-try.ts",
+    "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
+    "packages/site-kit/src/components/landing/problem-statement.tsx",
+    "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
+    "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
+    "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
+    "packages/site-kit/src/components/landing/death-clock.tsx",
+    "packages/site-kit/src/lib/site-config.ts",
+    ...dfdaHowItWorksFiles,
   ];
 }
 
@@ -894,6 +906,18 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     {
+      // Linked from the Right to Trial page, not from the site menu.
+      covers: [
+        "apps/acceleratedmedicine/app/contact/page.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
+        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+      ],
+      label: "Volunteer",
+      routeName: "contact",
+      routePath: "/contact",
+      sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
+    },
+    {
       covers: ["apps/acceleratedmedicine/app/donate/page.tsx"],
       label: "Donate",
       routeName: "donate",
@@ -1089,6 +1113,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
+      ["/right-to-trial", getRightToTrialPageFiles()],
       [
         "/impact",
         [
@@ -1097,13 +1122,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
           "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
           "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
           "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
-        ],
-      ],
-      [
-        "/contact",
-        [
-          "apps/acceleratedmedicine/app/contact/page.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
         ],
       ],
       [
@@ -1179,6 +1197,8 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       aboutRoute.covers = [
         "apps/acceleratedmedicine/app/about/page.tsx",
         "apps/acceleratedmedicine/components/about-page.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
+        "apps/acceleratedmedicine/components/org-links.tsx",
         "apps/acceleratedmedicine/lib/board-members.ts",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/ian-whitmore.jpg",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/kathryn-bortko.jpg",
@@ -1187,10 +1207,14 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
+  // acceleratedmedicine.org serves its survey on the Right to Trial page.
+  const surveyPath =
+    siteVariant === VARIANTS.ACCELERATED_MEDICINE ? "/right-to-trial" : "/";
   if ([VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
     const surveyComponent =
       "packages/site-kit/src/components/landing/trial-abundance-survey-section.tsx";
-    const landingRoute = routes.find(({ routePath }) => routePath === "/");
+    const surveyRouteName = surveyPath === "/" ? "home" : "right-to-trial";
+    const landingRoute = routes.find(({ routePath }) => routePath === surveyPath);
     if (landingRoute) {
       landingRoute.covers = [...(landingRoute.covers ?? []), surveyComponent];
       if (siteVariant === VARIANTS.SURVEY) {
@@ -1200,32 +1224,32 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     routes.push(
       {
         label: "Patient-access question",
-        routeName: "home-question",
-        routePath: "/?visual=question",
+        routeName: `${surveyRouteName}-question`,
+        routePath: `${surveyPath}?visual=question`,
         covers: [surveyComponent],
       },
       {
         label: "Patient-funded access question",
-        routeName: "home-self-funded",
-        routePath: "/?visual=self-funded",
+        routeName: `${surveyRouteName}-self-funded`,
+        routePath: `${surveyPath}?visual=self-funded`,
         covers: [surveyComponent],
       },
       {
         label: "Public-resource allocation",
-        routeName: "home-allocation",
-        routePath: "/?visual=allocation",
+        routeName: `${surveyRouteName}-allocation`,
+        routePath: `${surveyPath}?visual=allocation`,
         covers: [surveyComponent],
       },
       {
         label: "Response save retry",
-        routeName: "home-save-error",
-        routePath: "/?visual=save-error",
+        routeName: `${surveyRouteName}-save-error`,
+        routePath: `${surveyPath}?visual=save-error`,
         covers: [surveyComponent],
       },
       {
         label: "Completed response and verification",
-        routeName: "home-complete",
-        routePath: "/?visual=complete",
+        routeName: `${surveyRouteName}-complete`,
+        routePath: `${surveyPath}?visual=complete`,
         covers: [surveyComponent],
       },
       {
@@ -1257,8 +1281,8 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       authenticated: true,
       authRole: "user",
       label: "Saved response and dashboard link",
-      routeName: "home-saved",
-      routePath: "/?visual=saved",
+      routeName: `${surveyRouteName}-saved`,
+      routePath: `${surveyPath}?visual=saved`,
       covers: [
         surveyComponent,
         "packages/site-kit/src/lib/trial-abundance-visual.ts",
@@ -1305,7 +1329,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     routes.push({
       label: "Pragmatic clinical trials explanation",
       routeName: "pragmatic-trials-dialog",
-      routePath: siteVariant === VARIANTS.WAR_ON_DISEASE ? "/" : "/?visual=question",
+      routePath: siteVariant === VARIANTS.WAR_ON_DISEASE ? "/" : `${surveyPath}?visual=question`,
       openDialog: siteVariant === VARIANTS.WAR_ON_DISEASE ? "pragmatic clinical trials" : "pragmatic clinical trial",
       captureSelector: '[role="dialog"]',
       covers: [

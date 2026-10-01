@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getBestAvailableMedianIncomeSeries } from "@optimitron/data/datasets/median-income-series";
+import { OECD_BUDGET_PANEL, OECD_CATEGORY_MAPPINGS } from "@optimitron/data";
 import { usBudgetAnalysis } from "./us-budget-analysis";
 import { usPolicyAnalysis } from "./us-policy-analysis";
 
@@ -39,16 +39,12 @@ describe("generated budget and policy analysis", () => {
     }
   });
 
-  // The series runs oldest year first, so index 0 is 1981 ($10,382). Dividing a
-  // per-household dividend by that per-person income inflated every effect.
-  it("divides each per-person dividend by the latest measured per-person median income", () => {
-    const measured = getBestAvailableMedianIncomeSeries({
-      jurisdictions: ["USA"],
-      isAfterTax: true,
-      purchasingPower: "ppp",
-      excludeInterpolated: true,
-    });
-    const latestMedianIncome = Math.round(measured[measured.length - 1]!.value);
+  it("scales modeled dividends with observed survey income, never income derived from spending", () => {
+    const measured = OECD_BUDGET_PANEL.filter(row => row.jurisdictionIso3 === "USA" && row.afterTaxMedianIncome)
+      .sort((a, b) => b.year - a.year)[0]!.afterTaxMedianIncome!;
+    const latestMedianIncome = Math.round(measured.value);
+    expect(measured.taxScope).toBe("after_direct_taxes_and_cash_transfers");
+    expect(usPolicyAnalysis.methodology?.incomeReference).toEqual(measured);
     const efficiencyPolicies = usPolicyAnalysis.policies.filter(
       (policy) => policy.oecdSpendingField,
     );
@@ -58,10 +54,31 @@ describe("generated budget and policy analysis", () => {
       const dividend = policy.rationale.match(/\$([\d,]+)\/person\/yr/);
       expect(dividend, policy.name).not.toBeNull();
       const dividendPerPerson = Number(dividend![1]!.replace(/,/g, ""));
+      expect(policy.modeledAnnualSavingsPerPerson, policy.name).toBe(dividendPerPerson);
       expect(policy.incomeEffect, policy.name).toBeCloseTo(
         dividendPerPerson / latestMedianIncome,
         3,
       );
+    }
+  });
+
+  it("uses matching observed years for the target and every displayed comparator", () => {
+    for (const category of usBudgetAnalysis.categories) {
+      const efficiency = category.efficiency!;
+      const years = efficiency.comparisonYears!;
+      expect(years.length, category.id).toBeGreaterThan(0);
+      const mapping = OECD_CATEGORY_MAPPINGS[category.id]!;
+      for (const code of new Set(["USA", efficiency.bestCountry.code, ...efficiency.topEfficient.map(c => c.code)])) {
+        const rows = years.map(year => OECD_BUDGET_PANEL.find(row => row.jurisdictionIso3 === code && row.year === year));
+        for (const row of rows) {
+          expect(row?.[mapping.spendingField], `${code}:${category.id}`).toBeTypeOf("number");
+          expect(row?.[mapping.outcomeField], `${code}:${category.id}`).toBeTypeOf("number");
+        }
+        const spending = rows.reduce((sum, row) => sum + (row![mapping.spendingField] as number), 0) / years.length;
+        const displayed = code === "USA" ? efficiency.spendingPerCapita
+          : efficiency.topEfficient.find(country => country.code === code)!.spendingPerCapita;
+        expect(displayed, `${code}:${category.id}`).toBe(Math.round(spending));
+      }
     }
   });
 

@@ -313,6 +313,8 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
   [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
   [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
+  [ROUTES.efficiency, ["apps/optimitron/src/app/efficiency/page.tsx"]],
+  [ROUTES.dividend, ["apps/optimitron/src/app/dividend/page.tsx"]],
   [
     ROUTES.eosShareholders,
     ["apps/optimitron/src/components/eos-shareholder/EosShareholderLandingPage.tsx"],
@@ -360,6 +362,10 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
 ]);
 
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
+  // The spec asserts visibility on the raw locator, so a required selector has
+  // to resolve to exactly one element; `table tbody tr` matches every data row.
+  [ROUTES.efficiency, "table tbody tr:first-child"],
+  [ROUTES.dividend, "table tbody tr:first-child"],
   [ROUTES.admin, 'nav[aria-label="Admin tools"]'],
   [ROUTES.dashboard, "h1"],
   [ROUTES.donate, "h1"],
@@ -773,12 +779,12 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
     requiredText: /^Military$/,
   },
   {
-    covers: ["apps/optimitron/src/app/obg/page.tsx"],
+    covers: ["apps/optimitron/src/app/obg/page.tsx", "apps/optimitron/src/components/budget/OptimalBudgetGenerator.tsx", "apps/optimitron/src/components/budget/HealthcareFrontier.tsx"],
     name: "obg-index",
     path: ROUTES.obg,
     required: true,
     requiredSelector: "h1",
-    requiredText: /^The US Federal Budget, Diagnosed$/,
+    requiredText: /^The Optimal Budget Generator$/,
   },
   {
     covers: ["apps/optimitron/src/app/opg/page.tsx"],

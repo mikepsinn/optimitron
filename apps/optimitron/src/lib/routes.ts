@@ -310,6 +310,8 @@ export const opgLink: NavItem = {
 export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
+  copyPreview: true,
+  screenshot: true,
   emoji: AGENCIES.domb.emoji,
   description: AGENCIES.domb.description,
   tagline: AGENCIES.domb.tagline,
@@ -769,6 +771,8 @@ export const efficiencyLink: NavItem = {
     "The shopping-list autopsy: where budgets are bloated, where they are starving, and which deltas actually move welfare instead of headlines.",
   tagline: "Where budgets are bloated, starved, and fixable",
   matchPrefixes: [ROUTES.efficiency],
+  copyPreview: true,
+  screenshot: true,
 
   cta: "Audit Waste",
 };
@@ -781,6 +785,8 @@ export const dividendLink: NavItem = {
     "Translate the spending deltas into household cash. If governance improved, this is what the median adult would actually notice in their bank account.",
   tagline: "What better budgets pay back to actual humans",
   matchPrefixes: [ROUTES.dividend],
+  copyPreview: true,
+  screenshot: true,
 
   cta: "See Dividend",
 };
@@ -1902,6 +1908,7 @@ export interface RouteReviewSpec {
 }
 
 export const routeReviewNavItems = [
+  obgLink,
   adminLink,
   homeLink,
   prizeLink,
@@ -1915,6 +1922,8 @@ export const routeReviewNavItems = [
   referendumLink,
   scoreboardLink,
   toolsLink,
+  efficiencyLink,
+  dividendLink,
   humanityVGovernmentLink,
   plaintiffsLink,
   plaintiffsManageLink,

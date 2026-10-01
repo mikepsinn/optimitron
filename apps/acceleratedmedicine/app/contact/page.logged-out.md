@@ -5,11 +5,11 @@
 - Page title: Volunteer for Right to Trial | Right to Trial Initiative
 - Meta description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Canonical: https://acceleratedmedicine.org/contact
-- Open Graph title: Right to Trial Initiative
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Open Graph title: Volunteer for Right to Trial | Right to Trial Initiative
+- Open Graph description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Right to Trial Initiative
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Twitter title: Volunteer for Right to Trial | Right to Trial Initiative
+- Twitter description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 
 ## Visible Page Copy
 
@@ -41,19 +41,25 @@
 ### PREFER EMAIL?
 - The form is the fastest path. If your idea does not fit it, send it directly.
 - [EMAIL HELLO@ACCELERATEDMEDICINE.ORG](mailto:hello@acceleratedmedicine.org?subject=Right%20to%20Trial%20volunteer)
+#### MAILING ADDRESS
+- Accelerated Medicine Foundation Inc
+- 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601
+- Copy address
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
+- [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
-- [YOUR STATE](/#state-support)
-- [SURVEY](/survey)
+- [YOUR STATE](/right-to-trial#state-support)
+- [RIGHT TO TRIAL SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [RESEARCH & EVIDENCE](https://warondisease.org/research)
+- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [VOLUNTEER](/contact)
+- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
+- [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)

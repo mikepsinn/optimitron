@@ -13,6 +13,13 @@ function makeDeciles(spendings: number[], outcomes: number[]) {
 }
 
 describe('findMinimumEffectiveSpending', () => {
+  it('benchmarks the best outcome even when the highest spender performs badly', () => {
+    const [higher] = findMinimumEffectiveSpending([{ categoryId: 'health', deciles: makeDeciles([100, 200, 300], [70, 80, 65]) }], { outcomeTolerance: 1 });
+    expect(higher!.floorSpending).toBe(200);
+    expect(higher!.topSpending).toBe(300);
+    const [lower] = findMinimumEffectiveSpending([{ categoryId: 'mortality', deciles: makeDeciles([100, 200, 300], [8, 2, 10]) }], { outcomeTolerance: 1, outcomeDirection: 'lower' });
+    expect(lower!.floorSpending).toBe(200);
+  });
   it('finds the lowest decile within tolerance of top spending outcomes', () => {
     const category: SpendingDecileCategory = {
       categoryId: 'health',

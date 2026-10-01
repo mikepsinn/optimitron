@@ -49,6 +49,7 @@ const isCI = parseBoolean(process.env.CI);
 
 const MODE_SPECS = {
   all: [
+    "e2e/optimal-budget.spec.ts",
     "e2e/smoke.spec.ts",
     "e2e/contrast-audit.spec.ts",
     "e2e/mobile-responsiveness-audit.spec.ts",
@@ -56,11 +57,13 @@ const MODE_SPECS = {
   smoke: isCI
     ? [
         "e2e/smoke.spec.ts",
+        "e2e/optimal-budget.spec.ts",
         "e2e/contrast-audit.spec.ts",
         "e2e/auth-callback-roundtrip.spec.ts",
       ]
     : [
         "e2e/smoke.spec.ts",
+        "e2e/optimal-budget.spec.ts",
         "e2e/auth-callback-roundtrip.spec.ts",
       ],
   contrast: ["e2e/contrast-audit.spec.ts"],

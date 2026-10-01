@@ -151,7 +151,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
-const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. The Accelerated Medicine Foundation Inc is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. and is a 501(c)(3) nonprofit. EIN: 41-2555651.`;
 const DFDA_NON_AFFILIATION_NOTICE =
   "dFDA (Decentralized Framework for Drug Assessment) is an independent open-source project. It is not affiliated with, endorsed by, or acting on behalf of the U.S. Food and Drug Administration.";
 
@@ -1244,19 +1244,18 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // ============================================================================
   // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Right to Trial education, pragmatic trials, and public evidence
-  // Audience: Patients, caregivers, clinicians, researchers, and state educators
-  // Goal: Measure support, explain the Montana precedent, and equip state campaigns
+  // Purpose: Institute overview; the Right to Trial campaign lives at /right-to-trial
+  // Audience: Patients, caregivers, clinicians, researchers, funders, and state educators
+  // Goal: Explain the evidence, access, and funding plan and send visitors to the global survey
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "RTT",
-    title: "Right to Trial Initiative",
-    // The site lives at acceleratedmedicine.org, so the wordmark names the
-    // organization. `title` stays "Right to Trial Initiative" because the
-    // per-page metadata titles are written against it.
+    title: "Institute for Accelerated Medicine",
+    // The homepage is the institute overview. Right to Trial pages set their
+    // own titles and share metadata.
     headerBrandLabel: "Accelerated Medicine",
     description:
-      "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
+      "Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1307,7 +1306,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     sidebarVoteCtaEnabled: false,
     footerBranding: {
-      title: "RIGHT TO TRIAL INITIATIVE",
+      title: "INSTITUTE FOR ACCELERATED MEDICINE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     contactInfo: {
@@ -1330,10 +1329,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
+      alt: "The Right to Trial poster: patients and a doctor beside a sign that reads \"Montana proved it. Now it's your state.\"",
     },
     copyrightText:
-      "© 2025 Accelerated Medicine Foundation Inc (Institute for Accelerated Medicine) | CC BY-NC 4.0",
+      "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 

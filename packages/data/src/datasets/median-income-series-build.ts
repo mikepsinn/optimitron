@@ -67,6 +67,7 @@ export function buildOecdMedianIncomeSeries(
         taxScope: 'after_direct_taxes_and_cash_transfers' as const,
         consumptionTaxTreatment: 'excluded' as const,
         inKindTransferTreatment: 'excluded' as const,
+        equivalenceScale: 'square_root' as const,
         methodology: record.methodology,
         definition: record.definition,
         sourceUrl: record.sourceUrl,
@@ -90,7 +91,9 @@ export function buildOecdMedianIncomeSeries(
           priceBasis: 'real',
           purchasingPower: 'national_currency',
           derivation: 'derived',
-          priceIndexNote: 'Deflated with OECD IDD CPI (index, same-year basis as published by OECD).',
+          priceReferenceYear: record.priceReferenceYear,
+          priceIndexSource: record.priceIndexSource,
+          priceIndexNote: `Income multiplied by ${record.priceIndexSource} CPI(${record.priceReferenceYear}) / CPI(observation year).`,
         });
       }
 
@@ -102,7 +105,9 @@ export function buildOecdMedianIncomeSeries(
           priceBasis: 'nominal',
           purchasingPower: 'ppp',
           derivation: 'derived',
-          pppBasisNote: 'Converted with OECD IDD private-consumption PPP (national currency per US dollar).',
+          pppReferenceYear: record.year,
+          pppSource: record.nominalPppSource,
+          pppBasisNote: `Converted with same-year ${record.nominalPppSource} private-consumption PPP (national currency per US dollar).`,
         });
       }
 
@@ -114,8 +119,12 @@ export function buildOecdMedianIncomeSeries(
           priceBasis: 'real',
           purchasingPower: 'ppp',
           derivation: 'derived',
-          priceIndexNote: 'Deflated with OECD IDD CPI (index, same-year basis as published by OECD).',
-          pppBasisNote: 'Converted with OECD IDD private-consumption PPP (national currency per US dollar).',
+          priceReferenceYear: record.priceReferenceYear,
+          priceIndexSource: record.priceIndexSource,
+          priceIndexNote: `Income multiplied by ${record.priceIndexSource} CPI(${record.priceReferenceYear}) / CPI(observation year).`,
+          pppReferenceYear: record.priceReferenceYear,
+          pppSource: record.pppSource,
+          pppBasisNote: `Converted with ${record.priceReferenceYear} ${record.pppSource} private-consumption PPP (national currency per US dollar).`,
         });
       }
 
@@ -144,7 +153,9 @@ export function buildEurostatMedianIncomeSeries(
         taxScope: 'after_direct_taxes_and_cash_transfers' as const,
         consumptionTaxTreatment: 'excluded' as const,
         inKindTransferTreatment: 'excluded' as const,
+        equivalenceScale: 'modified_oecd' as const,
         methodology: 'EU-SILC',
+        pppBasisNote: record.pppCurrencyCompatibilityNote,
         definition: 'Median equivalised disposable income (MED_E).',
         surveyAcronym: 'EU-SILC',
         isInterpolated: false,
@@ -170,8 +181,9 @@ export function buildEurostatMedianIncomeSeries(
           priceBasis: 'real',
           purchasingPower: 'national_currency',
           derivation: 'derived',
-          priceIndexNote:
-            'Deflated with Eurostat HICP annual average all-items index.',
+          priceReferenceYear: record.priceReferenceYear,
+          priceIndexSource: record.priceIndexSource,
+          priceIndexNote: `Income multiplied by Eurostat HICP(${record.priceReferenceYear}) / HICP(observation year).`,
         });
       }
 
@@ -183,8 +195,9 @@ export function buildEurostatMedianIncomeSeries(
           priceBasis: 'nominal',
           purchasingPower: 'ppp',
           derivation: 'derived',
-          pppBasisNote:
-            'Converted with World Bank private-consumption PPP conversion factor (LCU per international $).',
+          pppReferenceYear: record.year,
+          pppSource: record.nominalPppSource,
+          pppBasisNote: 'Converted with same-year World Bank private-consumption PPP (LCU per international $).',
         });
       }
 
@@ -196,10 +209,12 @@ export function buildEurostatMedianIncomeSeries(
           priceBasis: 'real',
           purchasingPower: 'ppp',
           derivation: 'derived',
-          priceIndexNote:
-            'Deflated with Eurostat HICP annual average all-items index.',
-          pppBasisNote:
-            'Converted with World Bank private-consumption PPP conversion factor (LCU per international $).',
+          priceReferenceYear: record.priceReferenceYear,
+          priceIndexSource: record.priceIndexSource,
+          priceIndexNote: `Income multiplied by Eurostat HICP(${record.priceReferenceYear}) / HICP(observation year).`,
+          pppReferenceYear: record.priceReferenceYear,
+          pppSource: record.pppSource,
+          pppBasisNote: `Converted with ${record.priceReferenceYear} World Bank private-consumption PPP (LCU per international $).`,
         });
       }
 

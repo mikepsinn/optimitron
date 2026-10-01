@@ -4,34 +4,29 @@ import type { AppNavigation } from "@optimitron/site-kit/lib/app-navigation";
 export const appNavigation: AppNavigation = {
   "topLevelItems": [
     {
-      "id": "rightToTryMontana",
-      "label": "Montana Model",
-      "path": "/montana",
-      "description": "Read how Montana's Universal Right to Try law expands patient access while licensing experimental treatment centers.",
-      "emoji": "📍"
-    },
-    {
-      "id": "rightToTryStates",
-      "label": "Your State",
-      "path": "/#state-support",
-      "description": "Put your state on the Right to Trial map.",
-      "emoji": "🗺️",
+      "id": "homeInitiatives",
+      "label": "Initiatives",
+      "path": "/#initiatives",
+      "description": "Evidence, access, and funding: the three parts of our plan.",
+      "emoji": "🧭",
       "isHashLink": true,
       "requiresScrollHandler": true
     },
     {
-      "id": "rightToTryModelAct",
-      "label": "Model Act",
-      "path": "/model-act",
-      "description": "See how every patient can join a pragmatic trial and providers can publish comparable results.",
-      "emoji": "📄"
+      "id": "rightToTrial",
+      "label": "Right to Trial",
+      "path": "/right-to-trial",
+      "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
+      "emoji": "🩺"
     },
     {
-      "id": "rightToTrialImpact",
-      "label": "Impact",
-      "path": "/impact",
-      "description": "See how Right to Trial can help patients join low-cost trials and find effective treatments sooner.",
-      "emoji": "⚡"
+      "id": "homeResearch",
+      "label": "Research",
+      "path": "/#research",
+      "description": "Our book, podcast, and papers.",
+      "emoji": "📚",
+      "isHashLink": true,
+      "requiresScrollHandler": true
     },
     {
       "id": "donate",
@@ -56,6 +51,13 @@ export const appNavigation: AppNavigation = {
       "label": "RIGHT TO TRIAL",
       "resolvedItems": [
         {
+          "id": "rightToTrial",
+          "label": "Right to Trial",
+          "path": "/right-to-trial",
+          "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
+          "emoji": "🩺"
+        },
+        {
           "id": "rightToTryMontana",
           "label": "Montana Model",
           "path": "/montana",
@@ -65,7 +67,7 @@ export const appNavigation: AppNavigation = {
         {
           "id": "rightToTryStates",
           "label": "Your State",
-          "path": "/#state-support",
+          "path": "/right-to-trial#state-support",
           "description": "Put your state on the Right to Trial map.",
           "emoji": "🗺️",
           "isHashLink": true,
@@ -73,7 +75,7 @@ export const appNavigation: AppNavigation = {
         },
         {
           "id": "rightToTrySurvey",
-          "label": "Survey",
+          "label": "Right to Trial Survey",
           "path": "/survey",
           "description": "Record your answer and put your state on the map.",
           "emoji": "🗳️"
@@ -100,7 +102,7 @@ export const appNavigation: AppNavigation = {
         },
         {
           "id": "research",
-          "label": "Research & Evidence",
+          "label": "1% Treaty Research",
           "path": "https://warondisease.org/research",
           "description": "Comprehensive economic analysis showing pragmatic trials deliver 637:1 ROI with $172B+ recurring annual benefits. Peer-reviewed methodology and sensitivity testing",
           "emoji": "📚",
@@ -135,11 +137,21 @@ export const appNavigation: AppNavigation = {
           "feature": "donate"
         },
         {
-          "id": "volunteer",
-          "label": "Volunteer",
-          "path": "/contact",
-          "description": "Volunteer your skills to help more humans vote, share, and accelerate cures",
-          "emoji": "🤝"
+          "id": "globalSurvey",
+          "label": "Take the Global Survey",
+          "path": "https://warondisease.org",
+          "description": "Show how you would split public money between weapons and clinical trials.",
+          "emoji": "🗳️",
+          "isExternal": true
+        },
+        {
+          "id": "shareIdea",
+          "label": "Share an Idea",
+          "path": "/#help",
+          "description": "Tell us what would get more patients into trials or find cures sooner.",
+          "emoji": "💡",
+          "isHashLink": true,
+          "requiresScrollHandler": true
         },
         {
           "id": "rightToTryEmailUpdates",
