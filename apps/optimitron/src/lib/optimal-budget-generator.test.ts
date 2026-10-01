@@ -4,6 +4,14 @@ import { HEALTHCARE_COFOG_DATA as healthBudgets } from '@optimitron/data/dataset
 import { getOptimalBudgetReport, renderOptimalBudgetMarkdown } from './optimal-budget-generator';
 
 describe('published population budget', () => {
+  it('retains comparable observed spending without scaling it by the selected population', () => {
+    const report = getOptimalBudgetReport(2_000_000);
+    expect(report.observedBudgets).toHaveLength(data.countries.length);
+    for (const country of data.countries) {
+      expect(report.observedBudgets.find(item => item.id === country.id)?.costs).toEqual(country.costs);
+    }
+    expect(report.observedBudgets.some(country => country.id === 'USA')).toBe(false);
+  });
   it('reconciles all public functions before selecting systems', () => {
     for (const country of data.countries) {
       expect(Object.keys(country.costs).sort()).toEqual(data.categories.map(c => c.id).sort());

@@ -17,6 +17,7 @@ export function getOptimalBudgetReport(population = 1) {
       ranges: 'Up to three cheapest qualifying alternatives per category; not confidence intervals.',
     },
     populationCountries: data.populationCountries.map(country => ({ ...country, name: countryName(country.id, country.name) })).sort((a, b) => a.name.localeCompare(b.name)),
+    observedBudgets: data.countries.map(({ id, name, costs }) => ({ id, name, costs: costs as Record<string, number> })),
     healthcare: {
       ...result.healthcare,
       policies: HEALTHCARE_REFERENCE_POLICIES,

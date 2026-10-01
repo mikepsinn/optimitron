@@ -32,14 +32,19 @@
 - The healthcare budget uses government health accounts, including research and investment. The comparison below uses total recurring care costs, including private bills, to choose a system. Its care-cost figures have a different accounting boundary and are not added to the public budget.
 - Using the three cheapest qualifying alternatives where available gives $20,010–$49,621 in public spending per resident. This is an alternative-country range.
 - Service breakdowns show how each reference country divides its budget. Research and investment are included in the category totals.
+### Where the money goes
+- Bars show annual spending per resident in 2021 purchasing-power-adjusted dollars.
+- Comparable observed spending is unavailable for United States.
 - PUBLIC SPENDING
 - ANNUAL BUDGET
-- PER RESIDENT
+- BUDGET SHARE
 - REFERENCE COUNTRY
 #### Government, research and debt
 - $1.25T
-- $3,660
+- 17.5%
 - Switzerland
+- Recommended
+- $3,660
 - Services, outcomes and alternatives
 - Switzerland spending breakdown · per resident
 - Healthy life expectancy: 71.37 (target 71.16). years (WHO HALE, population average).
@@ -49,8 +54,9 @@
 - Luxembourg: $6,760 public spending per resident.
 #### Weapons and Military
 - $26.04B
-- $76
+- 0.4%
 - Iceland
+- $76
 - Iceland spending breakdown · per resident
 - Healthy life expectancy: 71.33 (target 71.16). years (WHO HALE, population average).
 - Median disposable income: 23,621 (target 22,435.4). 2019 PPS per equivalised person (Eurostat EU-SILC).
@@ -59,32 +65,37 @@
 - Switzerland: $635 public spending per resident.
 #### Police, courts and fire services
 - $313.63B
+- 4.4%
 - $918
 - Iceland: $918 public spending per resident.
 - Switzerland: $1,312 public spending per resident.
 - Luxembourg: $1,479 public spending per resident.
 #### Transport, energy and industry
 - $1.05T
+- 14.7%
 - $3,064
 - Switzerland: $3,064 public spending per resident.
 - Iceland: $3,258 public spending per resident.
 - Luxembourg: $6,974 public spending per resident.
 #### Waste, pollution and nature
 - $142.82B
+- 2.0%
 - $418
 - Iceland: $418 public spending per resident.
 - Switzerland: $454 public spending per resident.
 - Luxembourg: $1,144 public spending per resident.
 #### Housing and community services
 - $51.97B
+- 0.7%
 - $152
 - Switzerland: $152 public spending per resident.
 - Iceland: $412 public spending per resident.
 - Luxembourg: $728 public spending per resident.
 #### Healthcare
 - $1.17T
-- $3,413
+- 16.3%
 - Japan
+- $3,413
 - [Compare healthcare systems ↓](#healthcare-frontier)
 - Japan spending breakdown · per resident
 - Healthy life expectancy: 73.48 (target 72.52). years (WHO HALE, population average).
@@ -92,14 +103,16 @@
 - Singapore: $2,547 public spending per resident; $5,119 total healthcare cost.
 #### Culture, recreation and religion
 - $282.73B
+- 4.0%
 - $827
 - Switzerland: $827 public spending per resident.
 - Luxembourg: $1,646 public spending per resident.
 - Iceland: $1,977 public spending per resident.
 #### Education
 - $612.28B
-- $1,791
+- 8.6%
 - Poland
+- $1,791
 - Poland spending breakdown · per resident
 - Students reaching basic maths proficiency: 85.3 (target 83.72). % of 15-year-olds (PISA 2018, Level 2+).
 - Poland: $1,791 public spending per resident.
@@ -107,6 +120,7 @@
 - Ireland: $2,793 public spending per resident.
 #### Pensions and social support
 - $2.24T
+- 31.4%
 - $6,557
 - Iceland: $6,557 public spending per resident.
 - Switzerland: $10,375 public spending per resident.

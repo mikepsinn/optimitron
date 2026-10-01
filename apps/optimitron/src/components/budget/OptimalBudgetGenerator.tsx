@@ -26,6 +26,12 @@ export function OptimalBudgetGenerator({ report }: { report: OptimalBudgetReport
   const scenario = validPopulation ? scaleOptimalBudgetScenario(referenceScenario, population) : referenceScenario;
   const defaultScenario = report.scenarios.find(item => item.outcomeQuantile === report.defaultQuantile && item.maxHealthyYearGap === healthGap)!;
   const nationalTargets = scenario.lines.find(line => line.id === "GF02")!.targets;
+  const observedBudget = report.observedBudgets.find(item => item.id === countryId);
+  const observedHealth = report.healthcare.governmentBudgets.countries.find(item => item.countryId === countryId);
+  const observedCosts: Record<string, number> = observedBudget?.costs
+    ?? (observedHealth?.publicPerCapita != null ? { GF07: observedHealth.publicPerCapita } : {});
+  const hasObserved = Object.keys(observedCosts).length > 0;
+  const chartMaximum = Math.max(1, ...scenario.lines.flatMap(line => [line.peer?.publicCostPerCapita ?? 0, observedCosts[line.id] ?? 0]));
 
   useEffect(() => {
     try {
@@ -117,18 +123,40 @@ export function OptimalBudgetGenerator({ report }: { report: OptimalBudgetReport
       </details>
 
       {!scenario.complete && <p role="status" className="mb-5 font-bold">A complete budget is unavailable at this setting: a category has no qualifying reference or comparable public spending amount.{defaultScenario.complete ? ` The default top ${Math.round((1 - defaultScenario.outcomeQuantile) * 100)}% result has a complete budget.` : ""}</p>}
-      <div className="hidden grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b-2 border-foreground pb-3 text-xs font-black uppercase sm:grid" aria-hidden="true">
-        <span>Public spending</span><span className="text-right">Annual budget</span><span className="text-right">Per resident</span><span>Reference country</span>
+      <div className="mb-5" data-testid="budget-chart-legend">
+        <h2 className="text-xl font-black">Where the money goes</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Bars show annual spending per resident in 2021 purchasing-power-adjusted dollars.</p>
+        {hasObserved && <p className="mt-1 text-sm text-muted-foreground">Observed: {country?.name}, {report.period[0]}–{report.period.at(-1)} average{!observedBudget ? " · healthcare only" : ""}.</p>}
+        {country && !hasObserved && <p className="mt-1 text-sm text-muted-foreground">Comparable observed spending is unavailable for {country.name}.</p>}
       </div>
-      <div>
+      <div className="hidden grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b-2 border-foreground pb-3 text-xs font-black uppercase sm:grid" aria-hidden="true">
+        <span>Public spending</span><span className="text-right">Annual budget</span><span className="text-right">Budget share</span><span>Reference country</span>
+      </div>
+      <div data-testid="budget-allocation-chart">
         {scenario.lines.map(line => (
           <div key={line.id} className="border-b border-foreground/25 py-4" data-testid={`budget-line-${line.id}`}>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-[2fr_1fr_1fr_1fr] sm:items-center">
               <h3 className="font-bold">{line.name}</h3>
               <p className="text-right font-black tabular-nums" data-testid={`budget-annual-${line.id}`} title={line.peer && validPopulation ? money(line.annualBudget!) : undefined}>{line.peer && validPopulation ? compactMoney(line.annualBudget!) : "—"}</p>
-              <p className="text-sm tabular-nums sm:text-right">{line.peer ? <>{money(line.peer.publicCostPerCapita)}<span className="sm:hidden"> / resident</span></> : "No qualifying country"}</p>
+              <p className="text-sm tabular-nums sm:text-right">{line.peer && scenario.totalPerCapita ? <>{(line.peer.publicCostPerCapita / scenario.totalPerCapita * 100).toFixed(1)}%<span className="sm:hidden"> of budget</span></> : "—"}</p>
               <p className="text-right text-sm sm:text-left">{line.peer?.name}</p>
             </div>
+            <figure className="mt-3 space-y-2" aria-label={`${line.name}: annual spending per resident`}>
+              <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] items-center gap-2 text-xs sm:gap-4 sm:text-sm">
+                <span className="font-bold">Recommended</span>
+                <div className="h-4 bg-muted" aria-hidden="true">
+                  {line.peer && <div data-testid={`budget-recommended-bar-${line.id}`} data-value={line.peer.publicCostPerCapita} className="h-full bg-brutal-pink" style={{ width: `${line.peer.publicCostPerCapita / chartMaximum * 100}%` }} />}
+                </div>
+                <span className="text-right font-bold tabular-nums">{line.peer ? money(line.peer.publicCostPerCapita) : "Unavailable"}</span>
+              </div>
+              {observedCosts[line.id] != null && <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] items-center gap-2 text-xs sm:gap-4 sm:text-sm">
+                <span>Observed</span>
+                <div className="h-4 bg-muted" aria-hidden="true">
+                  <div data-testid={`budget-observed-bar-${line.id}`} data-value={observedCosts[line.id]} className="h-full bg-muted-foreground" style={{ width: `${observedCosts[line.id]! / chartMaximum * 100}%` }} />
+                </div>
+                <span className="text-right tabular-nums">{money(observedCosts[line.id]!)}</span>
+              </div>}
+            </figure>
             {line.id === "GF07" && <a href="#healthcare-frontier" className="mt-2 inline-block text-sm font-bold underline">Compare healthcare systems ↓</a>}
             <details className="mt-2 text-sm">
               <summary className="w-fit cursor-pointer text-muted-foreground">{line.breakdown.length ? "Services, outcomes and alternatives" : "Outcomes and alternatives"}</summary>
