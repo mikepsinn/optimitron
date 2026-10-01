@@ -909,6 +909,7 @@ export const publicSiteAppRoutes = Object.freeze({
       // Linked from the Right to Trial page, not from the site menu.
       covers: [
         "apps/acceleratedmedicine/app/contact/page.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
       ],
       label: "Volunteer",
@@ -1196,6 +1197,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       aboutRoute.covers = [
         "apps/acceleratedmedicine/app/about/page.tsx",
         "apps/acceleratedmedicine/components/about-page.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/org-links.tsx",
         "apps/acceleratedmedicine/lib/board-members.ts",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/ian-whitmore.jpg",
