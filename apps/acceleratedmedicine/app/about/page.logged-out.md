@@ -35,6 +35,8 @@
 - [PAPER OPTIMAL POLICY GENERATOR Uses policy experiments to recommend which policies to enact, replace, repeal, or keep. READ THE PAPER](https://opg.warondisease.org)
 - [PAPER OPTIMAL BUDGET GENERATOR Estimates the best funding level for each budget category and shows where budgets are over- or underfunded. READ THE PAPER](https://obg.warondisease.org)
 ### LEGAL FACTS
+- 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601
+- Copy address
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 ### BOARD OF DIRECTORS
 - PRESIDENT

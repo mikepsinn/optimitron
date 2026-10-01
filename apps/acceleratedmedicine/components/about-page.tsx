@@ -11,6 +11,7 @@ import {
 
 import { BOARD_MEMBERS } from "@/lib/board-members"
 import Layout from "@/components/layout"
+import { MailingAddress } from "@/components/mailing-address"
 import {
   COURT_OF_HUMANITY_LINK,
   DECENTRALIZED_FDA_LINK,
@@ -102,7 +103,7 @@ export function AboutPage() {
               {address ? (
                 <div>
                   <dt className="uppercase">Mailing address</dt>
-                  <dd>{address}</dd>
+                  <dd><MailingAddress showRecipient={false} /></dd>
                 </div>
               ) : null}
               <div>

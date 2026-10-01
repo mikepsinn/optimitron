@@ -44,6 +44,7 @@
 #### MAILING ADDRESS
 - Accelerated Medicine Foundation Inc
 - 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601
+- Copy address
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [RIGHT TO TRIAL](/right-to-trial)

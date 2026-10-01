@@ -99,7 +99,7 @@
 - EIN
 - 41-2555651
 - MAILING ADDRESS
-- 150 E B St Lbby #1810 · Casper, WY 82601
+- 150 E B St Lbby #1810 · SMB#99818 · Casper, WY 82601
 - ONE-CLICK VIA DAF DIRECT
 - DAF Direct charges no transaction fee to Accelerated Medicine Foundation Inc or to you. Because DAF contributions are tax-deductible at the time the donor funded the DAF, we do not issue a separate tax-deduction receipt for DAF grants — your DAF sponsor will provide grant confirmation.
 - [GIVE THROUGH ENDAOMENT](https://app.endaoment.org/orgs/41-2555651)
@@ -107,7 +107,7 @@
 - Best for estate gifts.
 - Add the following language to your will or trust:
 - SUGGESTED BEQUEST LANGUAGE
-- “I give [percentage / specific dollar amount / residue of my estate] to Accelerated Medicine Foundation Inc, EIN 41-2555651, located at 150 E B St Lbby #1810, Casper, WY 82601, for its general charitable purposes.”
+- “I give [percentage / specific dollar amount / residue of my estate] to Accelerated Medicine Foundation Inc, EIN 41-2555651, located at 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601, for its general charitable purposes.”
 - LEGAL NAME
 - Qualified Charitable Distribution (QCD)
 - Best for retirees aged 70½+ taking required minimum distributions.

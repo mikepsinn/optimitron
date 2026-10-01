@@ -14,7 +14,7 @@ import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
-import { NONPROFIT, formatNonprofitAddress } from "@optimitron/site-kit/lib/nonprofit-identity";
+import { MailingAddress } from "@/components/mailing-address";
 
 export const metadata: Metadata = rightToTrialMetadata({
   title: "Volunteer for Right to Trial | Right to Trial Initiative",
@@ -137,10 +137,7 @@ export default function VolunteerPage() {
           </a>
           <div className="mx-auto mt-10 max-w-md border-t-4 border-primary pt-6">
             <h3 className="text-xl font-black uppercase">Mailing address</h3>
-            <address className="mt-3 space-y-1 font-bold not-italic">
-              <p>{NONPROFIT.legalName}</p>
-              <p>{formatNonprofitAddress()}</p>
-            </address>
+            <div className="mt-3"><MailingAddress /></div>
           </div>
         </Container>
       </SectionContainer>
