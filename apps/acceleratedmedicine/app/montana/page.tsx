@@ -192,12 +192,12 @@ export default function MontanaPage() {
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
             SB 535 establishes access, licensing, consent, and oversight. The
-            Institute&apos;s decentralized FDA proposal would add standardized
-            outcome measures and pooled public evidence across participating
-            patients and centers.
+            Institute&apos;s proposed Decentralized Framework for Drug
+            Assessment would add standardized outcome measures and pooled
+            public evidence across participating patients and centers.
           </p>
           <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <Link href="/#evidence">
+            <Link href="/right-to-trial#evidence">
               See the evidence model <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>

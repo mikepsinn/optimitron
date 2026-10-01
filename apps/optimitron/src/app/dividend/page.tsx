@@ -46,8 +46,8 @@ export default function DividendPage() {
         <StatCard label="Adult population used" value={US_ADULT_POPULATION.toLocaleString("en-US")} accent="foreground" />
       </div>
 
-      <div className="mb-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <section className="min-w-0 border-4 border-primary bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <h2 className="text-xl font-black uppercase text-foreground">Breakdown</h2>
           <p className="mt-2 text-sm font-bold text-muted-foreground">
             Every row: your government pays more and gets worse results than a country that already solved it. Pick the cheaper one.
@@ -85,7 +85,7 @@ export default function DividendPage() {
                     <td className="px-3 py-3 text-right font-black text-foreground">
                       {row.overspendRatio.toFixed(1)}x
                     </td>
-                    <td className="px-3 py-3 text-right font-black text-background">
+                    <td className="px-3 py-3 text-right font-black text-foreground">
                       {formatCurrency(row.annualSavingsPerAdult)}
                     </td>
                     <td className="px-3 py-3 text-right font-black text-foreground">

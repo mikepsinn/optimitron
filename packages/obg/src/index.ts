@@ -18,3 +18,7 @@ export * from './uncertain-allocation.js';
 export * from './clinical-discovery-scenario.js';
 export * from './decision-report.js';
 export * from './welfare-budget.js';
+export * from './budget-references.js';
+export * from './optimal-budget-generator.js';
+export * from './optimal-budget-scaling.js';
+export * from './healthcare-frontier.js';

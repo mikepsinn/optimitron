@@ -23,3 +23,9 @@
 *.woff2 binary
 *.ttf binary
 *.eot binary
+
+# Reproducible country-budget inputs and outputs; review their generators first.
+packages/data/src/generated/optimal-budget.json linguist-generated=true
+packages/data/src/generated/healthcare-cofog.json linguist-generated=true
+apps/optimitron/public/data/optimal-budget.json linguist-generated=true
+apps/optimitron/public/data/optimal-budget.md linguist-generated=true

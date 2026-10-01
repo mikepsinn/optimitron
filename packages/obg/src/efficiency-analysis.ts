@@ -1,3 +1,5 @@
+import { selectLowestCostReferences } from './reference-selection.js';
+
 /**
  * Efficiency Analysis — "Cheapest High Performer"
  *
@@ -7,13 +9,13 @@
  *
  * Algorithm:
  * 1. Compute 75th percentile outcome across all panel countries
- * 2. Filter to "high performers" (at or above 75th percentile)
+ * 2. Filter to high performers meeting both the 75th percentile and target outcome
  * 3. Rank high performers by spending (lowest first)
  * 4. "Best value" = cheapest high performer
  * 5. "Floor" = best value's spending
  * 6. Overspend = target jurisdiction spending / floor
  *
- * No GDP filters, no jurisdiction-centric logic, no clamping.
+ * No GDP filters or fixed jurisdiction-specific thresholds.
  * Works for any jurisdiction as the target.
  */
 
@@ -33,6 +35,8 @@ export const CountryComparisonSchema = z.object({
 export type CountryComparison = z.infer<typeof CountryComparisonSchema>;
 
 export const EfficiencyAnalysisSchema = z.object({
+  /** Every compared country has observations for this exact set of years. */
+  comparisonYears: z.array(z.number().int()).optional(),
   /** Target jurisdiction's efficiency rank (by outcome/spending ratio, 1 = best) */
   rank: z.number().int().positive(),
   /** Total countries compared */
@@ -64,28 +68,44 @@ export type EfficiencyAnalysis = z.infer<typeof EfficiencyAnalysisSchema>;
 // ─── Helpers ────────────────────────────────────────────────────────
 
 /**
- * Average the latest N data points per jurisdiction from spending→outcome pairs.
+ * Find the latest target year with at least five same-year comparators.
+ * Average up to three target observation years only when every included
+ * country has that exact set. Never substitute a country's own latest years.
  */
-function latestAverages(
+function alignedAverages(
   data: SpendingOutcomePoint[],
-  latestN: number = 3,
-): Array<{ code: string; spending: number; outcome: number }> {
-  const byJurisdiction = new Map<string, SpendingOutcomePoint[]>();
+  targetCode: string,
+): { years: number[]; countries: Array<{ code: string; spending: number; outcome: number }> } | null {
+  const byJurisdiction = new Map<string, Map<number, SpendingOutcomePoint>>();
   for (const d of data) {
-    const existing = byJurisdiction.get(d.jurisdiction);
-    if (existing) {
-      existing.push(d);
-    } else {
-      byJurisdiction.set(d.jurisdiction, [d]);
-    }
+    if (!Number.isInteger(d.year) || !Number.isFinite(d.spending)
+      || !Number.isFinite(d.outcome) || d.spending <= 0) continue;
+    const years = byJurisdiction.get(d.jurisdiction) ?? new Map<number, SpendingOutcomePoint>();
+    years.set(d.year, d);
+    byJurisdiction.set(d.jurisdiction, years);
   }
 
-  return [...byJurisdiction.entries()].map(([code, points]) => {
-    const recent = points.slice(-latestN);
-    const avgS = recent.reduce((s, p) => s + p.spending, 0) / recent.length;
-    const avgO = recent.reduce((s, p) => s + p.outcome, 0) / recent.length;
-    return { code, spending: avgS, outcome: avgO };
-  }).filter(c => c.spending > 0);
+  const targetYears = [...(byJurisdiction.get(targetCode)?.keys() ?? [])].sort((a, b) => b - a);
+  for (let end = 0; end < targetYears.length; end++) {
+    for (let size = Math.min(3, targetYears.length - end); size >= 1; size--) {
+      const years = targetYears.slice(end, end + size).sort((a, b) => a - b);
+      const countries = [...byJurisdiction.entries()]
+        .flatMap(([code, points]) => {
+          const aligned = years.flatMap(year => {
+            const point = points.get(year);
+            return point ? [point] : [];
+          });
+          if (aligned.length !== years.length) return [];
+          return [{
+            code,
+            spending: aligned.reduce((sum, point) => sum + point.spending, 0) / years.length,
+            outcome: aligned.reduce((sum, point) => sum + point.outcome, 0) / years.length,
+          }];
+        });
+      if (countries.length >= 5) return { years, countries };
+    }
+  }
+  return null;
 }
 
 // ─── Main Function ──────────────────────────────────────────────────
@@ -119,8 +139,9 @@ export function analyzeEfficiency(
     outcomeName = 'Outcome',
   } = options;
 
-  const countries = latestAverages(data);
-  if (countries.length < 5) return null;
+  const aligned = alignedAverages(data, jurisdictionCode);
+  if (!aligned) return null;
+  const { countries } = aligned;
 
   const target = countries.find(c => c.code === jurisdictionCode);
   if (!target) return null;
@@ -132,10 +153,14 @@ export function analyzeEfficiency(
   const p75Index = Math.floor(sortedOutcomes.length * 0.75);
   const p75 = sortedOutcomes[p75Index] ?? sortedOutcomes[sortedOutcomes.length - 1] ?? 0;
 
-  // 2. High performers: at or above 75th percentile, sorted by spending (cheapest first)
-  const highPerformers = countries
-    .filter(c => c.outcome >= p75)
-    .sort((a, b) => a.spending - b.spending);
+  // 2. The spending floor must meet both the high-performer threshold and
+  // the target's outcome before it can support an overspending comparison.
+  const highPerformers = selectLowestCostReferences(
+    countries,
+    { outcome: Math.max(p75, target.outcome) },
+    country => ({ cost: country.spending, outcomes: { outcome: country.outcome } }),
+    (left, right) => left.code.localeCompare(right.code),
+  );
 
   if (highPerformers.length === 0) return null;
 
@@ -159,10 +184,11 @@ export function analyzeEfficiency(
 
   // 6. Rank target by outcome/spending ratio (for context)
   const allByRatio = [...countries]
-    .sort((a, b) => (b.outcome / b.spending) - (a.outcome / a.spending));
+    .sort((a, b) => (b.outcome / b.spending) - (a.outcome / a.spending) || a.code.localeCompare(b.code));
   const targetRank = allByRatio.findIndex(c => c.code === jurisdictionCode) + 1;
 
   return {
+    comparisonYears: aligned.years,
     rank: targetRank,
     totalCountries: countries.length,
     spendingPerCapita: Math.round(target.spending),

@@ -78,6 +78,7 @@ export const NONPROFIT: NonprofitIdentity = {
   incorporatedIn: "Wyoming",
   mailingAddress: {
     line1: "150 E B St Lbby #1810",
+    line2: "SMB#99818",
     city: "Casper",
     state: "WY",
     postalCode: "82601",

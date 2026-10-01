@@ -19,26 +19,11 @@
 
 | CATEGORY | BEST COUNTRY | US SPEND / CAP | BEST SPEND / CAP | US RANK | OVERSPEND | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- | --- | --- |
-| [Military](/obg/military) [OPEN LEGISLATION](/legislation/military-reform) | Switzerland Life Expectancy: 83.37 | $2,052 | $389 | 27/28 | 5.3x | $564B |
-| [Homeland Security](/obg/homeland-security) | Switzerland Life Expectancy: 83.37 | $2,052 | $389 | 27/28 | 5.3x | $564B |
-| [Veterans Affairs](/obg/veterans-affairs) | South Korea Life Expectancy: 83.57 | $10,333 | $3,588 | 28/28 | 2.9x | $2.3T |
-| [Health (non-Medicare/Medicaid)](/obg/health-non-medicare-medicaid) [OPEN LEGISLATION](/legislation/health-non-medicare-medicaid-reform) | South Korea Life Expectancy: 83.57 | $10,333 | $3,588 | 28/28 | 2.9x | $2.3T |
-| [Education](/obg/education) [OPEN LEGISLATION](/legislation/education-reform) | Japan PISA Math Score: 536 | $2,996 | $1,288 | 11/11 | 2.3x | $579B |
-| [Justice / Law Enforcement](/obg/justice-law-enforcement) | South Korea Life Expectancy: 83.57 | $12,848 | $6,037 | 25/26 | 2.1x | $2.3T |
-| [EPA / Environment](/obg/epa-environment) | South Korea Life Expectancy: 83.57 | $12,848 | $6,037 | 25/26 | 2.1x | $2.3T |
-| [Energy](/obg/energy) | Netherlands After-Tax Median Income (PPP): 31221.39 | $1,991 | $1,064 | 25/28 | 1.9x | $314B |
-| [Science / NASA](/obg/science-nasa) [OPEN LEGISLATION](/legislation/science-nasa-reform) | Netherlands After-Tax Median Income (PPP): 31221.39 | $1,991 | $1,064 | 25/28 | 1.9x | $314B |
-| [Commerce / Economic Development](/obg/commerce-economic-development) | Netherlands After-Tax Median Income (PPP): 31221.39 | $1,991 | $1,064 | 25/28 | 1.9x | $314B |
-| [Transportation](/obg/transportation) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [HUD / Housing](/obg/hud-housing) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [Foreign Aid / International Affairs](/obg/foreign-aid-international-affairs) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [Labor](/obg/labor) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [Agriculture](/obg/agriculture) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [Treasury / General Government](/obg/treasury-general-government) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [State Department / Diplomacy](/obg/state-department-diplomacy) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
-| [Interior / Natural Resources](/obg/interior-natural-resources) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
+| [Military spending](/obg/military) [OPEN LEGISLATION](/legislation/military-reform) | Switzerland Life Expectancy: 83.37 | $2,052 | $389 | 27/28 | 5.3x | $564B |
+| [Total health spending (public and private)](/obg/health-non-medicare-medicaid) [OPEN LEGISLATION](/legislation/health-non-medicare-medicaid-reform) | South Korea Life Expectancy: 83.57 | $10,333 | $3,588 | 28/28 | 2.9x | $2.3T |
+| [Government education spending (all levels)](/obg/education) [OPEN LEGISLATION](/legislation/education-reform) | Japan PISA Math Score: 536 | $2,996 | $1,288 | 8/8 | 2.3x | $579B |
 
 - [BACK TO OBG Full category-by-category spending analysis.](/obg)
 - [OPTIMIZATION DIVIDEND See the savings as a check to your household.](/dividend)
 - [GOVERNMENT SIZE Look at the whole-government floor instead of individual budget lines.](/government-size)
-- Generated 7/12/2026 from live public spending data.
+- Generated 9/29/2026 from live public spending data.

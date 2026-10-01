@@ -21,14 +21,14 @@
  *   socialSpendingPercentGdp    → OECD SOCX             (Public social spending % GDP)
  *   rdSpendingPercentGdp        → WB GB.XPD.RSDV.GD.ZS  (R&D expenditure % GDP)
  *
- * Derived per-capita PPP (constant 2017 intl $ — PRIMARY for optimizer):
+ * Derived per-capita PPP estimates (reference price year unverified):
  *   *SpendingPerCapitaPpp       = *PercentGdp × gdpPerCapitaPpp / 100
  *   These avoid the GDP-denominator distortion where GDP growth makes
  *   flat real spending look like cuts.
  *
  * Outcome indicators:
  *   lifeExpectancyYears         → WB SP.DYN.LE00.IN      (Life expectancy at birth, total)
- *   gdpPerCapitaPpp             → WB NY.GDP.PCAP.PP.KD   (GDP per capita, PPP constant 2017 intl $)
+ *   gdpPerCapitaPpp             → WB NY.GDP.PCAP.PP.KD   (bundled PPP estimate; reference price year unverified)
  *   infantMortalityPer1000      → WB SP.DYN.IMRT.IN      (Mortality rate, infant per 1000 live births)
  *   giniIndex                   → WB SI.POV.GINI         (Gini index, World Bank estimate)
  *
@@ -36,6 +36,8 @@
  *   - null values indicate data not available for that country-year
  *   - Per-capita PPP fields are derived (percentGdp × gdpPerCapitaPpp / 100),
  *     rounded to nearest integer. Null if either input is null.
+ *   - The compiled snapshot has no archived source vintage or verified PPP
+ *     reference price year. Current indicator metadata cannot date its values.
  *   - Education spending has gaps for many countries in certain years
  *   - Gini index is the sparsest variable (surveys not conducted annually)
  *   - Social spending (OECD SOCX) includes pensions, health (social component),
@@ -65,22 +67,22 @@ export interface OECDBudgetPanelDataPoint {
   rdSpendingPercentGdp: number | null;
 
   // ── Spending per capita PPP (PRIMARY — for optimizer analysis) ─────
-  // Derived: percentGdp × gdpPerCapitaPpp / 100, constant 2017 intl $
-  /** Health spending per capita, PPP constant 2017 intl $ */
+  // Derived: percentGdp × gdpPerCapitaPpp / 100; reference price year unverified.
+  /** Health spending per capita, PPP-adjusted estimate; reference price year unverified */
   healthSpendingPerCapitaPpp: number | null;
-  /** Education spending per capita, PPP constant 2017 intl $ */
+  /** Education spending per capita, PPP-adjusted estimate; reference price year unverified */
   educationSpendingPerCapitaPpp: number | null;
-  /** Military spending per capita, PPP constant 2017 intl $ */
+  /** Military spending per capita, PPP-adjusted estimate; reference price year unverified */
   militarySpendingPerCapitaPpp: number | null;
-  /** Social spending per capita, PPP constant 2017 intl $ */
+  /** Social spending per capita, PPP-adjusted estimate; reference price year unverified */
   socialSpendingPerCapitaPpp: number | null;
-  /** R&D spending per capita, PPP constant 2017 intl $ */
+  /** R&D spending per capita, PPP-adjusted estimate; reference price year unverified */
   rdSpendingPerCapitaPpp: number | null;
 
   // ── Outcome indicators ─────────────────────────────────────────────
   /** Life expectancy at birth, total years (WB SP.DYN.LE00.IN) */
   lifeExpectancyYears: number | null;
-  /** GDP per capita, PPP constant 2017 international $ (WB NY.GDP.PCAP.PP.KD) */
+  /** GDP per capita, bundled PPP estimate; reference price year unverified (WB NY.GDP.PCAP.PP.KD) */
   gdpPerCapitaPpp: number | null;
   /** Infant mortality rate per 1,000 live births (WB SP.DYN.IMRT.IN) */
   infantMortalityPer1000: number | null;
@@ -92,8 +94,10 @@ export interface OECDBudgetPanelDataPoint {
   pisaMathScore: number | null;
 
   // ── Welfare outcome (the actual Optimocracy metric) ───────────────
-  /** Real after-tax median disposable income, PPP-adjusted (constant intl $, per equivalised person) */
+  /** Measured real PPP disposable income; use afterTaxMedianIncome for its source-specific unit and price basis. */
   afterTaxMedianIncomePpp: number | null;
+  /** Published survey-income record, including equivalence, inflation, and PPP metadata. */
+  afterTaxMedianIncome?: MedianIncomeSeriesRecord | null;
 }
 
 // ─── Country codes ────────────────────────────────────────────────────
@@ -866,33 +870,40 @@ const data: OECDBudgetPanelDataPoint[] = [
 
 // ─── Enrich with Median Income Data ──────────────────────────────────
 
-import { getBestAvailableMedianIncomeSeries } from './median-income-series';
+import { MEDIAN_INCOME_SERIES } from './median-income-series';
+import type { MedianIncomeSeriesRecord } from './median-income-types';
+import {
+  buildCountryPanelIncomeLookup,
+  isEligibleCountryPanelIncomeRecord,
+} from './country-panel-income';
 
-/** Build a lookup: "ISO3:YEAR" → median income value (real PPP) */
-function buildMedianIncomeLookup(): Map<string, number> {
-  const records = getBestAvailableMedianIncomeSeries({
-    priceBasis: 'real',
-    purchasingPower: 'ppp',
-  });
-
-  const lookup = new Map<string, number>();
-  for (const r of records) {
-    const key = `${r.jurisdictionIso3}:${r.year}`;
-    // Only overwrite if this record has higher preference rank
-    if (!lookup.has(key)) {
-      lookup.set(key, r.value);
-    }
-  }
-  return lookup;
+/**
+ * Accept OECD disposable income with a common square-root equivalence scale
+ * and constant 2021 price/PPP basis. No cross-source mixing or inferred taxes.
+ */
+export function isEligiblePanelIncomeRecord(record: MedianIncomeSeriesRecord): boolean {
+  return isEligibleCountryPanelIncomeRecord(record);
 }
 
-const medianIncomeLookup = buildMedianIncomeLookup();
+/** Keep one observed definition per country without imputing missing years. */
+export function buildMedianIncomeLookup(
+  input: readonly MedianIncomeSeriesRecord[] = MEDIAN_INCOME_SERIES,
+): Map<string, number> {
+  return new Map([...buildCountryPanelIncomeLookup(input)]
+    .map(([key, record]) => [key, record.value]));
+}
+
+const medianIncomeLookup = buildCountryPanelIncomeLookup(MEDIAN_INCOME_SERIES);
 
 /** Enrich panel rows with median income from the generated series */
-const enrichedData = data.map(row => ({
-  ...row,
-  afterTaxMedianIncomePpp: medianIncomeLookup.get(`${row.jurisdictionIso3}:${row.year}`) ?? null,
-}));
+const enrichedData = data.map(row => {
+  const afterTaxMedianIncome = medianIncomeLookup.get(`${row.jurisdictionIso3}:${row.year}`) ?? null;
+  return {
+    ...row,
+    afterTaxMedianIncome,
+    afterTaxMedianIncomePpp: afterTaxMedianIncome?.value ?? null,
+  };
+});
 
 // ─── Export ───────────────────────────────────────────────────────────
 
@@ -900,7 +911,9 @@ const enrichedData = data.map(row => ({
  * Extended cross-country budget/outcome panel (28 countries, 2000–2022+).
  *
  * Includes 23 OECD core + 5 high-performing non-OECD countries (SGP, EST, VNM, TWN, POL).
- * Enriched with real after-tax median disposable income from Eurostat EU-SILC + World Bank PIP.
+ * Income uses OECD IDD METH2012/D_CUR, square-root household equivalence, and
+ * constant 2021 prices and private-consumption PPPs for every country.
+ * Missing observations stay null. Spending price vintage remains unverified.
  */
 export const OECD_BUDGET_PANEL: readonly OECDBudgetPanelDataPoint[] = Object.freeze(enrichedData);
 
@@ -916,6 +929,7 @@ export const OECD_BUDGET_PANEL_META = {
     'World Bank World Development Indicators (WDI)',
     'OECD Social Expenditure Database (SOCX)',
     'OECD StatExtracts',
+    'OECD Income Distribution Database (strict disposable-income observations)',
   ],
   indicators: {
     // % GDP (context/comparison)
@@ -925,11 +939,11 @@ export const OECD_BUDGET_PANEL_META = {
     socialSpendingPercentGdp: 'OECD SOCX',
     rdSpendingPercentGdp: 'WB GB.XPD.RSDV.GD.ZS',
     // Per-capita PPP (PRIMARY — derived: %GDP × gdpPerCapitaPpp / 100)
-    healthSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    educationSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    militarySpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    socialSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
-    rdSpendingPerCapitaPpp: 'derived (constant 2017 intl $)',
+    healthSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    educationSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    militarySpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    socialSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
+    rdSpendingPerCapitaPpp: 'derived PPP-adjusted estimate; reference price year unverified',
     // Outcomes
     lifeExpectancyYears: 'WB SP.DYN.LE00.IN',
     gdpPerCapitaPpp: 'WB NY.GDP.PCAP.PP.KD',

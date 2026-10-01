@@ -102,6 +102,22 @@ describe('WHO GHO Fetcher', () => {
   });
 
   describe('fetchGHOIndicator', () => {
+    it('keeps both-sex observations when the fallback response also contains sex-specific rows', async () => {
+      const record = mockRecords[0]!;
+      globalThis.fetch = vi.fn()
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ value: [] }) })
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ value: [
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_BTSX', NumericValue: 70 },
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_MLE', NumericValue: 65 },
+          { ...record, Dim1Type: 'SEX', Dim1: 'SEX_FMLE', NumericValue: 75 },
+        ] }) });
+      const result = await fetchGHOIndicator('WHOSIS_000002');
+      expect(result.map(r => r.value)).toEqual([70]);
+    });
+    it('does not substitute a sex-specific outcome when both-sex data are absent', () => {
+      expect(parseGHORecords([{ ...mockRecords[0]!, Dim1: 'MLE' }], 'WHOSIS_000002')).toEqual([]);
+      expect(parseGHORecords([{ ...mockRecords[0]!, Dim1: 'BTSX' }], 'WHOSIS_000002')).toHaveLength(1);
+    });
     it('returns parsed data on success (single page)', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -140,6 +156,33 @@ describe('WHO GHO Fetcher', () => {
 
       const result = await fetchGHOIndicator('WHOSIS_000001');
       expect(result).toEqual([]);
+    });
+
+    it('rejects a complete-refresh request when a later page fails after more than 3500 records', async () => {
+      const firstPage = Array.from({ length: 3501 }, (_, index) => ({
+        ...mockRecords[0]!, SpatialDim: `C${index}`, Dim1: 'SEX_BTSX',
+      }));
+      globalThis.fetch = vi.fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => ({
+          value: firstPage, '@odata.nextLink': 'https://ghoapi.azureedge.net/api/WHOSIS_000002?$skip=3501',
+        }) })
+        .mockResolvedValue({ ok: false, status: 503, statusText: 'Unavailable' });
+
+      await expect(fetchWHOHealthyLifeExpectancy({ requireComplete: true }))
+        .rejects.toThrow('incomplete fetch (WHOSIS_000002); received 3501 records');
+    });
+
+    it('preserves partial results for existing callers that do not require a complete refresh', async () => {
+      globalThis.fetch = vi.fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => mockPage1Response })
+        .mockResolvedValue({ ok: false, status: 404, statusText: 'Not found' });
+      const result = await fetchGHOIndicator('WHOSIS_000001');
+      expect(result.map(point => point.jurisdictionIso3)).toEqual(['USA', 'GBR']);
+    });
+
+    it('rejects a complete-refresh request when neither query can fetch its first page', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({ ok: false, status: 404, statusText: 'Not found' });
+      await expect(fetchWHOHealthyLifeExpectancy({ requireComplete: true })).rejects.toThrow('incomplete fetch');
     });
 
     it('returns empty array on network error', async () => {
@@ -198,7 +241,7 @@ describe('WHO GHO Fetcher', () => {
 
       await fetchGHOIndicator('WHOSIS_000001');
       const callUrl3 = decodeURIComponent((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string);
-      expect(callUrl3).toContain("Dim1 eq 'BTSX'");
+      expect(callUrl3).toContain("Dim1 eq 'SEX_BTSX'");
     });
 
     it('falls back without sex filter when Dim1 query returns empty rows', async () => {
@@ -220,11 +263,11 @@ describe('WHO GHO Fetcher', () => {
 
       const firstUrl = decodeURIComponent(fetchMock.mock.calls[0]?.[0] as string);
       const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
-      expect(firstUrl).toContain("Dim1 eq 'BTSX'");
-      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
+      expect(firstUrl).toContain("Dim1 eq 'SEX_BTSX'");
+      expect(secondUrl).not.toContain("Dim1 eq 'SEX_BTSX'");
     });
 
-    it('falls back without sex filter when Dim1 query fails', async () => {
+    it('allows a complete fallback when the sex-filter query fails before returning data', async () => {
       const fetchMock = vi.fn()
         .mockResolvedValueOnce({
           ok: false,
@@ -238,12 +281,12 @@ describe('WHO GHO Fetcher', () => {
 
       globalThis.fetch = fetchMock;
 
-      const result = await fetchGHOIndicator('WHOSIS_000001');
+      const result = await fetchGHOIndicator('WHOSIS_000001', { requireComplete: true });
       expect(result).toHaveLength(1);
       expect(fetchMock).toHaveBeenCalledTimes(2);
 
       const secondUrl = decodeURIComponent(fetchMock.mock.calls[1]?.[0] as string);
-      expect(secondUrl).not.toContain("Dim1 eq 'BTSX'");
+      expect(secondUrl).not.toContain("Dim1 eq 'SEX_BTSX'");
     });
   });
 

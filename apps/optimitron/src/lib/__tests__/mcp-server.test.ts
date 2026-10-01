@@ -1390,6 +1390,7 @@ describe("MCP server tool dispatch", () => {
     expect(writerNames).not.toContain("hideContent");
     expect(writerNames).not.toContain("restoreContent");
     expect(writerNames).not.toContain("mergeDuplicatePeople");
+    expect(writerNames).not.toContain("relabelVariableUnit");
 
     expect(adminNames).toEqual(
       expect.arrayContaining([
@@ -1397,6 +1398,7 @@ describe("MCP server tool dispatch", () => {
         "hideContent",
         "restoreContent",
         "resolveContentReport",
+        "relabelVariableUnit",
       ]),
     );
     expect(adminNames).not.toContain("mergeDuplicatePeople");

@@ -36,6 +36,66 @@ const NAMES: Record<string, string> = {
 };
 
 describe('analyzeEfficiency (cheapest high performer)', () => {
+  it('preserves the percentile and rounded output with deterministic reference ties', () => {
+    const data = [
+      { jurisdiction: 'USA', spending: 10, outcome: 1, year: 2020 },
+      { jurisdiction: 'B', spending: 8, outcome: 2, year: 2020 },
+      { jurisdiction: 'C', spending: 7, outcome: 3, year: 2020 },
+      { jurisdiction: 'D', spending: 6, outcome: 4, year: 2020 },
+      { jurisdiction: 'Z', spending: 2.4, outcome: 5.123, year: 2020 },
+      { jurisdiction: 'A', spending: 2.4, outcome: 5.123, year: 2020 },
+    ];
+    const result = analyzeEfficiency(data, { population: 10 })!;
+    expect(result.topEfficient.map(country => country.code)).toEqual(['A', 'Z']);
+    expect(result.floorSpendingPerCapita).toBe(2);
+    expect(result.floorOutcome).toBe(5.12);
+    expect(result.potentialSavingsTotal).toBe(76);
+    expect(analyzeEfficiency([...data].reverse(), { population: 10 })).toEqual(result);
+  });
+
+  it('does not claim savings against a cheaper high performer with a worse outcome', () => {
+    const data = [
+      { jurisdiction: 'USA', spending: 10, outcome: 100, year: 2020 },
+      { jurisdiction: 'A', spending: 1, outcome: 90, year: 2020 },
+      { jurisdiction: 'B', spending: 2, outcome: 80, year: 2020 },
+      { jurisdiction: 'C', spending: 3, outcome: 70, year: 2020 },
+      { jurisdiction: 'D', spending: 4, outcome: 60, year: 2020 },
+      { jurisdiction: 'E', spending: 5, outcome: 50, year: 2020 },
+    ];
+    const result = analyzeEfficiency(data)!;
+    expect(result.bestCountry.code).toBe('USA');
+    expect(result.floorOutcome).toBe(100);
+    expect(result.overspendRatio).toBe(1);
+    expect(result.potentialSavingsTotal).toBe(0);
+  });
+
+  it('compares the target and peers in the same years, regardless of input order', () => {
+    const data = MOCK_DATA.filter(d => d.jurisdiction !== 'USA' || d.year === 2020);
+    // Later peer outcomes must not be compared against the target's 2020 value.
+    data.push({ jurisdiction: 'JPN', year: 2025, spending: 1, outcome: 200 });
+    const result = analyzeEfficiency(data.reverse());
+    expect(result?.comparisonYears).toEqual([2020]);
+    expect(result?.spendingPerCapita).toBe(2000);
+    expect(result?.bestCountry.code).toBe('JPN');
+    expect(result?.bestCountry.spendingPerCapita).toBe(400);
+    expect(result?.bestCountry.outcome).toBe(84);
+    expect(analyzeEfficiency([...data].reverse())).toEqual(result);
+  });
+
+  it('uses the latest shared period when a newer target observation has no peers', () => {
+    const result = analyzeEfficiency([
+      ...MOCK_DATA,
+      { jurisdiction: 'USA', year: 2025, spending: 9000, outcome: 90 },
+    ]);
+    expect(result?.comparisonYears).toEqual([2020, 2021, 2022]);
+    expect(result?.spendingPerCapita).toBe(2050);
+  });
+
+  it('does not manufacture a comparison from countries with non-overlapping years', () => {
+    const data = MOCK_DATA.map(d => d.jurisdiction === 'USA' ? { ...d, year: d.year - 10 } : d);
+    expect(analyzeEfficiency(data)).toBeNull();
+  });
+
   it('returns null with insufficient data', () => {
     expect(analyzeEfficiency([
       { spending: 100, outcome: 80, jurisdiction: 'USA', year: 2022 },
