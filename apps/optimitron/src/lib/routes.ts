@@ -310,6 +310,8 @@ export const opgLink: NavItem = {
 export const obgLink: NavItem = {
   href: ROUTES.obg,
   label: AGENCIES.domb.dName,
+  copyPreview: true,
+  screenshot: true,
   emoji: AGENCIES.domb.emoji,
   description: AGENCIES.domb.description,
   tagline: AGENCIES.domb.tagline,
@@ -1906,6 +1908,7 @@ export interface RouteReviewSpec {
 }
 
 export const routeReviewNavItems = [
+  obgLink,
   adminLink,
   homeLink,
   prizeLink,
