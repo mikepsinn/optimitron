@@ -38,15 +38,6 @@ export const CITATION_URL_KINDS: readonly CitationUrlKind[] = [
   "invalid",
 ];
 
-/** Kinds a reader can open later and that identify one document or study. */
-export const RESOLVABLE_PRIMARY_KINDS: ReadonlySet<CitationUrlKind> = new Set([
-  "clinicaltrials-study",
-  "doi",
-  "pubmed",
-  "pmc",
-  "regulatory-label",
-]);
-
 const DOI_PATTERN = /(10\.\d{4,9}\/[^\s?#]+)/;
 const PMC_PATTERN = /(PMC\d+)/i;
 
@@ -60,7 +51,10 @@ function safeDecode(value: string): string {
 
 export interface ClassifiedCitationUrl {
   kind: CitationUrlKind;
-  /** Stable identifier such as `doi:10.1056/...`, `pmid:36449413`, `nct:NCT03887455`. */
+  /**
+   * Set only when the URL identifies one document or study (DOI, PubMed, PMC, NCT study, label),
+   * e.g. `doi:10.1056/...`, `pmid:36449413`, `nct:NCT03887455`.
+   */
   sourceId: string | null;
 }
 
@@ -97,10 +91,15 @@ export function classifyCitationUrl(rawUrl: string): ClassifiedCitationUrl {
     host === "europepmc.org";
   const pmc = isPmcHost ? PMC_PATTERN.exec(path)?.[1] : undefined;
   if (pmc) return { kind: "pmc", sourceId: `pmc:${pmc.toUpperCase()}` };
-  if (host === "accessdata.fda.gov" || host === "dailymed.nlm.nih.gov") {
-    return { kind: "regulatory-label", sourceId: `label:${host}${path}${url.search}` };
+  // Only a URL that names one label document counts; search and home pages do not.
+  const dailymedSetId = host === "dailymed.nlm.nih.gov" ? url.searchParams.get("setid") : null;
+  if (dailymedSetId) {
+    return { kind: "regulatory-label", sourceId: `label:dailymed:${dailymedSetId.toLowerCase()}` };
   }
-  if (host === "ema.europa.eu" && path.includes("/medicines/")) {
+  if (host === "accessdata.fda.gov" && /^\/drugsatfda_docs\/.+\.pdf$/i.test(path)) {
+    return { kind: "regulatory-label", sourceId: `label:${host}${path}` };
+  }
+  if (host === "ema.europa.eu" && /\/(?:documents|medicines\/human\/EPAR)\/./i.test(path)) {
     return { kind: "regulatory-label", sourceId: `label:${host}${path}` };
   }
   if (/^(?:google|bing|duckduckgo)\.[a-z.]+$/.test(host) && path.startsWith("/search")) {
@@ -109,11 +108,15 @@ export function classifyCitationUrl(rawUrl: string): ClassifiedCitationUrl {
   return { kind: "other-web", sourceId: null };
 }
 
-/** A citation is a primary source when its URL or its `pubmedId` identifies one document or study. */
-export function citationSourceId(citation: TreatmentCitation): ClassifiedCitationUrl {
-  const classified = classifyCitationUrl(citation.url);
-  if (classified.sourceId || !citation.pubmedId) return classified;
-  return { kind: "pubmed", sourceId: `pmid:${citation.pubmedId}` };
+/**
+ * The primary-source identifier of a citation: from its URL, or else from a numeric `pubmedId`.
+ * The URL kind is reported separately, so a redirect with a PMID still counts as a redirect.
+ */
+export function citationPrimarySourceId(citation: TreatmentCitation): string | null {
+  const { sourceId } = classifyCitationUrl(citation.url);
+  if (sourceId) return sourceId;
+  const pubmedId = citation.pubmedId?.trim();
+  return pubmedId && /^\d+$/.test(pubmedId) ? `pmid:${pubmedId}` : null;
 }
 
 export type OutcomeProvenance = "ai-estimated" | "trial" | "name-only" | "unlabeled-values";
@@ -167,12 +170,11 @@ export function auditTreatment(
   const primarySourceIds = new Set<string>();
   const redirectTitles: string[] = [];
   for (const citation of treatment.citations ?? []) {
-    const classified = citationSourceId(citation);
-    citationKinds[classified.kind] += 1;
-    if (RESOLVABLE_PRIMARY_KINDS.has(classified.kind) && classified.sourceId) {
-      primarySourceIds.add(classified.sourceId);
-    }
-    if (classified.kind === "vertex-grounding-redirect" && citation.title) {
+    const { kind } = classifyCitationUrl(citation.url);
+    citationKinds[kind] += 1;
+    const sourceId = citationPrimarySourceId(citation);
+    if (sourceId) primarySourceIds.add(sourceId);
+    if (kind === "vertex-grounding-redirect" && citation.title) {
       redirectTitles.push(citation.title);
     }
   }

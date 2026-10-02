@@ -9,7 +9,9 @@
  *   pnpm --filter @optimitron/data run audit:medical-citations -- --dir <medical-data dir> --out <dir>
  *
  * --probe N sends one GET (redirects not followed) to N redirect citations,
- * spread evenly across the snapshot, and records the HTTP status.
+ * spread evenly across the snapshot, and records the HTTP status. Requests are
+ * spaced 500 ms apart. Results are cached in <out>/probe-cache.json and reused;
+ * pass --refresh to request them again.
  *
  * Output (default packages/data/output/medical-citation-audit/, gitignored):
  *   inventory.json  totals, per-condition rollup, per-treatment audit, probe results
@@ -17,7 +19,7 @@
  *   citations.csv   one row per citation
  *   summary.md      readable summary with the unresolved-treatment list
  */
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,7 +27,8 @@ import type { ConditionTreatmentsFile } from "../src/datasets/medical.js";
 import {
   CITATION_URL_KINDS,
   auditConditionFile,
-  citationSourceId,
+  citationPrimarySourceId,
+  classifyCitationUrl,
   type CitationUrlKind,
   type OutcomeProvenance,
   type TreatmentCitationAudit,
@@ -35,7 +38,10 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function argValue(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);
-  return index >= 0 ? process.argv[index + 1] : undefined;
+  if (index < 0) return undefined;
+  const value = process.argv[index + 1];
+  if (value === undefined || value.startsWith("--")) throw new Error(`${flag} needs a value`);
+  return value;
 }
 
 const dataDir = resolve(argValue("--dir") ?? join(packageRoot, "src/datasets/medical-data"));
@@ -73,13 +79,12 @@ for (const fileName of conditionFiles) {
   audits.push(...auditConditionFile(slug, file));
   for (const treatment of file.treatments) {
     (treatment.citations ?? []).forEach((citation, index) => {
-      const { kind, sourceId } = citationSourceId(citation);
       citationRows.push({
         conditionSlug: slug,
         treatmentName: treatment.name,
         index,
-        kind,
-        sourceId,
+        kind: classifyCitationUrl(citation.url).kind,
+        sourceId: citationPrimarySourceId(citation),
         title: citation.title ?? "",
         type: citation.type ?? "",
         url: citation.url,
@@ -127,20 +132,41 @@ interface ProbeResult {
   error: string | null;
 }
 
+const PROBE_INTERVAL_MS = 500;
+const probeCachePath = join(outDir, "probe-cache.json");
+
+function readProbeCache(): Map<string, ProbeResult> {
+  if (process.argv.includes("--refresh") || !existsSync(probeCachePath)) return new Map();
+  const cached = JSON.parse(readFileSync(probeCachePath, "utf8")) as ProbeResult[];
+  return new Map(cached.map((result) => [result.url, result]));
+}
+
 async function probeRedirects(count: number): Promise<ProbeResult[]> {
   const redirects = citationRows.filter((row) => row.kind === "vertex-grounding-redirect");
   if (count === 0 || redirects.length === 0) return [];
   const step = Math.max(1, Math.floor(redirects.length / count));
   const sample = redirects.filter((_, index) => index % step === 0).slice(0, count);
+  const cache = readProbeCache();
   const results: ProbeResult[] = [];
+  let requested = 0;
   for (const row of sample) {
+    const cached = cache.get(row.url);
+    if (cached) {
+      results.push(cached);
+      continue;
+    }
+    if (requested > 0) await new Promise((done) => setTimeout(done, PROBE_INTERVAL_MS));
+    requested += 1;
     try {
       const response = await fetch(row.url, { redirect: "manual", signal: AbortSignal.timeout(15_000) });
       results.push({ url: row.url, status: response.status, location: response.headers.get("location"), error: null });
     } catch (error) {
       results.push({ url: row.url, status: null, location: null, error: error instanceof Error ? error.message : String(error) });
     }
+    cache.set(row.url, results[results.length - 1]!);
   }
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(probeCachePath, JSON.stringify([...cache.values()], null, 2) + "\n");
   return results;
 }
 

@@ -18,6 +18,10 @@ describe("classifyCitationUrl", () => {
     ["https://pubmed.ncbi.nlm.nih.gov/36449413/", "pubmed", "pmid:36449413"],
     ["https://pmc.ncbi.nlm.nih.gov/articles/PMC10450571/", "pmc", "pmc:PMC10450571"],
     ["https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf", "regulatory-label", "label:accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf"],
+    ["https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm", "other-web", null],
+    ["https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9D1FF786-e577-410a-a273-c4d7d0e4e975", "regulatory-label", "label:dailymed:9d1ff786-e577-410a-a273-c4d7d0e4e975"],
+    ["https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=leqembi", "other-web", null],
+    ["https://www.ema.europa.eu/en/documents/assessment-report/leqembi-epar-public-assessment-report_en.pdf", "regulatory-label", "label:ema.europa.eu/en/documents/assessment-report/leqembi-epar-public-assessment-report_en.pdf"],
     ["https://www.google.com/search?q=time+in+Ribeir%C3%A3o+Preto,+BR", "search-engine", null],
     ["https://www.researchgate.net/publication/123", "other-web", null],
     ["not a url", "invalid", null],
@@ -57,14 +61,17 @@ describe("auditTreatment", () => {
     expect(audit.redirectTitles).toEqual(["nih.gov"]);
   });
 
-  it("accepts a stored pubmedId when the URL itself is opaque", () => {
+  it("accepts a numeric pubmedId on an opaque URL without changing the URL kind", () => {
+    const redirect = "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZ";
     const audit = auditTreatment("alzheimers-disease", "Alzheimer's Disease", {
       ...base,
       citations: [
-        { url: "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZ", pubmedId: "36449413" },
+        { url: redirect, pubmedId: "36449413" },
+        { url: redirect, pubmedId: "unknown" },
       ],
     });
     expect(audit.primarySourceIds).toEqual(["pmid:36449413"]);
-    expect(audit.citationKinds.pubmed).toBe(1);
+    expect(audit.citationKinds["vertex-grounding-redirect"]).toBe(2);
+    expect(audit.citationKinds.pubmed).toBe(0);
   });
 });
