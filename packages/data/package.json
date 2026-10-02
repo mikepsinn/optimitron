@@ -67,7 +67,8 @@
     "data:import-csvs": "tsx ./scripts/import-csv-datasets.ts",
     "data:refresh:leaders": "tsx ./scripts/generate-world-leaders.ts",
     "generate:optimal-budget": "tsx ./scripts/generate-optimal-budget.ts",
-    "generate:healthcare-cofog": "tsx ./scripts/generate-healthcare-cofog.ts"
+    "generate:healthcare-cofog": "tsx ./scripts/generate-healthcare-cofog.ts",
+    "audit:medical-citations": "tsx ./scripts/audit-medical-citations.ts"
   },
   "keywords": [
     "data",
