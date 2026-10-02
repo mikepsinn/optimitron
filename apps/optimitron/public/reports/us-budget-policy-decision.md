@@ -92,9 +92,9 @@ Net benefit after financing opportunity cost: $302.6B (-$131.5B–$1251.8B).
 
 - This reproduces the canonical state-legislation scenario. It is an analogue for, not a direct estimate of, the broader federal Right to Trial & FDA Upgrade Act.
 - The 5.48 discovery multiplier is an explicit assumption, not the observed effect of any enacted law; its range is conditional on a mature operating system and does not include the chance of adoption.
-- The result covers global future generations. It is not annual US QALYs, current-population healthy life expectancy, or median healthy life years.
-- Launch cost is not total social cost. Do not use it as the full denominator for comparison with treatment programs that include delivery costs.
 - This and pragmatic-trial reform share discovery, infrastructure, participants and outcomes. Standalone lifetime totals must not be added.
+- Global benchmark only: The result covers global future generations. It is not annual US QALYs, current-population healthy life expectancy, or median healthy life years.
+- Global benchmark only: Launch cost is not total social cost. Do not use it as the full denominator for comparison with treatment programs that include delivery costs.
 - The funding cap is the evaluated reference-program scale, not an estimate of national absorption capacity. Unmodeled expansion is not implicitly assigned zero benefit.
 - The clinical allocation case is conditional on implementing the funded program, not a measured effect or a probability of passing the proposed law. Funding affects discovery for its financed period; benefits are followed for 20 years.
 - The shared-process maximum assumes full overlap between trial funding and access capacity during the first year. Complementarity is not estimated; this assumption can favor access over extra funding.
@@ -175,10 +175,10 @@ Net benefit after financing opportunity cost: $197.1M (-$214.7M–$1B).
 | Added treatment delivery cost (present value) | 365,185,839.97 (11,164,123.63–1,256,286,547.09) | 2025 USD present value |
 | Conditional RECOVERY-scale global QALYs (separate benchmark) | 3,521,689.88 (885,124.57–7,236,857.49) | global QALYs |
 
-- RECOVERY is a successful pandemic platform, not an unbiased draw from all possible trials. The canonical $4/QALY is retrospective discovery value including downstream adoption, not a demonstrated prospective portfolio yield.
 - The million-lives figure is a modeled global adoption estimate, and QALYs per death is a model assumption. Their inherited ranges are not published confidence intervals.
-- No finite common cohort horizon or US-only benefit is supplied. A prospective portfolio model needs trial success, attributable acceleration, adoption and delivery costs before comparison with domestic annual programs.
 - Pragmatic-trial and Right-to-Trial benefits overlap. Evaluate one shared discovery counterfactual; do not sum these standalone outputs.
+- Global benchmark only: RECOVERY is a successful pandemic platform, not an unbiased draw from all possible trials. The canonical $4/QALY is retrospective discovery value including downstream adoption, not a demonstrated prospective portfolio yield.
+- Global benchmark only: No finite common cohort horizon or US-only benefit is supplied. A prospective portfolio model needs trial success, attributable acceleration, adoption and delivery costs before comparison with domestic annual programs.
 - The funding cap is the evaluated reference-program scale, not an estimate of national absorption capacity. Unmodeled expansion is not implicitly assigned zero benefit.
 - The clinical allocation case is conditional on implementing the funded program, not a measured effect or a probability of passing the proposed law. Funding affects discovery for its financed period; benefits are followed for 20 years.
 - The shared-process maximum assumes full overlap between trial funding and access capacity during the first year. Complementarity is not estimated; this assumption can favor access over extra funding.

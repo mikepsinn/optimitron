@@ -28,6 +28,9 @@ import {
 const MODEL_SOURCE = "https://opg.warondisease.org";
 const TRIAL = "pragmatic-clinical-trial-funding-reform";
 const ACCESS = "right-to-trial-and-fda-upgrade-act";
+const HOUSING = "housing-supply-deregulation";
+/** Inputs whose global lifetime model `clinical()` replaces with a 20-year US flow. */
+const US_REMODELED = new Set([TRIAL, ACCESS]);
 const GROUP = "clinical-trial-discovery";
 const CPI_RATIO = 321.943 / 313.689;
 const DRAW_COUNT = 5000;
@@ -265,14 +268,19 @@ function clinical(
   };
 }
 
-const accountFor = (id: string): PolicyBudgetAccount =>
-  id === "universal-pre-k-ages-3-4"
-    ? "education"
-    : id === "shift-drug-policy-from-criminal-to-health-approach"
-      ? "public_health"
-      : id === "housing-supply-deregulation"
-        ? "housing"
-        : "health_research";
+const POLICY_ACCOUNTS: Readonly<Record<string, PolicyBudgetAccount>> = {
+  "universal-pre-k-ages-3-4": "education",
+  "shift-drug-policy-from-criminal-to-health-approach": "public_health",
+  [HOUSING]: "housing",
+  [TRIAL]: "health_research",
+  [ACCESS]: "health_research",
+};
+
+function accountFor(id: string): PolicyBudgetAccount {
+  const account = POLICY_ACCOUNTS[id];
+  if (!account) throw new Error(`No federal budget account declared for policy: ${id}`);
+  return account;
+}
 
 function referenceBudget(input: PolicyScenarioInput): number {
   // Launch cost includes the full canonical high-cost scenario. We do not
@@ -380,7 +388,9 @@ export function generateDecisionAnalysis(
     const budget = referenceBudget(input);
     const reference = makeOption(input, budget, draws);
     const clinicalPolicy = Boolean(input.overlapGroup);
-    const housing = input.policyId === "housing-supply-deregulation";
+    const remodeled = US_REMODELED.has(input.policyId);
+    // A noncomparable input enters the allocation only after clinical() re-models it.
+    const allocationEligible = input.comparableForAllocation || remodeled;
     const sharedInputs = clinicalPolicy
       ? decisionAssumptions.filter(
           (p) => !["vsl", "cpi_2025_ratio"].includes(p.id),
@@ -388,7 +398,7 @@ export function generateDecisionAnalysis(
       : decisionAssumptions.filter(
           (p) =>
             p.id === "cpi_2025_ratio" ||
-            (!housing && p.id === "military_loss") ||
+            (allocationEligible && p.id === "military_loss") ||
             (input.policyId ===
               "shift-drug-policy-from-criminal-to-health-approach" &&
               p.id === "vsl"),
@@ -416,16 +426,16 @@ export function generateDecisionAnalysis(
             : input.scope,
       referenceBudgetUsd: budget,
       annualFundingCapUsd: budget,
-      allocationEligible: !housing,
+      allocationEligible,
       benefit: summarizeSimulation(reference.benefitDrawsUsd),
-      netBenefit: housing
+      netBenefit: !allocationEligible
         ? null
         : summarizeSimulation(
             reference.benefitDrawsUsd.map(
               (value, i) => value - budget * financing[i]!,
             ),
           ),
-      benefitCostRatio: housing
+      benefitCostRatio: !allocationEligible
         ? null
         : summarizeSimulation(
             reference.benefitDrawsUsd.map((value) => value / budget),
@@ -449,8 +459,12 @@ export function generateDecisionAnalysis(
         : `${input.scope} ${input.formula} ${input.costBasis}`,
       limitations: [
         ...input.limitations,
+        // A re-modeled policy reports the native outcome only as a separate benchmark row.
+        ...(input.nativeOutcomeLimitations ?? []).map((text) =>
+          remodeled ? `Global benchmark only: ${text}` : text,
+        ),
         "The funding cap is the evaluated reference-program scale, not an estimate of national absorption capacity. Unmodeled expansion is not implicitly assigned zero benefit.",
-        ...(housing
+        ...(input.policyId === HOUSING
           ? [
               "Gross renter savings are retained but excluded from the net-social-benefit allocation objective because landlord losses and construction costs are not yet estimated.",
             ]
@@ -464,7 +478,7 @@ export function generateDecisionAnalysis(
           : []),
       ],
     });
-    if (housing) continue;
+    if (!allocationEligible) continue;
     // A short discrete menu expresses tested program scales without inventing
     // an empirically fitted national diminishing-return curve.
     const levels = input.policyId === ACCESS ? [1] : [0.1, 0.25, 0.5, 0.75, 1];

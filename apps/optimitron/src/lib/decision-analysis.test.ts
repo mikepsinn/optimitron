@@ -74,6 +74,20 @@ describe('integrated budget and policy decision report', () => {
     expect(statusQuo.netBenefit.mean).toBe(0);
   });
 
+  it('labels global-model caveats as benchmark-only on the re-modeled US allocation cases', () => {
+    let checked = 0;
+    for (const input of scenarioInputs.filter(candidate => !candidate.comparableForAllocation)) {
+      const policy = report.policies.find(candidate => candidate.id === input.policyId)!;
+      if (!policy.allocationEligible) continue;
+      for (const caveat of input.nativeOutcomeLimitations ?? []) {
+        expect(policy.limitations).toContain(`Global benchmark only: ${caveat}`);
+        expect(policy.limitations).not.toContain(caveat);
+        checked += 1;
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+
   it('selects at most one clinical alternative and excludes noncomparable housing transfers', () => {
     const clinicalIds = report.policies.filter(policy => policy.overlapGroup === 'clinical-trial-discovery').map(policy => policy.id);
     expect(clinicalIds).toHaveLength(2);

@@ -74,6 +74,8 @@ export interface PolicyScenarioInput {
   parameters: readonly PolicyScenarioPrimitive[];
   formula: string;
   limitations: readonly string[];
+  /** Caveats on the outcomes `calculate` returns, not on every use of `parameters`. */
+  nativeOutcomeLimitations?: readonly string[];
   calculate: (values: Readonly<Record<string, number>>) => PolicyScenarioOutcomes;
 }
 
@@ -107,13 +109,16 @@ function scenario(
 
 /** Canonical bounds describe model assumptions even when the point is sourced. */
 function canonical(parameter: Parameter): PolicyScenarioPrimitive {
-  const value = parameter.value;
+  const { parameterName, description, value } = parameter;
+  if (!parameterName || !description) {
+    throw new Error(`Canonical parameter ${parameterName ?? parameter.displayName ?? value} lacks a name or description`);
+  }
   return scenario(
-    parameter.parameterName!, parameter.displayName ?? parameter.parameterName!, parameter.unit ?? '',
+    parameterName, parameter.displayName ?? parameterName, parameter.unit ?? '',
     parameter.confidenceInterval?.[0] ?? value, value,
     parameter.confidenceInterval?.[1] ?? value,
     parameter.calculationsUrl ?? parameter.manualPageUrl ?? SOURCES.scenarios,
-    `${parameter.description} Bounds are inherited model ranges, not asserted to be a published sampling interval.`,
+    `${description} Bounds are inherited model ranges, not asserted to be a published sampling interval.`,
   );
 }
 
@@ -243,10 +248,12 @@ export const scenarioInputs: readonly PolicyScenarioInput[] = [
     ],
     formula: 'QALYs = canonical RECOVERY global lives saved × QALYs per death averted × transported benefit share; research capacity = trial budget/pragmatic cost per participant (reported separately, never multiplied into QALYs)',
     limitations: [
-      'RECOVERY is a successful pandemic platform, not an unbiased draw from all possible trials. The canonical $4/QALY is retrospective discovery value including downstream adoption, not a demonstrated prospective portfolio yield.',
       'The million-lives figure is a modeled global adoption estimate, and QALYs per death is a model assumption. Their inherited ranges are not published confidence intervals.',
-      'No finite common cohort horizon or US-only benefit is supplied. A prospective portfolio model needs trial success, attributable acceleration, adoption and delivery costs before comparison with domestic annual programs.',
       'Pragmatic-trial and Right-to-Trial benefits overlap. Evaluate one shared discovery counterfactual; do not sum these standalone outputs.',
+    ],
+    nativeOutcomeLimitations: [
+      'RECOVERY is a successful pandemic platform, not an unbiased draw from all possible trials. The canonical $4/QALY is retrospective discovery value including downstream adoption, not a demonstrated prospective portfolio yield.',
+      'No finite common cohort horizon or US-only benefit is supplied. A prospective portfolio model needs trial success, attributable acceleration, adoption and delivery costs before comparison with domestic annual programs.',
     ],
     calculate(values) {
       const cost = value(values, 'RECOVERY_TRIAL_TOTAL_COST');
@@ -285,9 +292,11 @@ export const scenarioInputs: readonly PolicyScenarioInput[] = [
     limitations: [
       'This reproduces the canonical state-legislation scenario. It is an analogue for, not a direct estimate of, the broader federal Right to Trial & FDA Upgrade Act.',
       'The 5.48 discovery multiplier is an explicit assumption, not the observed effect of any enacted law; its range is conditional on a mature operating system and does not include the chance of adoption.',
+      'This and pragmatic-trial reform share discovery, infrastructure, participants and outcomes. Standalone lifetime totals must not be added.',
+    ],
+    nativeOutcomeLimitations: [
       'The result covers global future generations. It is not annual US QALYs, current-population healthy life expectancy, or median healthy life years.',
       'Launch cost is not total social cost. Do not use it as the full denominator for comparison with treatment programs that include delivery costs.',
-      'This and pragmatic-trial reform share discovery, infrastructure, participants and outcomes. Standalone lifetime totals must not be added.',
     ],
     calculate(values) {
       const wait = value(values, 'RARE_DISEASES_COUNT_GLOBAL') * value(values, 'rare_disease_untreated_share')
