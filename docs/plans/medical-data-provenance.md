@@ -80,15 +80,21 @@ Consequences:
 2. The 84 `trial` rows are parser artifacts, not efficacy results. Example: Inotuzumab ozogamicin,
    "Number of Participants According to Prior HSCT", baseline "10 Participants", +50%. The parser
    compares two arms or two categories as if they were two time points.
-3. Rankings at `/treatment-rankings` sort by `effectiveness` or `safetyScore`. Both are model scores
-   with no primary source by construction.
+3. The dfda repository page `/treatment-rankings` (`apps/web/lib/demo/treatment-estimates.ts`,
+   `rankTreatments`) sorts by `effectiveness` or `safetyScore`. Optimitron's
+   `apps/dfda/components/condition/TreatmentRankings.tsx` shows the snapshot order, which is the
+   order the generator prompt asked Gemini to produce ("Rank treatments by effectiveness"). In
+   both apps the order comes from model scores with no primary source by construction.
 4. Optimitron's `apps/dfda` treatment report shows the first three citations as links. They are the
    expired redirects, so a reader who clicks gets HTTP 404.
-5. No UI in either app shows the `ai-estimated` tag. The dfda outcome label says only "Current best
-   estimates".
+5. No UI in either app shows the `ai-estimated` tag. The dfda repository outcome label
+   (`/outcome-labels/demo/...`) says only "Current best estimates".
 6. `percentageChange` mixes three meanings: percent change from baseline, percent slowing relative to
-   placebo, and a difference relative to an unrelated baseline. The dfda label says "Estimated
-   outcome changes relative to the baselines shown", which is wrong for the second and third meanings.
+   placebo, and a difference relative to an unrelated baseline. The dfda repository outcome label
+   (`apps/web/components/demo/treatment-outcomes.tsx`) says "Estimated outcome changes relative to
+   the baselines shown", which is wrong for the second and third meanings. Optimitron's
+   `apps/dfda` cards show the values under "Primary Outcomes" and "Secondary Benefits" and do not
+   say what the percentage means.
 
 ## 2. Proposed plan
 
@@ -98,8 +104,9 @@ Put the layer in the edited copy, which is now dfda. Two options:
 
 - **A. Sidecar file (recommended).** Add one reviewed provenance file per condition, and merge it in
   the loader (`lib/demo/treatment-estimates.ts` in dfda). The original values stay readable for
-  audit, and each correction carries its own source and reviewer. Both READMEs already call for
-  "an explicitly versioned correction layer".
+  audit, and each correction carries its own source and reviewer. The dfda import README
+  (`apps/web/data/optimitron/README.md`) already allows "an explicitly versioned correction layer".
+  The optimitron medical-data README asks to document each correction and fix the generator.
 - **B. Inline fields.** Add `sources` and `effectMeasure` to each value in the condition files.
   This option is simpler to read, but it mixes original and corrected values. Use it when the
   generator is rewritten and emits sourced data directly.
@@ -227,14 +234,14 @@ Column meanings:
 
 The paths use the order of the items in the file. `scores` means `effectiveness` /
 `safetyScore` / `confidenceScore`. No primary source can exist for these three model scores, and
-the ranking at `/treatment-rankings` sorts by them.
+the treatment order in both apps comes from them (see section 1.3, item 3).
 
 ### 3.1 Problems common to the six rows
 
 1. **Effect sizes shown as change from baseline (6 of 6).** Most `absoluteChange` values are the
    difference vs placebo. Most `percentageChange` values are "% slowing vs placebo" or that
-   difference divided by the stored baseline. The dfda label says "Estimated outcome changes
-   relative to the baselines shown". For the cholinesterase inhibitors this is worse than a
+   difference divided by the stored baseline. The dfda repository outcome label says "Estimated
+   outcome changes relative to the baselines shown". For the cholinesterase inhibitors this is worse than a
    wording issue: the drug arm often declines while the row shows an improvement.
 2. **Wrong baselines or scales.** Lecanemab ADCS-MCI-ADL 78 (0-87) vs 41.2 (0-53). Donanemab
    iADRS 80 vs 104. Galantamine NPI 25 (0-144) vs about 12 (0-120). Donepezil and rivastigmine
