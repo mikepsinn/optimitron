@@ -25,6 +25,13 @@ export const PLAINTIFFS_REDIRECT_SMOKE_ROUTE = {
   source: "permanent Court plaintiffs redirect",
 };
 
+export const TREATMENT_REDIRECT_SMOKE_ROUTE = {
+  path: "/agencies/dfda/treatments/dietary-counseling-and-education?ref=smoke-deploy&condition=crohns-disease",
+  expectedRedirect:
+    "https://dfda.earth/treatments/dietary-counseling-and-education",
+  source: "legacy treatment URL from Sentry issue 7690616825",
+};
+
 // Route paths mirror ROUTES in apps/optimitron/src/lib/routes.ts. Expected h1s
 // use route metadata where the nav label is the page heading; otherwise they
 // use the existing page/component h1 text.
@@ -42,6 +49,7 @@ const ROUTES_TO_SMOKE = [
     source: "permanent War on Disease treaty redirect",
   },
   PLAINTIFFS_REDIRECT_SMOKE_ROUTE,
+  TREATMENT_REDIRECT_SMOKE_ROUTE,
   {
     path: "/tasks",
     expectedH1: "Earth Optimization Tasks",
