@@ -4,6 +4,9 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const require = createRequire(import.meta.url);
+const { getRedirectUrl, unstable_getResponseFromNextConfig } = require(
+  "next/experimental/testing/server",
+);
 const { REDIRECTS } = require("../redirects.js") as {
   REDIRECTS: Array<{
     destination: string;
@@ -73,6 +76,23 @@ describe("redirects", () => {
       expect(REDIRECTS).toContainEqual({ source, destination, permanent: true });
     }
   });
+
+  // The weekly report names this concrete URL. Test Next's matcher and
+  // parameter substitution, not just the presence of a wildcard rule.
+  it.each(["", "?ref=legacy-link&condition=crohns-disease"])(
+    "redirects the reported dietary counseling slug with its query %s",
+    async (search) => {
+      const response = await unstable_getResponseFromNextConfig({
+        url: `https://optimitron.com/agencies/dfda/treatments/dietary-counseling-and-education${search}`,
+        nextConfig: { redirects: async () => REDIRECTS },
+      });
+
+      expect(response.status).toBe(308);
+      expect(getRedirectUrl(response)).toBe(
+        `https://dfda.earth/treatments/dietary-counseling-and-education${search}`,
+      );
+    },
+  );
 
   it("keeps legacy internal redirects out of app pages", () => {
     expect(REDIRECTS).toContainEqual({
