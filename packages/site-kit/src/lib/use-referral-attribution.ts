@@ -28,8 +28,9 @@ export function useReferralAttribution(): {
       setInviteToken(urlInviteToken);
       return;
     }
+    if (urlInviteToken) storage.setSignupInviteToken(urlInviteToken);
     setReferralCode(storage.getSignupReferral());
-    setInviteToken(storage.getSignupInviteToken());
+    setInviteToken(urlInviteToken ?? storage.getSignupInviteToken());
   }, [urlReferralCode, urlInviteToken]);
 
   return { referralCode, inviteToken };

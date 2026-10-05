@@ -195,4 +195,15 @@ describe("referral attribution", () => {
     expect(mocks.signupReferral).toBe("mike")
     expect(mocks.signupInviteToken).toBeNull()
   })
+
+  it("keeps an invite token that arrives without a referral code", async () => {
+    mocks.signupReferral = "jane"
+    mocks.searchParams = new URLSearchParams("invite=tok-direct")
+
+    render(<TreatyVoteSection hideHeading questionAs="h1" disableIntroAnimation />)
+    await voteYes()
+
+    expect(mocks.pendingVote).toMatchObject({ answer: "YES", referredBy: "jane", inviteToken: "tok-direct" })
+    expect(mocks.signupInviteToken).toBe("tok-direct")
+  })
 })
