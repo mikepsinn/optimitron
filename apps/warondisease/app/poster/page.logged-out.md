@@ -6,10 +6,10 @@
 - Meta description: Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our 122 apocalypse capacity for disease eradication. Hang referral flyers where humans will see them and let nearby foot traffic recruit voters while you do something else.
 - Canonical: https://warondisease.org/poster
 - Open Graph title: The International Campaign to End War and Disease
-- Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Open Graph description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png
 - Twitter title: The International Campaign to End War and Disease
-- Twitter description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Twitter description: Please take 30 seconds to trade one apocalypse for disease eradication.
 
 ## Visible Page Copy
 
@@ -45,7 +45,7 @@
 - [GO DOOR TO DOOR](/door-to-door)
 - [TREATY SIGNATORIES](/signatories)
 #### LEARN SOMETHING
-- [HUMANITY V. GOVERNMENT](https://courtofhumanity.org/humanity-v-government)
+- [COURT OF HUMANITY](https://courtofhumanity.org)
 - [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [THE PLAN](/the-plan)

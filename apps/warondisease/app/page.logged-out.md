@@ -333,7 +333,7 @@
 - [GO DOOR TO DOOR](/door-to-door)
 - [TREATY SIGNATORIES](/signatories)
 #### LEARN SOMETHING
-- [HUMANITY V. GOVERNMENT](https://courtofhumanity.org/humanity-v-government)
+- [COURT OF HUMANITY](https://courtofhumanity.org)
 - [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [THE PLAN](/the-plan)
