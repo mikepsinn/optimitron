@@ -45,7 +45,7 @@
 - Both positive and negative effects
 - Evidence-based decision making
 - Suvorexant
-- An example using today's estimates. Changes are relative to the baselines shown.
+- Changes are relative to the baselines shown.
 - Latency to Persistent Sleep (LPS) - PSG
 - Baseline: 68 minutes
 - -26.5%
@@ -88,10 +88,8 @@
 - See real-time availability and enrollment status
 - Compare multiple treatment options side-by-side
 - Alzheimer's
-- Click any treatment to view available trials
 - 92%
 - 88%
-- 76%
 - 72%
 - 68%
 - 65%
@@ -284,7 +282,6 @@
 ### Partner with us
 #### Donors and funders
 - Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.
-- [Donate](/donate)
 - [Discuss a major gift](mailto:donations@acceleratedmedicine.org?subject=Major%20gift)
 #### Clinics and doctors
 - Run a pilot site, serve on an independent review board, or advise us on the protocol.

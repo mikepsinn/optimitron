@@ -1,7 +1,11 @@
 import Link from "next/link"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
+import { visibleNavigationItems } from "@optimitron/site-kit/lib/app-navigation"
+import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
+import { getCopyrightText, getSiteConfig } from "@optimitron/site-kit/lib/site-config"
 
+import { MobileMenu } from "@/components/home/mobile-menu"
 import {
   COURT_OF_HUMANITY_LINK,
   ONE_PERCENT_TREATY_LINK,
@@ -11,7 +15,8 @@ import {
 import { appNavigation } from "@/lib/navigation"
 
 // The home page has its own header and footer in the decentralized-fda prototype's style. The other pages
-// keep the shared site-kit layout. The footer lists the same pages as the shared footer.
+// keep the shared site-kit layout. The footer lists the same pages, legal notice and copyright as the
+// shared footer, and both respect the shared donate switch.
 const headerLinks = [
   { href: "#how-it-works", label: "How it should work" },
   { href: "/right-to-trial", label: "Right to Trial" },
@@ -34,12 +39,15 @@ export function HomeHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
-            <Link href="/donate">Donate</Link>
-          </Button>
+          {SHOW_DONATE_LINKS && (
+            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+              <Link href="/donate">Donate</Link>
+            </Button>
+          )}
           <Button asChild size="sm">
             <a href="#help">Partner with us</a>
           </Button>
+          <MobileMenu links={headerLinks} />
         </div>
       </div>
     </header>
@@ -55,7 +63,8 @@ export function HomeFooter() {
   const columns: { id?: string; title: string; links: FooterLink[] }[] = [
     ...appNavigation.footerSections.map(section => ({
       title: sectionTitles[section.id] ?? section.label,
-      links: section.resolvedItems.map(item => ({ href: item.path, label: item.label, external: item.isExternal })),
+      links: visibleNavigationItems(section.resolvedItems, false)
+        .map(item => ({ href: item.path, label: item.label, external: item.isExternal })),
     })),
     {
       id: "research",
@@ -67,6 +76,7 @@ export function HomeFooter() {
       links: relatedProjects.map(link => ({ href: link.href, label: link.title, external: true })),
     },
   ]
+  const complianceNotice = getSiteConfig().footerComplianceNotice
 
   return (
     <footer className="w-full border-t py-10">
@@ -88,14 +98,18 @@ export function HomeFooter() {
             </div>
           ))}
         </div>
-        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t pt-6 text-muted-foreground">
-          <p className="font-semibold text-foreground">Institute for Accelerated Medicine</p>
-          <a href="mailto:hello@acceleratedmedicine.org" className="hover:text-foreground hover:underline">
-            hello@acceleratedmedicine.org
-          </a>
-          {appNavigation.legalItems.map(item => (
-            <a key={item.path} href={item.path} className="hover:text-foreground hover:underline">{item.label}</a>
-          ))}
+        <div className="space-y-3 border-t pt-6 text-muted-foreground">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <p className="font-semibold text-foreground">Institute for Accelerated Medicine</p>
+            <a href="mailto:hello@acceleratedmedicine.org" className="hover:text-foreground hover:underline">
+              hello@acceleratedmedicine.org
+            </a>
+            {visibleNavigationItems(appNavigation.legalItems, false).map(item => (
+              <a key={item.path} href={item.path} className="hover:text-foreground hover:underline">{item.label}</a>
+            ))}
+          </div>
+          <p>{getCopyrightText()}</p>
+          {complianceNotice && <p>{complianceNotice}</p>}
         </div>
       </div>
     </footer>

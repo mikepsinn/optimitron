@@ -41,7 +41,8 @@ export function HowItWorksStep({ stepNumber, title, icon, description, benefits,
           >
             {stepNumber}
           </div>
-          {preview}
+          {/* A picture of a future app: inert keeps its buttons and fields from being focused or clicked. */}
+          <div className="contents" inert>{preview}</div>
           {exampleData && <ExampleDataTag />}
         </div>
       </div>

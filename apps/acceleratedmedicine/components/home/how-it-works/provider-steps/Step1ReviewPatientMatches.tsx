@@ -33,7 +33,7 @@ export function Step1ReviewPatientMatches() {
               ].map((trial, i) => (
                 <div
                   key={i}
-                  className="rounded-lg border p-3 bg-card hover:bg-accent hover:cursor-pointer transition-colors"
+                  className="rounded-lg border p-3 bg-card"
                 >
                   <div className="flex justify-between items-start">
                     <div className="font-medium">{trial.name}</div>

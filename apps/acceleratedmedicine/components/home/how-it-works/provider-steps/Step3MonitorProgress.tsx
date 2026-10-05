@@ -36,11 +36,11 @@ export function Step3MonitorProgress() {
                 <div className="text-sm font-medium mb-2">Patient Group Performance (ADAS-Cog Avg. Change)</div>
                 <div className="flex justify-around text-center">
                   <div>
-                    <div className="text-lg font-bold text-green-600">+28%</div>
+                    <div className="text-lg font-bold text-green-700">+28%</div>
                     <div className="text-xs text-muted-foreground">Lecanemab Arm</div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-orange-600">-5%</div>
+                    <div className="text-lg font-bold text-orange-700">-5%</div>
                      <div className="text-xs text-muted-foreground">Placebo Arm</div>
                   </div>
                 </div>

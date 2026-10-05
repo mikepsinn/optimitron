@@ -105,8 +105,7 @@ function Rankings() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Interventions by Condition</CardTitle>
               <CardDescription>
-                An example using today&apos;s estimates. With the network, rankings would update as patients report
-                outcomes.
+                Rankings would update as patients report outcomes.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -140,7 +139,7 @@ function OutcomeLabels() {
             </ul>
           </div>
           <OutcomeLabel title={treatment} tag={condition}
-            subtitle="An example using today's estimates. Changes are relative to the baselines shown."
+            subtitle="Changes are relative to the baselines shown."
             data={categories as OutcomeCategory[]} showBars={false} />
         </div>
       </div>
@@ -151,6 +150,8 @@ function OutcomeLabels() {
 function HowItShouldWork() {
   return (
     <section id="how-it-works" className="w-full scroll-mt-16 py-12 md:py-24 lg:py-32">
+      {/* Old links to /#initiatives land here instead of being sent to the Right to Trial page. */}
+      <span id="initiatives" className="block scroll-mt-16" />
       {/* The page container already pads phones; the wide mock-ups need that width. */}
       <div className="container px-0 sm:px-4 md:px-6">
         <SectionHeading title="How It Should Actually Work">

@@ -34,7 +34,7 @@ export function Step2AssignIntervention() {
                   <div>
                     <div className="flex justify-between text-xs">
                       <span>Cognitive Function (ADAS-Cog)</span>
-                      <span className="text-green-600">+28%</span>
+                      <span className="text-green-700">+28%</span>
                     </div>
                     <div className="h-3 w-full bg-gray-200 rounded-full mt-1">
                       <div className="h-3 bg-green-500 rounded-full" style={{ width: "28%" }}></div>
@@ -66,7 +66,7 @@ export function Step2AssignIntervention() {
                   <div>
                     <div className="flex justify-between text-xs">
                       <span>Cognitive Function (ADAS-Cog)</span>
-                      <span className="text-orange-600">-5%</span>
+                      <span className="text-orange-700">-5%</span>
                     </div>
                     <div className="h-3 w-full bg-gray-200 rounded-full mt-1">
                       {/* Negative change indication could be different */}

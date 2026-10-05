@@ -225,7 +225,7 @@ export function ResearchPartnerSteps() {
                       <div className="text-xs font-medium">#ORD-2844</div>
                       <div className="text-xs text-muted-foreground">1 unit • Shipped</div>
                     </div>
-                    <div className="text-xs text-green-500">Delivered</div>
+                    <div className="text-xs text-green-700">Delivered</div>
                   </div>
                 </div>
               </div>
@@ -296,7 +296,7 @@ export function ResearchPartnerSteps() {
                   </div>
                   <div className="mt-1 flex justify-between items-center">
                     <div className="text-xs text-muted-foreground">Requires Review</div>
-                    <div className="text-xs font-bold text-amber-500">3</div>
+                    <div className="text-xs font-bold text-amber-700">3</div>
                   </div>
                 </div>
               </div>

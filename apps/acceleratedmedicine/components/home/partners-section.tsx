@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Building2, Database, HeartHandshake, Stethoscope } from "lucide-react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
+import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 
 const email = "hello@acceleratedmedicine.org"
 const protocolUrl = "https://papers.acceleratedmedicine.org/dfda-protocol"
@@ -15,7 +16,8 @@ const partners = [
     icon: HeartHandshake,
     title: "Donors and funders",
     text: "Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.",
-    links: [{ href: "/donate", label: "Donate" }],
+    // The shared donate switch hides donation links on every site; a major gift is still a conversation.
+    links: SHOW_DONATE_LINKS ? [{ href: "/donate", label: "Donate" }] : [],
     talk: { label: "Discuss a major gift", href: mailto("donations@acceleratedmedicine.org", "Major gift") },
   },
   {

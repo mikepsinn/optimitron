@@ -23,7 +23,7 @@ export function Step6GainInsights() {
               <div>
                 <div className="flex justify-between items-center">
                   <div className="font-medium text-sm">Cognitive Function Trend</div>
-                  <div className="text-xs text-green-500 font-medium">↑ 15%</div>
+                  <div className="text-xs text-green-700 font-medium">↑ 15%</div>
                 </div>
                 <div className="h-20 mt-2 flex items-end gap-1">
                   {[20, 25, 30, 35, 40, 45, 50].map((h, i) => (

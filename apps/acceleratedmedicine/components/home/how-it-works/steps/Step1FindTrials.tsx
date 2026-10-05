@@ -25,29 +25,10 @@ export function Step1FindTrials() {
 
             <div className="text-sm font-medium mb-2">Comparative Effectiveness Rankings</div>
 
-            <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center bg-primary/5 py-1.5 rounded-md">
-              <span>Click any treatment to view available trials</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="ml-1"
-              >
-                <path d="m9 18 6-6-6-6" />
-              </svg>
-            </div>
-
             <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
               {[
                 { name: "Lecanemab (Leqembi)", effectiveness: 92, status: "FDA Approved" },
-                { name: "Donanemab", effectiveness: 88, status: "Phase 3" },
-                { name: "Aducanumab (Aduhelm)", effectiveness: 76, status: "FDA Approved" },
+                { name: "Donanemab (Kisunla)", effectiveness: 88, status: "FDA Approved" },
                 { name: "Experimental Tau Inhibitor", effectiveness: 72, status: "Phase 2" },
                 { name: "Memantine + Donepezil", effectiveness: 68, status: "FDA Approved" },
                 { name: "APOE4 Gene Therapy", effectiveness: 65, status: "Phase 2" },
@@ -61,7 +42,7 @@ export function Step1FindTrials() {
               ].map((treatment, i) => (
                 <div
                   key={i}
-                  className="rounded-lg border p-3 bg-card hover:bg-accent hover:cursor-pointer transition-colors"
+                  className="rounded-lg border p-3 bg-card"
                 >
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{treatment.name}</div>

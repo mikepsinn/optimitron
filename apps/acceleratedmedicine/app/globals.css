@@ -32,6 +32,23 @@
   --shadow-color: hsl(222.2 84% 4.9%);
 }
 
+/* The home page's learning loop (components/home/learning-loop.tsx): each of its four steps is
+   highlighted for a quarter of the cycle. */
+@theme {
+  --animate-loop-step: loop-step 10s ease-in-out infinite;
+
+  @keyframes loop-step {
+    0%, 20% {
+      border-color: var(--primary);
+      background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+    }
+    25%, 100% {
+      border-color: var(--border);
+      background-color: var(--card);
+    }
+  }
+}
+
 /* Full-width background bands for sections inside the home page's container. Border-image outsets are
    ink overflow, so a band reaches the window edges without widening the page. */
 @layer components {
