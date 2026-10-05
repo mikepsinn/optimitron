@@ -37,7 +37,7 @@ describe("treaty signed state", () => {
 
     render(<TreatySignatureBox initialSignedYes />)
 
-    expect(screen.getByRole("link", { name: "Tell Two People" })).toHaveAttribute("href", "/send")
+    expect(screen.getByRole("link", { name: "Accept your promotion" })).toHaveAttribute("href", "/dashboard")
     expect(screen.queryByTestId("post-vote-flow")).toBeNull()
   })
 
@@ -47,6 +47,6 @@ describe("treaty signed state", () => {
     render(<TreatySignatureBox initialSignedYes />)
 
     expect(screen.getByTestId("post-vote-flow")).toBeInTheDocument()
-    expect(screen.queryByRole("link", { name: "Tell Two People" })).toBeNull()
+    expect(screen.queryByRole("link", { name: "Accept your promotion" })).toBeNull()
   })
 })

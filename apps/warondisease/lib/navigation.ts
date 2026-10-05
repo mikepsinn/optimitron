@@ -11,13 +11,6 @@ export const appNavigation: AppNavigation = {
       "emoji": "📜"
     },
     {
-      "id": "send",
-      "label": "Tell Two People",
-      "path": "/send",
-      "description": "Send a 1% Treaty invitation to someone who has not voted",
-      "emoji": "📨"
-    },
-    {
       "id": "employees",
       "label": "President Management System",
       "path": "/employees",

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Activity, Award, BarChart3, Building2, Goal, LogOut, Mail, Trophy } from "lucide-react"
 import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
+import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard"
 import { useRouter } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { getSiteConfig } from "@/lib/site-config"
@@ -107,6 +108,13 @@ export function DashboardClient({
               </Button>
             </div>
           </div>
+
+          {/* Humanity Manager assignment: the promotion, the share message, and the tracked invite form */}
+          {showPoliticalContent && (
+            <div className="mb-8" id="assignment">
+              <DashboardShareCard referralUrl={referralLink} showAssignmentForm />
+            </div>
+          )}
 
           {/* Referral Link + Goal (Action) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

@@ -30,7 +30,8 @@ interface TreatySignatureBoxProps {
  * Submission semantics:
  *   - The YES vote (with the typed name) is staged as the pending vote.
  *   - Signed-in: synced to /api/votes/sync immediately. The signed state
- *     offers one next action, Tell Two People, not the post-vote questions.
+ *     offers one next action, the Humanity Manager promotion on /dashboard,
+ *     not the post-vote questions.
  *   - Signed-out: the post-vote flow's email verification saves it on the
  *     next authenticated visit (the box also syncs on mount when a signer
  *     returns from the email link).
@@ -183,7 +184,7 @@ export function TreatySignatureBox({
             asChild
             className="h-auto border-4 border-primary bg-brutal-cyan px-8 py-3 text-lg font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brutal-cyan/90 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
-            <Link href="/send">Tell Two People</Link>
+            <Link href="/dashboard">Accept your promotion</Link>
           </Button>
         )}
       </div>

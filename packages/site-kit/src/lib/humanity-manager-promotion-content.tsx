@@ -42,7 +42,7 @@ export function createHumanityManagerPromotion({
         <PromoBody>
           <PromoText>
             🥳Congratulations! You&apos;ve been promoted to Humanity Manager at{" "}
-            {EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}. You are responsible for
+            {EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME} You are responsible for
             getting{" "}
             <ParameterValue
               className="font-black"
