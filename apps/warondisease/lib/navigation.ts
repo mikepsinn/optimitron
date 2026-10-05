@@ -77,11 +77,11 @@ export const appNavigation: AppNavigation = {
       "label": "TELL SOMEONE ELSE",
       "resolvedItems": [
         {
-          "id": "send",
-          "label": "Tell Two People",
-          "path": "/send",
-          "description": "Send a 1% Treaty invitation to someone who has not voted",
-          "emoji": "📨"
+          "id": "manageHumanity",
+          "label": "Manage Humanity",
+          "path": "/dashboard",
+          "description": "Your campaign dashboard: share your voting link and see who you brought in.",
+          "emoji": "🌍"
         },
         {
           "id": "shirt",

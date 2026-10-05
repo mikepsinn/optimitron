@@ -58,7 +58,7 @@
 - [PRESIDENT MANAGEMENT SYSTEM](/employees)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
-- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
 - [GET THE SHIRT](/shirt)
 - [HANG UP FLYERS](/poster)
 - [GO DOOR TO DOOR](/door-to-door)

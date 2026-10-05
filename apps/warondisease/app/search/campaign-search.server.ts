@@ -190,12 +190,12 @@ const CAMPAIGN_PAGES: CampaignPageDocument[] = [
   },
   {
     description:
-      "Send one more 1% Treaty invitation to someone who has not voted.",
-    emoji: "📨",
-    href: ROUTES.send,
-    keywords: ["send", "invite", "invitation", "share", "referral"],
+      "Your Humanity Manager assignment: send the 1% Treaty to people who have not voted.",
+    emoji: "🌍",
+    href: ROUTES.dashboard,
+    keywords: ["send", "invite", "invitation", "share", "referral", "dashboard", "tell two people"],
     section: "Recruit",
-    title: "Send One More",
+    title: "Manage Humanity",
   },
   {
     description:
