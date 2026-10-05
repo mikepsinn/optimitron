@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The International Campaign to End War and Disease
-- Meta description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Meta description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Canonical: https://warondisease.org/privacy
 - Open Graph title: The International Campaign to End War and Disease
-- Open Graph description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Open Graph description: Please take 30 seconds to trade one apocalypse for disease eradication.
 - Open Graph image: https://warondisease.org/assets/warondisease/war-on-disease-og-1200x630.png
 - Twitter title: The International Campaign to End War and Disease
-- Twitter description: Click a glowing rectangle. 15 seconds. 2.6 lives saved + 53 years of suffering prevented.
+- Twitter description: Please take 30 seconds to trade one apocalypse for disease eradication.
 
 ## Visible Page Copy
 
@@ -65,13 +65,13 @@
 - [PRESIDENT MANAGEMENT SYSTEM](/employees)
 - [FEEDBACK](/feedback)
 #### TELL SOMEONE ELSE
-- [TELL TWO PEOPLE](/send)
+- [MANAGE HUMANITY](/dashboard)
 - [GET THE SHIRT](/shirt)
 - [HANG UP FLYERS](/poster)
 - [GO DOOR TO DOOR](/door-to-door)
 - [TREATY SIGNATORIES](/signatories)
 #### LEARN SOMETHING
-- [HUMANITY V. GOVERNMENT](https://courtofhumanity.org/humanity-v-government)
+- [COURT OF HUMANITY](https://courtofhumanity.org)
 - [IMPACT ANALYSIS](https://impact.warondisease.org)
 - [HOW TO END WAR AND DISEASE](https://manual.warondisease.org)
 - [THE PLAN](/the-plan)

@@ -7,10 +7,11 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { useState, useEffect, useRef } from "react"
 import { Square, CheckSquare } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { storage } from "../../lib/storage"
 import { syncPendingVote } from "../../lib/vote-utils"
 import { getUsernameOrReferralCode } from "../../lib/referral.client"
+import { useReferralAttribution } from "../../lib/use-referral-attribution"
 import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
 import confetti from "canvas-confetti"
 import { motion, AnimatePresence } from "framer-motion"
@@ -69,9 +70,7 @@ export default function TreatyVoteSection({
   const [animatedValue, setAnimatedValue] = useState(50)
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const referralCode = searchParams?.get("ref") || null
-  const inviteToken = searchParams?.get("invite") || null
+  const { referralCode, inviteToken } = useReferralAttribution()
   const shareCardRef = useRef<HTMLDivElement>(null)
   const sliderSectionRef = useRef<HTMLDivElement>(null)
   const animationFrameRef = useRef<number | null>(null)

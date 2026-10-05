@@ -11,21 +11,6 @@ export const appNavigation: AppNavigation = {
       "emoji": "📜"
     },
     {
-      "id": "send",
-      "label": "Tell Two People",
-      "path": "/send",
-      "description": "Send a 1% Treaty invitation to someone who has not voted",
-      "emoji": "📨"
-    },
-    {
-      "id": "plaintiffs",
-      "label": "Register a Plaintiff",
-      "path": "https://courtofhumanity.org/plaintiffs",
-      "description": "Put your name on the record in Humanity v. Government.",
-      "emoji": "⚖️",
-      "isExternal": true
-    },
-    {
       "id": "employees",
       "label": "President Management System",
       "path": "/employees",
@@ -92,11 +77,11 @@ export const appNavigation: AppNavigation = {
       "label": "TELL SOMEONE ELSE",
       "resolvedItems": [
         {
-          "id": "send",
-          "label": "Tell Two People",
-          "path": "/send",
-          "description": "Send a 1% Treaty invitation to someone who has not voted",
-          "emoji": "📨"
+          "id": "manageHumanity",
+          "label": "Manage Humanity",
+          "path": "/dashboard",
+          "description": "Your campaign dashboard: share your voting link and see who you brought in.",
+          "emoji": "🌍"
         },
         {
           "id": "shirt",
@@ -133,11 +118,11 @@ export const appNavigation: AppNavigation = {
       "label": "LEARN SOMETHING",
       "resolvedItems": [
         {
-          "id": "humanityVGovernmentCase",
-          "label": "Humanity v. Government",
-          "path": "https://courtofhumanity.org/humanity-v-government",
-          "description": "The public case for redirecting 1% of military spending from weapons to cures.",
-          "emoji": "📜",
+          "id": "courtOfHumanity",
+          "label": "Court of Humanity",
+          "path": "https://courtofhumanity.org",
+          "description": "Humanity v. Government: read the case against the governments of Earth and render your verdict.",
+          "emoji": "⚖️",
           "isExternal": true
         },
         {

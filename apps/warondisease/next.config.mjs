@@ -76,6 +76,8 @@ const nextConfig = {
       { source: "/campaigns", destination: "/", permanent: false },
       { source: "/campaigns/:path*", destination: "/", permanent: false },
       { source: "/auth/signup", destination: "/auth/signin", permanent: false },
+      // The dashboard opens with the invitation generator that /send used to hold.
+      { source: "/send", destination: "/dashboard", permanent: false },
       {
         source: "/knowledge/:path*",
         destination: "https://manual.warondisease.org/knowledge/:path*",

@@ -14,8 +14,8 @@ export const dynamic = "force-dynamic"
 /**
  * Canonical treaty referral landing route: /vote/jane or /vote/REF123.
  *
- * Redirects to the focused vote surface with ?ref= and preserves directed
- * invitation tokens for named invite conversion. Remaining query params
+ * Redirects to the homepage (vote first, then the case) with ?ref= and
+ * preserves directed invitation tokens for named invite conversion. Remaining query params
  * (utm_* etc.) pass through unchanged.
  */
 export async function GET(request: NextRequest, { params }: RouteContext) {

@@ -23,9 +23,9 @@ describe("campaign sitemap", () => {
     const publicPages = pagePaths(appRoot).filter((route) =>
       !route.includes("[") &&
       !/^\/(?:admin|auth|dashboard|profile)(?:\/|$)/.test(route) &&
-      // /send is the authenticated invitation workflow; success pages are
-      // post-submit receipts (or redirects), not search landing pages.
-      route !== "/send" && !route.endsWith("/success"),
+      // Success pages are post-submit receipts (or redirects), not search
+      // landing pages.
+      !route.endsWith("/success"),
     );
     expect([...PUBLIC_CAMPAIGN_ROUTES].sort()).toEqual(publicPages.sort());
   });

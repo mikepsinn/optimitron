@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic"
  * can trace where shares originated (e.g. official social accounts). Also
  * captures `?sa=<shareAttemptId>` so we can tie this click (and any signup
  * that follows) back to the specific ShareAttempt row that generated this
- * outbound message. Then redirects to the focused /vote flow. Directed
+ * outbound message. Then redirects to the homepage vote. Directed
  * invitations also preserve ?invite=<token> for conversion, and remaining
  * query params (utm_* etc.) pass through unchanged.
  */

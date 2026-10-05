@@ -209,16 +209,20 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       sourcePage: "apps/warondisease/app/organizations/[slug]/page.tsx",
     },
     {
+      // /treaty is public. The site-app visual fixtures give the demo user a
+      // YES treaty vote, so this captures the signed state a returning signer sees.
       authenticated: true,
       authRole: "user",
+      captureSelector: "#sign",
+      publicPageSignedInState: true,
       covers: [
-        "apps/warondisease/app/send/page.tsx",
-        "apps/warondisease/app/send/send-referral-invitation-client.tsx",
+        "apps/warondisease/app/treaty/page.tsx",
+        "packages/site-kit/src/components/landing/TreatySignatureBox.tsx",
       ],
-      label: "Send an invitation — signed-in user",
-      routeName: "send-authenticated",
-      routePath: "/send",
-      sourcePage: "apps/warondisease/app/send/page.tsx",
+      label: "Treaty signature — signed-in signer",
+      routeName: "treaty-authenticated",
+      routePath: "/treaty",
+      sourcePage: "apps/warondisease/app/treaty/page.tsx",
     },
     {
       authenticated: true,

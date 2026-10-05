@@ -34,8 +34,8 @@ describe("referral redirect helpers", () => {
     mocks.shareAttemptUpdateMany.mockResolvedValue({ count: 1 })
   })
 
-  it("builds the vote-surface redirect for generic referral links", () => {
-    expect(buildReferralRedirectUrl({ code: "jane" })).toBe("/vote?ref=jane")
+  it("sends generic referral links to the homepage vote", () => {
+    expect(buildReferralRedirectUrl({ code: "jane" })).toBe("/?ref=jane")
   })
 
   it("preserves share-attempt and invite attribution params", () => {
@@ -48,7 +48,7 @@ describe("referral redirect helpers", () => {
         treatyFlow: "v1",
       }),
     ).toBe(
-      "/vote?ref=REF123&sa=share_1&invite=invite+1&treatyFlow=v1&flowVariant=vote-first",
+      "/?ref=REF123&sa=share_1&invite=invite+1&treatyFlow=v1&flowVariant=vote-first",
     )
   })
 
@@ -62,7 +62,7 @@ describe("referral redirect helpers", () => {
         ),
       }),
     ).toBe(
-      "/vote?ref=jane&sa=share_1&utm_source=twitter&utm_medium=social&source=dfda.earth",
+      "/?ref=jane&sa=share_1&utm_source=twitter&utm_medium=social&source=dfda.earth",
     )
   })
 
@@ -73,7 +73,7 @@ describe("referral redirect helpers", () => {
         inviteToken: "tok",
         passthroughParams: new URLSearchParams("ref=jane&invite=tok"),
       }),
-    ).toBe("/vote?ref=jane&invite=tok")
+    ).toBe("/?ref=jane&invite=tok")
   })
 
   it("logs canonical /vote username clicks through the shared resolver", async () => {

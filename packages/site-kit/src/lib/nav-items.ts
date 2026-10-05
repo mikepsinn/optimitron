@@ -166,16 +166,6 @@ export const NAV_ITEMS_MAP = {
     allowedVariants: [VARIANTS.WAR_ON_DISEASE],
     keywords: ["1% treaty", "sign treaty", "treaty text"],
   },
-  send: {
-    id: "send",
-    label: "Tell Two People",
-    path: ROUTES.send,
-    description: "Send a 1% Treaty invitation to someone who has not voted",
-    emoji: "📨",
-    canonicalVariant: VARIANTS.WAR_ON_DISEASE,
-    allowedVariants: [VARIANTS.WAR_ON_DISEASE],
-    keywords: ["share", "invite", "referral", "tell two people"],
-  },
   join: {
     id: "join",
     label: "Join as an Organization",

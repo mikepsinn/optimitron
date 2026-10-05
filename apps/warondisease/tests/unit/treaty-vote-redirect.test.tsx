@@ -6,6 +6,9 @@ import TreatyVoteSection from "../../../../packages/site-kit/src/components/land
 const mocks = vi.hoisted(() => ({
   pendingVote: null as Record<string, unknown> | null,
   push: vi.fn(),
+  searchParams: new URLSearchParams(),
+  signupInviteToken: null as string | null,
+  signupReferral: null as string | null,
   setVoteStatusCache: vi.fn(),
   syncPendingVote: vi.fn(),
 }))
@@ -24,7 +27,7 @@ vi.mock("next-auth/react", () => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mocks.searchParams,
 }))
 
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }))
@@ -63,6 +66,17 @@ vi.mock("../../../../packages/site-kit/src/lib/storage", () => ({
       mocks.pendingVote = vote
     },
     setVoteStatusCache: mocks.setVoteStatusCache,
+    getSignupReferral: () => mocks.signupReferral,
+    setSignupReferral: (code: string) => {
+      mocks.signupReferral = code
+    },
+    getSignupInviteToken: () => mocks.signupInviteToken,
+    setSignupInviteToken: (token: string) => {
+      mocks.signupInviteToken = token
+    },
+    removeSignupInviteToken: () => {
+      mocks.signupInviteToken = null
+    },
   },
 }))
 
@@ -74,9 +88,21 @@ vi.mock("../../../../packages/site-kit/src/lib/referral.client", () => ({
   getUsernameOrReferralCode: () => "voter-ref",
 }))
 
+beforeEach(() => {
+  mocks.pendingVote = null
+  mocks.searchParams = new URLSearchParams()
+  mocks.signupInviteToken = null
+  mocks.signupReferral = null
+})
+
+async function voteYes() {
+  fireEvent.change(screen.getByRole("slider"), { target: { value: "60" } })
+  fireEvent.click(await screen.findByRole("button", { name: "SUBMIT" }))
+  fireEvent.click(await screen.findByRole("button", { name: "YES" }))
+}
+
 describe("authenticated treaty voting", () => {
   beforeEach(() => {
-    mocks.pendingVote = null
     mocks.push.mockReset()
     mocks.setVoteStatusCache.mockReset()
     mocks.syncPendingVote.mockReset()
@@ -138,5 +164,46 @@ describe("authenticated treaty voting", () => {
     await act(async () => finishSync?.(true))
 
     await waitFor(() => expect(mocks.push).toHaveBeenCalledWith("/dashboard"))
+  })
+})
+
+describe("referral attribution", () => {
+  beforeEach(() => {
+    mocks.syncPendingVote.mockReset()
+    mocks.syncPendingVote.mockResolvedValue(true)
+  })
+
+  it("credits the saved referrer when the visitor votes on a page without ?ref=", async () => {
+    mocks.signupReferral = "jane"
+    mocks.signupInviteToken = "tok-jane"
+
+    render(<TreatyVoteSection hideHeading questionAs="h1" disableIntroAnimation />)
+    await voteYes()
+
+    expect(mocks.pendingVote).toMatchObject({ answer: "YES", referredBy: "jane", inviteToken: "tok-jane" })
+  })
+
+  it("lets a newer referral link replace the saved referrer and invite", async () => {
+    mocks.signupReferral = "jane"
+    mocks.signupInviteToken = "tok-jane"
+    mocks.searchParams = new URLSearchParams("ref=mike")
+
+    render(<TreatyVoteSection hideHeading questionAs="h1" disableIntroAnimation />)
+    await voteYes()
+
+    expect(mocks.pendingVote).toMatchObject({ answer: "YES", referredBy: "mike", inviteToken: null })
+    expect(mocks.signupReferral).toBe("mike")
+    expect(mocks.signupInviteToken).toBeNull()
+  })
+
+  it("keeps an invite token that arrives without a referral code", async () => {
+    mocks.signupReferral = "jane"
+    mocks.searchParams = new URLSearchParams("invite=tok-direct")
+
+    render(<TreatyVoteSection hideHeading questionAs="h1" disableIntroAnimation />)
+    await voteYes()
+
+    expect(mocks.pendingVote).toMatchObject({ answer: "YES", referredBy: "jane", inviteToken: "tok-direct" })
+    expect(mocks.signupInviteToken).toBe("tok-direct")
   })
 })

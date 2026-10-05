@@ -106,7 +106,6 @@ export const ROUTES = {
   // User / Auth
   dashboard: '/dashboard',
   dashboardSettings: '/dashboard/settings',
-  send: '/send',
   profileEdit: '/profile/edit',
   signIn: '/auth/signin',
   signInError: '/auth/error',

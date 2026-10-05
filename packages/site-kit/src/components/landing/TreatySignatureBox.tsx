@@ -1,15 +1,16 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
 import confetti from "canvas-confetti"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { storage } from "../../lib/storage"
 import { syncPendingVote } from "../../lib/vote-utils"
 import { getUsernameOrReferralCode } from "../../lib/referral.client"
-import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
+import { useReferralAttribution } from "../../lib/use-referral-attribution"
+import { getBaseUrl } from "../../lib/url"
 import { trackVoteSubmitted } from "../../lib/analytics"
 import { TreatyPostVoteFlow } from "./TreatyPostVoteFlow"
 
@@ -28,7 +29,9 @@ interface TreatySignatureBoxProps {
  *
  * Submission semantics:
  *   - The YES vote (with the typed name) is staged as the pending vote.
- *   - Signed-in: synced to /api/votes/sync immediately.
+ *   - Signed-in: synced to /api/votes/sync immediately. The signed state
+ *     offers one next action, the Humanity Manager promotion on /dashboard,
+ *     not the post-vote questions.
  *   - Signed-out: the post-vote flow's email verification saves it on the
  *     next authenticated visit (the box also syncs on mount when a signer
  *     returns from the email link).
@@ -41,9 +44,7 @@ export function TreatySignatureBox({
   initialSignedYes = false,
 }: TreatySignatureBoxProps) {
   const { data: session, status } = useSession()
-  const searchParams = useSearchParams()
-  const referralCode = searchParams?.get("ref") || null
-  const inviteToken = searchParams?.get("invite") || null
+  const { referralCode, inviteToken } = useReferralAttribution()
 
   const [name, setName] = useState("")
   const [showLegalName, setShowLegalName] = useState(false)
@@ -162,24 +163,30 @@ export function TreatySignatureBox({
   }
 
   if (signed) {
-    const baseUrl = getBaseUrl()
-    const shareUrl = session?.user
-      ? buildUserReferralUrl(session.user, baseUrl)
-      : baseUrl
     return (
-      <div className="mx-auto max-w-2xl">
-        <p className="mb-6 text-center text-2xl font-black uppercase">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="mb-6 text-2xl font-black uppercase">
           Signed. Thank you for ending war and disease.
         </p>
-        <TreatyPostVoteFlow
-          answer="yes"
-          mode="full"
-          status={status}
-          session={session}
-          shareUrl={shareUrl}
-          referralCode={referralCode}
-          inviteToken={inviteToken}
-        />
+        {status === "unauthenticated" ? (
+          // Signed-out: only the email verification box, which saves the signature.
+          <TreatyPostVoteFlow
+            answer="yes"
+            mode="full"
+            status={status}
+            session={session}
+            shareUrl={getBaseUrl()}
+            referralCode={referralCode}
+            inviteToken={inviteToken}
+          />
+        ) : (
+          <Button
+            asChild
+            className="h-auto border-4 border-primary bg-brutal-cyan px-8 py-3 text-lg font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brutal-cyan/90 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Link href="/dashboard">Accept your promotion</Link>
+          </Button>
+        )}
       </div>
     )
   }

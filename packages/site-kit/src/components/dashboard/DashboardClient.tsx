@@ -5,10 +5,10 @@ import Layout from "@/components/layout"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Activity, Award, BarChart3, Building2, Goal, LogOut, Mail, Trophy } from "lucide-react"
-import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
+import { TreatyReminderComposer } from "@/components/landing/treaty-reminder-composer"
+import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion.web"
 import { useRouter } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { getSiteConfig } from "@/lib/site-config"
 import { syncPendingVote } from "@/lib/vote-utils"
 import { buildUserReferralUrl } from "@/lib/url"
 import { StatsOverview } from "@/components/dashboard/StatsOverview"
@@ -34,8 +34,6 @@ export function DashboardClient({
   initialData: DashboardData
   leaderboard: LeaderboardEntry[]
 }) {
-  const config = getSiteConfig()
-  const showPoliticalContent = config.showPoliticalContent
   const router = useRouter()
   const { data: session, status } = useSession()
   const referralLink = buildUserReferralUrl(initialData.user)
@@ -90,11 +88,7 @@ export function DashboardClient({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase mb-4">
-                  {showPoliticalContent ? (
-                    <>ERADICATE DISEASE<span className="text-brutal-pink"> TODAY</span></>
-                  ) : (
-                    <>YOUR <span className="text-brutal-pink">SURVEY RESULTS</span></>
-                  )}
+                  ERADICATE DISEASE<span className="text-brutal-pink"> TODAY</span>
                 </h1>
               </div>
               <Button
@@ -108,18 +102,26 @@ export function DashboardClient({
             </div>
           </div>
 
-          {/* Referral Link + Goal (Action) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <ReferralLinkCard referralLink={referralLink} className="h-full" id="referral" />
+          {/* Humanity Manager assignment: the promotion, then the message generator (one human by default) */}
+          <section className="mx-auto mb-8 max-w-2xl" id="referral">
+            <HumanityManagerPromotion />
+            <div className="mt-6">
+              <TreatyReminderComposer
+                defaultRecipientMode="one_human"
+                referralUser={initialData.user}
+                surface="dashboard"
+              />
+            </div>
+          </section>
+
+          <div className="mx-auto mb-8 max-w-2xl">
             <ProfileCard user={initialData.user} />
           </div>
 
           {/* Impact Ledger — kept below share/profile so the share action stays above the fold */}
-          {showPoliticalContent && (
-            <div className="mb-8" id="impact-ledger">
-              <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
-            </div>
-          )}
+          <div className="mb-8" id="impact-ledger">
+            <ImpactLedgerCard votesLogged={initialData.stats.referrals} />
+          </div>
 
           {/* Impact Tree — full referral-tree view (direct + downstream + generations) */}
           <div className="mb-8" id="impact-tree">
@@ -145,131 +147,122 @@ export function DashboardClient({
             <SurveyResultsCard results={initialData.surveyResults} />
           </div>
 
-          {(showPoliticalContent || hasActivity || hasBadges || hasOrganizations || hasLeaderboard) && (
-            <div className="mb-8">
-              <Accordion type="multiple" value={openSections} onValueChange={setOpenSections} className="space-y-4">
-                <AccordionItem value="goal" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
+          <div className="mb-8">
+            <Accordion type="multiple" value={openSections} onValueChange={setOpenSections} className="space-y-4">
+              <AccordionItem value="goal" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                  <span className="inline-flex items-center gap-2">
+                    <Goal className="h-5 w-5" />
+                    Referral Goal
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4">
+                  <ReferralGoalCard stats={initialData.stats} frameless />
+                </AccordionContent>
+              </AccordionItem>
+
+              {hasLeaderboard && (
+                <AccordionItem value="leaderboard" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
                   <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
                     <span className="inline-flex items-center gap-2">
-                      <Goal className="h-5 w-5" />
-                      Referral Goal
+                      <Trophy className="h-5 w-5" />
+                      Leaderboard
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="pt-4">
-                    <ReferralGoalCard stats={initialData.stats} frameless />
+                    <LeaderboardCard
+                      leaderboard={leaderboard}
+                      user={initialData.user}
+                      stats={initialData.stats}
+                      showPoliticalContent
+                      frameless
+                    />
                   </AccordionContent>
                 </AccordionItem>
+              )}
 
-                {hasLeaderboard && (
-                  <AccordionItem value="leaderboard" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <Trophy className="h-5 w-5" />
-                        Leaderboard
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <LeaderboardCard
-                        leaderboard={leaderboard}
-                        user={initialData.user}
-                        stats={initialData.stats}
-                        showPoliticalContent={showPoliticalContent}
-                        frameless
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+              <AccordionItem value="details" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                  <span className="inline-flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    More Stats
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-6">
+                  <StatsOverview stats={initialData.stats} onMetricClick={handleMetricClick} className="mb-0" />
+                  <GlobalProgressCard progress={initialData.globalProgress} className="mb-0" />
+                </AccordionContent>
+              </AccordionItem>
 
-                {showPoliticalContent && (
-                  <AccordionItem value="details" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5" />
-                        More Stats
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4 space-y-6">
-                      <StatsOverview stats={initialData.stats} onMetricClick={handleMetricClick} className="mb-0" />
-                      <GlobalProgressCard progress={initialData.globalProgress} className="mb-0" />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+              {hasOrganizations && (
+                <AccordionItem value="organizations" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                  <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                    <span className="inline-flex items-center gap-2">
+                      <Building2 className="h-5 w-5" />
+                      Your Organizations
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4">
+                    <OrganizationsCard organizations={initialData.organizations} frameless />
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
-                {hasOrganizations && (
-                  <AccordionItem value="organizations" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <Building2 className="h-5 w-5" />
-                        Your Organizations
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <OrganizationsCard organizations={initialData.organizations} frameless />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+              {hasActivity && (
+                <AccordionItem value="activity" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                  <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                    <span className="inline-flex items-center gap-2">
+                      <Activity className="h-5 w-5" />
+                      Recent Activity
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4">
+                    <ActivityFeed activities={initialData.activities} frameless />
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
-                {hasActivity && (
-                  <AccordionItem value="activity" className="my-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <Activity className="h-5 w-5" />
-                        Recent Activity
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <ActivityFeed activities={initialData.activities} frameless />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+              {hasBadges && (
+                <AccordionItem value="awards" className="mt-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                  <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                    <span className="inline-flex items-center gap-2">
+                      <Award className="h-5 w-5" />
+                      Awards
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4">
+                    <BadgesSection
+                      badges={initialData.badges}
+                      showPoliticalContent
+                      frameless
+                      className="mb-0"
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
-                {hasBadges && (
-                  <AccordionItem value="awards" className="mt-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <Award className="h-5 w-5" />
-                        Awards
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <BadgesSection
-                        badges={initialData.badges}
-                        showPoliticalContent={showPoliticalContent}
-                        frameless
-                        className="mb-0"
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-
-                {showPoliticalContent && (
-                  <AccordionItem value="signature" className="mt-4 border-2 border-primary last:border-b-2 bg-background px-6">
-                    <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
-                      <span className="inline-flex items-center gap-2">
-                        <Mail className="h-5 w-5" />
-                        Email Signature Generator
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <EmailSignatureCard
-                        referralLink={referralLink}
-                        userName={initialData.user.name}
-                        frameless
-                        className="mb-0"
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-              </Accordion>
-            </div>
-          )}
+              <AccordionItem value="signature" className="mt-4 border-2 border-primary last:border-b-2 bg-background px-6">
+                <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
+                  <span className="inline-flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email Signature Generator
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4">
+                  <EmailSignatureCard
+                    referralLink={referralLink}
+                    userName={initialData.user.name}
+                    frameless
+                    className="mb-0"
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
 
         </div>
       </div>
-      {/* Sticky footer — hidden for survey variant (speculative "lives saved" claims) */}
-      {showPoliticalContent && (
-        <StickyShareFooter referrals={initialData.stats.referrals} referralLink={referralLink} />
-      )}
+      <StickyShareFooter referrals={initialData.stats.referrals} referralLink={referralLink} />
     </Layout>
   )
 }

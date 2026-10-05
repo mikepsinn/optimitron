@@ -76,11 +76,11 @@ async function run(browser: Browser) {
     const cases: Array<[string, string]> = [
       [
         "/vote/jane?sa=s1&utm_source=twitter&invite=tok",
-        "/vote?ref=jane&sa=s1&invite=tok&utm_source=twitter",
+        "/?ref=jane&sa=s1&invite=tok&utm_source=twitter",
       ],
       [
         "/r/jane?utm_medium=email&treatyFlow=v2",
-        "/vote?ref=jane&treatyFlow=v2&utm_medium=email",
+        "/?ref=jane&treatyFlow=v2&utm_medium=email",
       ],
       [
         "/questions?ref=jane&utm_medium=email",

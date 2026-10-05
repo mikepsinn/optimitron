@@ -197,8 +197,10 @@ test("every authenticated site-app page has visual coverage or a documented exem
         `${appName}:${route.routeName} references missing page ${route.sourcePage}`,
       );
       assert.ok(
-        // A public page can host a role-specific signed-in navigation capture.
+        // A public page can host a role-specific signed-in navigation capture,
+        // or a declared signed-in state of that page.
         (route.openMenu && typeof route.expectAdmin === "boolean") ||
+          route.publicPageSignedInState === true ||
           isAuthenticatedPage(path.join(repoRoot, route.sourcePage)),
         `${appName}:${route.routeName} source page needs an independent auth guard or visual-auth-state marker`,
       );
