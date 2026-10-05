@@ -1,3 +1,64 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "../../shared-globals.css";
+
+/* The home page (components/home-page.tsx) uses the decentralized-fda prototype's colors: purple, light
+   borders and rounded corners. :has() also reaches menus that open in a portal outside the page. */
+:root:has(.prototype-theme) {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+  --primary: hsl(250 95% 64%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(210 40% 96.1%);
+  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  --accent: hsl(210 40% 96.1%);
+  --accent-foreground: hsl(222.2 47.4% 11.2%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(221.2 83.2% 53.3%);
+  --radius: 0.5rem;
+  /* Soft shadows instead of the hard offset ones. */
+  --shadow-x: 0px;
+  --shadow-y: 2px;
+  --shadow-blur: 6px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.08;
+  --shadow-color: hsl(222.2 84% 4.9%);
+}
+
+/* The home page's learning loop (components/home/learning-loop.tsx): each of its four steps is
+   highlighted for a quarter of the cycle. */
+@theme {
+  --animate-loop-step: loop-step 10s ease-in-out infinite;
+
+  @keyframes loop-step {
+    0%, 20% {
+      border-color: var(--primary);
+      background-color: color-mix(in srgb, var(--primary) 6%, transparent);
+    }
+    25%, 100% {
+      border-color: var(--border);
+      background-color: var(--card);
+    }
+  }
+}
+
+/* Full-width background bands for sections inside the home page's container. Border-image outsets are
+   ink overflow, so a band reaches the window edges without widening the page. */
+@layer components {
+  .band-muted {
+    border-image: linear-gradient(var(--muted), var(--muted)) fill 0 / 0 / 0 100vmax;
+  }
+  .band-muted-fade {
+    border-image: linear-gradient(color-mix(in srgb, var(--muted) 50%, transparent), var(--muted)) fill 0 / 0 / 0 100vmax;
+  }
+  .band-fade {
+    border-image: linear-gradient(var(--background), color-mix(in srgb, var(--muted) 50%, transparent)) fill 0 / 0 / 0 100vmax;
+  }
+}

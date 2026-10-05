@@ -50,11 +50,40 @@ const campaignHomeSharedFiles = [
   ...dfdaHowItWorksFiles,
 ];
 
+/** The acceleratedmedicine.org home page's own sections, header, footer and walkthrough mock-ups. */
+const acceleratedmedicineHomeFiles = [
+  "apps/acceleratedmedicine/components/home/benefit-cards.tsx",
+  "apps/acceleratedmedicine/components/home/explainer-video.tsx",
+  "apps/acceleratedmedicine/components/home/home-chrome.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/ExampleDataTag.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/HowItWorksStep.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/PatientSteps.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/ProviderSteps.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/ResearchPartnerStep.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/ResearchPartnerSteps.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/provider-steps/Step1ReviewPatientMatches.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/provider-steps/Step2AssignIntervention.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/provider-steps/Step3MonitorProgress.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step1FindTrials.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step2ViewOutcomeLabels.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step3JoinTrial.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step4CoordinateCare.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step5TrackData.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step6GainInsights.tsx",
+  "apps/acceleratedmedicine/components/home/how-it-works/steps/Step7FDAiAgent.tsx",
+  "apps/acceleratedmedicine/components/home/learning-loop.tsx",
+  "apps/acceleratedmedicine/components/home/mobile-menu.tsx",
+  "apps/acceleratedmedicine/components/home/outcome-label.tsx",
+  "apps/acceleratedmedicine/components/home/partners-section.tsx",
+  "apps/acceleratedmedicine/components/home/rankings-preview.tsx",
+];
+
 function getCampaignHomeFiles(appName) {
   if (appName === "acceleratedmedicine") {
     return [
       "apps/acceleratedmedicine/app/page.tsx",
       "apps/acceleratedmedicine/components/home-page.tsx",
+      ...acceleratedmedicineHomeFiles,
       "apps/acceleratedmedicine/components/org-links.tsx",
       "apps/acceleratedmedicine/components/legacy-home-hash-redirect.tsx",
       "apps/acceleratedmedicine/lib/legacy-home-hash.ts",
