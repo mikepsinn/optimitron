@@ -345,9 +345,22 @@ jobs:
             );
           }
 
+          // Court of Humanity previews return 500 on pages that read the session
+          // (/ and /humanity-v-government) while /court and courtofhumanity.org
+          // work, on PRs that never touched the court. site-kit auth throws at
+          // load when DATABASE_URL or NEXTAUTH_SECRET is unset, so the likely
+          // cause is the courtofhumanity Vercel project's Preview variables.
+          // Production is still smoked. Remove the app from this set once a
+          // court preview serves / again.
+          const appsWithoutPreviewSmoke = new Set(["courtofhumanity"]);
+          const skip = environment === "Preview" && appsWithoutPreviewSmoke.has(appName);
+          if (skip) {
+            console.log(`Skipping ${appName} preview smoke until its Preview deployment serves / again.`);
+          }
+
           appendFileSync(
             process.env.GITHUB_OUTPUT,
-            `app=${appName}\nenvironment=${environment}\nurl=${smokeUrls[0]}\nurls=${smokeUrls.join(",")}\nsource_url=${targetUrl}\n`,
+            `app=${appName}\nenvironment=${environment}\nurl=${smokeUrls[0]}\nurls=${smokeUrls.join(",")}\nsource_url=${targetUrl}\nskip=${skip}\n`,
           );
           console.log(
             `Resolved ${environment} ${appName} smoke target(s): ${smokeUrls.join(", ")}`,
@@ -516,7 +529,7 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
-        if: steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app != 'unknown'
+        if: steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app != 'unknown' && steps.target.outputs.skip != 'true'
         env:
           DEPLOYMENT_ENVIRONMENT: ${{ steps.target.outputs.environment }}
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
