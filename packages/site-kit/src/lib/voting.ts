@@ -15,12 +15,12 @@ export function hasVotingEnabled(): boolean {
  * Get the URL to the vote section (homepage with #vote anchor)
  *
  * Returns the appropriate vote destination:
- * - For variants with voting enabled: local homepage (/)
+ * - For variants with voting enabled: local homepage (/#vote)
  * - For other variants: redirect to warondisease.org with preserved query params + source tracking
  *
  * This ensures all "Vote" buttons work regardless of which variant you're on.
  *
- * @returns Homepage URL with vote section (either local or warondisease.org) with preserved query params
+ * @returns Homepage URL with vote section (local, or warondisease.org with preserved query params)
  */
 export function getVoteSectionUrl(): string {
   const config = getSiteConfig()
@@ -30,10 +30,9 @@ export function getVoteSectionUrl(): string {
                     config.enabledFeatures.includes(SITE_FEATURES.SURVEY)
 
   if (hasVoting) {
-    // Same domain - return homepage with #vote anchor and query params preserved
-    if (typeof window !== 'undefined') {
-      return '/' + window.location.search + '#vote'
-    }
+    // Same domain. The vote section saves ?ref= on arrival, so the anchor
+    // doesn't carry the query string; a window-only branch here would make
+    // server and client hrefs differ during hydration.
     return '/#vote'
   }
 

@@ -34,7 +34,7 @@ export function buildReferralRedirectUrl(input: {
       redirectParams.append(key, value)
     }
   }
-  return `/vote?${redirectParams.toString()}`
+  return `/?${redirectParams.toString()}`
 }
 
 /** Both fields are diagnostic only — nothing reads them for logic. */

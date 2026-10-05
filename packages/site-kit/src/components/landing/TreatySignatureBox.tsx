@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
 import confetti from "canvas-confetti"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card } from "@optimitron/neobrutalist-ui/ui/card"
 import { storage } from "../../lib/storage"
 import { syncPendingVote } from "../../lib/vote-utils"
 import { getUsernameOrReferralCode } from "../../lib/referral.client"
+import { useReferralAttribution } from "../../lib/use-referral-attribution"
 import { buildUserReferralUrl, getBaseUrl } from "../../lib/url"
 import { trackVoteSubmitted } from "../../lib/analytics"
 import { TreatyPostVoteFlow } from "./TreatyPostVoteFlow"
@@ -41,9 +41,7 @@ export function TreatySignatureBox({
   initialSignedYes = false,
 }: TreatySignatureBoxProps) {
   const { data: session, status } = useSession()
-  const searchParams = useSearchParams()
-  const referralCode = searchParams?.get("ref") || null
-  const inviteToken = searchParams?.get("invite") || null
+  const { referralCode, inviteToken } = useReferralAttribution()
 
   const [name, setName] = useState("")
   const [showLegalName, setShowLegalName] = useState(false)
