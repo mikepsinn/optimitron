@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Activity, Award, BarChart3, Building2, Goal, LogOut, Mail, Trophy } from "lucide-react"
 import { ReferralLinkCard } from "@/components/shared/ReferralLinkCard"
-import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard"
+import { TreatyReminderComposer } from "@/components/landing/treaty-reminder-composer"
+import { HumanityManagerPromotion } from "@/lib/humanity-manager-promotion.web"
 import { useRouter } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { getSiteConfig } from "@/lib/site-config"
@@ -109,16 +110,25 @@ export function DashboardClient({
             </div>
           </div>
 
-          {/* Humanity Manager assignment: the promotion, the share message, and the tracked invite form */}
+          {/* Humanity Manager assignment: the promotion, then the message generator (one human by default) */}
           {showPoliticalContent && (
-            <div className="mb-8" id="assignment">
-              <DashboardShareCard referralUrl={referralLink} showAssignmentForm />
-            </div>
+            <section className="mx-auto mb-8 max-w-2xl" id="referral">
+              <HumanityManagerPromotion />
+              <div className="mt-6">
+                <TreatyReminderComposer
+                  defaultRecipientMode="one_human"
+                  referralUser={initialData.user}
+                  surface="dashboard"
+                />
+              </div>
+            </section>
           )}
 
-          {/* Referral Link + Goal (Action) */}
+          {/* Referral Link + Profile. Campaign sites share through the generator above. */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <ReferralLinkCard referralLink={referralLink} className="h-full" id="referral" />
+            {!showPoliticalContent && (
+              <ReferralLinkCard referralLink={referralLink} className="h-full" id="referral" />
+            )}
             <ProfileCard user={initialData.user} />
           </div>
 
