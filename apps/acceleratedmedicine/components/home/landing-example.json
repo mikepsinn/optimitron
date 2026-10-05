@@ -1,0 +1,288 @@
+{
+  "rankings": [
+    {
+      "slug": "depression",
+      "name": "Depression",
+      "treatmentCount": 6,
+      "treatments": [
+        {
+          "slug": "electroconvulsive-therapy-ect",
+          "name": "Electroconvulsive Therapy (ECT)",
+          "effectiveness": 90,
+          "safetyScore": 40
+        },
+        {
+          "slug": "venlafaxine-snri",
+          "name": "Venlafaxine (SNRI)",
+          "effectiveness": 80,
+          "safetyScore": 60
+        },
+        {
+          "slug": "cognitive-behavioral-therapy-cbt",
+          "name": "Cognitive Behavioral Therapy (CBT)",
+          "effectiveness": 78,
+          "safetyScore": 95
+        },
+        {
+          "slug": "sertraline-ssri",
+          "name": "Sertraline (SSRI)",
+          "effectiveness": 76,
+          "safetyScore": 60
+        },
+        {
+          "slug": "mirtazapine",
+          "name": "Mirtazapine",
+          "effectiveness": 75,
+          "safetyScore": 60
+        }
+      ]
+    },
+    {
+      "slug": "insomnia",
+      "name": "Insomnia",
+      "treatmentCount": 7,
+      "treatments": [
+        {
+          "slug": "cognitive-behavioral-therapy-for-insomnia-cbt-i",
+          "name": "Cognitive Behavioral Therapy for Insomnia (CBT-I)",
+          "effectiveness": 78,
+          "safetyScore": 95
+        },
+        {
+          "slug": "zolpidem",
+          "name": "Zolpidem",
+          "effectiveness": 70,
+          "safetyScore": 45
+        },
+        {
+          "slug": "eszopiclone",
+          "name": "Eszopiclone",
+          "effectiveness": 68,
+          "safetyScore": 45
+        },
+        {
+          "slug": "lemborexant",
+          "name": "Lemborexant",
+          "effectiveness": 65,
+          "safetyScore": 55
+        },
+        {
+          "slug": "suvorexant",
+          "name": "Suvorexant",
+          "effectiveness": 62,
+          "safetyScore": 55
+        }
+      ]
+    },
+    {
+      "slug": "diabetes-mellitus-type-2",
+      "name": "Diabetes mellitus type 2",
+      "treatmentCount": 7,
+      "treatments": [
+        {
+          "slug": "insulin-basal",
+          "name": "Insulin (Basal)",
+          "effectiveness": 92,
+          "safetyScore": 55
+        },
+        {
+          "slug": "lifestyle-modifications-diet-exercise",
+          "name": "Lifestyle Modifications (Diet & Exercise)",
+          "effectiveness": 92,
+          "safetyScore": 95
+        },
+        {
+          "slug": "semaglutide-glp-1-receptor-agonist",
+          "name": "Semaglutide (GLP-1 Receptor Agonist)",
+          "effectiveness": 90,
+          "safetyScore": 60
+        },
+        {
+          "slug": "empagliflozin-sglt2-inhibitor",
+          "name": "Empagliflozin (SGLT2 Inhibitor)",
+          "effectiveness": 89,
+          "safetyScore": 60
+        },
+        {
+          "slug": "metformin",
+          "name": "Metformin",
+          "effectiveness": 88,
+          "safetyScore": 65
+        }
+      ]
+    },
+    {
+      "slug": "hypertension",
+      "name": "Hypertension",
+      "treatmentCount": 5,
+      "treatments": [
+        {
+          "slug": "chlorthalidone",
+          "name": "Chlorthalidone",
+          "effectiveness": 90,
+          "safetyScore": 70
+        },
+        {
+          "slug": "lisinopril",
+          "name": "Lisinopril",
+          "effectiveness": 88,
+          "safetyScore": 70
+        },
+        {
+          "slug": "amlodipine",
+          "name": "Amlodipine",
+          "effectiveness": 87,
+          "safetyScore": 70
+        },
+        {
+          "slug": "valsartan",
+          "name": "Valsartan",
+          "effectiveness": 86,
+          "safetyScore": 70
+        },
+        {
+          "slug": "metoprolol",
+          "name": "Metoprolol",
+          "effectiveness": 80,
+          "safetyScore": 65
+        }
+      ]
+    },
+    {
+      "slug": "migraine",
+      "name": "Migraine",
+      "treatmentCount": 7,
+      "treatments": [
+        {
+          "slug": "erenumab",
+          "name": "Erenumab",
+          "effectiveness": 85,
+          "safetyScore": 65
+        },
+        {
+          "slug": "rimegepant",
+          "name": "Rimegepant",
+          "effectiveness": 80,
+          "safetyScore": 70
+        },
+        {
+          "slug": "sumatriptan",
+          "name": "Sumatriptan",
+          "effectiveness": 78,
+          "safetyScore": 60
+        },
+        {
+          "slug": "ubrogepant",
+          "name": "Ubrogepant",
+          "effectiveness": 75,
+          "safetyScore": 70
+        },
+        {
+          "slug": "onabotulinumtoxina-botox",
+          "name": "OnabotulinumtoxinA (Botox)",
+          "effectiveness": 72,
+          "safetyScore": 65
+        }
+      ]
+    }
+  ],
+  "outcomeLabel": {
+    "treatment": "Suvorexant",
+    "condition": "Insomnia",
+    "categories": [
+      {
+        "title": "Primary outcome estimates",
+        "items": [
+          {
+            "name": "Latency to Persistent Sleep (LPS) - PSG",
+            "baseline": "Baseline: 68 minutes",
+            "value": {
+              "percentage": -26.5,
+              "absolute": "-18 minutes"
+            },
+            "isPositive": true
+          },
+          {
+            "name": "Wake After Sleep Onset (WASO) - PSG",
+            "baseline": "Baseline: 115 minutes",
+            "value": {
+              "percentage": -21.7,
+              "absolute": "-25 minutes"
+            },
+            "isPositive": true
+          },
+          {
+            "name": "Total Sleep Time (TST) - PSG",
+            "baseline": "Baseline: 320 minutes",
+            "value": {
+              "percentage": 9.4,
+              "absolute": "+30 minutes"
+            },
+            "isPositive": true
+          }
+        ]
+      },
+      {
+        "title": "Other outcome estimates",
+        "items": [
+          {
+            "name": "Subjective Total Sleep Time (sTST)",
+            "baseline": "Baseline: 360 minutes",
+            "value": {
+              "percentage": 11.1,
+              "absolute": "+40 minutes"
+            },
+            "isPositive": true
+          },
+          {
+            "name": "Sleep Quality - PSQI",
+            "baseline": "Baseline: PSQI score: 14/21",
+            "value": {
+              "percentage": -28.6,
+              "absolute": "-4 points"
+            },
+            "isPositive": true
+          },
+          {
+            "name": "Daytime Alertness - KSS",
+            "baseline": "Baseline: KSS score: 7/9",
+            "value": {
+              "percentage": -21.4,
+              "absolute": "-1.5 points"
+            },
+            "isPositive": true
+          }
+        ]
+      },
+      {
+        "title": "Side-effect estimates",
+        "isSideEffectCategory": true,
+        "description": "Estimated frequency.",
+        "emptyText": "No side-effect estimates supplied; this does not establish safety.",
+        "items": [
+          {
+            "name": "Somnolence",
+            "value": {
+              "percentage": 10,
+              "kind": "frequency"
+            }
+          },
+          {
+            "name": "Headache",
+            "value": {
+              "percentage": 7,
+              "kind": "frequency"
+            }
+          },
+          {
+            "name": "Dizziness",
+            "value": {
+              "percentage": 4,
+              "kind": "frequency"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -4,10 +4,10 @@ import type { AppNavigation } from "@optimitron/site-kit/lib/app-navigation";
 export const appNavigation: AppNavigation = {
   "topLevelItems": [
     {
-      "id": "homeInitiatives",
-      "label": "Initiatives",
-      "path": "/#initiatives",
-      "description": "Evidence, access, and funding: the three parts of our plan.",
+      "id": "homeHowItWorks",
+      "label": "How it should work",
+      "path": "/#how-it-works",
+      "description": "How care-integrated clinical trials would work for patients, doctors and researchers.",
       "emoji": "🧭",
       "isHashLink": true,
       "requiresScrollHandler": true
