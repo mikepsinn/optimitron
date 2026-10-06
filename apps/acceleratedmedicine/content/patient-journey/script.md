@@ -9,9 +9,8 @@ The deck is the web app page `/present/patient-journey`
 title (or headline), subtitle, speaker notes and source line from this file, so edits to those show
 up on the next build. The rest of each slide's text is in its component. Keep slide numbers in
 step: the page fails to build if a slide here has no component or a component has no slide here.
-Keys: arrows or space move between slides, N shows the speaker notes (for a signed-in admin only,
-because they hold the in-person ask), F goes full screen, and printing saves a PDF with one page per
-slide.
+Keys: arrows or space move between slides, N shows the speaker notes, F goes full screen, and
+printing saves a PDF with one page per slide. The notes are public, because this repository is.
 
 **This version:** improved draft 2, for legislators and advocates (October 3, 2026), with plainer
 slide text. The deck and this script moved here from the decentralized-fda prototype
@@ -50,9 +49,10 @@ prototype render the app's own components with its data, not screenshots.
   outrage.
 - **The close:** "Learn more at acceleratedmedicine.org", with no ask on the slides or in the
   video. The initiative is a 501(c)(3). Describing the act is education. When the deck is presented
-  to a legislator, the presenter makes the ask in person (see the notes for slide 19); that is
-  direct lobbying, which is allowed within limits. Asking the public to contact legislators would be
-  grassroots lobbying, so the public materials do not. Confirm with counsel.
+  to a legislator, the presenter makes the ask in person, from a private presenter brief kept
+  outside this public repository; that is direct lobbying, which is allowed within limits. Asking
+  the public to contact legislators would be grassroots lobbying, so the public materials do not.
+  Confirm with counsel.
 - **No state:** the deck, the video and the handout name no state, so any state can use them.
 - **Tone:** plain and factual. No music in the video and no dramatic openers.
 - **Numbers:** only sourced, checkable figures in the main story, each shown against today where
@@ -581,9 +581,7 @@ it with bold lead-ins and the icons from slide 6. At the bottom, an amber-outlin
 web address.
 
 **Speaker notes:** Close on the three changes, and point people to acceleratedmedicine.org to
-learn more. If you are meeting a legislator, make the ask in person, not on a slide: would they
-sponsor or co-sponsor the bill, or hold a hearing on it? That is direct lobbying, which a 501(c)(3)
-may do within limits; confirm with counsel.
+learn more.
 
 **Video narration:** Any patient can get treatment through their own doctor. Clinics can afford to
 offer it. Every result is published, and the next patient learns from Margaret. Learn more at

@@ -22,7 +22,7 @@ const NEXT = new Set(["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"]);
 const PREVIOUS = new Set(["ArrowLeft", "ArrowUp", "PageUp", "Backspace"]);
 
 export function Deck({ title, slides }: { title: string; slides: DeckSlide[] }) {
-  // Only a signed-in admin's slides carry notes (app/present/patient-journey/page.tsx).
+  // A deck whose slides carry no notes gets no notes control.
   const hasNotes = slides.some(slide => slide.notes || slide.purpose);
   const [index, setIndex] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);

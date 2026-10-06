@@ -372,21 +372,6 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard?visual=1",
       sourcePage: "apps/acceleratedmedicine/app/dashboard/page.tsx",
     },
-    {
-      // The presentation is public; a signed-in admin also gets the speaker-notes control.
-      authenticated: true,
-      authRole: "admin",
-      publicPageSignedInState: true,
-      covers: [
-        "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
-        "apps/acceleratedmedicine/components/present/deck.tsx",
-        "apps/acceleratedmedicine/lib/presenter-access.ts",
-      ],
-      label: "Patient journey presentation — signed-in admin",
-      routeName: "present-patient-journey-admin",
-      routePath: "/present/patient-journey",
-      sourcePage: "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
-    },
   ],
   courtofhumanity: [
 
@@ -1011,7 +996,6 @@ export const publicSiteAppRoutes = Object.freeze({
         "apps/acceleratedmedicine/components/present/patient-journey/treatment-cards.tsx",
         "apps/acceleratedmedicine/content/patient-journey/script.md",
         "apps/acceleratedmedicine/lib/present-script.ts",
-        "apps/acceleratedmedicine/lib/presenter-access.ts",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/present/margaret.png",
       ],
       label: "Patient journey presentation",
