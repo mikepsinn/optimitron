@@ -16,7 +16,7 @@ afterEach(() => {
 afterAll(() => vi.unstubAllGlobals());
 
 const slides = ["1", "2", "B1"].map(key => ({
-  key, label: `Slide ${key}`, notes: `Notes for ${key}`, content: <p>Content {key}</p>,
+  key, label: `Slide ${key}`, say: `Notes for ${key}`, content: <p>Content {key}</p>,
 }));
 const visible = () => screen.getAllByRole("region", { hidden: true }).filter(el => !el.hidden).map(el => el.textContent);
 
@@ -53,17 +53,17 @@ describe("presentation deck", () => {
   });
 
   it("offers no speaker notes when the slides carry none", () => {
-    render(<Deck title="Test deck" slides={slides.map(({ notes: _notes, ...slide }) => slide)} />);
+    render(<Deck title="Test deck" slides={slides.map(({ say: _say, ...slide }) => slide)} />);
     fireEvent.keyDown(window, { key: "n" });
     expect(screen.queryByRole("complementary", { name: "Speaker notes" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show speaker notes" })).not.toBeInTheDocument();
   });
 
-  it("builds one slide per script slide, with its notes", () => {
+  it("builds one slide per script slide, with what to say on it", () => {
     const script = loadScript("patient-journey");
     const built = patientJourneySlides(script, alzheimers);
     expect(built.map(slide => slide.key)).toEqual(script.map(slide => slide.key));
-    expect(built.every(slide => slide.label && slide.notes)).toBe(true);
+    expect(built.every(slide => slide.label && slide.say)).toBe(true);
 
     expect(() => patientJourneySlides([...script, { ...script[0], key: "21" }], alzheimers))
       .toThrow("slide 21 has no component");

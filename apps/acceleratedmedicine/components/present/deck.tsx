@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Maximize2, NotebookText } from "lucide-react";
 import { Button } from "@optimitron/neobrutalist-ui/ui/button";
-import { cn } from "@optimitron/neobrutalist-ui/cn";
 
 export type DeckSlide = {
   key: string;
   label: string;
-  purpose?: string;
-  notes?: string;
+  // What the presenter says on the slide, and background for questions.
+  say?: string;
+  ifAsked?: string;
   content: ReactNode;
 };
 
@@ -23,7 +23,7 @@ const PREVIOUS = new Set(["ArrowLeft", "ArrowUp", "PageUp", "Backspace"]);
 
 export function Deck({ title, slides }: { title: string; slides: DeckSlide[] }) {
   // A deck whose slides carry no notes gets no notes control.
-  const hasNotes = slides.some(slide => slide.notes || slide.purpose);
+  const hasNotes = slides.some(slide => slide.say || slide.ifAsked);
   const [index, setIndex] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const [scale, setScale] = useState(0);
@@ -93,8 +93,12 @@ export function Deck({ title, slides }: { title: string; slides: DeckSlide[] }) 
       </div>
       {notesOpen && (
         <aside aria-label="Speaker notes" className="deck-chrome max-h-[38dvh] overflow-y-auto border-t border-slate-800 bg-slate-900 px-6 py-4 text-sm leading-relaxed">
-          {current.purpose && <p className="font-medium text-slate-300">Purpose: {current.purpose}</p>}
-          <p className={cn("max-w-4xl text-slate-200", current.purpose && "mt-2")}>{current.notes ?? "No speaker notes."}</p>
+          <p className="max-w-4xl text-base text-white">
+            {current.say ? <><span className="font-semibold">Say: </span>{current.say}</> : "No speaker notes."}
+          </p>
+          {current.ifAsked && (
+            <p className="mt-3 max-w-4xl text-slate-300"><span className="font-semibold text-slate-200">If asked: </span>{current.ifAsked}</p>
+          )}
         </aside>
       )}
       <nav aria-label="Slides" className="deck-chrome flex items-center justify-between gap-3 border-t border-slate-800 px-4 py-2 text-sm">

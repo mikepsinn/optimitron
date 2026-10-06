@@ -4,9 +4,10 @@
 **Voice settings:** default
 **Voice direction:** Calm, warm, credible. Let the numbers land. Not salesy.
 
-The narration matches the "Video narration" lines in the deck's script
-(`apps/acceleratedmedicine/content/patient-journey/script.md`). Lines 5, 6, 8 and 9 are unchanged from v3 and can
-reuse its recordings; the others were recorded for v4.
+The narration comes from the "Say (video line N)" lines in the deck's script
+(`apps/acceleratedmedicine/content/patient-journey/script.md`). Edit it there, then run
+`pnpm --filter @apps/acceleratedmedicine video:narration`, which rewrites the narration here and in
+`STORYBOARD.md`. The voice, the line titles and the delivery notes are written here.
 
 ---
 

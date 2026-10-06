@@ -8,7 +8,7 @@ narration and captions, and no music.
 
 | File | Purpose |
 | --- | --- |
-| `SCRIPT.md` | Locked narration, one line per scene (voice: HeyGen "Nadine") |
+| `SCRIPT.md` | Narration to record, one line per scene (voice: HeyGen "Nadine"), copied from the deck's script |
 | `STORYBOARD.md` | Scene-by-scene plan: voiceover, timing, shot sequence, sources |
 | `BRIEF.md`, `frame.md` | Intent, audience and the visual design system |
 | `compositions/frames/*.html` | The 10 scenes; `index.html` assembles them with captions and audio |
@@ -18,7 +18,6 @@ narration and captions, and no music.
 | `tools/estimate-narration.py` | Estimates word timings for lines not yet recorded, from the recorded voice's pace |
 | `tools/use-local-gsap.py` | Points the generated HTML at the vendored GSAP instead of the CDN |
 | `assets/vendor/gsap.min.js` | GSAP 3.15.0, vendored so previews and renders work offline ([license](https://gsap.com/standard-license)) |
-| `user_script.txt` | The full narration, with sources for the scale figures |
 
 Rendered MP4s, snapshots, voice samples and generated audio are not committed
 (see `.gitignore`).
@@ -30,6 +29,8 @@ Narration uses HeyGen text-to-speech (`npx hyperframes auth login`; free plan al
 10 minutes a month). `PR` below is the plugin root.
 
 ```bash
+# 0. Copy the narration from the deck's script into SCRIPT.md and STORYBOARD.md
+pnpm --filter @apps/acceleratedmedicine video:narration
 # 1. Narration and word timings (writes assets/voice and audio_meta.json)
 node "$PR/skills/hyperframes/scripts/plugin-cli.mjs" --script "$PR/skills/faceless-explainer/scripts/audio.mjs" \
   --script ./SCRIPT.md --storyboard ./STORYBOARD.md --hyperframes . --out ./audio_meta.json \
@@ -58,10 +59,18 @@ spoken words changed must be rebuilt rather than re-timed.
 change nothing, and exit 1 if a scene is out of sync with the narration or still loads GSAP
 from the network.
 
+## Narration source
+
+The narration is the deck's "Say (video line N)" lines
+(`apps/acceleratedmedicine/content/patient-journey/script.md`), so the deck and the video say the
+same words. A unit test in that app compares each line with the words recorded in
+`audio_meta.json`, and fails when the deck's text changes without a new recording:
+`pnpm --filter @apps/acceleratedmedicine test:unit video-narration`.
+
 ## Accuracy
 
-Every on-screen figure comes from the Right to Trial deck (see `BRIEF.md`), the sources in
-`user_script.txt`, or the captured app pages. Illustrative board-report numbers are labeled
+Every on-screen figure comes from the deck's script (its source lines and notes) or the captured
+app pages. Illustrative board-report numbers are labeled
 "Example report", and the Step 1 footage carries a "Prototype" pill. The
 Lecanemab label values were checked against the FDA prescribing information before
 capture (see the prototype's [corrections record](https://github.com/mikepsinn/dfda/blob/d0db04b51e/apps/web/data/optimitron/corrections.json)).

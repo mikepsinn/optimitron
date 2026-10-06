@@ -42,4 +42,4 @@ precise, not hyped.
 - Placeholder voice only (local Kokoro, signed out of HeyGen). The final will use the user's recorded voice or a clone, so timings will be re-synced.
 - No music bed in this cut (local MusicGen is not installed); add one for the final.
 - Never invent figures. Every number comes from the deck: 573, 21 (2018-2024), 99.8%, 9,500 x 1,000 = 9.5 million, 0.34%, 2,000+ years; app numbers come from the captured pages.
-- Full script (scenes 7-11) is in user_script.txt for later runs.
+- The narration for every scene now comes from the deck's script; see README.md.

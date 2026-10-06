@@ -17,7 +17,7 @@ export const metadata: Metadata = rightToTrialMetadata({
 // The page describes the act for legislators, staff and advocates who saw the deck or the video. It names
 // no state and asks visitors to do nothing, because the Institute is a 501(c)(3). Its content comes from
 // the deck's script (content/patient-journey/script.md): the three changes and the five provisions are the
-// slides' own lists, and the details and answers come from the speaker notes.
+// slides' own lists, and the details and answers come from the slides' If asked notes.
 const provisionDetails: Record<string, string> = {
   "Review:":
     "The board has at least three members, including a physician, an outcomes researcher and an ethicist, with no financial ties to the clinic or the maker. A treatment qualifies after Phase I safety testing in people or with a documented record of safe use in people. One approval can cover many qualified clinics.",
