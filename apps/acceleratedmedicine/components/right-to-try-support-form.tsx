@@ -54,7 +54,8 @@ export function RightToTrySupportForm({
           companyWebsite: formData.get("companyWebsite"),
         }),
       });
-      const body = (await response.json()) as {
+      // A platform error page is HTML, not JSON, so it falls back to the general message.
+      const body = (await response.json().catch(() => ({}))) as {
         error?: string;
         ok?: boolean;
         sentConfirmation?: boolean;
