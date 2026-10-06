@@ -83,4 +83,24 @@ describe("Partner sign-up browser form", () => {
       "00000000-0000-4000-8000-000000000002",
     ]);
   });
+
+  it("shows the general message when a platform error page is not JSON", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("<html>Gateway timeout</html>", { status: 504 })),
+    );
+    render(<PartnerSignupForm initialType="clinic" />);
+
+    fireEvent.change(screen.getByLabelText("Your name"), {
+      target: { value: "Ada Clinician" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "ada@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "We could not send this. Please try again or email hello@acceleratedmedicine.org.",
+    );
+  });
 });

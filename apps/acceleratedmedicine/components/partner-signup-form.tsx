@@ -58,7 +58,8 @@ export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ submissionKey: lastAttempt.current.key, ...fields }),
       })
-      const body = (await response.json()) as { error?: string; ok?: boolean }
+      // A platform error page is HTML, not JSON, so it falls back to the general message.
+      const body = (await response.json().catch(() => ({}))) as { error?: string; ok?: boolean }
       if (!response.ok || !body.ok) {
         throw new Error(body.error || failureMessage)
       }
