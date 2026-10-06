@@ -10,8 +10,8 @@ import { loadScript, videoNarration } from "../lib/present-script";
 const videoDir = join(process.cwd(), "..", "..", "videos", "care-integrated-clinical-trials");
 const lines = videoNarration(loadScript("patient-journey"));
 
-// Replaces the narration in each section that `heading` starts, by line number, and fails if a
-// line has no section or a section has no narration.
+// Returns the file with the narration replaced in each section that `heading` starts, by line
+// number, and fails if a line has no section or a section has no narration.
 function rewrite(file: string, heading: RegExp, narration: RegExp, render: (text: string) => string) {
   const path = join(videoDir, file);
   const sections = readFileSync(path, "utf8").replace(/\r\n/g, "\n").split(/(?=^## )/m);
@@ -27,12 +27,16 @@ function rewrite(file: string, heading: RegExp, narration: RegExp, render: (text
   });
   const missing = lines.filter(l => !updated.has(l.line)).map(l => l.line);
   if (missing.length) throw new Error(`${file} has no section for video lines ${missing.join(", ")}`);
-  writeFileSync(path, result.join(""));
+  return { path, text: result.join("") };
 }
 
-rewrite("SCRIPT.md", /^## Line (\d+) /, /^ {4}\S.*$/m, text => `    ${text}`);
-rewrite("STORYBOARD.md", /^## Frame (\d+) /, /^- voiceover: ".*"$/m, text => {
-  if (text.includes('"')) throw new Error(`STORYBOARD.md voiceover lines are quoted, so they cannot contain '"': ${text}`);
-  return `- voiceover: "${text}"`;
-});
+// Both files are checked before either is written, so a failure leaves them in step.
+const files = [
+  rewrite("SCRIPT.md", /^## Line (\d+) /, /^ {4}\S.*$/m, text => `    ${text}`),
+  rewrite("STORYBOARD.md", /^## Frame (\d+) /, /^- voiceover: ".*"$/m, text => {
+    if (text.includes('"')) throw new Error(`STORYBOARD.md voiceover lines are quoted, so they cannot contain '"': ${text}`);
+    return `- voiceover: "${text}"`;
+  }),
+];
+for (const file of files) writeFileSync(file.path, file.text);
 console.log(`Wrote ${lines.length} video lines to SCRIPT.md and STORYBOARD.md. Re-record any line that changed.`);
