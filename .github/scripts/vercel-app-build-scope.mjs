@@ -35,6 +35,7 @@ const appIgnoredBuildPaths = Object.freeze({
     "apps/optimitron/scripts/visual-review-diff.mjs",
     "apps/optimitron/scripts/visual-review-hunks.mjs",
     "apps/optimitron/scripts/visual-review-page.mjs",
+    "apps/optimitron/scripts/visual-review-scope.mjs",
   ],
 });
 
@@ -370,7 +371,7 @@ export function loadWorkspacePackages(root = repoRoot) {
   return packages;
 }
 
-function getDependencyDirectories(targetName, workspacePackages) {
+export function getDependencyDirectories(targetName, workspacePackages) {
   const directories = new Set();
   const pending = [targetName];
   const visited = new Set();
