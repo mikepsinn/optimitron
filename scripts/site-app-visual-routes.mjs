@@ -135,8 +135,9 @@ const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/StickyShareFooter.tsx",
 ];
 
-function getAuthenticatedMenuRoute(appName) {
-  const sourcePage = `apps/${appName}/app/contact/page.tsx`;
+// The signed-in menu opens from the shared layout's header, so it is captured on a page that uses it.
+function getAuthenticatedMenuRoute(appName, routePath = "/contact") {
+  const sourcePage = `apps/${appName}/app${routePath}/page.tsx`;
 
   return {
     authenticated: true,
@@ -152,7 +153,7 @@ function getAuthenticatedMenuRoute(appName) {
     label: "Navigation menu — signed-in user",
     openMenu: true,
     routeName: "navigation-menu-authenticated",
-    routePath: "/contact",
+    routePath,
     sourcePage,
   };
 }
@@ -356,7 +357,8 @@ export const authenticatedSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     ...getAdminRoutes("acceleratedmedicine"),
-    getAuthenticatedMenuRoute("acceleratedmedicine"),
+    // /contact has the Accelerated Medicine header, not the shared layout's menu.
+    getAuthenticatedMenuRoute("acceleratedmedicine", "/privacy"),
     {
       authenticated: true,
       authRole: "user",
