@@ -50,8 +50,8 @@ export function patientJourneySlides(script: ScriptSlide[], alzheimers: DemoCond
   return script.map(s => ({
     key: s.key,
     label: s.title ?? s.heading,
-    purpose: s.purpose,
-    notes: s.notes,
+    say: s.say,
+    ifAsked: s.ifAsked,
     content: components[s.key](s),
   }));
 }

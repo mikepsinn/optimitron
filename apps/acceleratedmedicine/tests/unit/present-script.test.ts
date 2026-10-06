@@ -10,7 +10,7 @@ describe("presentation script", () => {
     ]);
     for (const slide of slides) {
       expect(slide.purpose, slide.key).toBeTruthy();
-      expect(slide.notes, slide.key).toBeTruthy();
+      expect(slide.say, slide.key).toBeTruthy();
       expect(slide.visual, slide.key).toBeTruthy();
     }
   });
@@ -23,22 +23,22 @@ describe("presentation script", () => {
     expect(margaret.sourceLine).toBe(
       "Frontiers in Pharmacology, 2023, ten-year review of drug repurposing for Alzheimer's.");
     expect(slides.find(s => s.key === "19")!.title).toBe("Every patient's experience becomes evidence for the next.");
-    expect(slides.find(s => s.key === "11")!.narration).toMatch(/^Her own doctor recommends one/);
+    expect(slides.find(s => s.key === "11")).toMatchObject({ videoLine: 7, say: expect.stringMatching(/^Her own doctor recommends one/) });
     // The last main slide stops at the "Backup slides" heading.
-    expect(slides.find(s => s.key === "19")!.narration).not.toMatch(/Backup/);
+    expect(slides.find(s => s.key === "19")!.say).not.toMatch(/Backup/);
     expect(slides.find(s => s.key === "8")!.visual).not.toMatch(/`/);
   });
 
   it("joins wrapped bullets and ignores sections that are not slides", () => {
     const parsed = parseScript([
       "# Deck", "", "## Brief", "", "- not a slide", "", "## 1. One", "", "**Purpose:** Why.", "",
-      "**On screen**", "", "- Title: A long", "  title", "- Other", "", "**Speaker notes:** First", "line.", "",
-      "---", "", "# Backup slides", "", "## B1. Extra", "", "**Speaker notes:** More.",
+      "**On screen**", "", "- Title: A long", "  title", "- Other", "", "**Say (video line 2):** First", "line.", "",
+      "---", "", "# Backup slides", "", "## B1. Extra", "", "**If asked:** More.",
     ].join("\r\n"));
     expect(parsed).toEqual([
       { key: "1", heading: "One", onScreen: ["Title: A long title", "Other"], title: "A long title",
-        purpose: "Why.", notes: "First line." },
-      { key: "B1", heading: "Extra", onScreen: [], notes: "More." },
+        purpose: "Why.", say: "First line.", videoLine: 2 },
+      { key: "B1", heading: "Extra", onScreen: [], ifAsked: "More." },
     ]);
   });
 });
