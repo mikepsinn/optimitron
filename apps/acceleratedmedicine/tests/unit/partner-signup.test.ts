@@ -15,7 +15,7 @@ import {
   sendPartnerSignup,
 } from "../../lib/partner-signup";
 
-const sentMessages: unknown[] = [];
+const sentMessages: Array<{ body: unknown; idempotencyKey: string | null }> = [];
 const resendEndpoint = "https://api.resend.com/emails";
 
 const validSignup = {
@@ -30,16 +30,16 @@ const validSignup = {
 
 const server = setupServer(
   http.post(resendEndpoint, async ({ request }) => {
-    sentMessages.push(await request.json());
+    sentMessages.push({
+      body: await request.json(),
+      idempotencyKey: request.headers.get("idempotency-key"),
+    });
     return HttpResponse.json({ id: `email_${sentMessages.length}` });
   }),
 );
 
 describe("Partner sign-up submission", () => {
-  const store = vi.fn(async () => ({
-    created: true,
-    submissionId: "submission_1",
-  }));
+  const store = vi.fn(async () => ({ submissionId: "submission_1" }));
   const options = { clientKey: "0".repeat(64), store };
 
   beforeAll(() => {
@@ -66,22 +66,32 @@ describe("Partner sign-up submission", () => {
 
     expect(store).toHaveBeenCalledOnce();
     expect(sentMessages).toEqual([
-      expect.objectContaining({
-        from: "Institute for Accelerated Medicine <no-reply@updates.dfda.earth>",
-        reply_to: "ada@example.com",
-        subject: "[Partner sign-up] Advisory board: Ada Ethicist (Example University)",
-        to: "hello@acceleratedmedicine.org",
-      }),
+      {
+        body: expect.objectContaining({
+          from: "Institute for Accelerated Medicine <no-reply@updates.dfda.earth>",
+          reply_to: "ada@example.com",
+          subject: "[Partner sign-up] Advisory board: Ada Ethicist (Example University)",
+          to: "hello@acceleratedmedicine.org",
+        }),
+        idempotencyKey: `partner-signup/${validSignup.submissionKey}`,
+      },
     ]);
   });
 
-  it("does not email a retry of a sign-up that is already stored", async () => {
-    store.mockResolvedValueOnce({ created: false, submissionId: "submission_1" });
+  it("fails the request when the alert is rejected, so the sender's retry sends it", async () => {
+    server.use(
+      http.post(resendEndpoint, () =>
+        HttpResponse.json(
+          { name: "application_error", message: "Unavailable", statusCode: 500 },
+          { status: 500 },
+        ),
+      ),
+    );
 
-    await expect(sendPartnerSignup(validSignup, options)).resolves.toEqual({
-      notified: false,
-    });
-    expect(sentMessages).toHaveLength(0);
+    await expect(sendPartnerSignup(validSignup, options)).rejects.toThrow(
+      "The partner sign-up alert was not accepted",
+    );
+    expect(store).toHaveBeenCalledOnce();
   });
 
   it("does not store or email honeypot submissions", async () => {
@@ -94,29 +104,6 @@ describe("Partner sign-up submission", () => {
 
     expect(store).not.toHaveBeenCalled();
     expect(sentMessages).toHaveLength(0);
-  });
-
-  it("keeps the stored sign-up when the email provider rejects the alert", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-    server.use(
-      http.post(resendEndpoint, () =>
-        HttpResponse.json(
-          { name: "validation_error", message: "Rejected", statusCode: 422 },
-          { status: 422 },
-        ),
-      ),
-    );
-
-    try {
-      await expect(sendPartnerSignup(validSignup, options)).resolves.toEqual({
-        notified: false,
-      });
-      expect(store).toHaveBeenCalledOnce();
-    } finally {
-      consoleError.mockRestore();
-    }
   });
 
   it("rejects a sign-up without a name or email before storing it", async () => {

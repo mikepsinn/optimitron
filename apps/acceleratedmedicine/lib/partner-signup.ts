@@ -44,7 +44,11 @@ export function buildPartnerSignupNotification(input: PartnerSignupInput) {
   return { html, subject, text };
 }
 
-/** Stores a sign-up and emails it to the Institute. Reply to the alert to answer the sender. */
+/**
+ * Stores a sign-up and emails it to the Institute. Reply to the alert to answer the sender.
+ * A failed alert fails the request, so the sender's retry sends it again. The retry uses the
+ * same idempotency key, so Resend delivers each alert once.
+ */
 export async function sendPartnerSignup(
   rawInput: unknown,
   options: {
@@ -60,11 +64,7 @@ export async function sendPartnerSignup(
     return { notified: false };
   }
 
-  const { created } = await store(input, input.submissionKey, options.clientKey);
-  // A retry of a stored sign-up already sent its alert.
-  if (!created) {
-    return { notified: false };
-  }
+  await store(input, input.submissionKey, options.clientKey);
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -73,20 +73,17 @@ export async function sendPartnerSignup(
   }
 
   const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
-  try {
-    const result = await new Resend(apiKey).emails.send({
+  const result = await new Resend(apiKey).emails.send(
+    {
       from: `Institute for Accelerated Medicine <${fromAddress}>`,
       to: "hello@acceleratedmedicine.org",
       replyTo: input.email,
       ...buildPartnerSignupNotification(input),
-    });
-    if (result.error || !result.data?.id) {
-      throw new Error("The partner sign-up email was not accepted");
-    }
-    return { notified: true };
-  } catch (error) {
-    // The sign-up is stored, so the sender still sees success.
-    console.error("Partner sign-up notification email failed", error);
-    return { notified: false };
+    },
+    { idempotencyKey: `partner-signup/${input.submissionKey}` },
+  );
+  if (result.error || !result.data?.id) {
+    throw new Error(`The partner sign-up alert was not accepted: ${result.error?.message ?? "no email id"}`);
   }
+  return { notified: true };
 }

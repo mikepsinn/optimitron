@@ -40,10 +40,7 @@ const server = setupServer(
 );
 
 describe("Right to Trial participation submission", () => {
-  const store = vi.fn(async () => ({
-    created: true,
-    submissionId: "submission_1",
-  }));
+  const store = vi.fn(async () => ({ submissionId: "submission_1" }));
   const submissionOptions = {
     clientKey: "0".repeat(64),
     store,
@@ -100,13 +97,25 @@ describe("Right to Trial participation submission", () => {
     );
   });
 
-  it("does not email a retry of a response that is already stored", async () => {
-    store.mockResolvedValueOnce({ created: false, submissionId: "submission_1" });
+  it("sends a retry's emails with the same idempotency keys, so Resend delivers each once", async () => {
+    const idempotencyKeys: Array<string | null> = [];
+    server.use(
+      http.post(resendEndpoint, ({ request }) => {
+        idempotencyKeys.push(request.headers.get("idempotency-key"));
+        return HttpResponse.json({ id: `email_${idempotencyKeys.length}` });
+      }),
+    );
 
-    await expect(
-      sendRightToTrySupport(validResponse, submissionOptions),
-    ).resolves.toEqual({ sentConfirmation: false });
-    expect(sentMessages).toHaveLength(0);
+    await sendRightToTrySupport(validResponse, submissionOptions);
+    await sendRightToTrySupport(validResponse, submissionOptions);
+
+    const key = validResponse.submissionKey;
+    expect(idempotencyKeys).toEqual([
+      `right-to-trial-notification/${key}`,
+      `right-to-trial-confirmation/${key}`,
+      `right-to-trial-notification/${key}`,
+      `right-to-trial-confirmation/${key}`,
+    ]);
   });
 
   it("escapes the supporter story in the HTML notification", () => {

@@ -40,17 +40,22 @@ describe("Partner sign-up browser form", () => {
     );
   });
 
-  it("keeps the form and shows the server's error when sending fails", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        Response.json(
-          { ok: false, error: "We received several responses from this connection." },
-          { status: 429 },
-        ),
+  it("shows the server's error, retries with the same key, and uses a new key after an edit", async () => {
+    const fetchMock = vi.fn(async () =>
+      Response.json(
+        { ok: false, error: "We could not send this. Please try again." },
+        { status: 503 },
       ),
     );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.spyOn(crypto, "randomUUID")
+      .mockReturnValueOnce("00000000-0000-4000-8000-000000000001")
+      .mockReturnValueOnce("00000000-0000-4000-8000-000000000002");
     render(<PartnerSignupForm initialType="clinic" />);
+    const sentKeys = () =>
+      fetchMock.mock.calls.map(
+        (call) => (JSON.parse(String(call[1]?.body)) as { submissionKey: string }).submissionKey,
+      );
 
     fireEvent.change(screen.getByLabelText("Your name"), {
       target: { value: "Ada Clinician" },
@@ -59,10 +64,23 @@ describe("Partner sign-up browser form", () => {
       target: { value: "ada@example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
-
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "We received several responses from this connection.",
+      "We could not send this. Please try again.",
     );
-    expect(screen.getByLabelText("Your name")).toHaveValue("Ada Clinician");
+
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    await screen.findByRole("alert");
+    fireEvent.change(screen.getByLabelText("Your name"), {
+      target: { value: "Ada B. Clinician" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
+
+    expect(sentKeys()).toEqual([
+      "00000000-0000-4000-8000-000000000001",
+      "00000000-0000-4000-8000-000000000001",
+      "00000000-0000-4000-8000-000000000002",
+    ]);
   });
 });

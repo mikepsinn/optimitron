@@ -22,8 +22,8 @@ const failureMessage = "We could not send this. Please try again or email hello@
 export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }) {
   const [type, setType] = useState<PartnerType | undefined>(initialType)
   const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" })
-  // One key per form, so a retry after a lost response is stored and emailed once.
-  const submissionKey = useRef<string>()
+  // An unchanged retry reuses its key, so it is stored and emailed once. An edited message is a new submission.
+  const lastAttempt = useRef<{ key: string; payload: string }>()
   const confirmation = useRef<HTMLDivElement>(null)
 
   // The confirmation is shorter than the form, so bring it into view where the Send button was.
@@ -38,22 +38,25 @@ export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }
     const formData = new FormData(event.currentTarget)
     const name = String(formData.get("name") ?? "").trim()
     const email = String(formData.get("email") ?? "").trim()
-    submissionKey.current ||= crypto.randomUUID()
+    const fields = {
+      type: formData.get("type"),
+      name,
+      email,
+      organization: formData.get("organization"),
+      message: formData.get("message"),
+      companyWebsite: formData.get("companyWebsite"),
+    }
+    const payload = JSON.stringify(fields)
+    if (lastAttempt.current?.payload !== payload) {
+      lastAttempt.current = { key: crypto.randomUUID(), payload }
+    }
     setSubmission({ status: "submitting" })
 
     try {
       const response = await fetch("/api/partner-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          submissionKey: submissionKey.current,
-          type: formData.get("type"),
-          name,
-          email,
-          organization: formData.get("organization"),
-          message: formData.get("message"),
-          companyWebsite: formData.get("companyWebsite"),
-        }),
+        body: JSON.stringify({ submissionKey: lastAttempt.current.key, ...fields }),
       })
       const body = (await response.json()) as { error?: string; ok?: boolean }
       if (!response.ok || !body.ok) {

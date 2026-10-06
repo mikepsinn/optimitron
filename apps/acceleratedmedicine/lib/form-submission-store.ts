@@ -130,22 +130,23 @@ async function getCurrentFormRevision(form: StoredForm, actorUserId: string) {
 }
 
 /**
- * Stores one submission. A retry with the same submission key returns the
- * first submission with `created: false`, so callers send its emails once.
+ * Stores one submission. A retry with the same submission key and values
+ * returns the first submission, even from a new connection.
  */
 export async function storeFormSubmission(
   form: StoredForm,
   formValues: StoredFormValues,
   submissionKey: string,
   clientKey: string,
-): Promise<{ created: boolean; submissionId: string }> {
+): Promise<{ submissionId: string }> {
   const { user } = await upsertWishoniaUser(prisma);
   const revision = await getCurrentFormRevision(form, user.id);
   const values: StoredFormValues = {
     ...formValues,
     [CLIENT_KEY_FIELD]: clientKey,
   };
-  const requestHash = hashJson(values);
+  // The client key is left out, so a retry after a network change still matches.
+  const requestHash = hashJson(formValues);
 
   return prisma.$transaction(async (tx) => {
     // The lock returns PostgreSQL void, which Prisma cannot deserialize as a row.
@@ -165,7 +166,7 @@ export async function storeFormSubmission(
       if (existing.requestHash !== requestHash) {
         throw new Error("Submission key was already used for another response");
       }
-      return { created: false, submissionId: existing.id };
+      return { submissionId: existing.id };
     }
 
     const clientKeyFieldId = revision.fields.find(
@@ -211,6 +212,6 @@ export async function storeFormSubmission(
         valueJson: values[field.key] ?? null,
       })),
     });
-    return { created: true, submissionId: submission.id };
+    return { submissionId: submission.id };
   });
 }

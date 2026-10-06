@@ -65,7 +65,7 @@ export function createFormPostHandler<Result extends object>(
         {
           ok: false,
           error:
-            "We could not record this response. Please try again or email hello@acceleratedmedicine.org.",
+            "We could not send this. Please try again or email hello@acceleratedmedicine.org.",
         },
         { status: 503 },
       );

@@ -19,11 +19,12 @@ const signup = {
   companyWebsite: "",
 };
 
-// Count the alerts without sending them.
-const sentEmails: unknown[] = [];
+// Record the alerts without sending them.
+const resendEndpoint = "https://api.resend.com/emails";
+const sentEmails: Array<{ idempotencyKey: string | null }> = [];
 const resend = setupServer(
-  http.post("https://api.resend.com/emails", async ({ request }) => {
-    sentEmails.push(await request.json());
+  http.post(resendEndpoint, ({ request }) => {
+    sentEmails.push({ idempotencyKey: request.headers.get("idempotency-key") });
     return HttpResponse.json({ id: `email_${sentEmails.length}` });
   }),
 );
@@ -55,6 +56,7 @@ beforeAll(() => {
 });
 beforeEach(async () => {
   sentEmails.length = 0;
+  resend.resetHandlers();
   await removeTestSignups();
 });
 afterAll(async () => {
@@ -68,7 +70,7 @@ afterAll(async () => {
 });
 
 describe("Partner sign-up POST with PostgreSQL", () => {
-  it("stores a sign-up and emails it once, even when the browser retries", async () => {
+  it("stores a retried sign-up once and sends both alerts with one idempotency key", async () => {
     const first = await submit(signup);
     expect(first.status).toBe(200);
     await expect(first.json()).resolves.toEqual({ ok: true, notified: true });
@@ -90,13 +92,43 @@ describe("Partner sign-up POST with PostgreSQL", () => {
         message: "Integration test sign-up",
       });
 
+    // Resend delivers one email per idempotency key, so the retry's alert is not a second email.
     const retry = await submit(signup);
     expect(retry.status).toBe(200);
-    await expect(retry.json()).resolves.toEqual({ ok: true, notified: false });
     expect(await prisma.formSubmission.count({
       where: { idempotencyKey: signup.submissionKey },
     })).toBe(1);
-    expect(sentEmails).toHaveLength(1);
+    expect(sentEmails).toEqual([
+      { idempotencyKey: `partner-signup/${signup.submissionKey}` },
+      { idempotencyKey: `partner-signup/${signup.submissionKey}` },
+    ]);
+  });
+
+  it("delivers the alert on retry when the first alert failed", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    resend.use(
+      http.post(
+        resendEndpoint,
+        () => HttpResponse.json(
+          { name: "application_error", message: "Unavailable", statusCode: 500 },
+          { status: 500 },
+        ),
+        { once: true },
+      ),
+    );
+
+    try {
+      expect((await submit(signup)).status).toBe(503);
+      const retry = await submit(signup);
+      expect(retry.status).toBe(200);
+      await expect(retry.json()).resolves.toEqual({ ok: true, notified: true });
+      expect(await prisma.formSubmission.count({
+        where: { idempotencyKey: signup.submissionKey },
+      })).toBe(1);
+      expect(sentEmails).toHaveLength(1);
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 
   it("limits one connection to five sign-ups in ten minutes", async () => {

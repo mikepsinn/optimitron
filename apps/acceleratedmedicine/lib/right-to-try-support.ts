@@ -123,15 +123,7 @@ export async function sendRightToTrySupport(
     return { sentConfirmation: false };
   }
 
-  const { created } = await store(
-    input,
-    input.submissionKey,
-    options.clientKey,
-  );
-  // A retry of a stored response already sent its emails.
-  if (!created) {
-    return { sentConfirmation: false };
-  }
+  await store(input, input.submissionKey, options.clientKey);
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -145,12 +137,16 @@ export async function sendRightToTrySupport(
   const from = `Institute for Accelerated Medicine <${fromAddress}>`;
   const notification = buildSupportNotification(input);
   try {
-    const notificationResult = await resend.emails.send({
-      from,
-      to: "hello@acceleratedmedicine.org",
-      replyTo: input.email || undefined,
-      ...notification,
-    });
+    // A retry sends with the same keys, so Resend delivers each email once.
+    const notificationResult = await resend.emails.send(
+      {
+        from,
+        to: "hello@acceleratedmedicine.org",
+        replyTo: input.email || undefined,
+        ...notification,
+      },
+      { idempotencyKey: `right-to-trial-notification/${input.submissionKey}` },
+    );
 
     if (notificationResult.error || !notificationResult.data?.id) {
       throw new Error("The support response email was not accepted");
@@ -188,11 +184,14 @@ export async function sendRightToTrySupport(
 
   const confirmation = buildSupportConfirmation(input);
   try {
-    const confirmationResult = await resend.emails.send({
-      from,
-      to: input.email,
-      ...confirmation,
-    });
+    const confirmationResult = await resend.emails.send(
+      {
+        from,
+        to: input.email,
+        ...confirmation,
+      },
+      { idempotencyKey: `right-to-trial-confirmation/${input.submissionKey}` },
+    );
     return {
       sentConfirmation: Boolean(
         !confirmationResult.error && confirmationResult.data?.id,
