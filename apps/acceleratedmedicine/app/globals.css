@@ -65,8 +65,9 @@
 }
 
 /* apps/shared-globals.css sets every element's border color outside any cascade layer, which beats
-   Tailwind's border-color utilities (border-primary, border-amber-400). In this look, revert to the
-   layers so those utilities apply, and elements without one keep the base layer's border color. */
+   Tailwind's border-color utilities (border-primary, border-amber-400). The neobrutalist pages rely on
+   that, so it stays there. In this look, revert to the layers so those utilities apply, and elements
+   without one keep the base layer's border color. */
 .accelerated-medicine-theme * {
   border-color: revert-layer;
 }
