@@ -26,7 +26,10 @@ jobs:
       core: ${{ steps.manual.outputs.core_files_changed || steps.main.outputs.core_files_changed || steps.filter.outputs.core_files_changed }}
       web: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
-      site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.main.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
+      site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.main.outputs.site_apps_changed || steps.scope.outputs.site_apps_changed || 'false' }}
+      # The site apps a pull request affects, so site-apps-build builds only those. Main pushes and manual runs build every app.
+      site_app_matrix: ${{ steps.scope.outputs.site_app_matrix || steps.every_site_app.outputs.site_app_matrix }}
+      site_app_names: ${{ steps.scope.outputs.site_app_names || steps.every_site_app.outputs.site_app_names }}
       web_deploy: ${{ steps.manual.outputs.web_deploy || steps.production.outputs.web_deploy || 'false' }}
     steps:
       - name: Treat manual runs as web-impacting
@@ -183,17 +186,83 @@ jobs:
               - 'packages/survey-embed/**'
               - 'packages/tracking/**'
               - 'packages/wishonia-widget/**'
+              - 'apps/next-auth.d.ts'
+              - 'apps/shared-*'
               - 'scripts/capture-lane.mjs'
               - 'scripts/capture-lane.test.mjs'
+              - 'scripts/site-app-navigation.ts'
               - 'scripts/site-app-navigation.test.ts'
+              - 'scripts/site-app-route-changes.mjs'
               - 'scripts/site-app-visual-routes.mjs'
               - 'scripts/smoke-site-apps.mjs'
+              - 'apps/optimitron/e2e/helpers/freeze-clock.mjs'
+              - 'apps/optimitron/e2e/utils/auth-api.mjs'
+              - 'apps/optimitron/e2e/utils/visual-settle.mjs'
               - 'apps/optimitron/scripts/visual-capture-contract.mjs'
+              - '.github/scripts/ci-site-app-scope.mjs'
+              - '.github/scripts/vercel-app-build-scope.mjs'
               - '.npmrc'
               - 'package.json'
               - 'pnpm-workspace.yaml'
               - 'pnpm-lock.yaml'
+              - 'tsconfig.base.json'
               - '.github/workflows/ci.yml'
+            site_app_routes_changed:
+              - 'scripts/site-app-visual-routes.mjs'
+
+      # Only a pull request's affected site apps build. A screenshot registry
+      # change counts only for the apps whose routes it changed.
+      - name: Enable Corepack for the screenshot route comparison
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true' && steps.filter.outputs.site_app_routes_changed == 'true' }}
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Set up Node.js for the screenshot route comparison
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true' && steps.filter.outputs.site_app_routes_changed == 'true' }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies for the screenshot route comparison
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true' && steps.filter.outputs.site_app_routes_changed == 'true' }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Compare site-app screenshot routes with the base
+        id: routes
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true' && steps.filter.outputs.site_app_routes_changed == 'true' }}
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          merge_base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
+          pnpm --dir apps/optimitron exec tsx ../../scripts/site-app-route-changes.mjs "$merge_base" >> "$GITHUB_OUTPUT"
+
+      - name: Choose the site apps to build
+        id: scope
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true' }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ROUTE_CHANGED_APPS: ${{ steps.routes.outputs.route_changed_apps }}
+        run: node .github/scripts/ci-site-app-scope.mjs >> "$GITHUB_OUTPUT"
+
+      - name: Checkout the site-app list for manual runs
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github
+          persist-credentials: false
+
+      - name: Schedule every site app
+        id: every_site_app
+        if: ${{ !(github.event_name == 'pull_request' && steps.filter.outputs.site_apps_changed == 'true') }}
+        env:
+          ALL_SITE_APPS: "true"
+        run: node .github/scripts/ci-site-app-scope.mjs >> "$GITHUB_OUTPUT"
 
   leak-scan:
     name: leak-scan
@@ -232,7 +301,7 @@ jobs:
         with:
           node-version: 24
       - name: Test GitHub and Vercel automation
-        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/ci-stacked-preview.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
+        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/ci-stacked-preview.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/ci-site-app-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs .github/scripts/vercel-preview-comment.test.mjs scripts/app-preview-urls.test.mjs scripts/capture-lane.test.mjs
 
   core-validate:
     name: core-validate
@@ -418,42 +487,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - app: warondisease
-            variant: warondisease.org
-            port: 4010
-            postgres_image: postgres:16
-            requires_database: true
-          - app: dfda
-            variant: dfda
-            port: 4011
-            postgres_image: postgres:16
-            requires_database: true
-          - app: wishocracy
-            variant: wishocracy.org
-            port: 4013
-            postgres_image: postgres:16
-            requires_database: true
-          - app: trialabundancesurvey
-            variant: trialabundancesurvey.org
-            port: 4014
-            postgres_image: postgres:16
-            requires_database: true
-          - app: curedao
-            variant: curedao.org
-            port: 4015
-            postgres_image: ""
-            requires_database: false
-          - app: acceleratedmedicine
-            variant: acceleratedmedicine.org
-            port: 4016
-            postgres_image: postgres:16
-            requires_database: true
-          - app: courtofhumanity
-            variant: courtofhumanity.org
-            port: 4017
-            postgres_image: postgres:16
-            requires_database: true
+        # From .github/scripts/ci-site-app-scope.mjs: every site app, or only a pull request's affected ones.
+        include: ${{ fromJSON(needs.changes.outputs.site_app_matrix) }}
     env:
       CI: true
       DATABASE_URL: postgresql://test:test@localhost:5432/test
@@ -1284,7 +1319,7 @@ jobs:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           VISUAL_REVIEW_APP_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
           VISUAL_REVIEW_CAPTURE_WEB: ${{ needs.changes.outputs.web }}
-          VISUAL_REVIEW_CAPTURE_SITE_APPS: ${{ needs.changes.outputs.site_apps }}
+          VISUAL_REVIEW_CAPTURE_SITE_APPS: ${{ needs.changes.outputs.site_apps == 'true' && needs.changes.outputs.site_app_names || 'false' }}
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}

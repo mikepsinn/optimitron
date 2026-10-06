@@ -34,6 +34,23 @@ test("missing scheduled artifacts fail rather than silently narrowing review sco
   }), /missing its route manifest: courtofhumanity/);
 });
 
+test("a CI run that built some site apps reviews only those apps", () => {
+  const apps = getVisualReviewCaptureApps({
+    webScheduled: "false", siteAppsScheduled: "acceleratedmedicine",
+    manifestApps: ["acceleratedmedicine"], siteApps: ["warondisease", "acceleratedmedicine"],
+  });
+  assert.deepEqual([...apps], ["acceleratedmedicine"]);
+  assert.equal(isRouteInCaptureScope("site-app-warondisease-home", apps), false);
+  assert.throws(() => getVisualReviewCaptureApps({
+    webScheduled: "false", siteAppsScheduled: "warondisease,acceleratedmedicine",
+    manifestApps: ["acceleratedmedicine"], siteApps: ["warondisease", "acceleratedmedicine"],
+  }), /missing its route manifest: warondisease/);
+  assert.throws(() => getVisualReviewCaptureApps({
+    webScheduled: "false", siteAppsScheduled: "acceleratedmedicine,mystery",
+    manifestApps: ["acceleratedmedicine"], siteApps: ["acceleratedmedicine"],
+  }), /Unknown scheduled site apps: mystery/);
+});
+
 test("local reviews infer scope from manifests, not the broader baseline", () => {
   assert.deepEqual([...getVisualReviewCaptureApps({
     manifestApps: ["courtofhumanity"], siteApps: ["dfda", "courtofhumanity"],
