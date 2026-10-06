@@ -981,6 +981,20 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
     },
     {
+      // The act, for legislators and staff who saw the deck or the video. The menu links to it from step 3.
+      covers: [
+        "apps/acceleratedmedicine/app/act/page.tsx",
+        "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
+        "apps/acceleratedmedicine/components/home/explainer-video.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/opening.tsx",
+      ],
+      label: "The Care-Integrated Clinical Trials Act",
+      routeName: "act",
+      routePath: "/act",
+      sourcePage: "apps/acceleratedmedicine/app/act/page.tsx",
+    },
+    {
       // A presenter's deck for meetings. Nothing on the site links to it.
       covers: [
         "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",

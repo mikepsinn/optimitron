@@ -5,13 +5,18 @@ import { Deck } from "@/components/present/deck"
 import { alzheimers } from "@/components/present/patient-journey/alzheimers"
 import { patientJourneySlides } from "@/components/present/patient-journey/slides"
 import { loadScript, onScreenOnly } from "@/lib/present-script"
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 import { canSeeSpeakerNotes } from "@/lib/presenter-access"
 
 const title = "Care-Integrated Clinical Trials: The Patient Journey"
 
 export const metadata: Metadata = {
-  title,
-  description: "How one patient gets a promising treatment through her own doctor, and how every result helps the next patient.",
+  // Its own link preview, so a shared link does not show the home page's.
+  ...rightToTrialMetadata({
+    title,
+    description: "How one patient gets a promising treatment through her own doctor, and how every result helps the next patient.",
+    path: "/present/patient-journey",
+  }),
   // A presenter's deck for meetings. Share the link directly; nothing on the site links to it.
   robots: { index: false, follow: false },
 }

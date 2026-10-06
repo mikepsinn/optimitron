@@ -1,5 +1,5 @@
-// The two-minute explainer, built in the decentralized-fda repository (videos/right-to-trial) and hosted
-// on the static R2 bucket. The files are cached for a year, so each new render gets a new dated name.
+// The two-minute explainer, built from videos/care-integrated-clinical-trials and hosted on the static R2
+// bucket. The files are cached for a year, so each new render gets a new dated name.
 const video = "https://static.warondisease.org/care-integrated-clinical-trials-explainer-2026-10-05.mp4"
 const poster = "https://static.warondisease.org/care-integrated-clinical-trials-explainer-2026-10-05-poster.jpg"
 

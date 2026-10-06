@@ -111,7 +111,8 @@ export function ReasonsSlide({ s }: Props) {
   );
 }
 
-const recovery = [
+// RECOVERY's results, on slide 5 and the /act page.
+export const recovery = [
   { value: "89 days", text: "to show that a cheap steroid cuts deaths among the sickest COVID patients by up to a third. Typical trials take years." },
   { value: "4", text: "treatments found that save lives, out of more than a dozen tested side by side." },
   { value: "$500", text: "per patient, 82 times less than the $41,000 of a typical trial.", highlight: true },
@@ -139,6 +140,7 @@ export function RecoverySlide({ s }: Props) {
   );
 }
 
+// The act's three changes, on slides 6 and 19 and the /act page.
 export const threeChanges = [
   { icon: UserRound, lead: "Any patient", text: "can get the most promising treatments through their own doctor, after independent review and with written consent." },
   { icon: Hospital, lead: "Clinics can charge a fair price,", text: "so they have a reason to offer treatments nobody else will fund." },
