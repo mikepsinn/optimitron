@@ -258,7 +258,6 @@
 - Click any treatment to view available trials
 - 92%
 - 88%
-- 76%
 - 72%
 - 68%
 - 65%

@@ -54,12 +54,7 @@ export function Step1FindTrials() {
                   effectiveness: 92,
                   status: "FDA Approved",
                 },
-                { name: "Donanemab", effectiveness: 88, status: "Phase 3" },
-                {
-                  name: "Aducanumab (Aduhelm)",
-                  effectiveness: 76,
-                  status: "FDA Approved",
-                },
+                { name: "Donanemab (Kisunla)", effectiveness: 88, status: "FDA Approved" },
                 {
                   name: "Experimental Tau Inhibitor",
                   effectiveness: 72,
