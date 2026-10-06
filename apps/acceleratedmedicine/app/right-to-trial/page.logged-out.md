@@ -442,7 +442,7 @@
 - [PATIENTS AND CAREGIVERS TELL YOUR STORY Show what another supervised treatment option would mean when approved treatments are not enough. GET STARTED](#state-support)
 - [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](#state-support)
 - [RESEARCHERS TURN CARE INTO DISCOVERIES Choose the small set of outcomes that lets one patient's result improve treatment rankings for everyone. GET STARTED](/research)
-- [PUBLIC EDUCATORS MAKE THE CASE IN YOUR STATE Share the patient story, answer local questions, and show what Montana already proved possible. GET STARTED](/contact)
+- [PUBLIC EDUCATORS MAKE THE CASE IN YOUR STATE Share the patient story, answer local questions, and show what Montana already proved possible. GET STARTED](#state-support)
 ### 💀 DEATH CLOCK
 ### MONTANA CREATED A PATH. BRING RIGHT TO TRIAL TO YOUR STATE.
 - [READ THE PROPOSED LAW](/model-act)

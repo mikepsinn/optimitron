@@ -50,11 +50,12 @@ const campaignHomeSharedFiles = [
   ...dfdaHowItWorksFiles,
 ];
 
-/** The acceleratedmedicine.org home page's own sections, header, footer and walkthrough mock-ups. */
+/** The acceleratedmedicine.org home page's sections and walkthrough mock-ups, plus the site's header and footer. */
 const acceleratedmedicineHomeFiles = [
+  "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
+  "apps/acceleratedmedicine/components/accelerated-medicine-mobile-menu.tsx",
   "apps/acceleratedmedicine/components/home/benefit-cards.tsx",
   "apps/acceleratedmedicine/components/home/explainer-video.tsx",
-  "apps/acceleratedmedicine/components/home/home-chrome.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/ExampleDataTag.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/HowItWorksStep.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/PatientSteps.tsx",
@@ -72,7 +73,6 @@ const acceleratedmedicineHomeFiles = [
   "apps/acceleratedmedicine/components/home/how-it-works/steps/Step6GainInsights.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/steps/Step7FDAiAgent.tsx",
   "apps/acceleratedmedicine/components/home/learning-loop.tsx",
-  "apps/acceleratedmedicine/components/home/mobile-menu.tsx",
   "apps/acceleratedmedicine/components/home/outcome-label.tsx",
   "apps/acceleratedmedicine/components/home/partners-section.tsx",
   "apps/acceleratedmedicine/components/home/rankings-preview.tsx",
@@ -135,8 +135,9 @@ const warOnDiseaseDashboardFiles = [
   "packages/site-kit/src/components/dashboard/StickyShareFooter.tsx",
 ];
 
-function getAuthenticatedMenuRoute(appName) {
-  const sourcePage = `apps/${appName}/app/contact/page.tsx`;
+// The signed-in menu opens from the shared layout's header, so it is captured on a page that uses it.
+function getAuthenticatedMenuRoute(appName, routePath = "/contact") {
+  const sourcePage = `apps/${appName}/app${routePath}/page.tsx`;
 
   return {
     authenticated: true,
@@ -152,7 +153,7 @@ function getAuthenticatedMenuRoute(appName) {
     label: "Navigation menu — signed-in user",
     openMenu: true,
     routeName: "navigation-menu-authenticated",
-    routePath: "/contact",
+    routePath,
     sourcePage,
   };
 }
@@ -356,7 +357,8 @@ export const authenticatedSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     ...getAdminRoutes("acceleratedmedicine"),
-    getAuthenticatedMenuRoute("acceleratedmedicine"),
+    // /contact has the Accelerated Medicine header, not the shared layout's menu.
+    getAuthenticatedMenuRoute("acceleratedmedicine", "/privacy"),
     {
       authenticated: true,
       authRole: "user",
@@ -939,15 +941,30 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     {
-      // Linked from the Right to Trial page, not from the site menu.
+      // The partner and advisory-board sign-up. Linked from the header's
+      // "Partner with us" button and the home page's partner cards.
       covers: [
         "apps/acceleratedmedicine/app/contact/page.tsx",
-        "apps/acceleratedmedicine/components/mailing-address.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
+        "apps/acceleratedmedicine/components/accelerated-medicine-mobile-menu.tsx",
+        "apps/acceleratedmedicine/components/partner-signup-form.tsx",
+        "apps/acceleratedmedicine/lib/partner-signup-options.ts",
       ],
-      label: "Volunteer",
+      label: "Partner sign-up",
       routeName: "contact",
       routePath: "/contact",
+      sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
+    },
+    {
+      // A partner card's button preselects its type.
+      covers: [
+        "apps/acceleratedmedicine/app/contact/page.tsx",
+        "apps/acceleratedmedicine/components/partner-signup-form.tsx",
+        "apps/acceleratedmedicine/lib/partner-signup-options.ts",
+      ],
+      label: "Advisory-board sign-up",
+      routeName: "contact-advisory-board",
+      routePath: "/contact?type=advisory-board",
       sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
     },
     {
