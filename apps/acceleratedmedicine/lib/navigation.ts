@@ -13,20 +13,18 @@ export const appNavigation: AppNavigation = {
       "requiresScrollHandler": true
     },
     {
-      "id": "rightToTrial",
-      "label": "Right to Trial",
-      "path": "/right-to-trial",
-      "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
-      "emoji": "🩺"
+      "id": "act",
+      "label": "The act",
+      "path": "/act",
+      "description": "What the Care-Integrated Clinical Trials Act does, and answers to common questions.",
+      "emoji": "📜"
     },
     {
-      "id": "homeResearch",
-      "label": "Research",
-      "path": "/#research",
-      "description": "Our book, podcast, and papers.",
-      "emoji": "📚",
-      "isHashLink": true,
-      "requiresScrollHandler": true
+      "id": "faq",
+      "label": "FAQ",
+      "path": "/faq",
+      "description": "Questions about care-integrated clinical trials and the act.",
+      "emoji": "❓"
     },
     {
       "id": "donate",
@@ -48,8 +46,15 @@ export const appNavigation: AppNavigation = {
   "footerSections": [
     {
       "id": "right-to-try",
-      "label": "RIGHT TO TRIAL",
+      "label": "LEGISLATION",
       "resolvedItems": [
+        {
+          "id": "act",
+          "label": "The act",
+          "path": "/act",
+          "description": "What the Care-Integrated Clinical Trials Act does, and answers to common questions.",
+          "emoji": "📜"
+        },
         {
           "id": "rightToTrial",
           "label": "Right to Trial",
@@ -101,18 +106,10 @@ export const appNavigation: AppNavigation = {
           "emoji": "⚡"
         },
         {
-          "id": "research",
-          "label": "1% Treaty Research",
-          "path": "https://warondisease.org/research",
-          "description": "Comprehensive economic analysis showing pragmatic trials deliver 637:1 ROI with $172B+ recurring annual benefits. Peer-reviewed methodology and sensitivity testing",
-          "emoji": "📚",
-          "isExternal": true
-        },
-        {
           "id": "faq",
           "label": "FAQ",
           "path": "/faq",
-          "description": "Answers about the 1% Treaty, pragmatic clinical trials, peace dividend economics, implementation feasibility, and how to help",
+          "description": "Questions about care-integrated clinical trials and the act.",
           "emoji": "❓"
         },
         {
@@ -135,14 +132,6 @@ export const appNavigation: AppNavigation = {
           "description": "Fund patient education, pragmatic-trial research, and public treatment evidence.",
           "emoji": "💝",
           "feature": "donate"
-        },
-        {
-          "id": "globalSurvey",
-          "label": "Take the Global Survey",
-          "path": "https://warondisease.org",
-          "description": "Show how you would split public money between weapons and clinical trials.",
-          "emoji": "🗳️",
-          "isExternal": true
         },
         {
           "id": "shareIdea",

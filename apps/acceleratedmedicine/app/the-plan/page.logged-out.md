@@ -155,7 +155,8 @@
 - [VOTE NOW](/#vote)
 - [BROWSE THE FIELD MANUAL](https://manual.warondisease.org?utm_source=the_plan_footer&utm_medium=web&utm_campaign=cross_site)
 - MISSION: TOTAL DISEASE ERADICATION
-#### RIGHT TO TRIAL
+#### LEGISLATION
+- [THE ACT](/act)
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
@@ -163,11 +164,9 @@
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
 - [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT
