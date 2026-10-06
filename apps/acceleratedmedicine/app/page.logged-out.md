@@ -282,16 +282,18 @@
 ### Partner with us
 #### Donors and funders
 - Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.
-- [Discuss a major gift](mailto:donations@acceleratedmedicine.org?subject=Major%20gift)
+- [Discuss a major gift](/contact?type=funder)
 #### Clinics and doctors
 - Run a pilot site, serve on an independent review board, or advise us on the protocol.
-- [Talk to us](mailto:hello@acceleratedmedicine.org?subject=Partnership%3A%20clinic%20or%20doctor)
+- [Talk to us](/contact?type=clinic)
 #### Organizations building their own
 - The protocol and code are open source, so you can build your own version and publish results in the same open format.
 - [Read the protocol](https://papers.acceleratedmedicine.org/dfda-protocol)
 - [See the code](https://github.com/mikepsinn/dfda)
-- [Talk to us](mailto:hello@acceleratedmedicine.org?subject=Partnership%3A%20organization%20building%20its%20own%20version)
+- [Talk to us](/contact?type=builder)
 #### Data partners
 - Apps, health record systems, registries and wearable makers would share outcome data through an open API, so their users' results count toward the rankings and labels.
-- [Talk to us](mailto:hello@acceleratedmedicine.org?subject=Partnership%3A%20data%20partner)
-- Or email [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
+- [Talk to us](/contact?type=data-partner)
+#### Advisory board
+- We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on the protocol, patient safety and the law.
+- [Apply to the board](/contact?type=advisory-board)

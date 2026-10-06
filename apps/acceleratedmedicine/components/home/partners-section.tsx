@@ -1,15 +1,16 @@
 import Link from "next/link"
-import { Building2, Database, HeartHandshake, Stethoscope } from "lucide-react"
+import { Building2, Database, HeartHandshake, Stethoscope, Users } from "lucide-react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 
-const email = "hello@acceleratedmedicine.org"
+import type { PartnerType } from "@/lib/partner-signup-options"
+
 const protocolUrl = "https://papers.acceleratedmedicine.org/dfda-protocol"
 const codeUrl = "https://github.com/mikepsinn/dfda"
 
-// Each card's "Talk to us" opens an email to the Institute, with the partner type in the subject.
-const mailto = (address: string, subject: string) => `mailto:${address}?subject=${encodeURIComponent(subject)}`
+// Each card's main button opens the sign-up form with the card's type already chosen.
+const signUp = (type: PartnerType) => `/contact?type=${type}`
 
 const partners = [
   {
@@ -18,14 +19,14 @@ const partners = [
     text: "Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.",
     // The shared donate switch hides donation links on every site; a major gift is still a conversation.
     links: SHOW_DONATE_LINKS ? [{ href: "/donate", label: "Donate" }] : [],
-    talk: { label: "Discuss a major gift", href: mailto("donations@acceleratedmedicine.org", "Major gift") },
+    talk: { label: "Discuss a major gift", href: signUp("funder") },
   },
   {
     icon: Stethoscope,
     title: "Clinics and doctors",
     text: "Run a pilot site, serve on an independent review board, or advise us on the protocol.",
     links: [],
-    talk: { label: "Talk to us", href: mailto(email, "Partnership: clinic or doctor") },
+    talk: { label: "Talk to us", href: signUp("clinic") },
   },
   {
     icon: Building2,
@@ -35,14 +36,21 @@ const partners = [
       { href: protocolUrl, label: "Read the protocol" },
       { href: codeUrl, label: "See the code" },
     ],
-    talk: { label: "Talk to us", href: mailto(email, "Partnership: organization building its own version") },
+    talk: { label: "Talk to us", href: signUp("builder") },
   },
   {
     icon: Database,
     title: "Data partners",
     text: "Apps, health record systems, registries and wearable makers would share outcome data through an open API, so their users' results count toward the rankings and labels.",
     links: [],
-    talk: { label: "Talk to us", href: mailto(email, "Partnership: data partner") },
+    talk: { label: "Talk to us", href: signUp("data-partner") },
+  },
+  {
+    icon: Users,
+    title: "Advisory board",
+    text: "We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on the protocol, patient safety and the law.",
+    links: [],
+    talk: { label: "Apply to the board", href: signUp("advisory-board") },
   },
 ]
 
@@ -56,7 +64,9 @@ export function PartnersSection() {
         </h2>
         <div className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-2">
           {partners.map(partner => (
-            <div key={partner.title} className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
+            // A lone last card sits centered under the two columns.
+            <div key={partner.title}
+              className="flex flex-col rounded-lg border bg-background p-6 shadow-sm md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%-0.75rem)]">
               <div className="flex items-center gap-3">
                 <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <partner.icon className="h-5 w-5" />
@@ -71,15 +81,12 @@ export function PartnersSection() {
                   </Button>
                 ))}
                 <Button asChild size="sm">
-                  <a href={partner.talk.href}>{partner.talk.label}</a>
+                  <Link href={partner.talk.href}>{partner.talk.label}</Link>
                 </Button>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-8 text-center text-muted-foreground">
-          Or email <a href={`mailto:${email}`} className="text-primary hover:underline">{email}</a>
-        </p>
       </div>
     </section>
   )

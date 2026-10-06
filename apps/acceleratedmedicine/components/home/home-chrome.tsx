@@ -1,4 +1,6 @@
+import { Inter } from "next/font/google"
 import Link from "next/link"
+import type { ReactNode } from "react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { visibleNavigationItems } from "@optimitron/site-kit/lib/app-navigation"
@@ -14,15 +16,18 @@ import {
 } from "@/components/org-links"
 import { appNavigation } from "@/lib/navigation"
 
-// The home page has its own header and footer in the decentralized-fda prototype's style. The other pages
-// keep the shared site-kit layout. The footer lists the same pages, legal notice and copyright as the
-// shared footer, and both respect the shared donate switch.
+// Pages in the decentralized-fda prototype's style (the home page and /contact) have their own header and
+// footer. The other pages keep the shared site-kit layout. The footer lists the same pages, legal notice
+// and copyright as the shared footer, and both respect the shared donate switch.
 const headerLinks = [
-  { href: "#how-it-works", label: "How it should work" },
+  { href: "/#how-it-works", label: "How it should work" },
   { href: "/right-to-trial", label: "Right to Trial" },
+  // Every page with this header ends with the footer's Research column.
   { href: "#research", label: "Research" },
   { href: "/about", label: "About us" },
 ]
+
+const inter = Inter({ subsets: ["latin"] })
 
 const relatedProjects = [ONE_PERCENT_TREATY_LINK, WISHOCRACY_LINK, COURT_OF_HUMANITY_LINK]
 
@@ -45,7 +50,7 @@ export function HomeHeader() {
             </Button>
           )}
           <Button asChild size="sm">
-            <a href="#help">Partner with us</a>
+            <Link href="/contact">Partner with us</Link>
           </Button>
           <MobileMenu links={headerLinks} />
         </div>
@@ -113,5 +118,18 @@ export function HomeFooter() {
         </div>
       </div>
     </footer>
+  )
+}
+
+/** A page in the prototype's look: `prototype-theme` switches to its colors (app/globals.css). */
+export function HomeChrome({ children }: { children: ReactNode }) {
+  return (
+    <div className={`prototype-theme flex min-h-screen flex-col bg-background text-foreground ${inter.className}`}>
+      <HomeHeader />
+      <main className="w-full flex-1 py-6 md:py-10">
+        <div className="container mx-auto px-4 md:px-6">{children}</div>
+      </main>
+      <HomeFooter />
+    </div>
   )
 }

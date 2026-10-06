@@ -1,18 +1,15 @@
 import { createHmac } from "node:crypto";
 
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
+import { ZodError, type ZodType } from "zod";
 
-import {
-  rightToTrySupportSchema,
-  sendRightToTrySupport,
-} from "@/lib/right-to-try-support";
-import { RightToTryRateLimitError } from "@/lib/right-to-try-support-store";
+import { FormSubmissionRateLimitError } from "@/lib/form-submission-store";
 
 function clientKeyForRequest(request: Request): string {
+  // The secret predates the partner form; both forms share it.
   const secret = process.env.RIGHT_TO_TRY_RATE_LIMIT_SECRET;
   if (!secret) {
-    throw new Error("Right to Try rate-limit secret is not configured");
+    throw new Error("Form rate-limit secret is not configured");
   }
   const address =
     request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
@@ -21,24 +18,32 @@ function clientKeyForRequest(request: Request): string {
   return createHmac("sha256", secret).update(address).digest("hex");
 }
 
+type Submit<Result> = (
+  input: unknown,
+  options: { clientKey: string },
+) => Promise<Result>;
+
 interface PostDependencies {
   clientKeyForRequest?: (request: Request) => string;
-  submit?: typeof sendRightToTrySupport;
 }
 
-export function createPostHandler(dependencies: PostDependencies = {}) {
-  const submit = dependencies.submit ?? sendRightToTrySupport;
+/** POST handler for a public site form: validate, store and email, and map failures to status codes. */
+export function createFormPostHandler<Result extends object>(
+  schema: ZodType,
+  submit: Submit<Result>,
+  dependencies: PostDependencies = {},
+) {
   const getClientKey = dependencies.clientKeyForRequest ?? clientKeyForRequest;
 
   return async function post(request: Request) {
     try {
-      const input = rightToTrySupportSchema.parse(await request.json());
+      const input = schema.parse(await request.json());
       const result = await submit(input, {
         clientKey: getClientKey(request),
       });
       return NextResponse.json({ ok: true, ...result });
     } catch (error) {
-      if (error instanceof RightToTryRateLimitError) {
+      if (error instanceof FormSubmissionRateLimitError) {
         return NextResponse.json(
           {
             ok: false,
@@ -55,7 +60,7 @@ export function createPostHandler(dependencies: PostDependencies = {}) {
         );
       }
 
-      console.error("Right to Try support response failed", error);
+      console.error("Form submission failed", error);
       return NextResponse.json(
         {
           ok: false,

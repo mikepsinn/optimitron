@@ -17,7 +17,7 @@ describe("Right to Trial browser form payloads", () => {
     vi.restoreAllMocks();
   });
 
-  it("omits the inactive volunteer name from a state response", async () => {
+  it("sends the state position with a state response", async () => {
     const fetchMock = successfulFetch();
     vi.stubGlobal("fetch", fetchMock);
     vi.spyOn(crypto, "randomUUID").mockReturnValue(submissionKey);
@@ -36,35 +36,5 @@ describe("Right to Trial browser form payloads", () => {
       position: "yes",
       state: "Missouri",
     });
-    expect(body).not.toHaveProperty("name");
-  });
-
-  it("omits the inactive state position from a volunteer offer", async () => {
-    const fetchMock = successfulFetch();
-    vi.stubGlobal("fetch", fetchMock);
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(submissionKey);
-    render(
-      <RightToTrySupportForm initialState="Missouri" variant="volunteer" />,
-    );
-
-    fireEvent.change(screen.getByLabelText("Your name"), {
-      target: { value: "Ada Patient" },
-    });
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "ada@example.com" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "I want to help" }));
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    const body = JSON.parse(
-      String(fetchMock.mock.calls[0]?.[1]?.body),
-    ) as Record<string, unknown>;
-    expect(body).toMatchObject({
-      email: "ada@example.com",
-      intent: "volunteer",
-      name: "Ada Patient",
-      state: "Missouri",
-    });
-    expect(body).not.toHaveProperty("position");
   });
 });

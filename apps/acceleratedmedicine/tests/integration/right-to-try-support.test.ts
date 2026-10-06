@@ -59,36 +59,32 @@ afterAll(async () => {
 });
 
 describe("Right to Try POST with PostgreSQL", () => {
-  it.each([
-    { intent: "state-support", name: "", email: "", position: "yes" },
-    { intent: "volunteer", name: "Test Volunteer", email: "volunteer@example.invalid", position: undefined },
-  ])("persists a $intent response and deduplicates a retry", async (participant) => {
-    const input = { ...validResponse, ...participant };
-    const response = await submit(input);
+  it("persists a state response and deduplicates a retry", async () => {
+    const response = await submit(validResponse);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ ok: true, sentConfirmation: false });
 
     const saved = await prisma.formSubmission.findFirstOrThrow({
-      where: { idempotencyKey: input.submissionKey },
+      where: { idempotencyKey: validResponse.submissionKey },
       include: { responses: { include: { field: { select: { key: true } } } } },
     });
     expect(saved.status).toBe("SUBMITTED");
     expect(Object.fromEntries(saved.responses.map((item) => [item.field.key, item.valueJson])))
       .toEqual({
-        intent: input.intent,
-        name: input.name,
-        state: input.state,
-        position: input.position || "",
-        role: input.role,
-        story: input.story,
-        email: input.email,
+        intent: "state-support",
+        name: "",
+        state: validResponse.state,
+        position: validResponse.position,
+        role: validResponse.role,
+        story: validResponse.story,
+        email: "",
         updates: false,
         "client-key": createHmac("sha256", secret).update(address).digest("hex"),
       });
 
-    expect((await submit(input)).status).toBe(200);
+    expect((await submit(validResponse)).status).toBe(200);
     expect(await prisma.formSubmission.count({
-      where: { idempotencyKey: input.submissionKey },
+      where: { idempotencyKey: validResponse.submissionKey },
     })).toBe(1);
   });
 

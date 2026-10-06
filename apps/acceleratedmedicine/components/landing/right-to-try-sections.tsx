@@ -575,7 +575,7 @@ export function RoleActionSection() {
       role: "Public educators",
       action: "Make the case in your state",
       text: "Share the patient story, answer local questions, and show what Montana already proved possible.",
-      href: "/contact",
+      href: "#state-support",
       color: "bg-background",
     },
   ];

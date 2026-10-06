@@ -939,15 +939,29 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   acceleratedmedicine: [
     {
-      // Linked from the Right to Trial page, not from the site menu.
+      // The partner and advisory-board sign-up. Linked from the header's
+      // "Partner with us" button and the home page's partner cards.
       covers: [
         "apps/acceleratedmedicine/app/contact/page.tsx",
-        "apps/acceleratedmedicine/components/mailing-address.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        "apps/acceleratedmedicine/components/home/home-chrome.tsx",
+        "apps/acceleratedmedicine/components/partner-signup-form.tsx",
+        "apps/acceleratedmedicine/lib/partner-signup-options.ts",
       ],
-      label: "Volunteer",
+      label: "Partner sign-up",
       routeName: "contact",
       routePath: "/contact",
+      sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
+    },
+    {
+      // A partner card's button preselects its type.
+      covers: [
+        "apps/acceleratedmedicine/app/contact/page.tsx",
+        "apps/acceleratedmedicine/components/partner-signup-form.tsx",
+        "apps/acceleratedmedicine/lib/partner-signup-options.ts",
+      ],
+      label: "Advisory-board sign-up",
+      routeName: "contact-advisory-board",
+      routePath: "/contact?type=advisory-board",
       sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
     },
     {

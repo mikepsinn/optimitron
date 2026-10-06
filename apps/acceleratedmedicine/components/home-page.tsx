@@ -1,12 +1,11 @@
 import { ArrowRight, Check, CheckCircle2 } from "lucide-react"
-import { Inter } from "next/font/google"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@optimitron/neobrutalist-ui/ui/card"
 
 import { BenefitCards } from "@/components/home/benefit-cards"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
-import { HomeFooter, HomeHeader } from "@/components/home/home-chrome"
+import { HomeChrome } from "@/components/home/home-chrome"
 import { PatientSteps } from "@/components/home/how-it-works/PatientSteps"
 import { ProviderSteps } from "@/components/home/how-it-works/ProviderSteps"
 import { ResearchPartnerSteps } from "@/components/home/how-it-works/ResearchPartnerSteps"
@@ -19,13 +18,11 @@ import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
 
 // The home page shows how care-integrated clinical trials would work for patients with a global Open
 // Treatment Evidence Network. Its sections and look come from the decentralized-fda prototype's home page
-// (mikepsinn/dfda, apps/web), without links into the prototype. `prototype-theme` switches the page to
-// the prototype's colors (app/globals.css).
+// (mikepsinn/dfda, apps/web), without links into the prototype. HomeChrome gives it the prototype's
+// header, footer and colors.
 //
 // landing-example.json holds the prototype's example rankings and Outcome Label, exported from its
 // treatment-estimate snapshot (apps/web/data/optimitron). Regenerate it from there when they change.
-
-const inter = Inter({ subsets: ["latin"] })
 
 const highlights = [
   "Treatment rankings based on real-world outcomes",
@@ -187,21 +184,15 @@ function Benefits() {
 
 export function HomePage() {
   return (
-    <div className={`prototype-theme flex min-h-screen flex-col bg-background text-foreground ${inter.className}`}>
+    <HomeChrome>
       <LegacyHomeHashRedirect />
-      <HomeHeader />
-      <main className="w-full flex-1 py-6 md:py-10">
-        <div className="container mx-auto px-4 md:px-6">
-          <Hero />
-          <ExplainerVideoSection />
-          <Rankings />
-          <OutcomeLabels />
-          <HowItShouldWork />
-          <Benefits />
-          <PartnersSection />
-        </div>
-      </main>
-      <HomeFooter />
-    </div>
+      <Hero />
+      <ExplainerVideoSection />
+      <Rankings />
+      <OutcomeLabels />
+      <HowItShouldWork />
+      <Benefits />
+      <PartnersSection />
+    </HomeChrome>
   )
 }
