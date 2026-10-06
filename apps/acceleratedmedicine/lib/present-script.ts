@@ -71,8 +71,3 @@ export function loadScript(deck: string) {
   return parseScript(readFileSync(join(process.cwd(), "content", deck, "script.md"), "utf8"));
 }
 
-// A slide without the presenter's fields. The speaker notes include the in-person ask to
-// legislators, so only a signed-in admin gets the purpose, visual, notes and narration.
-export function onScreenOnly({ key, heading, onScreen, eyebrow, title, subtitle, sourceLine }: ScriptSlide): ScriptSlide {
-  return { key, heading, onScreen, eyebrow, title, subtitle, sourceLine };
-}

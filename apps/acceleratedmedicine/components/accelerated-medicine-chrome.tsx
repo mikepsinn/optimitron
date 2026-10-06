@@ -22,9 +22,8 @@ import { appNavigation } from "@/lib/navigation"
 // copyright as the shared footer, and both respect the shared donate switch.
 const headerLinks = [
   { href: "/#how-it-works", label: "How it should work" },
-  { href: "/right-to-trial", label: "Right to Trial" },
-  // Every page with this header ends with the footer's Research column.
-  { href: "#research", label: "Research" },
+  { href: "/act", label: "The act" },
+  { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About us" },
 ]
 
@@ -63,7 +62,7 @@ function AcceleratedMedicineHeader() {
 type FooterLink = { href: string; label: string; external?: boolean }
 
 // The shared footer's section labels are in capitals.
-const sectionTitles: Record<string, string> = { "right-to-try": "Right to Trial", evidence: "Evidence", support: "Support" }
+const sectionTitles: Record<string, string> = { "right-to-try": "Legislation", evidence: "Evidence", support: "Support" }
 
 function AcceleratedMedicineFooter() {
   const columns: { id?: string; title: string; links: FooterLink[] }[] = [

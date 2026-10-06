@@ -52,7 +52,8 @@
 - ~140,000 people
 - Estimates: national counts scaled to Missouri's share of the US population (Census 2025). Each condition links to its national source.
 - MISSION: TOTAL DISEASE ERADICATION
-#### RIGHT TO TRIAL
+#### LEGISLATION
+- [THE ACT](/act)
 - [RIGHT TO TRIAL](/right-to-trial)
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/right-to-trial#state-support)
@@ -60,11 +61,9 @@
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
-- [1% TREATY RESEARCH](https://warondisease.org/research)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [TAKE THE GLOBAL SURVEY](https://warondisease.org)
 - [SHARE AN IDEA](/#help)
 - [GET EMAIL UPDATES](/survey)
 #### CONTACT

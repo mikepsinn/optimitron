@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest
 import { Deck } from "../../components/present/deck";
 import { alzheimers } from "../../components/present/patient-journey/alzheimers";
 import { patientJourneySlides } from "../../components/present/patient-journey/slides";
-import { loadScript, onScreenOnly } from "../../lib/present-script";
+import { loadScript } from "../../lib/present-script";
 
 beforeAll(() => {
   vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
@@ -59,15 +59,11 @@ describe("presentation deck", () => {
     expect(screen.queryByRole("button", { name: "Show speaker notes" })).not.toBeInTheDocument();
   });
 
-  it("builds one slide per script slide, with notes only for a presenter", () => {
+  it("builds one slide per script slide, with its notes", () => {
     const script = loadScript("patient-journey");
-    const presenterSlides = patientJourneySlides(script, alzheimers);
-    expect(presenterSlides.map(slide => slide.key)).toEqual(script.map(slide => slide.key));
-    expect(presenterSlides.every(slide => slide.label && slide.notes)).toBe(true);
-
-    const publicSlides = patientJourneySlides(script.map(onScreenOnly), alzheimers);
-    expect(publicSlides.map(slide => slide.label)).toEqual(presenterSlides.map(slide => slide.label));
-    expect(publicSlides.some(slide => slide.notes || slide.purpose)).toBe(false);
+    const built = patientJourneySlides(script, alzheimers);
+    expect(built.map(slide => slide.key)).toEqual(script.map(slide => slide.key));
+    expect(built.every(slide => slide.label && slide.notes)).toBe(true);
 
     expect(() => patientJourneySlides([...script, { ...script[0], key: "21" }], alzheimers))
       .toThrow("slide 21 has no component");

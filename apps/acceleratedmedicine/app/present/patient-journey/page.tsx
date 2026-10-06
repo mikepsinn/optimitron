@@ -4,9 +4,8 @@ import { AcceleratedMedicineTheme } from "@/components/accelerated-medicine-chro
 import { Deck } from "@/components/present/deck"
 import { alzheimers } from "@/components/present/patient-journey/alzheimers"
 import { patientJourneySlides } from "@/components/present/patient-journey/slides"
-import { loadScript, onScreenOnly } from "@/lib/present-script"
+import { loadScript } from "@/lib/present-script"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
-import { canSeeSpeakerNotes } from "@/lib/presenter-access"
 
 const title = "Care-Integrated Clinical Trials: The Patient Journey"
 
@@ -26,15 +25,12 @@ export const metadata: Metadata = {
 // (Chrome zooms out to 25% at most, so wider layouts would not fit a phone screen).
 export const viewport: Viewport = { width: 1280, initialScale: undefined }
 
-// Arrow keys or space move between slides, F goes full screen, and printing saves a PDF with one
-// page per slide. A signed-in admin also gets the speaker notes (N), which hold the in-person ask
-// to legislators.
-export default async function PatientJourneyPresentation() {
-  const presenter = await canSeeSpeakerNotes()
-  const script = loadScript("patient-journey")
+// Arrow keys or space move between slides, N shows the speaker notes, F goes full screen, and
+// printing saves a PDF with one page per slide.
+export default function PatientJourneyPresentation() {
   return (
     <AcceleratedMedicineTheme>
-      <Deck title={title} slides={patientJourneySlides(presenter ? script : script.map(onScreenOnly), alzheimers)} />
+      <Deck title={title} slides={patientJourneySlides(loadScript("patient-journey"), alzheimers)} />
     </AcceleratedMedicineTheme>
   )
 }
