@@ -1,5 +1,7 @@
 import { execFileSync } from "node:child_process";
-import { pathToFileURL } from "node:url";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   getDependencyDirectories,
@@ -21,6 +23,46 @@ export const SITE_APP_MATRIX = Object.freeze([
 ]);
 
 const siteAppNames = SITE_APP_MATRIX.map(({ app }) => app);
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+// Unit and integration tests run for every site app in site-apps-static-validate,
+// so their imports from other apps do not decide which app builds.
+const crossAppScanSkippedDirectories = /^(node_modules|\.next|\.turbo|output|public|tests\/unit|tests\/integration)$/u;
+const crossAppScanSkippedFiles = /\.(test|spec)\.[cm]?[jt]sx?$/u;
+const sourceFile = /\.[cm]?[jt]sx?$/u;
+
+function* sourceFiles(appRoot, relativeDirectory = "") {
+  for (const entry of readdirSync(path.join(appRoot, relativeDirectory), { withFileTypes: true })) {
+    const relativePath = relativeDirectory ? `${relativeDirectory}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      if (!crossAppScanSkippedDirectories.test(relativePath)) yield* sourceFiles(appRoot, relativePath);
+    } else if (entry.isFile() && sourceFile.test(entry.name) && !crossAppScanSkippedFiles.test(entry.name)) {
+      yield relativePath;
+    }
+  }
+}
+const relativeImport = /(?:from\s+|import\s*\(\s*|require\s*\(\s*)["'](\.{1,2}\/[^"']+)["']/gu;
+
+/**
+ * Folders in other site apps that each app's build imports, for example the
+ * survey app's sign-in test harness that two other apps' auth configs load.
+ * A change under one of those folders builds the importing app too.
+ */
+export function getCrossAppDependencies(root = repoRoot) {
+  const dependencies = new Map(siteAppNames.map((app) => [app, new Set()]));
+  for (const app of siteAppNames) {
+    const appRoot = path.join(root, "apps", app);
+    for (const relativePath of sourceFiles(appRoot)) {
+      const filePath = path.join(appRoot, relativePath);
+      for (const [, specifier] of readFileSync(filePath, "utf8").matchAll(relativeImport)) {
+        const target = path.relative(root, path.resolve(path.dirname(filePath), specifier)).replaceAll("\\", "/");
+        const owner = siteAppNames.find((other) => other !== app && target.startsWith(`apps/${other}/`));
+        if (owner) dependencies.get(app).add(path.posix.dirname(target));
+      }
+    }
+  }
+  return dependencies;
+}
 
 /** The shared screenshot registry. scripts/site-app-route-changes.mjs reports which apps' routes it changed. */
 export const SITE_APP_ROUTES_FILE = "scripts/site-app-visual-routes.mjs";
@@ -55,13 +97,17 @@ const everySiteAppFiles = new Set([
 
 /**
  * The site apps a change set needs to build, in matrix order: each app whose
- * own folder or workspace dependencies changed, plus the apps whose screenshot
- * routes changed. `routeChangedApps` is null when that comparison did not run,
+ * own folder, workspace dependencies or imported folders in other apps changed,
+ * plus the apps whose screenshot routes changed. `routeChangedApps` is null when that comparison did not run,
  * so a registry change then builds every app.
  */
 export function getAffectedSiteApps(
   files,
-  { routeChangedApps = null, workspacePackages = loadWorkspacePackages() } = {},
+  {
+    routeChangedApps = null,
+    workspacePackages = loadWorkspacePackages(),
+    crossAppDependencies = getCrossAppDependencies(),
+  } = {},
 ) {
   const changed = files.map((file) => file.replaceAll("\\", "/"));
   if (changed.some((file) => everySiteAppFiles.has(file))) return [...siteAppNames];
@@ -75,10 +121,13 @@ export function getAffectedSiteApps(
       ({ directory }) => directory === `apps/${app}`,
     );
     if (!workspacePackage) throw new Error(`Unknown site app: ${app}`);
-    const directories = getDependencyDirectories(workspacePackage.name, workspacePackages);
+    const directories = [
+      ...getDependencyDirectories(workspacePackage.name, workspacePackages),
+      ...crossAppDependencies.get(app),
+    ];
     if (
       changed.some((file) =>
-        [...directories].some((directory) => file === directory || file.startsWith(`${directory}/`)),
+        directories.some((directory) => file === directory || file.startsWith(`${directory}/`)),
       )
     ) {
       affected.add(app);

@@ -26,6 +26,19 @@ test("a shared package builds every app that depends on it", () => {
   assert.deepEqual(getAffectedSiteApps(["packages/site-kit/src/components/layout.tsx"]), everyApp);
 });
 
+test("a change to another app's folder that an app's build imports builds that app too", () => {
+  // The War on Disease and Accelerated Medicine auth configs load the survey app's test harness.
+  assert.deepEqual(
+    getAffectedSiteApps(["apps/trialabundancesurvey/tests/e2e/config.ts"]),
+    ["warondisease", "trialabundancesurvey", "acceleratedmedicine"],
+  );
+});
+
+test("imports in unit and integration tests do not widen the build", () => {
+  // warondisease's unit tests import this file; those tests run for every app in static validation.
+  assert.deepEqual(getAffectedSiteApps(["apps/acceleratedmedicine/lib/navigation.ts"]), ["acceleratedmedicine"]);
+});
+
 test("files outside the site apps and their dependencies build nothing", () => {
   assert.deepEqual(
     getAffectedSiteApps(["docs/ROADMAP.md", "apps/optimitron/src/app/page.tsx", "videos/x/README.md"]),
