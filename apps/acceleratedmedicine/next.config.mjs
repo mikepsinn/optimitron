@@ -13,6 +13,10 @@ const nextConfig = {
   },
   transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/data", "@optimitron/survey-embed", "@optimitron/site-kit"],
   outputFileTracingRoot: monorepoRoot,
+  // The presentation reads its script at request time (lib/present-script.ts).
+  outputFileTracingIncludes: {
+    "/present/patient-journey": ["./content/patient-journey/script.md"],
+  },
   webpack(config) {
     return pinAppNextAuthInstance(config, __dirname)
   },

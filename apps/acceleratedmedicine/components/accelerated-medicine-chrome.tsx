@@ -122,15 +122,20 @@ function AcceleratedMedicineFooter() {
   )
 }
 
-/** A page in the Accelerated Medicine look. `accelerated-medicine-theme` sets its colors (app/globals.css). */
+/** The Accelerated Medicine colors and font, without the header and footer. `accelerated-medicine-theme` sets the colors (app/globals.css). */
+export function AcceleratedMedicineTheme({ className = "", children }: { className?: string; children: ReactNode }) {
+  return <div className={`accelerated-medicine-theme ${inter.className} ${className}`}>{children}</div>
+}
+
+/** A page in the Accelerated Medicine look, with its header and footer. */
 export function AcceleratedMedicinePage({ children }: { children: ReactNode }) {
   return (
-    <div className={`accelerated-medicine-theme flex min-h-screen flex-col bg-background text-foreground ${inter.className}`}>
+    <AcceleratedMedicineTheme className="flex min-h-screen flex-col bg-background text-foreground">
       <AcceleratedMedicineHeader />
       <main className="w-full flex-1 py-6 md:py-10">
         <div className="container mx-auto px-4 md:px-6">{children}</div>
       </main>
       <AcceleratedMedicineFooter />
-    </div>
+    </AcceleratedMedicineTheme>
   )
 }

@@ -370,6 +370,21 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       routePath: "/dashboard?visual=1",
       sourcePage: "apps/acceleratedmedicine/app/dashboard/page.tsx",
     },
+    {
+      // The presentation is public; a signed-in admin also gets the speaker-notes control.
+      authenticated: true,
+      authRole: "admin",
+      publicPageSignedInState: true,
+      covers: [
+        "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
+        "apps/acceleratedmedicine/components/present/deck.tsx",
+        "apps/acceleratedmedicine/lib/presenter-access.ts",
+      ],
+      label: "Patient journey presentation — signed-in admin",
+      routeName: "present-patient-journey-admin",
+      routePath: "/present/patient-journey",
+      sourcePage: "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
+    },
   ],
   courtofhumanity: [
 
@@ -964,6 +979,29 @@ export const publicSiteAppRoutes = Object.freeze({
       routeName: "contact-advisory-board",
       routePath: "/contact?type=advisory-board",
       sourcePage: "apps/acceleratedmedicine/app/contact/page.tsx",
+    },
+    {
+      // A presenter's deck for meetings. Nothing on the site links to it.
+      covers: [
+        "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
+        "apps/acceleratedmedicine/components/present/card.tsx",
+        "apps/acceleratedmedicine/components/present/deck.tsx",
+        "apps/acceleratedmedicine/components/present/slide.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/alzheimers.ts",
+        "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/journey.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/opening.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/slides.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/treatment-cards.tsx",
+        "apps/acceleratedmedicine/content/patient-journey/script.md",
+        "apps/acceleratedmedicine/lib/present-script.ts",
+        "apps/acceleratedmedicine/lib/presenter-access.ts",
+        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/present/margaret.png",
+      ],
+      label: "Patient journey presentation",
+      routeName: "present-patient-journey",
+      routePath: "/present/patient-journey",
+      sourcePage: "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
     },
     {
       covers: ["apps/acceleratedmedicine/app/donate/page.tsx"],
