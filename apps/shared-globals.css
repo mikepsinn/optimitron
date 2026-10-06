@@ -309,6 +309,9 @@
   }
 }
 
+/* Outside any layer on purpose: it beats Tailwind's border-color utilities, so the neobrutalist pages'
+   ~880 `border-primary` borders stay black (--border) instead of pink (--primary). A look that needs
+   border colors opts out in its own stylesheet (apps/acceleratedmedicine/app/globals.css). */
 * {
   border-color: var(--border);
 }

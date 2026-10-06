@@ -1,0 +1,493 @@
+{
+  "slug": "alzheimers-disease",
+  "name": "Alzheimer's Disease",
+  "lastUpdated": "2025-11-04T13:16:41.503Z",
+  "treatments": [
+    {
+      "name": "Donanemab",
+      "slug": "donanemab",
+      "effectiveness": 57,
+      "safetyScore": 48,
+      "timeToEffect": "6-12 months",
+      "annualCost": 38000,
+      "primaryOutcomes": [
+        {
+          "name": "Clinical Dementia Rating-Sum of Boxes (CDR-SB)",
+          "baseline": "3.0 points (on a 0-18 scale)",
+          "percentageChange": 36.8,
+          "absoluteChange": "-0.7 points (less decline compared to placebo over 18 months)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "Amyloid Plaque Burden (PET Centiloids)",
+          "baseline": "100 Centiloids",
+          "percentageChange": -80,
+          "absoluteChange": "-80 Centiloids (reduction to amyloid-negative status)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "Integrated Alzheimer's Disease Rating Scale (iADRS)",
+          "baseline": "80 points (on a 0-144 scale)",
+          "percentageChange": 29,
+          "absoluteChange": "+2.9 points (less decline compared to placebo over 18 months)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "Alzheimer's Disease Assessment Scale-Cognitive Subscale (ADAS-Cog13)",
+          "baseline": "25 points (on a 0-85 scale)",
+          "percentageChange": 26,
+          "absoluteChange": "-1.3 points (less worsening compared to placebo over 18 months)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "ADCS-Activities of Daily Living - Mild Cognitive Impairment (ADCS-ADL-MCI)",
+          "baseline": "75 points (on a 0-78 scale)",
+          "percentageChange": 40,
+          "absoluteChange": "+1.2 points (less decline compared to placebo over 18 months)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "Tau Pathology (PET SUVR - medial temporal lobe)",
+          "baseline": "1.4 SUVR (medial temporal lobe)",
+          "percentageChange": -6.7,
+          "absoluteChange": "-0.09 SUVR",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "ARIA-E (edema)",
+          "percentage": 24
+        },
+        {
+          "name": "ARIA-H (hemorrhage)",
+          "percentage": 31
+        },
+        {
+          "name": "Headache",
+          "percentage": 10
+        },
+        {
+          "name": "Infusion-related reactions",
+          "percentage": 8.7
+        }
+      ]
+    },
+    {
+      "name": "Lecanemab",
+      "slug": "lecanemab",
+      "effectiveness": 55,
+      "safetyScore": 50,
+      "timeToEffect": "6-12 months",
+      "annualCost": 36500,
+      "primaryOutcomes": [
+        {
+          "name": "Clinical Dementia Rating-Sum of Boxes (CDR-SB)",
+          "baseline": "3.17 points (CDR-SB 0-18 scale)",
+          "percentageChange": 27,
+          "absoluteChange": "-0.45 points (less increase compared to placebo's change from baseline)",
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf",
+          "isPositive": true
+        },
+        {
+          "name": "Alzheimer's Disease Assessment Scale-Cognitive Subscale 14 (ADAS-Cog14)",
+          "baseline": "24.45 points (ADAS-Cog14 0-90 scale)",
+          "percentageChange": 26,
+          "absoluteChange": "-1.44 points (less increase compared to placebo's change from baseline)",
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf",
+          "isPositive": true
+        },
+        {
+          "name": "Alzheimer's Disease Cooperative Study-Activities of Daily Living (ADCS-MCI-ADL)",
+          "baseline": "41.2 points (ADCS-MCI-ADL 0-53 scale)",
+          "percentageChange": 37,
+          "absoluteChange": "+2.0 points (less decrease compared to placebo's change from baseline)",
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf",
+          "isPositive": true
+        },
+        {
+          "name": "Brain Amyloid Plaque (PET Centiloids)",
+          "baseline": null,
+          "percentageChange": null,
+          "absoluteChange": "-59.1 Centiloids compared with placebo",
+          "dataSource": "publication",
+          "sourceUrl": "https://doi.org/10.1056/NEJMoa2212948",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "CSF p-tau181",
+          "baseline": "23.0 pg/mL",
+          "percentageChange": -20.6,
+          "absoluteChange": "-4.7 pg/mL",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "Plasma Aβ42/40 ratio",
+          "baseline": "0.088",
+          "percentageChange": null,
+          "absoluteChange": "+0.007 compared with placebo",
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf",
+          "isPositive": true
+        },
+        {
+          "name": "Plasma p-tau181",
+          "baseline": "3.70 pg/mL",
+          "percentageChange": null,
+          "absoluteChange": "-0.78 pg/mL compared with placebo",
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "Infusion-related reactions",
+          "percentage": 26,
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf"
+        },
+        {
+          "name": "ARIA-E (edema)",
+          "percentage": 13,
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf"
+        },
+        {
+          "name": "ARIA-H (hemorrhage)",
+          "percentage": 17,
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf"
+        },
+        {
+          "name": "Headache",
+          "percentage": 11,
+          "dataSource": "fda-label",
+          "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf"
+        }
+      ]
+    },
+    {
+      "name": "Donepezil",
+      "slug": "donepezil",
+      "effectiveness": 45,
+      "safetyScore": 60,
+      "timeToEffect": "4-6 weeks",
+      "annualCost": 525,
+      "primaryOutcomes": [
+        {
+          "name": "ADAS-Cog Score",
+          "baseline": "27 points (Scale: 0-75, higher is worse)",
+          "percentageChange": -9.3,
+          "absoluteChange": "-2.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "MMSE Score",
+          "baseline": "19 points (Scale: 0-30, higher is better)",
+          "percentageChange": 7.9,
+          "absoluteChange": "+1.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "CDR-SB Score",
+          "baseline": "7 points (Scale: 0-18, higher is worse)",
+          "percentageChange": -11.4,
+          "absoluteChange": "-0.8 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "ADCS-ADL Score",
+          "baseline": "58 points (Scale: 0-78, higher is better)",
+          "percentageChange": 5.2,
+          "absoluteChange": "+3 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "NPI Total Score",
+          "baseline": "24 points (Scale: 0-144, higher is worse)",
+          "percentageChange": -14.6,
+          "absoluteChange": "-3.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "Nausea",
+          "percentage": 11
+        },
+        {
+          "name": "Diarrhea",
+          "percentage": 9
+        },
+        {
+          "name": "Insomnia",
+          "percentage": 9
+        },
+        {
+          "name": "Muscle cramps",
+          "percentage": 8
+        },
+        {
+          "name": "Vomiting",
+          "percentage": 6
+        }
+      ]
+    },
+    {
+      "name": "Rivastigmine",
+      "slug": "rivastigmine",
+      "effectiveness": 43,
+      "safetyScore": 58,
+      "timeToEffect": "4-6 weeks",
+      "annualCost": 600,
+      "primaryOutcomes": [
+        {
+          "name": "ADAS-Cog (Alzheimer's Disease Assessment Scale-Cognitive Subscale)",
+          "baseline": "25 points (ADAS-Cog scale: 0-75, higher score indicates worse cognitive function)",
+          "percentageChange": -8,
+          "absoluteChange": "-2 points (lesser decline or improvement in score compared to placebo)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "CIBIC-Plus (Clinician's Interview-Based Impression of Change Plus Caregiver Input)",
+          "baseline": "4 (CIBIC-Plus scale: 1-7, 1=markedly improved, 4=no change, 7=markedly worse)",
+          "percentageChange": -7.5,
+          "absoluteChange": "-0.3 points (less decline or slight improvement compared to placebo's change)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "ADCS-ADL (Alzheimer's Disease Cooperative Study-Activities of Daily Living)",
+          "baseline": "60 points (ADCS-ADL scale: 0-78, higher score indicates better functional ability)",
+          "percentageChange": 3.3,
+          "absoluteChange": "+2 points (lesser decline or improvement in functional ability compared to placebo)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "NPI (Neuropsychiatric Inventory)",
+          "baseline": "15 points (NPI scale: 0-144, higher score indicates more severe neuropsychiatric symptoms)",
+          "percentageChange": -20,
+          "absoluteChange": "-3 points (reduction in neuropsychiatric symptoms compared to placebo)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "Caregiver Burden (hypothetical scale, e.g., Zarit Burden Interview)",
+          "baseline": "25 points (Caregiver Burden Scale: 0-88, higher score indicates greater burden)",
+          "percentageChange": -20,
+          "absoluteChange": "-5 points (reduction in caregiver burden due to improved patient symptoms)",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "Nausea",
+          "percentage": 10
+        },
+        {
+          "name": "Vomiting",
+          "percentage": 7
+        },
+        {
+          "name": "Skin irritation (patch)",
+          "percentage": 12
+        },
+        {
+          "name": "Diarrhea",
+          "percentage": 4
+        },
+        {
+          "name": "Dizziness",
+          "percentage": 6
+        }
+      ]
+    },
+    {
+      "name": "Galantamine",
+      "slug": "galantamine",
+      "effectiveness": 42,
+      "safetyScore": 58,
+      "timeToEffect": "4-6 weeks",
+      "annualCost": 550,
+      "primaryOutcomes": [
+        {
+          "name": "ADAS-Cog (Alzheimer's Disease Assessment Scale-Cognitive Subscale)",
+          "baseline": "28/70 points",
+          "percentageChange": -10.71,
+          "absoluteChange": "-3 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "MMSE (Mini-Mental State Examination)",
+          "baseline": "20/30 points",
+          "percentageChange": 6,
+          "absoluteChange": "+1.2 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "CIBIC-Plus (Clinician's Interview-Based Impression of Change Plus Caregiver Input)",
+          "baseline": "4/7 points (no change)",
+          "percentageChange": -10,
+          "absoluteChange": "-0.4 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "ADCS-ADL (Alzheimer's Disease Cooperative Study - Activities of Daily Living)",
+          "baseline": "55/78 points",
+          "percentageChange": 3.64,
+          "absoluteChange": "+2 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "NPI (Neuropsychiatric Inventory)",
+          "baseline": "25/144 points",
+          "percentageChange": -12,
+          "absoluteChange": "-3 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "CDR-SB (Clinical Dementia Rating - Sum of Boxes)",
+          "baseline": "7/18 points",
+          "percentageChange": -7.14,
+          "absoluteChange": "-0.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "Nausea",
+          "percentage": 13
+        },
+        {
+          "name": "Vomiting",
+          "percentage": 8
+        },
+        {
+          "name": "Anorexia",
+          "percentage": 7
+        },
+        {
+          "name": "Diarrhea",
+          "percentage": 6
+        },
+        {
+          "name": "Dizziness",
+          "percentage": 6
+        }
+      ]
+    },
+    {
+      "name": "Memantine",
+      "slug": "memantine",
+      "effectiveness": 40,
+      "safetyScore": 68,
+      "timeToEffect": "2-4 weeks",
+      "annualCost": 550,
+      "primaryOutcomes": [
+        {
+          "name": "ADAS-Cog Score (Cognitive Function)",
+          "baseline": "28/70 points",
+          "percentageChange": -5.3,
+          "absoluteChange": "-1.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "ADCS-ADL Score (Activities of Daily Living)",
+          "baseline": "45/78 points",
+          "percentageChange": 2.2,
+          "absoluteChange": "+1.0 point",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "NPI Score (Neuropsychiatric Symptoms)",
+          "baseline": "30/144 points",
+          "percentageChange": -16.7,
+          "absoluteChange": "-5.0 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "name": "Zarit Burden Interview Score (Caregiver Burden)",
+          "baseline": "35/88 points",
+          "percentageChange": -8.6,
+          "absoluteChange": "-3.0 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "MMSE Score (Mini-Mental State Examination)",
+          "baseline": "15/30 points",
+          "percentageChange": 3.3,
+          "absoluteChange": "+0.5 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        },
+        {
+          "name": "CMAI Score (Agitation)",
+          "baseline": "60/203 points",
+          "percentageChange": -6.7,
+          "absoluteChange": "-4.0 points",
+          "dataSource": "ai-estimated",
+          "isPositive": true
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "Dizziness",
+          "percentage": 7
+        },
+        {
+          "name": "Headache",
+          "percentage": 6
+        },
+        {
+          "name": "Confusion",
+          "percentage": 5
+        },
+        {
+          "name": "Constipation",
+          "percentage": 5
+        }
+      ]
+    }
+  ]
+}

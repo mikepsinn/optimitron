@@ -490,7 +490,7 @@ export function StateCampaignMapSection() {
   };
 
   return (
-    <SectionContainer bgColor="yellow" borderPosition="bottom">
+    <SectionContainer id="state-map" bgColor="yellow" borderPosition="bottom" className="scroll-mt-24">
       <Container>
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">

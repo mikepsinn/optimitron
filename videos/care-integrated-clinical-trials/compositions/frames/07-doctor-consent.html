@@ -1,0 +1,943 @@
+<template id="07-doctor-consent-template">
+<script src="assets/vendor/gsap.min.js"></script>
+<style>
+  @font-face {
+    font-family: "Inter";
+    src: url("assets/fonts/Inter-Variable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  #root {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    container-type: size;
+    font-family: "Inter", sans-serif;
+    color: #0F172A;
+  }
+
+  /* full-bleed cream ground (its own clip, lowest track) */
+  [id="07-doctor-consent-bg"] {
+    position: absolute;
+    inset: 0;
+    background: #F8F6F1;
+  }
+  [id="07-doctor-consent-stage"] {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* ---------- slide header: mini path + eyebrow (step 2 -> step 3), h2 that swaps three times ---------- */
+  [id="07-doctor-consent-eyebrow"] {
+    position: absolute;
+    left: 96px;
+    top: 70px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 5;
+  }
+  [id="07-doctor-consent-minipath"] {
+    display: block;
+    width: 176px;
+    height: 32px;
+    overflow: visible;
+  }
+  [id="07-doctor-consent-eyebrow-texts"] {
+    position: relative;
+    width: 640px;
+    height: 32px;
+  }
+  [class~="07-doctor-consent-eyebrow-text"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 1.05cqw;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #694CFA;
+    white-space: nowrap;
+  }
+  [id="07-doctor-consent-h2"] {
+    position: absolute;
+    left: 96px;
+    top: 112px;
+    width: 1100px;
+    height: 60px;
+    z-index: 5;
+  }
+  [class~="07-doctor-consent-h2-line"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    font-size: 2.6cqw;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #0F172A;
+    white-space: nowrap;
+  }
+  [class~="07-doctor-consent-word"] {
+    display: inline-block;
+  }
+
+  /* ---------- left column, beat 1: the video-visit illustration (foreground subject) ---------- */
+  [id="07-doctor-consent-illo"] {
+    position: absolute;
+    left: 96px;
+    top: 214px;
+    width: 700px;
+    height: 600px;
+    z-index: 2;
+  }
+  [id="07-doctor-consent-illo-push"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 700px;
+    height: 600px;
+    transform-origin: 50% 55%;
+  }
+  [id="07-doctor-consent-glow"] {
+    position: absolute;
+    left: 40px;
+    top: 20px;
+    width: 620px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(105, 76, 250, 0.1) 0%, rgba(105, 76, 250, 0.04) 55%, rgba(105, 76, 250, 0) 100%);
+  }
+  [id="07-doctor-consent-visit"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 700px;
+    height: 600px;
+    overflow: visible;
+  }
+
+  /* "Telemedicine is fine" pill, centred beneath the illustration */
+  [id="07-doctor-consent-pill-row"] {
+    position: absolute;
+    left: 96px;
+    top: 776px;
+    width: 700px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+  }
+  [id="07-doctor-consent-pill"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 30px 14px 18px;
+    border-radius: 100px;
+    background: rgba(105, 76, 250, 0.08);
+    border: 1.5px solid rgba(105, 76, 250, 0.2);
+    color: #694CFA;
+    font-size: 1.4cqw;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    transform-origin: 50% 50%;
+  }
+  [id="07-doctor-consent-pill"] svg {
+    display: block;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+  }
+  [id="07-doctor-consent-pill-dot"] {
+    fill: #694CFA;
+  }
+  [id="07-doctor-consent-pill-check"] {
+    fill: none;
+    stroke: #F8F6F1;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---------- tinted cards: consent form (right), bill (left, final beat) ---------- */
+  [class~="07-doctor-consent-card"] {
+    position: absolute;
+    left: 960px;
+    top: 240px;
+    width: 864px;
+    box-sizing: border-box;
+    background-color: #F8F6F1;
+    background-image: linear-gradient(rgba(105, 76, 250, 0.04), rgba(105, 76, 250, 0.04));
+    border: 1.5px solid rgba(105, 76, 250, 0.2);
+    border-radius: 14px;
+    z-index: 4;
+  }
+  [id="07-doctor-consent-cf-card"] {
+    height: 600px;
+  }
+  [class~="07-doctor-consent-icon"] {
+    position: absolute;
+    left: 44px;
+    top: 40px;
+    width: 64px;
+    height: 64px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: rgba(105, 76, 250, 0.08);
+    border: 1.5px solid rgba(105, 76, 250, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  [class~="07-doctor-consent-icon"] svg {
+    display: block;
+    width: 34px;
+    height: 34px;
+  }
+  [class~="07-doctor-consent-ico"] {
+    fill: none;
+    stroke: #694CFA;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  [class~="07-doctor-consent-card-title"] {
+    position: absolute;
+    left: 128px;
+    font-size: 1.9cqw;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: #0F172A;
+    white-space: nowrap;
+  }
+  [id="07-doctor-consent-cf-title"] {
+    top: 34px;
+  }
+  [id="07-doctor-consent-cf-sub"] {
+    position: absolute;
+    left: 128px;
+    top: 82px;
+    font-size: 1.4cqw;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #475569;
+    white-space: nowrap;
+  }
+  [class~="07-doctor-consent-divider"] {
+    position: absolute;
+    left: 44px;
+    top: 140px;
+    width: 776px;
+    height: 1.5px;
+    background: rgba(105, 76, 250, 0.16);
+    transform-origin: 0% 50%;
+  }
+
+  /* "Who pays" row is lit as a split-highlight when the charity answers it */
+  [id="07-doctor-consent-who-hl"] {
+    position: absolute;
+    left: 24px;
+    top: 314px;
+    width: 816px;
+    height: 72px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border-left: 4px solid #694CFA;
+    background: rgba(105, 76, 250, 0.08);
+  }
+
+  /* consent checklist rows: box + label, each enters and ticks on its spoken item */
+  [class~="07-doctor-consent-cf-row"] {
+    position: absolute;
+    left: 44px;
+    width: 776px;
+    height: 76px;
+  }
+  [class~="07-doctor-consent-box"] {
+    position: absolute;
+    left: 0;
+    top: 18px;
+    display: block;
+    width: 40px;
+    height: 40px;
+  }
+  [class~="07-doctor-consent-box-check"] {
+    fill: none;
+    stroke: #F8F6F1;
+    stroke-width: 3.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  [class~="07-doctor-consent-ripple"] {
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 2px solid #694CFA;
+  }
+  [class~="07-doctor-consent-label"] {
+    position: absolute;
+    left: 68px;
+    top: 0;
+    font-size: 1.75cqw;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  [class~="07-doctor-consent-cf-row"] [class~="07-doctor-consent-label"] {
+    line-height: 76px;
+    color: #475569;
+  }
+
+  /* e-signature: baseline + ink scribble */
+  [id="07-doctor-consent-sig"] {
+    position: absolute;
+    left: 60px;
+    top: 478px;
+    display: block;
+    width: 300px;
+    height: 84px;
+    overflow: visible;
+  }
+  [id="07-doctor-consent-sig-ink"] {
+    fill: none;
+    stroke: #0F172A;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  [id="07-doctor-consent-sig-line"] {
+    position: absolute;
+    left: 44px;
+    top: 566px;
+    width: 776px;
+    height: 1.5px;
+    background: rgba(105, 76, 250, 0.3);
+    transform-origin: 0% 50%;
+  }
+
+  /* ---------- left column, final beat: her bill + the charity chip ---------- */
+  [id="07-doctor-consent-bill"] {
+    left: 96px;
+    top: 240px;
+    width: 720px;
+    height: 352px;
+  }
+  [id="07-doctor-consent-bill-title"] {
+    top: 51px;
+  }
+  [id="07-doctor-consent-bill-divider"] {
+    width: 632px;
+  }
+  [class~="07-doctor-consent-bar"] {
+    position: absolute;
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.09);
+    transform-origin: 0% 50%;
+  }
+  [id="07-doctor-consent-bill-rule"] {
+    position: absolute;
+    left: 44px;
+    top: 246px;
+    width: 632px;
+    height: 1px;
+    background: rgba(105, 76, 250, 0.15);
+    transform-origin: 0% 50%;
+  }
+  [id="07-doctor-consent-chip"] {
+    position: absolute;
+    left: 44px;
+    top: 266px;
+    height: 54px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 26px 0 18px;
+    box-sizing: border-box;
+    border-radius: 100px;
+    background: rgba(105, 76, 250, 0.08);
+    border: 1.5px solid rgba(105, 76, 250, 0.2);
+    color: #694CFA;
+    font-size: 1.4cqw;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  [id="07-doctor-consent-heart"] {
+    display: block;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    transform-origin: 50% 55%;
+  }
+
+  /* ---------- left column, final beat: the payoff line ---------- */
+  [id="07-doctor-consent-rule"] {
+    position: absolute;
+    left: 96px;
+    top: 640px;
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: #694CFA;
+    transform-origin: 0% 50%;
+    z-index: 4;
+  }
+  [id="07-doctor-consent-statement"] {
+    position: absolute;
+    left: 96px;
+    top: 664px;
+    width: 800px;
+    height: 130px;
+    z-index: 4;
+  }
+  [class~="07-doctor-consent-stmt-line"] {
+    display: block;
+    font-size: 3cqw;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #0F172A;
+    white-space: nowrap;
+  }
+  [id="07-doctor-consent-no"] {
+    font-weight: 700;
+    color: #694CFA;
+  }
+</style>
+
+<div id="root" data-composition-id="07-doctor-consent" data-width="1920" data-height="1080" data-start="0" data-duration="14.841">
+  <div id="07-doctor-consent-bg" class="clip" data-start="0" data-duration="14.841" data-track-index="0"></div>
+
+  <div id="07-doctor-consent-stage" class="clip" data-start="0" data-duration="14.841" data-track-index="1">
+
+    <!-- six-step path: explore · doctor · consent & cost · treatment · results · rankings (star, orange) -->
+    <div id="07-doctor-consent-eyebrow">
+      <svg id="07-doctor-consent-minipath" viewBox="0 0 176 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 22C25.6 22 25.6 10 41.2 10S56.8 22 72.4 22S88 10 103.6 10S119.2 22 134.8 22S150.4 10 166 10" fill="none" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.6" stroke-dasharray="3 4" stroke-linecap="round" />
+        <circle cx="10" cy="22" r="5" fill="#694CFA" fill-opacity="0.3" />
+        <circle cx="41.2" cy="10" r="5" fill="#694CFA" fill-opacity="0.3" />
+        <circle cx="72.4" cy="22" r="5" fill="#694CFA" fill-opacity="0.3" />
+        <circle cx="103.6" cy="10" r="5" fill="#694CFA" fill-opacity="0.3" />
+        <circle cx="134.8" cy="22" r="5" fill="#694CFA" fill-opacity="0.3" />
+        <circle cx="166" cy="10" r="5" fill="#F0A050" fill-opacity="0.3" />
+        <g id="07-doctor-consent-dot2">
+          <circle cx="41.2" cy="10" r="9" fill="none" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <circle cx="41.2" cy="10" r="5.5" fill="#694CFA" />
+        </g>
+        <g id="07-doctor-consent-dot3">
+          <circle cx="72.4" cy="22" r="9" fill="none" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <circle cx="72.4" cy="22" r="5.5" fill="#694CFA" />
+        </g>
+        <circle id="07-doctor-consent-dot3-pulse" cx="72.4" cy="22" r="9" fill="none" stroke="#694CFA" stroke-width="1.5" />
+      </svg>
+      <div id="07-doctor-consent-eyebrow-texts">
+        <div id="07-doctor-consent-eyebrow-a" class="07-doctor-consent-eyebrow-text">Step 2 · Talk with your doctor</div>
+        <div id="07-doctor-consent-eyebrow-b" class="07-doctor-consent-eyebrow-text">Step 3 · Consent and cost</div>
+      </div>
+    </div>
+
+    <div id="07-doctor-consent-h2">
+      <div id="07-doctor-consent-h2-a" class="07-doctor-consent-h2-line"><span class="07-doctor-consent-word">Her</span> <span class="07-doctor-consent-word">doctor’s</span> <span class="07-doctor-consent-word">recommendation</span></div>
+      <div id="07-doctor-consent-h2-b" class="07-doctor-consent-h2-line"><span class="07-doctor-consent-word">Her</span> <span class="07-doctor-consent-word">written</span> <span class="07-doctor-consent-word">consent</span></div>
+      <div id="07-doctor-consent-h2-c" class="07-doctor-consent-h2-line"><span class="07-doctor-consent-word">Help</span> <span class="07-doctor-consent-word">with</span> <span class="07-doctor-consent-word">the</span> <span class="07-doctor-consent-word">cost</span></div>
+    </div>
+
+    <!-- video-visit illustration (public/deck/video-visit.svg, inlined so the call can connect) -->
+    <div id="07-doctor-consent-illo">
+      <div id="07-doctor-consent-illo-push">
+        <div id="07-doctor-consent-glow"></div>
+        <svg id="07-doctor-consent-visit" viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" aria-label="Illustration of a video visit with a doctor">
+          <defs>
+            <clipPath id="07-doctor-consent-scr"><rect x="36" y="36" width="348" height="218" rx="10" /></clipPath>
+          </defs>
+          <rect x="20" y="20" width="380" height="250" rx="20" fill="#1F2A44" />
+          <rect x="36" y="36" width="348" height="218" rx="10" fill="#ECE9FB" />
+          <g clip-path="url(#07-doctor-consent-scr)">
+            <g id="07-doctor-consent-doc">
+              <path d="M120 260 C120 190 160 172 210 172 C260 172 300 190 300 260 Z" fill="#FFFDF9" />
+              <path d="M210 172 L190 260 M210 172 L230 260" fill="none" stroke="#E4DED3" stroke-width="4" />
+              <path d="M175 185 C170 225 190 238 210 232 C230 238 250 225 245 185" fill="none" stroke="#5B47D6" stroke-width="5" />
+              <circle cx="210" cy="234" r="8" fill="#5B47D6" />
+              <rect x="198" y="140" width="24" height="34" fill="#B97A55" />
+              <circle cx="210" cy="118" r="38" fill="#C98B63" />
+              <path d="M172 112 C172 78 248 78 248 112 C236 96 190 94 172 112 Z" fill="#3A2E28" />
+              <path d="M198 132 Q210 140 222 132" fill="none" stroke="#6E3F2A" stroke-width="3" stroke-linecap="round" />
+            </g>
+            <g id="07-doctor-consent-inset">
+              <rect x="282" y="176" width="88" height="66" rx="8" fill="#FFFDF9" stroke="#5B47D6" stroke-width="3" />
+              <circle cx="326" cy="202" r="14" fill="#F0C8A4" />
+              <path d="M302 242 C302 222 314 216 326 216 C338 216 350 222 350 242 Z" fill="#5B47D6" />
+              <path d="M311 198 C311 180 341 180 341 198 C334 190 318 189 311 198 Z" fill="#B3ABA0" />
+            </g>
+          </g>
+          <path d="M0 286 L420 286 L396 316 L24 316 Z" fill="#3A4766" />
+          <rect x="170" y="286" width="80" height="10" rx="5" fill="#6B7A9C" />
+        </svg>
+      </div>
+    </div>
+
+    <div id="07-doctor-consent-pill-row">
+      <div id="07-doctor-consent-pill">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle id="07-doctor-consent-pill-dot" cx="12" cy="12" r="11" />
+          <path id="07-doctor-consent-pill-check" d="M7 12.4l3.3 3.3L17 9" />
+        </svg>
+        <span>Telemedicine is fine</span>
+      </div>
+    </div>
+
+    <!-- "Consent form" card: arrives on "she signs"; each item enters and ticks as it is named -->
+    <div id="07-doctor-consent-cf-card" class="07-doctor-consent-card">
+      <div class="07-doctor-consent-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path class="07-doctor-consent-ico" d="M5 18.5V4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5A1.5 1.5 0 0 0 6.5 20H19" />
+          <path class="07-doctor-consent-ico" d="M9 7.5h6M9 11h4" />
+        </svg>
+      </div>
+      <div id="07-doctor-consent-cf-title" class="07-doctor-consent-card-title">Consent form</div>
+      <div id="07-doctor-consent-cf-sub">Plain language · e-signed</div>
+      <div id="07-doctor-consent-cf-divider" class="07-doctor-consent-divider"></div>
+
+      <div id="07-doctor-consent-who-hl"></div>
+
+      <div class="07-doctor-consent-cf-row" style="top: 160px;">
+        <div class="07-doctor-consent-ripple"></div>
+        <svg class="07-doctor-consent-box" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" fill-opacity="0.06" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <rect class="07-doctor-consent-box-fill" x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" />
+          <path class="07-doctor-consent-box-check" d="M11.5 20.5l5.6 5.6L28.5 14.2" />
+        </svg>
+        <div class="07-doctor-consent-label">Known risks</div>
+      </div>
+      <div class="07-doctor-consent-cf-row" style="top: 236px;">
+        <div class="07-doctor-consent-ripple"></div>
+        <svg class="07-doctor-consent-box" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" fill-opacity="0.06" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <rect class="07-doctor-consent-box-fill" x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" />
+          <path class="07-doctor-consent-box-check" d="M11.5 20.5l5.6 5.6L28.5 14.2" />
+        </svg>
+        <div class="07-doctor-consent-label">What’s unknown</div>
+      </div>
+      <div class="07-doctor-consent-cf-row" style="top: 312px;">
+        <div class="07-doctor-consent-ripple"></div>
+        <svg class="07-doctor-consent-box" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" fill-opacity="0.06" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <rect class="07-doctor-consent-box-fill" x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" />
+          <path class="07-doctor-consent-box-check" d="M11.5 20.5l5.6 5.6L28.5 14.2" />
+        </svg>
+        <div class="07-doctor-consent-label">Who pays</div>
+      </div>
+      <div class="07-doctor-consent-cf-row" style="top: 388px;">
+        <div class="07-doctor-consent-ripple"></div>
+        <svg class="07-doctor-consent-box" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" fill-opacity="0.06" stroke="#694CFA" stroke-opacity="0.35" stroke-width="1.5" />
+          <rect class="07-doctor-consent-box-fill" x="1" y="1" width="38" height="38" rx="10" fill="#694CFA" />
+          <path class="07-doctor-consent-box-check" d="M11.5 20.5l5.6 5.6L28.5 14.2" />
+        </svg>
+        <div class="07-doctor-consent-label">Clearly experimental</div>
+      </div>
+
+      <svg id="07-doctor-consent-sig" viewBox="0 0 300 84" xmlns="http://www.w3.org/2000/svg">
+        <path id="07-doctor-consent-sig-ink" d="M8 58C18 30 30 14 36 26C42 38 26 66 38 64C50 62 58 30 66 34C74 38 64 60 74 58C86 56 92 36 100 40C108 44 100 60 110 58C122 56 128 30 140 22C150 16 150 40 144 56C140 66 156 58 166 46C176 34 184 44 190 50C198 58 210 40 222 42C236 44 250 50 288 36" />
+      </svg>
+      <div id="07-doctor-consent-sig-line"></div>
+    </div>
+
+    <!-- final beat, left column: her bill, paid with a charity's help (takes the illustration's place) -->
+    <div id="07-doctor-consent-bill" class="07-doctor-consent-card">
+      <div class="07-doctor-consent-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path class="07-doctor-consent-ico" d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21Z" />
+          <path class="07-doctor-consent-ico" d="M9 8h6M9 12h6M9 16h3" />
+        </svg>
+      </div>
+      <div id="07-doctor-consent-bill-title" class="07-doctor-consent-card-title">Margaret’s treatment</div>
+      <div id="07-doctor-consent-bill-divider" class="07-doctor-consent-divider"></div>
+      <div class="07-doctor-consent-bar" style="left: 44px; top: 176px; width: 300px;"></div>
+      <div class="07-doctor-consent-bar" style="left: 580px; top: 176px; width: 96px; transform-origin: 100% 50%;"></div>
+      <div class="07-doctor-consent-bar" style="left: 44px; top: 208px; width: 220px;"></div>
+      <div class="07-doctor-consent-bar" style="left: 604px; top: 208px; width: 72px; transform-origin: 100% 50%;"></div>
+      <div id="07-doctor-consent-bill-rule"></div>
+      <div id="07-doctor-consent-chip">
+        <svg id="07-doctor-consent-heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 20.5S3.5 15.2 3.5 9.1C3.5 6.3 5.6 4.2 8.2 4.2c1.6 0 3 .8 3.8 2.1.8-1.3 2.2-2.1 3.8-2.1 2.6 0 4.7 2.1 4.7 4.9 0 6.1-8.5 11.4-8.5 11.4Z" fill="#694CFA" />
+        </svg>
+        <span>A charity helps her pay</span>
+      </div>
+    </div>
+
+    <div id="07-doctor-consent-rule"></div>
+    <div id="07-doctor-consent-statement">
+      <div id="07-doctor-consent-stmt-1" class="07-doctor-consent-stmt-line"><span id="07-doctor-consent-no" class="07-doctor-consent-word">No</span> <span class="07-doctor-consent-word">insurer</span> <span class="07-doctor-consent-word">or</span> <span class="07-doctor-consent-word">state</span> <span class="07-doctor-consent-word">program</span></div>
+      <div id="07-doctor-consent-stmt-2" class="07-doctor-consent-stmt-line"><span class="07-doctor-consent-word">has</span> <span class="07-doctor-consent-word">to</span> <span class="07-doctor-consent-word">pay</span></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var P = "07-doctor-consent-";
+    function byId(id) {
+      return document.getElementById(P + id);
+    }
+    function byClass(cls, scope) {
+      return Array.prototype.slice.call((scope || document).getElementsByClassName(P + cls));
+    }
+    var INK = "#0F172A";
+
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    // svg-path-draw: dash = measured length, offset length -> 0
+    function draw(path, at, dur, ease) {
+      var len = Math.ceil(path.getTotalLength()) + 1;
+      path.style.strokeDasharray = len + " " + len;
+      tl.fromTo(
+        path,
+        { strokeDashoffset: len },
+        { strokeDashoffset: 0, duration: dur, ease: ease || "power2.out" },
+        at
+      );
+    }
+
+    // waterfall cut on the headline: old line exits word by word (last word dies at `cut`),
+    // the new line enters word by word from the right
+    function headlineCut(fromWords, toWords, cut) {
+      var EXIT_STAGGER = 0.022;
+      var exitStart = cut - 0.18 - (fromWords.length - 1) * EXIT_STAGGER;
+      fromWords.forEach(function (w, i) {
+        var s = exitStart + i * EXIT_STAGGER;
+        tl.to(w, { x: -230, duration: 0.34, ease: "power4.in" }, s);
+        tl.to(w, { opacity: 0, duration: 0.18, ease: "power1.in" }, s);
+      });
+      var gap = 0.05;
+      var entryAt = cut;
+      toWords.forEach(function (w) {
+        tl.fromTo(
+          w,
+          { opacity: 0, x: 230 },
+          { opacity: 1, x: 0, duration: 0.3, ease: "power4.out" },
+          entryAt
+        );
+        entryAt += gap;
+        gap *= 0.84;
+      });
+    }
+
+    // Estimated word cues (timing/v4-estimated.json, frame 7):
+    // "Her" 0.309 · "doctor" 0.811 · "recommends" 1.223 · "over" 2.099 · "video" 2.614 · "visit" 2.972
+    // "signs" 3.938 · "plain-language" 4.507 · "consent" 5.293
+    // "risks" 6.295 · "unknowns" 7.010 · "who" 7.635 · "pays" 7.886 · "it's" 8.852 · "experimental" 9.103
+    // "A" 10.062 · "charity" 10.272 · "helps" 10.737 · "pay" 11.346 · "no" 11.954 · "has" 13.663 · "to" 13.914
+    var SIGNS = 3.938; // consent beat starts
+    var CHARITY = 10.062; // cost beat starts ("A charity")
+
+    // ===== Beat 1 (0.0-3.9s): step 2. Header, then the video visit on
+    // "doctor recommends one over a video visit" =====
+    tl.fromTo(
+      byId("minipath"),
+      { clipPath: "inset(0% 100% 0% 0%)" },
+      { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.out" },
+      0.05
+    );
+    tl.fromTo(
+      byId("dot2"),
+      { opacity: 0, scale: 0.3, svgOrigin: "41.2 10" },
+      { opacity: 1, scale: 1, svgOrigin: "41.2 10", duration: 0.5, ease: "power3.out" },
+      0.14
+    );
+    tl.fromTo(
+      byId("eyebrow-a"),
+      { opacity: 0, x: -14 },
+      { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" },
+      0.15
+    );
+
+    // the laptop rises in on "Her own"
+    tl.fromTo(
+      byId("illo"),
+      { opacity: 0, y: 70 },
+      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
+      0.34
+    );
+    tl.fromTo(
+      byId("glow"),
+      { opacity: 0, scale: 0.85 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" },
+      0.42
+    );
+    // the call connects on "doctor": the doctor rises into frame on the laptop screen
+    tl.fromTo(
+      byId("doc"),
+      { opacity: 0, y: 46 },
+      { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
+      0.76
+    );
+
+    // h2 (step 2) on "recommends"
+    var wordsA = byClass("word", byId("h2-a"));
+    wordsA.forEach(function (w, i) {
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        1.17 + i * 0.08
+      );
+    });
+
+    // Margaret's own window joins the call on "over a video"
+    tl.fromTo(
+      byId("inset"),
+      { opacity: 0, scale: 0, svgOrigin: "326 209" },
+      { opacity: 1, scale: 1, svgOrigin: "326 209", duration: 0.5, ease: "power3.out" },
+      2.07
+    );
+
+    // "Telemedicine is fine" settles in on "video visit"
+    tl.fromTo(
+      byId("pill"),
+      { opacity: 0, scale: 0.6, y: 12 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: "power3.out" },
+      2.58
+    );
+    draw(byId("pill-check"), 2.86, 0.32, "power2.out");
+
+    // macro move underneath: slow push on the illustration while it is on screen
+    tl.fromTo(
+      byId("illo-push"),
+      { scale: 1 },
+      { scale: 1.035, duration: 8.66, ease: "sine.inOut" },
+      1.2
+    );
+
+    // ===== Beat 2 (3.9-10.0s): step 3. On "she signs" the header moves to step 3 and the
+    // consent form arrives; each item enters and ticks as it is named =====
+    headlineCut(wordsA, byClass("word", byId("h2-b")), SIGNS);
+
+    // eyebrow + mini path: step 2 hands over to step 3
+    tl.to(byId("eyebrow-a"), { opacity: 0, y: -10, duration: 0.24, ease: "power2.in" }, SIGNS - 0.2);
+    tl.fromTo(
+      byId("eyebrow-b"),
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
+      SIGNS + 0.02
+    );
+    tl.to(byId("dot2"), { opacity: 0, scale: 0.5, svgOrigin: "41.2 10", duration: 0.3, ease: "power2.in" }, SIGNS - 0.15);
+    tl.fromTo(
+      byId("dot3"),
+      { opacity: 0, scale: 0.3, svgOrigin: "72.4 22" },
+      { opacity: 1, scale: 1, svgOrigin: "72.4 22", duration: 0.5, ease: "power3.out" },
+      SIGNS
+    );
+    // step 3 dot answers with a single pulse
+    tl.fromTo(
+      byId("dot3-pulse"),
+      { opacity: 0, scale: 1, svgOrigin: "72.4 22" },
+      { opacity: 0.8, scale: 1.15, svgOrigin: "72.4 22", duration: 0.08, ease: "power1.out" },
+      SIGNS + 0.04
+    );
+    tl.to(byId("dot3-pulse"), { opacity: 0, scale: 2.4, svgOrigin: "72.4 22", duration: 0.6, ease: "power2.out" }, SIGNS + 0.12);
+
+    // the consent form arrives on "signs"
+    var cfCard = byId("cf-card");
+    tl.fromTo(
+      cfCard,
+      { opacity: 0, x: 60 },
+      { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" },
+      SIGNS - 0.02
+    );
+    byClass("ico", cfCard).forEach(function (p, k) {
+      draw(p, 4.1 + k * 0.28, 0.5, "power2.out");
+    });
+    tl.fromTo(
+      byId("cf-divider"),
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.55, ease: "power2.out" },
+      4.15
+    );
+    // "plain-language"
+    tl.fromTo(
+      byId("cf-sub"),
+      { opacity: 0, x: -10 },
+      { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" },
+      4.46
+    );
+    // the e-signature writes itself across "plain-language consent"
+    tl.fromTo(
+      byId("sig-line"),
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.5, ease: "power2.out" },
+      4.6
+    );
+    draw(byId("sig-ink"), 4.98, 0.85, "power1.inOut");
+
+    // items: each row enters on the word before its item and ticks on the item itself
+    // "the risks" 6.044/6.295 · "the unknowns" 6.759/7.010 · "who pays" 7.635/7.886 · "it's experimental" 8.852/9.103
+    var ROW_AT = [6.04, 6.76, 7.63, 8.85];
+    var TICK_AT = [6.28, 6.99, 7.87, 9.08];
+    var cfRows = byClass("cf-row", cfCard);
+    cfRows.forEach(function (row, i) {
+      tl.fromTo(
+        row,
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" },
+        ROW_AT[i]
+      );
+      var at = TICK_AT[i];
+      tl.fromTo(
+        byClass("box-fill", row)[0],
+        { opacity: 0, scale: 0.5, svgOrigin: "20 20" },
+        { opacity: 1, scale: 1, svgOrigin: "20 20", duration: 0.28, ease: "power3.out" },
+        at
+      );
+      draw(byClass("box-check", row)[0], at + 0.08, 0.26, "power2.out");
+      var ripple = byClass("ripple", row)[0];
+      tl.fromTo(
+        ripple,
+        { opacity: 0, scale: 1 },
+        { opacity: 0.7, scale: 1.12, duration: 0.08, ease: "power1.out" },
+        at + 0.04
+      );
+      tl.to(ripple, { opacity: 0, scale: 1.9, duration: 0.55, ease: "power2.out" }, at + 0.12);
+      tl.to(byClass("label", row)[0], { color: INK, duration: 0.3, ease: "power1.out" }, at);
+    });
+
+    // ===== Beat 3 (9.9-15.7s): cost. In the pause after "experimental" the video visit clears;
+    // on "A charity helps her pay" her bill takes its place with the charity chip, and
+    // "Who pays" lights on the form; on "no insurer or state program has to" the payoff line lands =====
+    tl.to(byId("illo"), { opacity: 0, y: -28, scale: 0.97, duration: 0.42, ease: "power2.in" }, 9.86);
+    tl.to(byId("pill-row"), { opacity: 0, y: -16, duration: 0.36, ease: "power2.in" }, 9.86);
+
+    headlineCut(byClass("word", byId("h2-b")), byClass("word", byId("h2-c")), CHARITY);
+
+    // the rest of the form steps back; "Who pays" stays lit as the question this beat answers
+    var dimmed = [
+      byClass("icon", cfCard)[0],
+      byId("cf-title"),
+      byId("cf-sub"),
+      byId("cf-divider"),
+      cfRows[0],
+      cfRows[1],
+      cfRows[3],
+      byId("sig"),
+      byId("sig-line"),
+    ];
+    tl.to(dimmed, { opacity: 0.45, duration: 0.5, ease: "power2.out" }, 10.12);
+    tl.fromTo(
+      byId("who-hl"),
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, ease: "power2.out" },
+      10.2
+    );
+
+    // her bill rises into the left column on "charity"
+    var bill = byId("bill");
+    tl.fromTo(
+      bill,
+      { opacity: 0, y: 28 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+      10.24
+    );
+    byClass("ico", bill).forEach(function (p, k) {
+      draw(p, 10.4 + k * 0.25, 0.5, "power2.out");
+    });
+    tl.fromTo(
+      byId("bill-divider"),
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.55, ease: "power2.out" },
+      10.42
+    );
+    byClass("bar", bill).forEach(function (bar, i) {
+      tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 10.5 + i * 0.06);
+    });
+    tl.fromTo(
+      byId("bill-rule"),
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.45, ease: "power2.out" },
+      10.6
+    );
+
+    // "helps her pay": the chip wipes on, the heart settles, one beat on "pay"
+    tl.fromTo(
+      byId("chip"),
+      { clipPath: "inset(0% 100% 0% 0% round 100px)" },
+      { clipPath: "inset(0% 0% 0% 0% round 100px)", duration: 0.6, ease: "power2.out" },
+      10.7
+    );
+    tl.fromTo(byId("chip"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, 10.7);
+    tl.fromTo(byId("heart"), { scale: 0.2 }, { scale: 1, duration: 0.45, ease: "power3.out" }, 10.86);
+    tl.to(byId("heart"), { scale: 1.18, duration: 0.12, ease: "power2.out" }, 11.34);
+    tl.to(byId("heart"), { scale: 1, duration: 0.3, ease: "power2.inOut" }, 11.46);
+
+    // "no insurer or state program" lands on "no"; "has to pay" on "has"
+    tl.fromTo(byId("rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power2.out" }, 11.82);
+    byClass("word", byId("stmt-1")).forEach(function (w, i) {
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+        11.92 + i * 0.07
+      );
+    });
+    byClass("word", byId("stmt-2")).forEach(function (w, i) {
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+        13.63 + i * 0.07
+      );
+    });
+
+    // hold still on the finished frame to the scene's length (15.169s voice + 0.5s) — no exit
+    tl.set({}, {}, 15.669);
+
+    window.__timelines["07-doctor-consent"] = tl;
+  })();
+</script>
+
+  <script>
+    // retime-to-new-voice: drive this scene's original timeline through a map from the
+    // new narration's time to the old narration's time, anchored on matching spoken cues.
+    (function () {
+      var ID = "07-doctor-consent";
+      var inner = window.__timelines[ID];
+      var MAP = [[0.000,0.000],[3.436,2.816],[6.044,5.333],[6.759,6.272],[7.635,7.253],[8.297,8.235],[10.062,10.283],[11.704,11.733],[14.034,14.143]]; // [old seconds, new seconds]
+      var NEW_DURATION = 14.341;
+      function toOld(t) {
+        for (var i = 1; i < MAP.length; i++) {
+          if (t <= MAP[i][1]) {
+            var a = MAP[i - 1], b = MAP[i];
+            return a[0] + (t - a[1]) * (b[0] - a[0]) / (b[1] - a[1]);
+          }
+        }
+        var last = MAP[MAP.length - 1];
+        return last[0] + (t - last[1]); // after the last cue, real time (holds stay holds)
+      }
+      var OLD_END = toOld(NEW_DURATION);
+      var outer = gsap.timeline({ paused: true });
+      outer.fromTo(inner, { time: 0 }, {
+        time: OLD_END, duration: NEW_DURATION,
+        ease: function (p) { return toOld(p * NEW_DURATION) / OLD_END; },
+      }, 0);
+      window.__timelines[ID] = outer;
+    })();
+  </script>
+</template>

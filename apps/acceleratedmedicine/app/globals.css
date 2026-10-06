@@ -63,3 +63,84 @@
     border-image: linear-gradient(var(--background), color-mix(in srgb, var(--muted) 50%, transparent)) fill 0 / 0 / 0 100vmax;
   }
 }
+
+/* apps/shared-globals.css sets every element's border color outside any cascade layer, which beats
+   Tailwind's border-color utilities (border-primary, border-amber-400). The neobrutalist pages rely on
+   that, so it stays there. In this look, revert to the layers so those utilities apply, and elements
+   without one keep the base layer's border color. */
+.accelerated-medicine-theme * {
+  border-color: revert-layer;
+}
+
+/* Dark slides in the presentation deck (components/present/slide.tsx) use the prototype's dark colors.
+   The selector outranks the shared .dark rule, which is the neobrutalist dark style. */
+.accelerated-medicine-theme .dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(250 95% 64%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
+  --shadow-x: 0px;
+  --shadow-y: 2px;
+  --shadow-blur: 6px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.08;
+  --shadow-color: hsl(222.2 84% 4.9%);
+}
+
+/* Presentations (components/present/deck.tsx): print or save as PDF with one
+   1920 × 1080 page per slide, without the controls. */
+@media print {
+  @page {
+    size: 1920px 1080px;
+    margin: 0;
+  }
+  .deck {
+    display: block;
+    height: auto;
+    background: none;
+  }
+  .deck-chrome {
+    display: none !important;
+  }
+  .deck-stage {
+    overflow: visible;
+  }
+  .deck-canvas {
+    position: static !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  .deck-slide {
+    position: relative !important;
+    display: block !important;
+    height: 1080px;
+    break-after: page;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .deck-slide:last-child {
+    break-after: auto;
+  }
+  /* Tailwind's base layer hides [hidden] with !important, which beats any unlayered rule, so the
+     slides that are not on screen need a more specific rule in the same layer to print. */
+  @layer base {
+    .deck-slide[hidden] {
+      display: block !important;
+    }
+  }
+}

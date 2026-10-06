@@ -1,0 +1,74 @@
+import type { OutcomeCategory } from "@/components/home/outcome-label"
+
+import data from "./alzheimers.json"
+
+// Alzheimer's disease from the decentralized-fda prototype's treatment estimates (mikepsinn/dfda,
+// apps/web/data/optimitron/medical-data, a fork of this repo's packages/data with corrections.json
+// applied), keeping only the fields the slides show. Lecanemab's label values come from its FDA label.
+type Outcome = {
+  name: string
+  baseline?: string | null
+  percentageChange?: number | null
+  absoluteChange?: string | null
+  dataSource?: string | null
+  sourceUrl?: string | null
+  isPositive?: boolean
+}
+
+export type TreatmentEstimate = {
+  name: string
+  slug: string
+  effectiveness: number
+  safetyScore: number
+  timeToEffect: string | null
+  annualCost: number | null
+  primaryOutcomes: Outcome[]
+  secondaryOutcomes: Outcome[]
+  sideEffects: { name: string; percentage?: number | null; dataSource?: string | null; sourceUrl?: string | null }[]
+}
+
+export type DemoCondition = { slug: string; name: string; lastUpdated: string; treatments: TreatmentEstimate[] }
+
+export const alzheimers: DemoCondition = data
+
+export function rankTreatments(treatments: TreatmentEstimate[], sort: "effectiveness" | "safety") {
+  const metric = sort === "safety" ? "safetyScore" : "effectiveness"
+  return [...treatments].sort((a, b) => b[metric] - a[metric] || a.name.localeCompare(b.name, "en"))
+}
+
+// A public link someone can check, not an AI search redirect.
+const checkableSourceUrl = /^https:\/\/(?!vertexaisearch\.cloud\.google\.com\/)[^\s]+$/
+const sourceNames: Record<string, string> = { "fda-label": "FDA label", publication: "Published study" }
+
+// The cited source of a value taken from one; null for an estimate.
+function citedSource(item: { dataSource?: string | null; sourceUrl?: string | null }) {
+  if (!item.sourceUrl || !checkableSourceUrl.test(item.sourceUrl) || item.dataSource === "ai-estimated") {
+    return undefined
+  }
+  return { label: sourceNames[item.dataSource ?? ""] ?? "Source", href: item.sourceUrl }
+}
+
+export function treatmentOutcomeCategories(treatment: TreatmentEstimate): OutcomeCategory[] {
+  const outcomes = (items: Outcome[]) => items.map(item => ({
+    name: item.name,
+    baseline: item.baseline ? `Baseline: ${item.baseline}` : "Baseline: Not provided",
+    value: { percentage: item.percentageChange, absolute: item.absoluteChange ?? undefined },
+    isPositive: item.isPositive,
+    source: citedSource(item),
+  }))
+  const sideEffects = treatment.sideEffects.map(item => ({
+    name: item.name, value: { percentage: item.percentage, kind: "frequency" as const }, source: citedSource(item),
+  }))
+  return [
+    { title: "Primary outcome estimates", items: outcomes(treatment.primaryOutcomes) },
+    { title: "Other outcome estimates", items: outcomes(treatment.secondaryOutcomes) },
+    {
+      title: "Side-effect estimates", isSideEffectCategory: true,
+      description: sideEffects.some(item => item.source)
+        ? "Frequency, from the cited source where one is shown."
+        : "Estimated frequency.",
+      emptyText: "No side-effect estimates supplied; this does not establish safety.",
+      items: sideEffects,
+    },
+  ]
+}
