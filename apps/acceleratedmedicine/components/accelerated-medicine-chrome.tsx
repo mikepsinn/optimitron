@@ -7,7 +7,7 @@ import { visibleNavigationItems } from "@optimitron/site-kit/lib/app-navigation"
 import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 import { getCopyrightText, getSiteConfig } from "@optimitron/site-kit/lib/site-config"
 
-import { MobileMenu } from "@/components/home/mobile-menu"
+import { MobileMenu } from "@/components/accelerated-medicine-mobile-menu"
 import {
   COURT_OF_HUMANITY_LINK,
   ONE_PERCENT_TREATY_LINK,
@@ -16,9 +16,10 @@ import {
 } from "@/components/org-links"
 import { appNavigation } from "@/lib/navigation"
 
-// Pages in the decentralized-fda prototype's style (the home page and /contact) have their own header and
-// footer. The other pages keep the shared site-kit layout. The footer lists the same pages, legal notice
-// and copyright as the shared footer, and both respect the shared donate switch.
+// The Accelerated Medicine look: purple, light borders, rounded corners and Inter, adapted from the
+// decentralized-fda prototype. Pages in this look (the home page and /contact) use this header and footer.
+// The other pages keep the shared site-kit layout. The footer lists the same pages, legal notice and
+// copyright as the shared footer, and both respect the shared donate switch.
 const headerLinks = [
   { href: "/#how-it-works", label: "How it should work" },
   { href: "/right-to-trial", label: "Right to Trial" },
@@ -31,7 +32,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 const relatedProjects = [ONE_PERCENT_TREATY_LINK, WISHOCRACY_LINK, COURT_OF_HUMANITY_LINK]
 
-export function HomeHeader() {
+function AcceleratedMedicineHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 md:px-6">
@@ -64,7 +65,7 @@ type FooterLink = { href: string; label: string; external?: boolean }
 // The shared footer's section labels are in capitals.
 const sectionTitles: Record<string, string> = { "right-to-try": "Right to Trial", evidence: "Evidence", support: "Support" }
 
-export function HomeFooter() {
+function AcceleratedMedicineFooter() {
   const columns: { id?: string; title: string; links: FooterLink[] }[] = [
     ...appNavigation.footerSections.map(section => ({
       title: sectionTitles[section.id] ?? section.label,
@@ -121,15 +122,15 @@ export function HomeFooter() {
   )
 }
 
-/** A page in the prototype's look: `prototype-theme` switches to its colors (app/globals.css). */
-export function HomeChrome({ children }: { children: ReactNode }) {
+/** A page in the Accelerated Medicine look. `accelerated-medicine-theme` sets its colors (app/globals.css). */
+export function AcceleratedMedicinePage({ children }: { children: ReactNode }) {
   return (
-    <div className={`prototype-theme flex min-h-screen flex-col bg-background text-foreground ${inter.className}`}>
-      <HomeHeader />
+    <div className={`accelerated-medicine-theme flex min-h-screen flex-col bg-background text-foreground ${inter.className}`}>
+      <AcceleratedMedicineHeader />
       <main className="w-full flex-1 py-6 md:py-10">
         <div className="container mx-auto px-4 md:px-6">{children}</div>
       </main>
-      <HomeFooter />
+      <AcceleratedMedicineFooter />
     </div>
   )
 }

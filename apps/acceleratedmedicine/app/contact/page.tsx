@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { HomeChrome } from "@/components/home/home-chrome"
+import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { PartnerSignupForm } from "@/components/partner-signup-form"
 import { isPartnerType } from "@/lib/partner-signup-options"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
@@ -21,7 +21,7 @@ export default async function ContactPage({
   const { type } = await searchParams
 
   return (
-    <HomeChrome>
+    <AcceleratedMedicinePage>
       <section className="mx-auto w-full max-w-3xl md:py-4">
         <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">Partner with us</div>
         <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
@@ -42,6 +42,6 @@ export default async function ContactPage({
           .
         </p>
       </section>
-    </HomeChrome>
+    </AcceleratedMedicinePage>
   )
 }

@@ -3,9 +3,9 @@ import { ArrowRight, Check, CheckCircle2 } from "lucide-react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@optimitron/neobrutalist-ui/ui/card"
 
+import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { BenefitCards } from "@/components/home/benefit-cards"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
-import { HomeChrome } from "@/components/home/home-chrome"
 import { PatientSteps } from "@/components/home/how-it-works/PatientSteps"
 import { ProviderSteps } from "@/components/home/how-it-works/ProviderSteps"
 import { ResearchPartnerSteps } from "@/components/home/how-it-works/ResearchPartnerSteps"
@@ -18,8 +18,8 @@ import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
 
 // The home page shows how care-integrated clinical trials would work for patients with a global Open
 // Treatment Evidence Network. Its sections and look come from the decentralized-fda prototype's home page
-// (mikepsinn/dfda, apps/web), without links into the prototype. HomeChrome gives it the prototype's
-// header, footer and colors.
+// (mikepsinn/dfda, apps/web), without links into the prototype. AcceleratedMedicinePage gives it the
+// site's header, footer and colors.
 //
 // landing-example.json holds the prototype's example rankings and Outcome Label, exported from its
 // treatment-estimate snapshot (apps/web/data/optimitron). Regenerate it from there when they change.
@@ -184,7 +184,7 @@ function Benefits() {
 
 export function HomePage() {
   return (
-    <HomeChrome>
+    <AcceleratedMedicinePage>
       <LegacyHomeHashRedirect />
       <Hero />
       <ExplainerVideoSection />
@@ -193,6 +193,6 @@ export function HomePage() {
       <HowItShouldWork />
       <Benefits />
       <PartnersSection />
-    </HomeChrome>
+    </AcceleratedMedicinePage>
   )
 }

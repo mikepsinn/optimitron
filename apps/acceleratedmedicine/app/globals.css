@@ -2,9 +2,10 @@
 @import "tw-animate-css";
 @import "../../shared-globals.css";
 
-/* The home page (components/home-page.tsx) uses the decentralized-fda prototype's colors: purple, light
-   borders and rounded corners. :has() also reaches menus that open in a portal outside the page. */
-:root:has(.prototype-theme) {
+/* The Accelerated Medicine look (components/accelerated-medicine-chrome.tsx), adapted from the
+   decentralized-fda prototype: purple, light borders and rounded corners. :has() also reaches menus that
+   open in a portal outside the page. */
+:root:has(.accelerated-medicine-theme) {
   --background: hsl(0 0% 100%);
   --foreground: hsl(222.2 84% 4.9%);
   --card: hsl(0 0% 100%);
@@ -49,7 +50,7 @@
   }
 }
 
-/* Full-width background bands for sections inside the home page's container. Border-image outsets are
+/* Full-width background bands for sections inside the page container. Border-image outsets are
    ink overflow, so a band reaches the window edges without widening the page. */
 @layer components {
   .band-muted {
