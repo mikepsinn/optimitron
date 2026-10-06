@@ -168,12 +168,10 @@ const SITES: Site[] = [
   },
   {
     additionalSnapshotRoutes: [
-      "/the-plan",
       "/impact",
       "/montana",
       "/model-act",
       "/states/missouri",
-      "/survey",
       "/donate/success",
     ],
     directory: "apps/acceleratedmedicine",

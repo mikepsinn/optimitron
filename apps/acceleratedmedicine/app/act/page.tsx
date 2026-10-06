@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
+import { SectionHeading } from "@/components/section-heading"
 import { actProvisions } from "@/components/present/patient-journey/closing"
 import { recovery, threeChanges } from "@/components/present/patient-journey/opening"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
@@ -67,20 +68,11 @@ const questions = [
 ]
 
 const background = [
-  { href: "/right-to-trial", label: "Right to Trial", text: "Our earlier education campaign on patients' access to promising treatments." },
-  { href: "/model-act", label: "Model framework", text: "Provisions a state can start from, drawn from enacted text." },
+  { href: "/states", label: "Your state", text: "The patients waiting in each state, and what the act would change there." },
   { href: "/montana", label: "An enacted state precedent", text: "How one state already licenses experimental treatment centers." },
-  { href: "/right-to-trial#state-map", label: "State-by-state pages", text: "Where each state stands." },
+  { href: "/model-act", label: "Model framework", text: "Provisions a state can start from, drawn from enacted text." },
+  { href: "/impact", label: "Impact model", text: "How much sooner treatments could arrive if every state adopted the act." },
 ]
-
-function SectionHeading({ id, title, children }: { id: string; title: string; children?: string }) {
-  return (
-    <div className="mx-auto max-w-3xl text-center">
-      <h2 id={id} className="text-3xl font-bold tracking-tighter sm:text-4xl">{title}</h2>
-      {children && <p className="mt-3 text-muted-foreground md:text-lg">{children}</p>}
-    </div>
-  )
-}
 
 export default function ActPage() {
   return (

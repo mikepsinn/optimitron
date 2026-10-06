@@ -45,7 +45,7 @@
 - Unproven stem-cell clinics show why people worry about this. The act answers it four ways. The board approves each clinic and protocol. The consent form states the cost and that the treatment is experimental. Serious side effects can pause new patients. Every result, including failures, is published, so a clinic cannot hide poor results.
 - The Right to Try figures come from the FDA's summary, as reported by [FactCheck.org (2026)](https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/).
 ### More background
-- [Right to Trial](/right-to-trial) Our earlier education campaign on patients' access to promising treatments.
-- [Model framework](/model-act) Provisions a state can start from, drawn from enacted text.
+- [Your state](/states) The patients waiting in each state, and what the act would change there.
 - [An enacted state precedent](/montana) How one state already licenses experimental treatment centers.
-- [State-by-state pages](/right-to-trial#state-map) Where each state stands.
+- [Model framework](/model-act) Provisions a state can start from, drawn from enacted text.
+- [Impact model](/impact) How much sooner treatments could arrive if every state adopted the act.
