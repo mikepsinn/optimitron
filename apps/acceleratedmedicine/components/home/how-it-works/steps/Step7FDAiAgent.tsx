@@ -54,8 +54,8 @@ export function Step7FDAiAgent() {
               </div>
               <div className="bg-muted p-3 rounded-lg rounded-tl-none">
                 <p className="text-sm">
-                  That's good progress! Your fatigue has decreased by 40% since last week. Would you like to see how
-                  your symptoms compare to others in your trial?
+                  Thanks, Sarah. I've recorded that, and I'll let your doctor know you still feel tired. Would you
+                  like to see how your check-ins compare with other patients on the same treatment?
                 </p>
               </div>
             </div>

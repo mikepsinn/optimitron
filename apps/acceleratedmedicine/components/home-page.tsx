@@ -11,9 +11,10 @@ import { ProviderSteps } from "@/components/home/how-it-works/ProviderSteps"
 import { ResearchPartnerSteps } from "@/components/home/how-it-works/ResearchPartnerSteps"
 import landingExample from "@/components/home/landing-example.json"
 import { LearningLoop } from "@/components/home/learning-loop"
-import { OutcomeLabel, type OutcomeCategory } from "@/components/home/outcome-label"
+import { OutcomeLabel } from "@/components/home/outcome-label"
 import { PartnersSection } from "@/components/home/partners-section"
 import { RankingsPreview } from "@/components/home/rankings-preview"
+import { alzheimers, treatmentOutcomeCategories } from "@/components/present/patient-journey/alzheimers"
 import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
 
 // The home page shows how care-integrated clinical trials would work for patients with a global Open
@@ -21,8 +22,9 @@ import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
 // (mikepsinn/dfda, apps/web), without links into the prototype. AcceleratedMedicinePage gives it the
 // site's header, footer and colors.
 //
-// landing-example.json holds the prototype's example rankings and Outcome Label, exported from its
-// treatment-estimate snapshot (apps/web/data/optimitron). Regenerate it from there when they change.
+// landing-example.json holds the prototype's example rankings, exported from its treatment-estimate
+// snapshot (apps/web/data/optimitron); the scores are AI-assisted estimates, and the page says so. The
+// Outcome Label is lecanemab's from the deck's dataset, where every value cites its FDA label.
 
 const highlights = [
   "Treatment rankings based on real-world outcomes",
@@ -102,7 +104,8 @@ function Rankings() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Interventions by Condition</CardTitle>
               <CardDescription>
-                Rankings would update as patients report outcomes.
+                Rankings would update as patients report outcomes. The scores shown are the prototype&apos;s
+                AI-assisted estimates.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -115,8 +118,9 @@ function Rankings() {
   )
 }
 
+const lecanemab = alzheimers.treatments.find(treatment => treatment.slug === "lecanemab")!
+
 function OutcomeLabels() {
-  const { treatment, condition, categories } = landingExample.outcomeLabel
   return (
     <section className="band-muted w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
@@ -135,9 +139,9 @@ function OutcomeLabels() {
               ))}
             </ul>
           </div>
-          <OutcomeLabel title={treatment} tag={condition}
+          <OutcomeLabel title={lecanemab.name} tag="Alzheimer's disease"
             subtitle="Changes are relative to the baselines shown."
-            data={categories as OutcomeCategory[]} showBars={false} />
+            data={treatmentOutcomeCategories(lecanemab)} showBars={false} />
         </div>
       </div>
     </section>

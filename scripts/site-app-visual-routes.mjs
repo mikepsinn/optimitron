@@ -1184,13 +1184,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         ],
       ],
       [
-        "/model-act",
-        [
-          "apps/acceleratedmedicine/app/model-act/page.tsx",
-          "apps/acceleratedmedicine/components/section-heading.tsx",
-        ],
-      ],
-      [
         "/states",
         [
           "apps/acceleratedmedicine/app/states/page.tsx",

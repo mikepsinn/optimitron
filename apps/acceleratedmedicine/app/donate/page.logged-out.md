@@ -46,12 +46,11 @@
 - Create transparent treatment outcome labels, compare treatments by effectiveness, side effects, and cost, and publish the methods and results.
 #### INFRASTRUCTURE
 - Maintain secure tools for standardized outcome collection, anonymization, aggregation, analysis, and public treatment rankings.
-- MISSION: TOTAL DISEASE ERADICATION
+- Ensure every patient can participate in clinical trials for the most promising treatments.
 #### LEGISLATION
 - [THE ACT](/act)
 - [YOUR STATE](/states)
 - [MONTANA PRECEDENT](/montana)
-- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)

@@ -23,12 +23,11 @@
 ### KEEP THE MOMENTUM
 - [VOTE ON THE TREATY](https://warondisease.org/vote)
 - [READ THE ACT](/act)
-- MISSION: TOTAL DISEASE ERADICATION
+- Ensure every patient can participate in clinical trials for the most promising treatments.
 #### LEGISLATION
 - [THE ACT](/act)
 - [YOUR STATE](/states)
 - [MONTANA PRECEDENT](/montana)
-- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)

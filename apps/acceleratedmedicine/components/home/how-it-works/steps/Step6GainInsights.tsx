@@ -13,7 +13,7 @@ export function Step6GainInsights() {
         "See how your response compares to others",
         "Identify patterns in your symptoms and triggers",
         "Track your progress over time",
-        "Receive personalized recommendations",
+        "Flag patterns for your doctor to review",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
@@ -22,17 +22,17 @@ export function Step6GainInsights() {
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-center">
-                  <div className="font-medium text-sm">Cognitive Function Trend</div>
-                  <div className="text-xs text-green-700 font-medium">↑ 15%</div>
+                  <div className="font-medium text-sm">Memory test score</div>
+                  <div className="text-xs text-muted-foreground font-medium">Stable</div>
                 </div>
                 <div className="h-20 mt-2 flex items-end gap-1">
-                  {[20, 25, 30, 35, 40, 45, 50].map((h, i) => (
+                  {[48, 50, 47, 49, 48, 50, 49].map((h, i) => (
                     <div key={i} className="bg-primary/80 rounded-sm w-full" style={{ height: `${h}%` }}></div>
                   ))}
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>Apr 1</span>
-                  <span>Apr 7</span>
+                  <span>Month 1</span>
+                  <span>Month 6</span>
                 </div>
               </div>
               <div className="rounded-lg border p-3 bg-card">
@@ -42,9 +42,9 @@ export function Step6GainInsights() {
                 </div>
               </div>
               <div className="rounded-lg border p-3 bg-card">
-                <div className="font-medium text-sm">Recommendation</div>
+                <div className="font-medium text-sm">For your doctor</div>
                 <div className="text-sm mt-1">
-                  Consider taking your medication in the evening to reduce the daytime fatigue you've reported.
+                  You have reported daytime fatigue on most days since starting treatment. We flagged it for your next visit.
                 </div>
               </div>
             </div>

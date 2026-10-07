@@ -1306,7 +1306,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     sidebarVoteCtaEnabled: false,
     footerBranding: {
       title: "INSTITUTE FOR ACCELERATED MEDICINE",
-      tagline: "MISSION: TOTAL DISEASE ERADICATION",
+      // The home page's mission, word for word.
+      tagline: "Ensure every patient can participate in clinical trials for the most promising treatments.",
     },
     contactInfo: {
       email: "hello@acceleratedmedicine.org",

@@ -23,6 +23,7 @@ const benefits = [
       "Data collection runs inside routine care",
       "Automated analysis replaces manual site work",
     ],
+    source: "Sources: Manhattan Institute, 2023 (RECOVERY); Moore et al., JAMA Internal Medicine, 2018.",
   },
   {
     title: "Better Data Quality",
@@ -68,6 +69,7 @@ export function BenefitCards() {
                 </li>
               ))}
             </ul>
+            {"source" in benefit && <p className="mt-4 text-xs">{benefit.source}</p>}
           </div>
         </div>
       ))}

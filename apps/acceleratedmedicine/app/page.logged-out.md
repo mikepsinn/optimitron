@@ -44,89 +44,74 @@
 - Comprehensive health impact data
 - Both positive and negative effects
 - Evidence-based decision making
-- Suvorexant
+- Lecanemab
+- Alzheimer's disease
 - Changes are relative to the baselines shown.
-- Latency to Persistent Sleep (LPS) - PSG
-- Baseline: 68 minutes
-- -26.5%
-- (-18 minutes)
-- Wake After Sleep Onset (WASO) - PSG
-- Baseline: 115 minutes
-- -21.7%
-- (-25 minutes)
-- Total Sleep Time (TST) - PSG
-- Baseline: 320 minutes
-- +9.4%
-- (+30 minutes)
-- Subjective Total Sleep Time (sTST)
-- Baseline: 360 minutes
-- +11.1%
-- (+40 minutes)
-- Sleep Quality - PSQI
-- Baseline: PSQI score: 14/21
-- -28.6%
-- (-4 points)
-- Daytime Alertness - KSS
-- Baseline: KSS score: 7/9
-- -21.4%
-- (-1.5 points)
-- Estimated frequency.
-- Somnolence
-- 10%
+- Clinical Dementia Rating-Sum of Boxes (CDR-SB)
+- Baseline: 3.17 points (CDR-SB 0-18 scale)
+- [Source: FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf)
+- +27%
+- (-0.45 points (less increase compared to placebo's change from baseline))
+- Alzheimer's Disease Assessment Scale-Cognitive Subscale 14 (ADAS-Cog14)
+- Baseline: 24.45 points (ADAS-Cog14 0-90 scale)
+- +26%
+- (-1.44 points (less increase compared to placebo's change from baseline))
+- Alzheimer's Disease Cooperative Study-Activities of Daily Living (ADCS-MCI-ADL)
+- Baseline: 41.2 points (ADCS-MCI-ADL 0-53 scale)
+- +37%
+- (+2.0 points (less decrease compared to placebo's change from baseline))
+- Brain Amyloid Plaque (PET Centiloids)
+- Baseline: Not provided
+- [Source: Published study](https://doi.org/10.1056/NEJMoa2212948)
+- -59.1 Centiloids compared with placebo
+- CSF p-tau181
+- Baseline: 23.0 pg/mL
+- -20.6%
+- (-4.7 pg/mL)
+- Plasma Aβ42/40 ratio
+- Baseline: 0.088
+- +0.007 compared with placebo
+- Plasma p-tau181
+- Baseline: 3.70 pg/mL
+- -0.78 pg/mL compared with placebo
+- Frequency, from the cited source where one is shown.
+- Infusion-related reactions
+- 26%
+- ARIA-E (edema)
+- 13%
+- ARIA-H (hemorrhage)
+- 17%
 - Headache
-- 7%
-- Dizziness
-- 4%
+- 11%
 ### How It Should Actually Work
 - Patients would report outcomes, doctors would see what has worked for patients like theirs, and researchers would run trials on the same network.
 - FOR PATIENTS
 #### How Your Doctor's Visit Should Actually Work
-##### Find the Most Promising Treatment for Your Condition
-- Search for trials based on your condition, location, and preferences.
-- Access trials from anywhere in the world
-- Filter by condition, treatment type, and more
-- See real-time availability and enrollment status
-- Compare multiple treatment options side-by-side
-- Alzheimer's
-- 92%
-- 88%
-- 72%
-- 68%
-- 65%
-- 61%
-- 58%
-- 52%
-- 49%
-- 47%
-- 45%
-- 42%
+##### Compare the Most Promising Treatments for Your Condition
+- See the treatments for your condition ranked side by side, each with an outcome label.
+- Compare effectiveness, side effects and cost side by side
+- See how strong the evidence is for each treatment
+- Find participating clinics near you
+- Talk the options over with your own doctor
+- 57/100
+- 55/100
+- 45/100
+- 43/100
+- 42/100
+- 40/100
 - Example data
 ##### View Outcome Labels
-- Review comprehensive outcome data before deciding to join a trial.
-- See real effectiveness data from actual patients
+- Review what is known about a treatment before deciding, with the source of every number.
+- See results from trials and from treated patients
 - Understand potential side effects and their frequency
 - Compare with standard of care treatments
-- Read about experiences from patients like you
-- Klotho-Increasing Gene Therapy
-- Cognitive Function (ADAS-Cog)
-- +28%
-- Memory Recall
-- +35%
-- Executive Function
-- +22%
-- Hippocampal Volume
-- +15%
-- Immune Response
-- +12%
-- +9%
-- Fatigue
-- +7%
-##### Join a Trial
-- Complete informed consent and enroll in your chosen trial.
-- Simple digital enrollment process
-- Clear explanation of trial requirements
-- Transparent compensation information
-- Easy withdrawal option if needed
+- Check the source of every value
+##### Decide in Writing
+- Sign a plain-language consent with your doctor: the treatment, the risks, the unknowns and the cost.
+- Sign online, after talking it over with your doctor
+- Known and unknown risks in plain language
+- The cost, and who pays, before you start
+- Stop at any time
 ##### Coordinate Your Care
 - Schedule lab tests, provider visits, and import your health records.
 - Book appointments with just a few clicks
@@ -150,9 +135,9 @@
 - See how your response compares to others
 - Identify patterns in your symptoms and triggers
 - Track your progress over time
-- Receive personalized recommendations
-- Apr 1
-- Apr 7
+- Flag patterns for your doctor to review
+- Month 1
+- Month 6
 ##### Connect with Your AI Health Agent
 - Receive personalized daily check-ins from your AI health agent that monitors your progress, collects data, and provides insights in a conversational way.
 - Daily check-ins via phone or text to monitor your well-being
@@ -164,48 +149,54 @@
 - Your personal health assistant
 - Good morning, Sarah! How are you feeling today after your treatment yesterday?
 - I'm feeling better today. The headache is gone but I still feel a bit tired.
-- That's good progress! Your fatigue has decreased by 40% since last week. Would you like to see how your symptoms compare to others in your trial?
+- Thanks, Sarah. I've recorded that, and I'll let your doctor know you still feel tired. Would you like to see how your check-ins compare with other patients on the same treatment?
 - Yes, please show me.
 - FOR DOCTORS
 #### How Treating Patients Should Work
-##### Review AI-Ranked Trial Matches for Your Patients
-- Our AI analyzes patient EHR data to identify and rank the most suitable and effective clinical trials, saving you time.
-- Leverage AI for precise patient-trial matching
-- View ranked lists based on predicted effectiveness
-- Quickly assess eligibility criteria against patient data
-- Focus on the most promising options first
-- Recruiting
-- 95%
-- View Details & Assign
-- 91%
-- 85%
-- Screening
-- 82%
-##### Assign Patients to Trial Arms with Confidence
-- Review detailed outcome labels, compare trial arms (including placebo/standard of care), and assign patients directly.
-- Make informed decisions with transparent outcome data
-- Compare effectiveness and side effect profiles easily
-- Assign patients to specific trial arms seamlessly
-- Integrate assignment with patient management workflows
-- Arm 1: Lecanemab (Bi-weekly IV)
-- Active
-- Immune Response (ARIA)
-- 12%
-- Assign to Lecanemab Arm
-- Arm 2: Placebo (Bi-weekly IV)
-- Control
-- -5%
-- 5%
-- Assign to Placebo Arm
-##### Monitor Patient Progress & Trial Performance
-- Track key metrics, patient-reported outcomes, and overall trial status through an intuitive dashboard.
-- Visualize patient progress over time
-- Monitor adherence and adverse events easily
-- Track enrollment rates and trial milestones
-- Generate reports for analysis and regulatory needs
-- Enrollment Progress
-- 42 / 100 Patients
-- P12345: Mild ARIA reported
+##### Review Screened Options for Your Patient
+- See the treatments an independent board has screened for your patient's condition, ranked by the evidence so far. The ranking supports your judgment; it does not replace it.
+- Options ranked by outcomes from trials and treated patients
+- Eligibility checked against your patient's record
+- An outcome label, with sources, for every option
+- You and your patient make the decision
+- Eligible
+- 48/100
+- View outcome label
+- 50/100
+- 60/100
+- 58/100
+##### Recommend a Treatment, or Offer a Randomized Comparison
+- Recommend a screened treatment that your patient chooses with you. Or, if your patient agrees, enroll them in a centrally run randomized comparison, as the RECOVERY trial did.
+- Recommend any screened treatment, with written consent
+- Offer willing patients a randomized comparison
+- The trial assigns treatments at random; you never pick an arm
+- No placebo arm
+- Recommend a treatment
+- Screened
+- Decline on CDR-SB at 18 months
+- 27% slower
+- Brain swelling (ARIA-E)
+- Recommend lecanemab
+- Offer a randomized comparison
+- Optional
+- Compares screened treatments with each other or with usual care. The central trial assigns each patient at random.
+- Joins only with your patient's written consent.
+- Offer enrollment
+##### Monitor Your Patients' Outcomes
+- Track how your patients are doing, report side effects in minutes, and see the same outcome categories the board publishes.
+- Outcome reports straight from routine medical records
+- Serious side effects reach the review board within days
+- Good, bad and unclear results are all recorded
+- Compare your patients with every clinic's pooled results
+- Outcome reports due this week
+- Improved
+- 21
+- No real change
+- 14
+- Worsened
+- Stopped
+- Lost to follow-up
+- P12345: Mild ARIA, reported to the board
 - P67890: Headache (resolved)
 - FOR RESEARCHERS
 #### How Clinical Trials Should Work
@@ -230,13 +221,15 @@
 - $32
 - Select Plan
 ##### Set Parameters
-- Define patient pricing, required data collection, and refundable deposits to optimize your trial.
-- Flexible pricing models for participants
+- Set what your study covers for each participant and what data it collects.
+- Cover participants' treatment and visit costs
+- Point patients to charity and maker assistance
 - Customizable data collection requirements
-- Incentive structures to maximize retention
-- Participant Cost
+- Sponsor covers per participant
 - USD
-- Refundable Deposit
+- Patient assistance
+- Charity
+- Free supply from maker
 - Required Data Points
 - Blood Glucose
 - Weight
@@ -248,7 +241,7 @@
 - Automated inventory tracking and alerts
 - Secure patient order processing and fulfillment
 - Temperature-controlled shipping monitoring
-- Blockchain-verified chain of custody
+- An audit trail for every shipment
 - New
 - Manage Inventory
 ##### Analyze Trial Data
@@ -270,6 +263,7 @@
 - The RECOVERY trial cost about $500 per patient, compared with about $41,000 for a typical trial
 - Data collection runs inside routine care
 - Automated analysis replaces manual site work
+- Sources: Manhattan Institute, 2023 (RECOVERY); Moore et al., JAMA Internal Medicine, 2018.
 #### Better Data Quality
 - Designed for data that researchers can check and reuse:
 - Continuous data from apps and wearables, not only clinic visits
@@ -284,7 +278,7 @@
 - Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.
 - [Discuss a major gift](/contact?type=funder)
 #### Clinics and doctors
-- Run a pilot site, serve on an independent review board, or advise us on the protocol.
+- Run a pilot site or advise us on the protocol.
 - [Talk to us](/contact?type=clinic)
 #### Organizations building their own
 - The protocol and code are open source, so you can build your own version and publish results in the same open format.

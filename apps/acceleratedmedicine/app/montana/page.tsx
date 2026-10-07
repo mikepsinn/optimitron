@@ -136,7 +136,7 @@ export default function MontanaPage() {
       </section>
 
       <section aria-labelledby="provisions-heading" className="py-12 md:py-20">
-        <SectionHeading id="provisions-heading" title="Six parts worth carrying forward" />
+        <SectionHeading id="provisions-heading" title="What the law requires" />
         <ul className="mx-auto mt-8 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
           {provisions.map(({ icon: Icon, title, text }) => (
             <li key={title} className={card}>
@@ -172,10 +172,11 @@ export default function MontanaPage() {
       </section>
 
       <section aria-labelledby="act-heading" className="py-12 md:py-20">
-        <SectionHeading id="act-heading" title="The law opens access. Published results make it learn.">
-          SB 535 sets up access, licensing, consent and oversight. The Care-Integrated Clinical Trials Act builds on
-          the same idea and adds the evidence half: every patient&apos;s outcome is reported in one open format and
-          published, so the next patient chooses better.
+        <SectionHeading id="act-heading" title="How the act differs">
+          Montana opens access through state-licensed centers. The Care-Integrated Clinical Trials Act takes a
+          different route: an independent review board screens each treatment, clinic and consent form, a
+          doctor&apos;s recommendation and written consent are all a patient needs, and every outcome is published,
+          so the next patient chooses better.
         </SectionHeading>
         <div className="mt-8 text-center">
           <Button asChild size="lg">

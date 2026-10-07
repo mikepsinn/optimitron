@@ -1,64 +1,49 @@
 import { Search } from "lucide-react"
+
+import { alzheimers, rankTreatments } from "@/components/present/patient-journey/alzheimers"
 import { HowItWorksStep } from "../HowItWorksStep"
+
+// The approved Alzheimer's treatments the deck shows, ranked by the prototype's effectiveness scores
+// (out of 100). No experimental therapies appear here.
+const ranked = rankTreatments(alzheimers.treatments, "effectiveness")
 
 export function Step1FindTrials() {
   return (
     <HowItWorksStep
       exampleData
       stepNumber={1}
-      title="Find the Most Promising Treatment for Your Condition"
+      title="Compare the Most Promising Treatments for Your Condition"
       icon={<Search className="h-5 w-5 text-primary" />}
-      description="Search for trials based on your condition, location, and preferences."
+      description="See the treatments for your condition ranked side by side, each with an outcome label."
       benefits={[
-        "Access trials from anywhere in the world",
-        "Filter by condition, treatment type, and more",
-        "See real-time availability and enrollment status",
-        "Compare multiple treatment options side-by-side",
+        "Compare effectiveness, side effects and cost side by side",
+        "See how strong the evidence is for each treatment",
+        "Find participating clinics near you",
+        "Talk the options over with your own doctor",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
           <div className="space-y-4">
             <div className="rounded-md border px-3 py-2 flex items-center gap-2 bg-background">
               <Search className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">Alzheimer's</span>
+              <span className="font-medium">Alzheimer&apos;s disease</span>
             </div>
 
             <div className="text-sm font-medium mb-2">Comparative Effectiveness Rankings</div>
 
             <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-              {[
-                { name: "Lecanemab (Leqembi)", effectiveness: 92, status: "FDA Approved" },
-                { name: "Donanemab (Kisunla)", effectiveness: 88, status: "FDA Approved" },
-                { name: "Experimental Tau Inhibitor", effectiveness: 72, status: "Phase 2" },
-                { name: "Memantine + Donepezil", effectiveness: 68, status: "FDA Approved" },
-                { name: "APOE4 Gene Therapy", effectiveness: 65, status: "Phase 2" },
-                { name: "Neuroinflammation Modulator", effectiveness: 61, status: "Phase 2" },
-                { name: "Donepezil (Aricept)", effectiveness: 58, status: "FDA Approved" },
-                { name: "Memantine (Namenda)", effectiveness: 52, status: "FDA Approved" },
-                { name: "Rivastigmine (Exelon)", effectiveness: 49, status: "FDA Approved" },
-                { name: "Galantamine (Razadyne)", effectiveness: 47, status: "FDA Approved" },
-                { name: "Stem Cell Therapy", effectiveness: 45, status: "Phase 1" },
-                { name: "GLP-1 Receptor Agonist", effectiveness: 42, status: "Phase 2" },
-              ].map((treatment, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg border p-3 bg-card"
-                >
+              {ranked.map(treatment => (
+                <div key={treatment.slug} className="rounded-lg border p-3 bg-card">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{treatment.name}</div>
-                    <div className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      {treatment.status}
-                    </div>
+                    <div className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">FDA approved</div>
                   </div>
 
                   <div className="mt-2 flex items-center gap-2">
                     <div className="w-full bg-muted rounded-full h-2">
-                      <div
-                        className="bg-primary rounded-full h-2"
-                        style={{ width: `${treatment.effectiveness}%` }}
-                      ></div>
+                      <div className="bg-primary rounded-full h-2" style={{ width: `${treatment.effectiveness}%` }}></div>
                     </div>
-                    <span className="text-xs font-medium">{treatment.effectiveness}%</span>
+                    <span className="whitespace-nowrap text-xs font-medium">{treatment.effectiveness}/100</span>
                   </div>
                 </div>
               ))}
@@ -70,4 +55,3 @@ export function Step1FindTrials() {
     />
   )
 }
-

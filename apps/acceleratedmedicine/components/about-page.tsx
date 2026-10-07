@@ -12,26 +12,7 @@ import {
 import { BOARD_MEMBERS } from "@/lib/board-members"
 import Layout from "@/components/layout"
 import { MailingAddress } from "@/components/mailing-address"
-import {
-  COURT_OF_HUMANITY_LINK,
-  DECENTRALIZED_FDA_LINK,
-  ONE_PERCENT_TREATY_LINK,
-  OrgLinkCard,
-  RESEARCH_LINKS,
-  RIGHT_TO_TRIAL_LINK,
-  TRIAL_ABUNDANCE_SURVEY_LINK,
-  WISHOCRACY_LINK,
-  buttonShadow,
-} from "@/components/org-links"
-
-const INITIATIVES = [
-  RIGHT_TO_TRIAL_LINK,
-  ONE_PERCENT_TREATY_LINK,
-  DECENTRALIZED_FDA_LINK,
-  WISHOCRACY_LINK,
-  COURT_OF_HUMANITY_LINK,
-  TRIAL_ABUNDANCE_SURVEY_LINK,
-]
+import { OrgLinkCard, RESEARCH_LINKS, buttonShadow } from "@/components/org-links"
 
 export function AboutPage() {
   const address = formatNonprofitAddress()
@@ -49,22 +30,9 @@ export function AboutPage() {
           <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
             We are a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit. We work so
             every patient can join a pragmatic clinical trial for a promising
-            treatment, with a clinician, at a licensed center, and so every
-            result is published.
+            treatment, through their own doctor, at a clinic an independent
+            board has approved, and so every result is published.
           </p>
-        </Container>
-      </SectionContainer>
-
-      <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
-        <Container>
-          <h2 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">
-            Our initiatives
-          </h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {INITIATIVES.map((item) => (
-              <OrgLinkCard item={item} key={item.title} size="large" />
-            ))}
-          </div>
         </Container>
       </SectionContainer>
 

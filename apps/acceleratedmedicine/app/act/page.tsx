@@ -70,7 +70,6 @@ const questions = [
 const background = [
   { href: "/states", label: "Your state", text: "The patients waiting in each state, and what the act would change there." },
   { href: "/montana", label: "An enacted state precedent", text: "How one state already licenses experimental treatment centers." },
-  { href: "/model-act", label: "Model framework", text: "Provisions a state can start from, drawn from enacted text." },
   { href: "/impact", label: "Impact model", text: "How much sooner treatments could arrive if every state adopted the act." },
 ]
 

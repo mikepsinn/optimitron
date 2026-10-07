@@ -16,14 +16,7 @@
 - [ACCELERATED MEDICINE](/)
 - ABOUT US
 ## INSTITUTE FOR ACCELERATED MEDICINE
-- We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial for a promising treatment, with a clinician, at a licensed center, and so every result is published.
-### OUR INITIATIVES
-- [ACCELERATEDMEDICINE.ORG RIGHT TO TRIAL A model state law that starts from Montana's enacted framework and lets every patient join a pragmatic trial through their clinician. SEE THE MONTANA MODEL](/montana)
-- [WARONDISEASE.ORG 1% TREATY A proposed treaty. Each nation that signs would redirect 1% of its military budget, mostly to pragmatic clinical trials. TAKE THE GLOBAL SURVEY](https://warondisease.org)
-- [DFDA.EARTH DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT We are building an open protocol that ranks treatments by real-world patient outcomes and publishes an Outcome Label for each drug. VISIT DFDA.EARTH](https://dfda.earth)
-- [WISHOCRACY.ORG WISHOCRACY People split $100 between two spending priorities at a time. The answers combine into public budget priorities. VISIT WISHOCRACY.ORG](https://wishocracy.org)
-- [COURTOFHUMANITY.ORG COURT OF HUMANITY A public case, Humanity v. Government. Read the claim and the cited evidence, register affected people as plaintiffs, and render a verdict. VISIT THE COURT](https://courtofhumanity.org)
-- [TRIALABUNDANCESURVEY.ORG TRIAL ABUNDANCE SURVEY Measures public support for faster medical progress through pragmatic clinical trials. TAKE THE SURVEY](https://trialabundancesurvey.org)
+- We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial for a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published.
 ### OUR RESEARCH
 - [BOOK HOW TO END WAR AND DISEASE The full plan: economics, legal framework, financing, and roadmap. READ ONLINE](https://manual.warondisease.org)
 - [PODCAST HOW TO END WAR AND DISEASE The book as a podcast. LISTEN ON SPOTIFY](https://open.spotify.com/show/1aX8mw9MmFzyiSBq2RNnu2)
@@ -47,12 +40,11 @@
 ### SEE WHAT THE ACT WOULD CHANGE
 - [READ THE ACT](/act)
 - [FIND YOUR STATE](/states)
-- MISSION: TOTAL DISEASE ERADICATION
+- Ensure every patient can participate in clinical trials for the most promising treatments.
 #### LEGISLATION
 - [THE ACT](/act)
 - [YOUR STATE](/states)
 - [MONTANA PRECEDENT](/montana)
-- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)

@@ -122,11 +122,11 @@ export function ResearchPartnerSteps() {
         stepNumber={3}
         title="Set Parameters"
         icon={<Settings className="h-5 w-5 text-primary" />}
-        description="Define patient pricing, required data collection, and refundable deposits to optimize your trial."
+        description="Set what your study covers for each participant and what data it collects."
         benefits={[
-          "Flexible pricing models for participants",
+          "Cover participants' treatment and visit costs",
+          "Point patients to charity and maker assistance",
           "Customizable data collection requirements",
-          "Incentive structures to maximize retention",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
@@ -136,17 +136,21 @@ export function ResearchPartnerSteps() {
             </div>
             <div className="p-4 space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs">Participant Cost</Label>
+                <Label className="text-xs">Sponsor covers per participant</Label>
                 <div className="flex items-center space-x-2">
-                  <Input placeholder="100" className="h-8 text-xs" disabled />
+                  <Input placeholder="929" className="h-8 text-xs" disabled />
                   <span className="text-xs">USD</span>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs">Refundable Deposit</Label>
-                <div className="flex items-center space-x-2">
-                  <Input placeholder="50" className="h-8 text-xs" disabled />
-                  <span className="text-xs">%</span>
+                <Label className="text-xs">Patient assistance</Label>
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant="outline" className="text-xs">
+                    Charity
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Free supply from maker
+                  </Badge>
                 </div>
               </div>
               <div className="space-y-2">
@@ -185,7 +189,7 @@ export function ResearchPartnerSteps() {
           "Automated inventory tracking and alerts",
           "Secure patient order processing and fulfillment",
           "Temperature-controlled shipping monitoring",
-          "Blockchain-verified chain of custody",
+          "An audit trail for every shipment",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">

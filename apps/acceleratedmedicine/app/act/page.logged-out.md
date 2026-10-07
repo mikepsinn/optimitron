@@ -47,5 +47,4 @@
 ### More background
 - [Your state](/states) The patients waiting in each state, and what the act would change there.
 - [An enacted state precedent](/montana) How one state already licenses experimental treatment centers.
-- [Model framework](/model-act) Provisions a state can start from, drawn from enacted text.
 - [Impact model](/impact) How much sooner treatments could arrive if every state adopted the act.

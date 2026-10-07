@@ -24,7 +24,7 @@ const partners = [
   {
     icon: Stethoscope,
     title: "Clinics and doctors",
-    text: "Run a pilot site, serve on an independent review board, or advise us on the protocol.",
+    text: "Run a pilot site or advise us on the protocol.",
     links: [],
     talk: { label: "Talk to us", href: signUp("clinic") },
   },

@@ -44,12 +44,11 @@
 - Institute for Accelerated Medicine
 - Email: hello@acceleratedmedicine.org
 - Website: AcceleratedMedicine.org
-- MISSION: TOTAL DISEASE ERADICATION
+- Ensure every patient can participate in clinical trials for the most promising treatments.
 #### LEGISLATION
 - [THE ACT](/act)
 - [YOUR STATE](/states)
 - [MONTANA PRECEDENT](/montana)
-- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)
