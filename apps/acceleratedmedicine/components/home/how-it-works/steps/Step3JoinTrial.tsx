@@ -5,14 +5,14 @@ export function Step3JoinTrial() {
   return (
     <HowItWorksStep
       stepNumber={3}
-      title="Join a Trial"
+      title="Decide in Writing"
       icon={<ClipboardCheck className="h-5 w-5 text-primary" />}
-      description="Complete informed consent and enroll in your chosen trial."
+      description="Sign a plain-language consent with your doctor: the treatment, the risks, the unknowns and the cost."
       benefits={[
-        "Simple digital enrollment process",
-        "Clear explanation of trial requirements",
-        "Transparent compensation information",
-        "Easy withdrawal option if needed",
+        "Sign online, after talking it over with your doctor",
+        "Known and unknown risks in plain language",
+        "The cost, and who pays, before you start",
+        "Stop at any time",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
@@ -20,7 +20,7 @@ export function Step3JoinTrial() {
             <div className="font-bold">Informed Consent</div>
             <div className="space-y-3">
               <div className="text-sm">
-                I understand that I am enrolling in a clinical trial for a new Alzheimer's disease treatment.
+                I understand this treatment's known and unknown risks, and that my outcome will be recorded.
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
@@ -32,17 +32,17 @@ export function Step3JoinTrial() {
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
                   <div className="h-2 w-2 bg-primary rounded-sm"></div>
                 </div>
-                <div className="text-sm">I understand the potential risks</div>
+                <div className="text-sm">I know the other options, including none</div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
                   <div className="h-2 w-2 bg-primary rounded-sm"></div>
                 </div>
-                <div className="text-sm">I agree to share my anonymized data</div>
+                <div className="text-sm">I know the cost and who pays</div>
               </div>
               <div className="mt-4">
                 <div className="bg-primary text-primary-foreground rounded px-3 py-2 text-sm text-center">
-                  Complete Enrollment
+                  Sign consent
                 </div>
               </div>
             </div>

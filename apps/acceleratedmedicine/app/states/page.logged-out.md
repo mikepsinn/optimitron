@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Your State | Institute for Accelerated Medicine
+- Page title: Your State | Care-Integrated Clinical Trials Initiative
 - Meta description: Choose a state to see how many people there live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 - Canonical: https://acceleratedmedicine.org/states
-- Open Graph title: Your State | Institute for Accelerated Medicine
+- Open Graph title: Your State | Care-Integrated Clinical Trials Initiative
 - Open Graph description: Choose a state to see how many people there live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Your State | Institute for Accelerated Medicine
+- Twitter title: Your State | Care-Integrated Clinical Trials Initiative
 - Twitter description: Choose a state to see how many people there live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 
 ## Visible Page Copy

@@ -48,11 +48,23 @@ function citedSource(item: { dataSource?: string | null; sourceUrl?: string | nu
   return { label: sourceNames[item.dataSource ?? ""] ?? "Source", href: item.sourceUrl }
 }
 
+// "-0.45 points (less increase compared to placebo's change from baseline)" with 27 means the treatment
+// slowed decline by 27% against placebo. Shown as "+27%", it reads as a 27% rise, so it is spelled out.
+const placeboSlowing = /^([+-]?[\d.]+ [a-z]+) \(less (?:increase|decrease|decline|worsening) compared to placebo/i
+
+function outcomeValue(item: Outcome) {
+  const slowing = item.absoluteChange ? placeboSlowing.exec(item.absoluteChange) : null
+  if (slowing && item.percentageChange && item.percentageChange > 0) {
+    return { absolute: `${item.percentageChange}% less decline than placebo (${slowing[1]})` }
+  }
+  return { percentage: item.percentageChange, absolute: item.absoluteChange ?? undefined }
+}
+
 export function treatmentOutcomeCategories(treatment: TreatmentEstimate): OutcomeCategory[] {
   const outcomes = (items: Outcome[]) => items.map(item => ({
     name: item.name,
     baseline: item.baseline ? `Baseline: ${item.baseline}` : "Baseline: Not provided",
-    value: { percentage: item.percentageChange, absolute: item.absoluteChange ?? undefined },
+    value: outcomeValue(item),
     isPositive: item.isPositive,
     source: citedSource(item),
   }))

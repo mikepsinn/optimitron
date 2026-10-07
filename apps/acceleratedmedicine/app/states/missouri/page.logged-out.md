@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Missouri: Care-Integrated Clinical Trials | Institute for Accelerated Medicine
+- Page title: Missouri: Care-Integrated Clinical Trials
 - Meta description: How many people in Missouri live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 - Canonical: https://acceleratedmedicine.org/states/missouri
-- Open Graph title: Missouri: Care-Integrated Clinical Trials | Institute for Accelerated Medicine
+- Open Graph title: Missouri: Care-Integrated Clinical Trials
 - Open Graph description: How many people in Missouri live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Missouri: Care-Integrated Clinical Trials | Institute for Accelerated Medicine
+- Twitter title: Missouri: Care-Integrated Clinical Trials
 - Twitter description: How many people in Missouri live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 
 ## Visible Page Copy

@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Montana's Universal Right to Try Law | Institute for Accelerated Medicine
+- Page title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
 - Meta description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
 - Canonical: https://acceleratedmedicine.org/montana
-- Open Graph title: Montana's Universal Right to Try Law | Institute for Accelerated Medicine
+- Open Graph title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
 - Open Graph description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Montana's Universal Right to Try Law | Institute for Accelerated Medicine
+- Twitter title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
 - Twitter description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
 
 ## Visible Page Copy
@@ -23,7 +23,7 @@
 - 2023 SB 422 broadens eligibility The state removes the terminal-illness restriction from its Right to Try law.
 - 2025 SB 535 creates licensed centers The law defines experimental treatments and sets state licensing, safety, consent and oversight requirements.
 - 2026 The doors can open Final rules take effect, and Montana publishes the experimental treatment center application.
-### Six parts worth carrying forward
+### What the law requires
 - Licensed centers Experimental treatment centers must obtain a state license and operate within Montana's facility rules.
 - Clinical review A treating health care provider identifies the patient as eligible after considering approved options.
 - Written consent The patient receives the treatment's possible outcomes, approved alternatives, insurance limits, and costs.
@@ -35,8 +35,8 @@
 - $12,500 to apply A company with a drug through preliminary safety testing pays $12,500 to ask the review board for approval to offer it in Montana.
 - First applications filed Treatments for neuropathy and hearing loss are already under review. The first licensed clinics are expected around the end of 2026.
 - Reported by [MIT Technology Review (July 30, 2026)](https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/). Board details at [montanaetrb.org](https://montanaetrb.org).
-### The law opens access. Published results make it learn.
-- SB 535 sets up access, licensing, consent and oversight. The Care-Integrated Clinical Trials Act builds on the same idea and adds the evidence half: every patient's outcome is reported in one open format and published, so the next patient chooses better.
+### How the act differs
+- Montana opens access through state-licensed centers. The Care-Integrated Clinical Trials Act takes a different route: an independent review board screens each treatment, clinic and consent form, a doctor's recommendation and written consent are all a patient needs, and every outcome is published, so the next patient chooses better.
 - [Read the act](/act)
 ### Official Montana sources
 - [SB 535 enrolled bill](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)

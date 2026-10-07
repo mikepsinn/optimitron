@@ -1,178 +1,127 @@
+import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
-import { Card } from "@optimitron/neobrutalist-ui/ui/card"
-import { Container } from "@optimitron/neobrutalist-ui/ui/container"
-import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
-import {
-  NONPROFIT,
-  formatNonprofitAddress,
-} from "@optimitron/site-kit/lib/nonprofit-identity"
+import { NONPROFIT, formatNonprofitAddress } from "@optimitron/site-kit/lib/nonprofit-identity"
 
-import { BOARD_MEMBERS } from "@/lib/board-members"
-import Layout from "@/components/layout"
+import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { MailingAddress } from "@/components/mailing-address"
-import {
-  COURT_OF_HUMANITY_LINK,
-  DECENTRALIZED_FDA_LINK,
-  ONE_PERCENT_TREATY_LINK,
-  OrgLinkCard,
-  RESEARCH_LINKS,
-  RIGHT_TO_TRIAL_LINK,
-  TRIAL_ABUNDANCE_SURVEY_LINK,
-  WISHOCRACY_LINK,
-  buttonShadow,
-} from "@/components/org-links"
+import { RESEARCH_LINKS } from "@/components/research-links"
+import { SectionHeading } from "@/components/section-heading"
+import { BOARD_MEMBERS } from "@/lib/board-members"
 
-const INITIATIVES = [
-  RIGHT_TO_TRIAL_LINK,
-  ONE_PERCENT_TREATY_LINK,
-  DECENTRALIZED_FDA_LINK,
-  WISHOCRACY_LINK,
-  COURT_OF_HUMANITY_LINK,
-  TRIAL_ABUNDANCE_SURVEY_LINK,
-]
+const card = "rounded-lg border bg-card p-6 shadow-sm"
 
 export function AboutPage() {
   const address = formatNonprofitAddress()
+  const legalFacts = [
+    { term: "Legal name", detail: NONPROFIT.legalName },
+    { term: "EIN", detail: NONPROFIT.ein },
+    { term: "Status", detail: `501(c)(3) public charity, incorporated in ${NONPROFIT.incorporatedIn}` },
+  ]
 
   return (
-    <Layout>
-      <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-        <Container>
-          <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-yellow px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            About us
-          </p>
-          <h1 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl">
-            Institute for Accelerated Medicine
-          </h1>
-          <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-            We are a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit. We work so
-            every patient can join a pragmatic clinical trial for a promising
-            treatment, with a clinician, at a licensed center, and so every
-            result is published.
-          </p>
-        </Container>
-      </SectionContainer>
+    <AcceleratedMedicinePage>
+      <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
+        <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">About us</p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Care-Integrated Clinical Trials Initiative</h1>
+        <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">
+          We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own
+          doctor, at a clinic an independent board has approved, and so every result is published. The Institute for
+          Accelerated Medicine, a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit, runs the initiative.
+        </p>
+      </section>
 
-      <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
-        <Container>
-          <h2 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">
-            Our initiatives
-          </h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {INITIATIVES.map((item) => (
-              <OrgLinkCard item={item} key={item.title} size="large" />
-            ))}
-          </div>
-        </Container>
-      </SectionContainer>
-
-      <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-        <Container>
-          <h2 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">
-            Our research
-          </h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {RESEARCH_LINKS.map((item) => (
-              <OrgLinkCard item={item} key={item.href} size="small" />
-            ))}
-          </div>
-        </Container>
-      </SectionContainer>
-
-      <SectionContainer bgColor="yellow" borderPosition="bottom" padding="lg">
-        <Container>
-          <h2 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">
-            Legal facts
-          </h2>
-          <Card className="mt-8 rounded-none border-4 border-primary bg-background p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8">
-            <dl className="grid gap-5 text-base font-bold sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <dt className="uppercase">Legal name</dt>
-                <dd>{NONPROFIT.legalName}</dd>
+      <section aria-labelledby="board-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="board-heading" title="Board of directors" />
+        <ul className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3 sm:gap-6">
+          {BOARD_MEMBERS.map(member => (
+            <li key={member.name} className="overflow-hidden rounded-lg border bg-card shadow-sm">
+              <div className="aspect-square w-full overflow-hidden bg-primary/10">
+                <img alt={member.photoAlt} className="h-full w-full object-cover" src={member.photoSrc} />
               </div>
-              <div>
-                <dt className="uppercase">EIN</dt>
-                <dd>{NONPROFIT.ein}</dd>
+              <div className="p-3 sm:p-4">
+                <p className="text-xs font-medium text-primary sm:text-sm">{member.role}</p>
+                <h3 className="mt-1 text-sm font-semibold leading-tight sm:text-lg">{member.name}</h3>
               </div>
-              <div>
-                <dt className="uppercase">Status</dt>
-                <dd>501(c)(3) public charity, incorporated in {NONPROFIT.incorporatedIn}</dd>
-              </div>
-              {address ? (
-                <div>
-                  <dt className="uppercase">Mailing address</dt>
-                  <dd><MailingAddress showRecipient={false} /></dd>
-                </div>
-              ) : null}
-              <div>
-                <dt className="uppercase">Contact</dt>
-                <dd>
-                  <a
-                    className="underline decoration-2 underline-offset-4"
-                    href="mailto:hello@acceleratedmedicine.org"
-                  >
-                    hello@acceleratedmedicine.org
-                  </a>
-                </dd>
-              </div>
-            </dl>
-          </Card>
-        </Container>
-      </SectionContainer>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
-        <Container>
-          <h2 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">
-            Board of directors
-          </h2>
-          <div className="mt-8 grid max-w-3xl grid-cols-3 gap-3 sm:gap-5">
-            {BOARD_MEMBERS.map((member) => (
-              <Card
-                key={member.name}
-                className="overflow-hidden rounded-none border-4 border-primary bg-background py-0 gap-0 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <div
-                  className={`relative aspect-square w-full overflow-hidden border-b-4 border-primary ${member.photoClassName}`}
-                >
-                  <img
-                    alt={member.photoAlt}
-                    className="h-full w-full object-cover"
-                    src={member.photoSrc}
-                  />
-                </div>
-                <div className="p-2 sm:p-4">
-                  <p className="text-[10px] font-black uppercase sm:text-xs">{member.role}</p>
-                  <h3 className="mt-1 text-sm font-black uppercase leading-tight tracking-tight sm:text-lg">
-                    {member.name}
-                  </h3>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </SectionContainer>
+      <section aria-labelledby="advisors-heading" className="py-12 md:py-20">
+        <SectionHeading id="advisors-heading" title="Advisory board">
+          We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on
+          the protocol, patient safety and the law. Members will be listed here once they join.
+        </SectionHeading>
+        <div className="mt-8 text-center">
+          <Button asChild size="lg">
+            <Link href="/contact?type=advisory-board">
+              Apply to the advisory board <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
 
-      <SectionContainer bgColor="yellow" borderPosition="none" padding="lg">
-        <Container className="text-center">
-          <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl">
-            See what the act would change
-          </h2>
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button asChild className={`${buttonShadow} bg-brutal-pink`} size="lg">
-              <Link href="/act">Read the act</Link>
-            </Button>
-            <Button
-              asChild
-              className={`${buttonShadow} bg-background text-foreground`}
-              size="lg"
-            >
-              <Link href="/states">Find your state</Link>
-            </Button>
+      <section aria-labelledby="research-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="research-heading" title="Our research" />
+        <ul className="mx-auto mt-8 grid max-w-4xl gap-6 md:grid-cols-2">
+          {RESEARCH_LINKS.map(item => (
+            <li key={item.href} className={`${card} flex flex-col`}>
+              <p className="flex items-center gap-2 text-sm font-medium text-primary">
+                <item.icon aria-hidden="true" className="h-4 w-4" /> {item.label}
+              </p>
+              <h3 className="mt-2 font-semibold">{item.title}</h3>
+              <p className="mt-2 flex-1 text-muted-foreground">{item.text}</p>
+              <a href={item.href} rel="noreferrer" target="_blank"
+                className="mt-4 inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                {item.action} <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="legal-heading" className="py-12 md:py-20">
+        <SectionHeading id="legal-heading" title="Legal facts" />
+        <dl className={`mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3 ${card}`}>
+          {legalFacts.map(fact => (
+            <div key={fact.term}>
+              <dt className="text-sm font-medium text-muted-foreground">{fact.term}</dt>
+              <dd className="mt-1">{fact.detail}</dd>
+            </div>
+          ))}
+          {address ? (
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">Mailing address</dt>
+              <dd className="mt-1"><MailingAddress showRecipient={false} /></dd>
+            </div>
+          ) : null}
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Contact</dt>
+            <dd className="mt-1">
+              <a className="font-medium text-primary hover:underline" href="mailto:hello@acceleratedmedicine.org">
+                hello@acceleratedmedicine.org
+              </a>
+            </dd>
           </div>
-        </Container>
-      </SectionContainer>
-    </Layout>
+        </dl>
+      </section>
+
+      <section aria-labelledby="work-heading" className="border-t py-12 md:py-16">
+        <SectionHeading id="work-heading" title="Work with us">
+          Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials
+          Initiative.
+        </SectionHeading>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button asChild size="lg">
+            <Link href="/contact">Partner with us <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/act">Read the act</Link>
+          </Button>
+        </div>
+      </section>
+    </AcceleratedMedicinePage>
   )
 }

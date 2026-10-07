@@ -107,9 +107,9 @@ export function LabelSlide({ s, treatment }: Props & { treatment: TreatmentEstim
 }
 
 const review = [
-  { icon: Users, title: "Who reviews", items: ["A physician, an outcomes researcher and an ethicist", "No financial ties to the clinic or maker", "Flat fees, never paid per approval"] },
+  { icon: Users, title: "Who reviews", items: ["Five or more members, including a physician, a researcher and an ethicist", "A non-scientist and an outside member", "No financial ties to the clinic or maker", "Flat fees, never paid per approval"] },
   { icon: Search, title: "What they check", items: ["The evidence", "The treatment plan", "Each provider's competence", "Conflicts of interest", "The consent form"] },
-  { icon: ClipboardCheck, title: "What qualifies", items: ["Passed Phase I safety testing in people", "Or a documented record of safe use in people"] },
+  { icon: ClipboardCheck, title: "What qualifies", items: ["Early safety testing in people", "Or a documented record of safe use in people", "Or a well-understood biological method with lab or animal data", "Or device-specific evidence"] },
 ];
 
 export function ReviewSlide({ s }: Props) {

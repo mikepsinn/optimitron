@@ -68,13 +68,6 @@ export const appNavigation: AppNavigation = {
           "path": "/montana",
           "description": "How Montana's law already licenses experimental treatment centers.",
           "emoji": "📍"
-        },
-        {
-          "id": "rightToTryModelAct",
-          "label": "Model framework",
-          "path": "/model-act",
-          "description": "Provisions a state can start from, drawn from enacted text.",
-          "emoji": "📄"
         }
       ]
     },

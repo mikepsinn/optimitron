@@ -89,7 +89,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
     "Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute bring Right to Trial education to every state.",
     "",
     "See the Montana precedent: https://acceleratedmedicine.org/montana",
-    "Review the model framework: https://acceleratedmedicine.org/model-act",
+    "Read about the act: https://acceleratedmedicine.org/act",
     "",
     "Institute for Accelerated Medicine",
     "A DBA of the Accelerated Medicine Foundation Inc",
@@ -99,7 +99,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
       <h1 style="text-transform:uppercase">Your ${state} response is recorded.</h1>
       <p>Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute bring Right to Trial education to every state.</p>
       <p><a href="https://acceleratedmedicine.org/montana">See the Montana precedent</a></p>
-      <p><a href="https://acceleratedmedicine.org/model-act">Review the model framework</a></p>
+      <p><a href="https://acceleratedmedicine.org/act">Read about the act</a></p>
       <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation Inc</p>
     </main>
   `.trim();

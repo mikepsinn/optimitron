@@ -5,15 +5,15 @@
 - Page title: Donation Received
 - Meta description: Your donation to Accelerated Medicine Foundation Inc (dba Institute for Accelerated Medicine), a 501(c)(3) nonprofit. EIN 41-2555651. Donations are tax-deductible.
 - Canonical: https://acceleratedmedicine.org/donate/success
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Open Graph title: Care-Integrated Clinical Trials Initiative
+- Open Graph description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Twitter title: Care-Integrated Clinical Trials Initiative
+- Twitter description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 
 ## Visible Page Copy
 
-- [ACCELERATED MEDICINE](/)
+- [CARE-INTEGRATED CLINICAL TRIALS](/)
 ## THANK YOU!
 - Your support funds patient education, pragmatic-trial research, and public treatment evidence.
 ### WHERE YOUR DONATION WENT
@@ -23,12 +23,11 @@
 ### KEEP THE MOMENTUM
 - [VOTE ON THE TREATY](https://warondisease.org/vote)
 - [READ THE ACT](/act)
-- MISSION: TOTAL DISEASE ERADICATION
+- Ensure every patient can participate in clinical trials for the most promising treatments.
 #### LEGISLATION
 - [THE ACT](/act)
 - [YOUR STATE](/states)
 - [MONTANA PRECEDENT](/montana)
-- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)

@@ -243,7 +243,7 @@ NHS England, 2021; Manhattan Institute, 2023; Moore et al., JAMA Internal Medici
 - Title: Do the same for every disease, in everyday care
 - **Any patient** can get the most promising treatments through their own doctor, after
   independent review and with written consent.
-- **Clinics can charge a fair price,** so they have a reason to offer treatments nobody else will
+- **Clinics can charge for treatment,** so they have a reason to offer treatments nobody else will
   fund.
 - **Every result is published,** good or bad, so the next patient chooses better.
 
@@ -321,8 +321,8 @@ is.
   patient's real-world outcome. Side-effect reports from clinics and doctors.
 
 **Visual:** The prototype's Lecanemab outcome label, drawn by its own components: effectiveness
-55/100 and safety 50/100 across the top, the primary outcomes on the left (CDR-SB +27%, 0.45 points
-less decline than placebo) and the side effects on the right (infusion reactions 26%, brain
+55/100 and safety 50/100 across the top, the primary outcomes on the left (CDR-SB: 27% less decline than placebo,
+0.45 points) and the side effects on the right (infusion reactions 26%, brain
 swelling (ARIA-E) 13%, brain bleeding (ARIA-H) 17%, headache 11%), each with its "Source: FDA
 label" link. The three evidence sources run along the bottom with amber icons.
 
@@ -342,22 +342,24 @@ values come from its FDA prescribing information and published trial.
 
 - Eyebrow: INDEPENDENT TREATMENT REVIEW
 - Title: An independent board approves every treatment first
-- Who reviews: A physician, an outcomes researcher and an ethicist. No financial ties to the
-  clinic or maker. Flat fees, never paid per approval.
+- Who reviews: Five or more members, including a physician, a researcher and an ethicist. A
+  non-scientist and an outside member. No financial ties to the clinic or maker. Flat fees, never
+  paid per approval.
 - What they check: The evidence. The treatment plan. Each provider's competence. Conflicts of
   interest. The consent form.
-- What qualifies: Passed Phase I safety testing in people. Or a documented record of safe use in
-  people.
+- What qualifies: Early safety testing in people. Or a documented record of safe use in people. Or
+  a well-understood biological method with lab or animal data. Or device-specific evidence.
 
 **Visual:** Three white cards side by side, each with a small round icon, a heading and a
 bulleted list.
 
 **If asked:** Margaret never has to do this herself: every treatment is screened before it is
-offered to any patient. The Experimental Treatment Review Board, or ETRB, has at least three
-members, including a physician, an outcomes researcher and an ethicist, with no financial ties to
-the provider or manufacturer. One approval can cover many qualified clinics. Qualifying pathways: a
-Phase I or comparable early human study, a documented human safety record, a well-characterized
-platform or individualized treatment, or device-specific evidence.
+offered to any patient. The Experimental Treatment Review Board, or ETRB, has at least five
+members, including a physician, an outcomes researcher, an ethicist, a non-scientist and a member
+unaffiliated with the providers and manufacturers it reviews, with no financial ties to them. One approval can cover many qualified clinics. Qualifying pathways: early
+safety testing in people (Phase I or a comparable early study), a documented record of safe use in
+people, a well-understood biological method with lab or animal data (such as a well-characterized
+platform or a treatment made for one patient), or device-specific evidence.
 
 **Say (video line 6):** An independent board has already screened every option.
 
@@ -545,8 +547,8 @@ is good, bad or neutral, so the evidence shows what really happens.
 - Eyebrow: THE CARE-INTEGRATED CLINICAL TRIALS ACT
 - Title: What the act does
 - Review: An independent board approves each treatment, clinic and consent form.
-- Access: A treating doctor's recommendation and written consent are all a patient needs.
-- Payment: Clinics may charge a fair price. No insurer or state program has to pay.
+- Access: A treating doctor's documented recommendation and written consent are all a patient needs.
+- Payment: Clinics may charge for treatment. No insurer or state program has to pay.
 - Safety: Serious side effects reach the board within days, and it can pause new patients.
 - Results: Every outcome is reported in one open format and published, de-identified.
 
@@ -554,12 +556,12 @@ is good, bad or neutral, so the evidence shows what really happens.
 sentence.
 
 **Say:** The act does five things. An independent board approves each treatment, clinic and consent
-form. A doctor's recommendation and written consent are all a patient needs. Clinics may charge a
-fair price, and no insurer or state program has to pay. Serious side effects reach the board within
+form. A doctor's documented recommendation and written consent are all a patient needs. Clinics may
+charge for treatment, and no insurer or state program has to pay. Serious side effects reach the board within
 days. And every result is published, de-identified.
 
 **If asked:** Who pays: no insurer or state program is required to. The patient, family, charities,
-employers, research sponsors, and insurers that choose to can pay. Clinics can charge a fair price,
+employers, research sponsors, and insurers that choose to can pay. Clinics can charge for treatment,
 so they have a reason to offer new treatments, and one board approval can cover many clinics. Under
 federal Right to Try, by contrast, the drug maker may charge only its direct costs (21 CFR
 312.8(d)(1)), so almost nobody offers drugs. Expect the concern that charging patients for
@@ -567,9 +569,9 @@ experimental treatment invites exploitation, as with unproven stem-cell clinics.
 the board approves each clinic and protocol; the consent form states the cost and that the
 treatment is experimental; serious side effects can pause new patients; and every result,
 including failures, is published, so a clinic cannot hide poor results. Liability:
-the bill protects people who take part in good faith from liability under state law, except for
-gross negligence, reckless or willful misconduct, fraud, or concealing safety information. Federal
-law still applies, and federal Right to Try's protections cover only patients who meet its rules. Other payment
+the bill protects doctors, clinics and review boards that take part in good faith from liability
+under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing
+safety information. Makers stay liable under ordinary state law. Federal law still applies, and federal Right to Try's protections cover only patients who meet its rules. Other payment
 options: installments or memberships, crowdfunding, patient-aid groups, free supply from the
 maker, and lower prices for patients who share outcome data.
 

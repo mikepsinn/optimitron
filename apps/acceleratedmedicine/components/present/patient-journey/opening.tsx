@@ -143,7 +143,7 @@ export function RecoverySlide({ s }: Props) {
 // The act's three changes, on slides 6 and 19 and the /act page.
 export const threeChanges = [
   { icon: UserRound, lead: "Any patient", text: "can get the most promising treatments through their own doctor, after independent review and with written consent." },
-  { icon: Hospital, lead: "Clinics can charge a fair price,", text: "so they have a reason to offer treatments nobody else will fund." },
+  { icon: Hospital, lead: "Clinics can charge for treatment,", text: "so they have a reason to offer treatments nobody else will fund." },
   { icon: FileText, lead: "Every result is published,", text: "good or bad, so the next patient chooses better." },
 ];
 

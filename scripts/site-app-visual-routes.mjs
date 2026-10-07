@@ -84,7 +84,7 @@ function getCampaignHomeFiles(appName) {
       "apps/acceleratedmedicine/app/page.tsx",
       "apps/acceleratedmedicine/components/home-page.tsx",
       ...acceleratedmedicineHomeFiles,
-      "apps/acceleratedmedicine/components/org-links.tsx",
+      "apps/acceleratedmedicine/components/research-links.tsx",
       "apps/acceleratedmedicine/components/legacy-home-hash-redirect.tsx",
       "apps/acceleratedmedicine/lib/legacy-home-hash.ts",
       "packages/site-kit/src/lib/site-config.ts",
@@ -938,6 +938,7 @@ export const publicSiteAppRoutes = Object.freeze({
       // The act, for legislators and staff who saw the deck or the video. The menu links to it from step 3.
       covers: [
         "apps/acceleratedmedicine/app/act/page.tsx",
+        "apps/acceleratedmedicine/lib/act-questions.ts",
         "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
         "apps/acceleratedmedicine/components/home/explainer-video.tsx",
         "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
@@ -1167,6 +1168,15 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
       [
+        "/faq",
+        [
+          "apps/acceleratedmedicine/app/faq/page.tsx",
+          "apps/acceleratedmedicine/components/section-heading.tsx",
+          "apps/acceleratedmedicine/lib/act-questions.ts",
+          "apps/acceleratedmedicine/lib/faq.ts",
+        ],
+      ],
+      [
         "/impact",
         [
           "apps/acceleratedmedicine/app/impact/page.tsx",
@@ -1181,13 +1191,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
           "apps/acceleratedmedicine/app/montana/page.tsx",
           "apps/acceleratedmedicine/components/section-heading.tsx",
           "apps/acceleratedmedicine/lib/right-to-try.ts",
-        ],
-      ],
-      [
-        "/model-act",
-        [
-          "apps/acceleratedmedicine/app/model-act/page.tsx",
-          "apps/acceleratedmedicine/components/section-heading.tsx",
         ],
       ],
       [
@@ -1221,8 +1224,10 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       aboutRoute.covers = [
         "apps/acceleratedmedicine/app/about/page.tsx",
         "apps/acceleratedmedicine/components/about-page.tsx",
+        "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
+        "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/components/mailing-address.tsx",
-        "apps/acceleratedmedicine/components/org-links.tsx",
+        "apps/acceleratedmedicine/components/research-links.tsx",
         "apps/acceleratedmedicine/lib/board-members.ts",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/ian-whitmore.jpg",
         "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/kathryn-bortko.jpg",

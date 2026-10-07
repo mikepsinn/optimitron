@@ -19,7 +19,7 @@ export const PARTNER_TYPE_OPTIONS: Record<
 > = {
   clinic: {
     label: "Clinic or doctor",
-    description: "Run a pilot site, serve on a review board, or advise on the protocol.",
+    description: "Run a pilot site or advise on the protocol.",
     messagePlaceholder: "Where you practice and how you would like to take part.",
   },
   builder: {

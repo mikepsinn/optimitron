@@ -125,7 +125,6 @@ import type { Metadata } from "next";
 import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
-  ACCELERATED_MEDICINE_FAQ,
   CUREDAO_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
@@ -151,7 +150,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
-const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA of the Accelerated Medicine Foundation Inc. and is a 501(c)(3) nonprofit. EIN: 41-2555651.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `A project of the ${INSTITUTE_FOR_ACCELERATED_MEDICINE}, a DBA of the Accelerated Medicine Foundation Inc. and a 501(c)(3) nonprofit. EIN: 41-2555651.`;
 const DFDA_NON_AFFILIATION_NOTICE =
   "dFDA (Decentralized Framework for Drug Assessment) is an independent open-source project. It is not affiliated with, endorsed by, or acting on behalf of the U.S. Food and Drug Administration.";
 
@@ -1250,12 +1249,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "RTT",
-    title: "Institute for Accelerated Medicine",
-    // The homepage is the institute overview. Right to Trial pages set their
-    // own titles and share metadata.
-    headerBrandLabel: "Accelerated Medicine",
+    title: "Care-Integrated Clinical Trials Initiative",
+    // The home page explains care-integrated clinical trials; /act describes the act. Its pages set their
+    // own titles and share metadata, and the app owns its FAQ (apps/acceleratedmedicine/lib/faq.ts).
+    headerBrandLabel: "Care-Integrated Clinical Trials",
     description:
-      "Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.",
+      "Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1305,8 +1304,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     sidebarVoteCtaEnabled: false,
     footerBranding: {
-      title: "INSTITUTE FOR ACCELERATED MEDICINE",
-      tagline: "MISSION: TOTAL DISEASE ERADICATION",
+      title: "CARE-INTEGRATED CLINICAL TRIALS INITIATIVE",
+      // The home page's mission, word for word.
+      tagline: "Ensure every patient can participate in clinical trials for the most promising treatments.",
     },
     contactInfo: {
       email: "hello@acceleratedmedicine.org",
@@ -1328,12 +1328,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "The Right to Trial poster: patients and a doctor beside a sign that reads \"Montana proved it. Now it's your state.\"",
+      alt: "The Care-Integrated Clinical Trials Initiative: see your doctor, compare rankings, check the outcome label, and every clinic adds results.",
     },
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
-    faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,

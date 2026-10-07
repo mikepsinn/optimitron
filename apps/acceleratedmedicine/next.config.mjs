@@ -43,6 +43,8 @@ const nextConfig = {
       { source: "/dashboard", destination: "/act", permanent: false },
       { source: "/auth/:path*", destination: "/", permanent: false },
       { source: "/the-plan", destination: "https://warondisease.org/the-plan", permanent: false },
+      // The model framework differed from the act; /act describes it until the bill text is published.
+      { source: "/model-act", destination: "/act", permanent: false },
       {
         source: "/knowledge/:path*",
         destination: "https://manual.warondisease.org/knowledge/:path*",

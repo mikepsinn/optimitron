@@ -8,12 +8,7 @@ import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 import { getCopyrightText, getSiteConfig } from "@optimitron/site-kit/lib/site-config"
 
 import { MobileMenu } from "@/components/accelerated-medicine-mobile-menu"
-import {
-  COURT_OF_HUMANITY_LINK,
-  ONE_PERCENT_TREATY_LINK,
-  RESEARCH_LINKS,
-  WISHOCRACY_LINK,
-} from "@/components/org-links"
+import { RESEARCH_LINKS } from "@/components/research-links"
 import { appNavigation } from "@/lib/navigation"
 
 // The Accelerated Medicine look: purple, light borders, rounded corners and Inter, adapted from the
@@ -29,14 +24,12 @@ const headerLinks = [
 
 const inter = Inter({ subsets: ["latin"] })
 
-const relatedProjects = [ONE_PERCENT_TREATY_LINK, WISHOCRACY_LINK, COURT_OF_HUMANITY_LINK]
-
 function AcceleratedMedicineHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 md:px-6">
         <Link href="/" className="max-w-[9.5rem] text-sm leading-tight font-bold sm:max-w-none sm:text-base 2xl:text-xl">
-          Institute for Accelerated Medicine
+          Care-Integrated Clinical Trials Initiative
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-medium lg:flex">
           {headerLinks.map(link => (
@@ -75,18 +68,14 @@ function AcceleratedMedicineFooter() {
       id: "research",
       title: "Research",
       links: RESEARCH_LINKS.map(link => ({ href: link.href, label: `${link.label}: ${link.title}`, external: true })),
-    },
-    {
-      title: "Related projects",
-      links: relatedProjects.map(link => ({ href: link.href, label: link.title, external: true })),
-    },
+    }
   ]
   const complianceNotice = getSiteConfig().footerComplianceNotice
 
   return (
     <footer className="w-full border-t py-10">
       <div className="container mx-auto space-y-8 px-4 text-sm md:px-6">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {columns.map(column => (
             <div key={column.title} id={column.id} className="scroll-mt-20 space-y-2">
               <p className="font-semibold">{column.title}</p>
@@ -105,7 +94,7 @@ function AcceleratedMedicineFooter() {
         </div>
         <div className="space-y-3 border-t pt-6 text-muted-foreground">
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <p className="font-semibold text-foreground">Institute for Accelerated Medicine</p>
+            <p className="font-semibold text-foreground">Care-Integrated Clinical Trials Initiative</p>
             <a href="mailto:hello@acceleratedmedicine.org" className="hover:text-foreground hover:underline">
               hello@acceleratedmedicine.org
             </a>
