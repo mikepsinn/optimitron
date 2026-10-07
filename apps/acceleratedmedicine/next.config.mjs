@@ -8,10 +8,7 @@ const monorepoRoot = path.join(__dirname, "../..")
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    NEXT_PUBLIC_SITE_VARIANT: "acceleratedmedicine.org",
-  },
-  transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/data", "@optimitron/survey-embed", "@optimitron/site-kit"],
+  transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/data"],
   outputFileTracingRoot: monorepoRoot,
   // The presentation reads its script at request time (lib/present-script.ts).
   outputFileTracingIncludes: {

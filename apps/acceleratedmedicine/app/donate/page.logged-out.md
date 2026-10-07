@@ -13,16 +13,11 @@
 
 ## Visible Page Copy
 
-- [CARE-INTEGRATED CLINICAL TRIALS](/)
-## FUND MEDICAL FREEDOM THAT LEARNS
+- Donate
+## Fund medical freedom that learns
 - Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
-- [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
-- [82.0x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
-### COMPLETE YOUR DONATION
-- ONE-TIME
-- MONTHLY
-- SELECT AMOUNT
+- One-time
+- Monthly
 - $1
 - $5
 - $10
@@ -31,35 +26,15 @@
 - $100
 - $250
 - $500
-- $1000
-- FULL NAME *
-- EMAIL *
-- DONATE $25 MONTHLY
-#### FOUNDATION OR MAJOR GIFTS ($10,000+)
-- For large donations, corporate giving, or foundation grants requiring proposals, invoicing, or impact reports
-- [SCHEDULE A CALL](https://cal.com/mikepsinn)
-- [SEND EMAIL](mailto:donations@acceleratedmedicine.org?subject=Major%20Gift%20%2F%20Foundation%20Inquiry)
-### HOW YOUR DONATION IS USED
-#### PUBLIC EDUCATION
-- Explain patient choice, clinical-trial participation, pragmatic methods, and what the evidence can and cannot support.
-#### RESEARCH & OPERATIONS
-- Create transparent treatment outcome labels, compare treatments by effectiveness, side effects, and cost, and publish the methods and results.
-#### INFRASTRUCTURE
-- Maintain secure tools for standardized outcome collection, anonymization, aggregation, analysis, and public treatment rankings.
-- Ensure every patient can participate in clinical trials for the most promising treatments.
-#### LEGISLATION
-- [THE ACT](/act)
-- [YOUR STATE](/states)
-- [MONTANA PRECEDENT](/montana)
-#### EVIDENCE
-- [IMPACT](/impact)
-- [FAQ](/faq)
-- [ABOUT US](/about)
-#### SUPPORT
-- [SHOW YOUR SUPPORT](/support)
-- [SUPPORTERS](/supporters)
-- [PARTNER WITH US](/contact)
-#### CONTACT
-- [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
-- [PRIVACY POLICY](/privacy)
-- [TERMS OF SERVICE](/terms)
+- $1,000
+- Full name
+- Email
+- Donate $25 monthly
+### Foundation or major gifts ($10,000+)
+- For large donations, corporate giving, or foundation grants requiring proposals, invoicing, or impact reports.
+- [Schedule a call](https://cal.com/mikepsinn)
+- [Send email](mailto:donations@acceleratedmedicine.org?subject=Major%20Gift%20%2F%20Foundation%20Inquiry)
+### How your donation is used
+- Public education Explain patient choice, clinical-trial participation, pragmatic methods, and what the evidence can and cannot support.
+- Research and operations Create transparent treatment outcome labels, compare treatments by effectiveness, side effects, and cost, and publish the methods and results.
+- Infrastructure Maintain secure tools for standardized outcome collection, anonymization, aggregation, analysis, and public treatment rankings.

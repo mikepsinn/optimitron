@@ -23,7 +23,12 @@ test("a change inside one app builds only that app", () => {
 });
 
 test("a shared package builds every app that depends on it", () => {
-  assert.deepEqual(getAffectedSiteApps(["packages/site-kit/src/components/layout.tsx"]), everyApp);
+  // acceleratedmedicine.org does not use site-kit, so a site-kit change leaves it alone.
+  assert.deepEqual(
+    getAffectedSiteApps(["packages/site-kit/src/components/layout.tsx"]),
+    everyApp.filter((app) => app !== "acceleratedmedicine"),
+  );
+  assert.deepEqual(getAffectedSiteApps(["packages/neobrutalist-ui/src/ui/button.tsx"]), everyApp);
 });
 
 test("a change to another app's folder that an app's build imports builds that app too", () => {

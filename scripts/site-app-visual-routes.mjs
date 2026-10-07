@@ -87,7 +87,8 @@ function getCampaignHomeFiles(appName) {
       "apps/acceleratedmedicine/components/research-links.tsx",
       "apps/acceleratedmedicine/components/legacy-home-hash-redirect.tsx",
       "apps/acceleratedmedicine/lib/legacy-home-hash.ts",
-      "packages/site-kit/src/lib/site-config.ts",
+      "apps/acceleratedmedicine/lib/fonts.ts",
+      "apps/acceleratedmedicine/lib/site-settings.ts",
     ];
   }
 
@@ -1017,7 +1018,11 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
     },
     {
-      covers: ["apps/acceleratedmedicine/app/donate/page.tsx"],
+      // The amount picker. No menu links here while the donate links are hidden.
+      covers: [
+        "apps/acceleratedmedicine/app/donate/page.tsx",
+        "apps/acceleratedmedicine/components/donate/donation-form.tsx",
+      ],
       label: "Donate",
       routeName: "donate",
       routePath: "/donate",
@@ -1037,8 +1042,7 @@ export const publicSiteAppRoutes = Object.freeze({
     {
       covers: [
         "apps/acceleratedmedicine/app/not-found.tsx",
-        "packages/site-kit/src/components/not-found.tsx",
-        "packages/site-kit/src/components/providers.tsx",
+        "apps/acceleratedmedicine/components/sentry-404-reporter.tsx",
       ],
       expectNotFound: true,
       label: "Page not found",
@@ -1212,6 +1216,20 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
+      [
+        "/terms",
+        [
+          "apps/acceleratedmedicine/app/terms/page.tsx",
+          "apps/acceleratedmedicine/components/legal-page.tsx",
+        ],
+      ],
+      [
+        "/privacy",
+        [
+          "apps/acceleratedmedicine/app/privacy/page.tsx",
+          "apps/acceleratedmedicine/components/legal-page.tsx",
+        ],
+      ],
       [
         "/faq",
         [

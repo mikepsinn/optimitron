@@ -2,13 +2,14 @@ import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
-import { NONPROFIT, formatNonprofitAddress } from "@optimitron/site-kit/lib/nonprofit-identity"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { MailingAddress } from "@/components/mailing-address"
 import { RESEARCH_LINKS } from "@/components/research-links"
 import { SectionHeading } from "@/components/section-heading"
 import { BOARD_MEMBERS } from "@/lib/board-members"
+import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity"
+import { SITE } from "@/lib/site-settings"
 
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 
@@ -100,8 +101,8 @@ export function AboutPage() {
           <div>
             <dt className="text-sm font-medium text-muted-foreground">Contact</dt>
             <dd className="mt-1">
-              <a className="font-medium text-primary hover:underline" href="mailto:hello@acceleratedmedicine.org">
-                hello@acceleratedmedicine.org
+              <a className="font-medium text-primary hover:underline" href={`mailto:${SITE.email}`}>
+                {SITE.email}
               </a>
             </dd>
           </div>

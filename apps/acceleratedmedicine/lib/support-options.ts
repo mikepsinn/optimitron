@@ -1,4 +1,4 @@
-import { US_STATES } from "@optimitron/site-kit/lib/us-states"
+import { US_STATES } from "@/lib/us-states"
 
 // Shared by the /support forms and the server, so it imports nothing server-only.
 export const OUTSIDE_US = "Outside the United States"

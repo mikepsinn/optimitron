@@ -17,7 +17,7 @@ Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 | `@apps/wishocracy` | 3013 | wishocracy.org | Wishocracy **allocations only** (pairbars + edit) — not the WoD campaign dashboard |
 | `@apps/trialabundancesurvey` | 3014 | trialabundancesurvey.org | **Survey host** + `/embed` + lite participant home + `embed.js` |
 | `@apps/curedao` | 3015 | curedao.org | Landing + product links (**no donate**) |
-| `@apps/acceleratedmedicine` | 3016 | acceleratedmedicine.org | Case + **donate** + embedded survey |
+| `@apps/acceleratedmedicine` | 3016 | acceleratedmedicine.org | Care-Integrated Clinical Trials Initiative + **donate**. Owns its shell and settings; does not use `site-kit` |
 | `@apps/courtofhumanity` | 3017 | courtofhumanity.org | Court of Humanity — **Humanity v. Government** case, plaintiffs, verdicts |
 
 Architecture decisions (host vs campaign, email, embeds): **`SURVEY-AND-SATELLITES.md`**.

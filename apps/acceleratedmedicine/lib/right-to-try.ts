@@ -2,7 +2,7 @@ import {
   US_STATES,
   type StateAbbreviation,
   type StateName,
-} from "@optimitron/site-kit/lib/us-states";
+} from "@/lib/us-states";
 
 export const RIGHT_TO_TRY_SOURCES = {
   montanaSb535:
@@ -15,8 +15,6 @@ export const RIGHT_TO_TRY_SOURCES = {
     "https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters",
 } as const;
 
-// The list lives in site-kit so the shared survey's state select and these
-// campaign pages cannot drift apart.
 export { US_STATES };
 export type { StateAbbreviation, StateName };
 

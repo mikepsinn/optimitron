@@ -147,7 +147,8 @@ variables without real secrets. CureDAO does not receive database or
 authentication secrets because it does not ship those capabilities.
 
 Vercel sets `NODE_ENV`, `VERCEL_URL`, and related platform variables. Do not add
-them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
+them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each site-kit app's Next config.
+acceleratedmedicine.org does not use site-kit and does not read it.
 
 ## Cutover order
 

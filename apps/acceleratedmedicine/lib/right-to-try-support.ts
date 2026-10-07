@@ -4,6 +4,7 @@ import { z } from "zod";
 import { escapeHtml } from "@/lib/escape-html";
 import { SUPPORTER_ROLES, US_STATES } from "@/lib/right-to-try";
 import { storeRightToTrySupport } from "@/lib/right-to-try-support-store";
+import { SITE } from "@/lib/site-settings";
 
 const stateNames = US_STATES.map(([name]) => name) as [string, ...string[]];
 
@@ -134,14 +135,14 @@ export async function sendRightToTrySupport(
   const resend = new Resend(apiKey);
   const fromAddress =
     process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
-  const from = `Institute for Accelerated Medicine <${fromAddress}>`;
+  const from = `${SITE.emailFromName} <${fromAddress}>`;
   const notification = buildSupportNotification(input);
   try {
     // A retry sends with the same keys, so Resend delivers each email once.
     const notificationResult = await resend.emails.send(
       {
         from,
-        to: "hello@acceleratedmedicine.org",
+        to: SITE.email,
         replyTo: input.email || undefined,
         ...notification,
       },

@@ -1,34 +1,26 @@
-import { Inter } from "next/font/google"
 import Link from "next/link"
 import type { ReactNode } from "react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
-import { visibleNavigationItems } from "@optimitron/site-kit/lib/app-navigation"
-import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
-import { getCopyrightText, getSiteConfig } from "@optimitron/site-kit/lib/site-config"
 
 import { MobileMenu } from "@/components/accelerated-medicine-mobile-menu"
 import { RESEARCH_LINKS } from "@/components/research-links"
-import { appNavigation } from "@/lib/navigation"
+import { SHOW_DONATE_LINKS, appNavigation, visibleNavigationItems } from "@/lib/navigation"
+import { SITE } from "@/lib/site-settings"
 
-// The Accelerated Medicine look: purple, light borders, rounded corners and Inter, adapted from the
-// decentralized-fda prototype. Pages in this look (the home page and /contact) use this header and footer.
-// The other pages keep the shared site-kit layout. The footer lists the same pages, legal notice and
-// copyright as the shared footer, and both respect the shared donate switch.
-const headerLinks = [
-  { href: "/#how-it-works", label: "How it should work" },
-  { href: "/act", label: "The act" },
-  { href: "/faq", label: "FAQ" },
-]
-
-const inter = Inter({ subsets: ["latin"] })
+// The Accelerated Medicine look: purple, light borders, rounded corners and Inter (set on <body> by
+// app/layout.tsx), adapted from the decentralized-fda prototype. Every page uses this header and footer.
+// The header shows the donate link as a button, so its menu leaves it out.
+const headerLinks = appNavigation.topLevelItems
+  .filter(item => item.feature !== "donate")
+  .map(item => ({ href: item.path, label: item.label }))
 
 function AcceleratedMedicineHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 md:px-6">
         <Link href="/" className="max-w-[9.5rem] text-sm leading-tight font-bold sm:max-w-none sm:text-base 2xl:text-xl">
-          Care-Integrated Clinical Trials Initiative
+          {SITE.title}
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-sm font-medium lg:flex">
           {headerLinks.map(link => (
@@ -53,14 +45,11 @@ function AcceleratedMedicineHeader() {
 
 type FooterLink = { href: string; label: string; external?: boolean }
 
-// The shared footer's section labels are in capitals.
-const sectionTitles: Record<string, string> = { "right-to-try": "Legislation", evidence: "Evidence", support: "Support" }
-
 function AcceleratedMedicineFooter() {
   const columns: { id?: string; title: string; links: FooterLink[] }[] = [
     ...appNavigation.footerSections.map(section => ({
-      title: sectionTitles[section.id] ?? section.label,
-      links: visibleNavigationItems(section.resolvedItems, false)
+      title: section.label,
+      links: visibleNavigationItems(section.resolvedItems)
         .map(item => ({ href: item.path, label: item.label, external: item.isExternal })),
     })),
     {
@@ -69,7 +58,6 @@ function AcceleratedMedicineFooter() {
       links: RESEARCH_LINKS.map(link => ({ href: link.href, label: `${link.label}: ${link.title}`, external: true })),
     }
   ]
-  const complianceNotice = getSiteConfig().footerComplianceNotice
 
   return (
     <footer className="w-full border-t py-10">
@@ -93,25 +81,25 @@ function AcceleratedMedicineFooter() {
         </div>
         <div className="space-y-3 border-t pt-6 text-muted-foreground">
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <p className="font-semibold text-foreground">Care-Integrated Clinical Trials Initiative</p>
-            <a href="mailto:hello@acceleratedmedicine.org" className="hover:text-foreground hover:underline">
-              hello@acceleratedmedicine.org
+            <p className="font-semibold text-foreground">{SITE.title}</p>
+            <a href={`mailto:${SITE.email}`} className="hover:text-foreground hover:underline">
+              {SITE.email}
             </a>
-            {visibleNavigationItems(appNavigation.legalItems, false).map(item => (
+            {visibleNavigationItems(appNavigation.legalItems).map(item => (
               <a key={item.path} href={item.path} className="hover:text-foreground hover:underline">{item.label}</a>
             ))}
           </div>
-          <p>{getCopyrightText()}</p>
-          {complianceNotice && <p>{complianceNotice}</p>}
+          <p>{SITE.copyright}</p>
+          <p>{SITE.footerNotice}</p>
         </div>
       </div>
     </footer>
   )
 }
 
-/** The Accelerated Medicine colors and font, without the header and footer. `accelerated-medicine-theme` sets the colors (app/globals.css). */
+/** The Accelerated Medicine colors, without the header and footer. `accelerated-medicine-theme` sets them (app/globals.css). */
 export function AcceleratedMedicineTheme({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <div className={`accelerated-medicine-theme ${inter.className} ${className}`}>{children}</div>
+  return <div className={`accelerated-medicine-theme ${className}`}>{children}</div>
 }
 
 /** A page in the Accelerated Medicine look, with its header and footer. */

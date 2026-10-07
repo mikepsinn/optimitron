@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@optimitron/neobrutalist-ui/ui/button";
-import { copyTextToClipboard } from "@optimitron/site-kit/lib/clipboard";
-import { NONPROFIT, formatNonprofitAddress } from "@optimitron/site-kit/lib/nonprofit-identity";
+import { copyTextToClipboard } from "@/lib/clipboard";
+import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity";
 
 export function MailingAddress({ showRecipient = true }: { showRecipient?: boolean }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");

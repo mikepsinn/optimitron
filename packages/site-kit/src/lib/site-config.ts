@@ -1247,6 +1247,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Audience: State legislators and their staff, patient advocates, clinicians and researchers
   // Goal: Explain the act and recruit partners and supporters. No accounts: forms need no sign-in.
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
+  // apps/acceleratedmedicine no longer reads this entry: its settings live in apps/acceleratedmedicine/lib/site-settings.ts.
+  // Repository tooling and other sites' routing still read the domain, base URL and variant from here.
   "acceleratedmedicine.org": {
     name: "RTT",
     title: "Care-Integrated Clinical Trials Initiative",
