@@ -49,11 +49,6 @@ export const FAQ_SECTIONS: FaqSection[] = [
         ],
       },
       {
-        id: "who",
-        question: "Who runs the initiative?",
-        answer: ["The Institute for Accelerated Medicine, a 501(c)(3) nonprofit."],
-      },
-      {
         id: "help",
         question: "How can I help?",
         answer: [

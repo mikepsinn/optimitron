@@ -29,8 +29,6 @@
 - They use existing clinics and routine records instead of building a separate research site for each study. RECOVERY cost about $500 per patient, compared with about $41,000 per patient in the trials behind new FDA approvals (Manhattan Institute, 2023; Moore et al., JAMA Internal Medicine, 2018).
 - Does the initiative tell patients which treatment to choose?
 - No. Treatment decisions belong to patients and their doctors. We explain the evidence and the research methods, and give no medical advice.
-- Who runs the initiative?
-- The Institute for Accelerated Medicine, a 501(c)(3) nonprofit.
 - How can I help?
 - Add your name, or endorse the initiative as an organization. Clinics, researchers, data partners and funders can also partner with us.
 - [Show your support](/support)
