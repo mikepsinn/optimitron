@@ -356,9 +356,10 @@ bulleted list.
 **If asked:** Margaret never has to do this herself: every treatment is screened before it is
 offered to any patient. The Experimental Treatment Review Board, or ETRB, has at least five
 members, including a physician, an outcomes researcher, an ethicist, a non-scientist and a member
-unaffiliated with the providers and manufacturers it reviews, with no financial ties to them. One approval can cover many qualified clinics. Qualifying pathways: a
-Phase I or comparable early human study, a documented human safety record, a well-characterized
-platform or individualized treatment, or device-specific evidence.
+unaffiliated with the providers and manufacturers it reviews, with no financial ties to them. One approval can cover many qualified clinics. Qualifying pathways: early
+safety testing in people (Phase I or a comparable early study), a documented record of safe use in
+people, a well-understood biological method with lab or animal data (such as a well-characterized
+platform or a treatment made for one patient), or device-specific evidence.
 
 **Say (video line 6):** An independent board has already screened every option.
 
