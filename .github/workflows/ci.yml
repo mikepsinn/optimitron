@@ -1197,8 +1197,15 @@ jobs:
                     per_page: 20,
                   });
                   // Commits and their deployments are walked newest first,
-                  // so the first record seen for an app is its newest.
-                  if (deploymentApp && !appsWithDeployment.has(deploymentApp.appName)) {
+                  // so the first record seen for an app is its newest. Only a
+                  // record from the app's latest affected commit (or later)
+                  // counts, so an older finished record cannot end the wait
+                  // before Vercel registers the new preview.
+                  if (
+                    deploymentApp &&
+                    !appsWithDeployment.has(deploymentApp.appName) &&
+                    commitIndex >= (latestAffectedCommitIndex.get(deploymentApp.appName) ?? 0)
+                  ) {
                     appsWithDeployment.add(deploymentApp.appName);
                     if (previewCommentModule.isVercelDeploymentBuilding(statuses.data)) {
                       appsBuilding.add(deploymentApp.appName);
@@ -1664,6 +1671,9 @@ jobs:
           echo "available=false" >> "$GITHUB_OUTPUT"
           echo "Waiting for $target_url to show commit $expected_sha"
           max_attempts=180
+          # Stop after 25 minutes even if curl keeps timing out, so this job (35-minute limit) still posts
+          # the Visual review status instead of being cancelled with it pending.
+          deadline=$((SECONDS + 25 * 60))
           for attempt in $(seq 1 "$max_attempts"); do
             status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
             if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
@@ -1676,9 +1686,10 @@ jobs:
             else
               echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 10s."
             fi
-            if [ "$attempt" -lt "$max_attempts" ]; then
-              sleep 10
+            if [ "$attempt" -ge "$max_attempts" ] || [ "$SECONDS" -ge "$deadline" ]; then
+              break
             fi
+            sleep 10
           done
           echo "::error::Visual review page did not become available before the wait limit: $target_url"
           echo "The review artifact was uploaded and the gh-pages publish step completed, but the public GitHub Pages URL stayed unavailable."
