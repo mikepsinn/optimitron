@@ -54,6 +54,8 @@
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
+- [SHOW YOUR SUPPORT](/support)
+- [SUPPORTERS](/supporters)
 - [PARTNER WITH US](/contact)
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

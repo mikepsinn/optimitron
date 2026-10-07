@@ -5,7 +5,9 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { SectionHeading } from "@/components/section-heading"
+import { SupportingOrganizations } from "@/components/supporting-organizations"
 import type { StateCampaign } from "@/lib/right-to-try"
+import type { ListedOrganization } from "@/lib/support-store"
 import {
   estimatedRareDiseasePatients,
   estimateStateShare,
@@ -26,7 +28,7 @@ const FDA_RIGHT_TO_TRY_SUMMARY = "https://www.factcheck.org/2026/06/no-evidence-
  * state has today, and what the act would add. It describes the act and asks nobody to contact a
  * legislator, because the Institute is a 501(c)(3).
  */
-export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
+export function StateCampaignPage({ campaign, organizations }: { campaign: StateCampaign; organizations: ListedOrganization[] }) {
   const { name } = campaign
   const rarePatients = formatPeopleApprox(estimatedRareDiseasePatients(name))
   const population = formatPeopleApprox(STATE_POPULATIONS[name])
@@ -112,11 +114,19 @@ export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
       </section>
 
       <section aria-labelledby="partner-heading" className="border-t py-12 md:py-16">
-        <SectionHeading id="partner-heading" title={`Organizations in ${name}`}>
-          Patient groups, clinics, hospitals and researchers in {name} can partner with the Care-Integrated
-          Clinical Trials Initiative.
+        <SectionHeading id="partner-heading"
+          title={organizations.length > 0 ? `Organizations in ${name} that support the initiative` : `Organizations in ${name}`}>
+          {organizations.length > 0
+            ? `These ${name} organizations endorse the Care-Integrated Clinical Trials Initiative.`
+            : `Patient groups, clinics, hospitals and researchers in ${name} can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.`}
         </SectionHeading>
-        <div className="mt-8 text-center">
+        {organizations.length > 0 && (
+          <div className="mt-8"><SupportingOrganizations organizations={organizations} showState={false} /></div>
+        )}
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button asChild size="lg">
+            <Link href="/support#organization">Endorse as an organization</Link>
+          </Button>
           <Button asChild size="lg" variant="outline">
             <Link href="/contact">Partner with us</Link>
           </Button>

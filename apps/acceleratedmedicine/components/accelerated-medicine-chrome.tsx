@@ -43,7 +43,7 @@ function AcceleratedMedicineHeader() {
             </Button>
           )}
           <Button asChild size="sm">
-            <Link href="/contact">Partner with us</Link>
+            <Link href="/support">Show your support</Link>
           </Button>
           <MobileMenu links={headerLinks} />
         </div>

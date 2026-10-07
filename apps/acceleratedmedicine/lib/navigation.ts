@@ -103,6 +103,20 @@ export const appNavigation: AppNavigation = {
       "label": "SUPPORT",
       "resolvedItems": [
         {
+          "id": "support",
+          "label": "Show your support",
+          "path": "/support",
+          "description": "Add your name, or endorse as an organization.",
+          "emoji": "✋"
+        },
+        {
+          "id": "supporters",
+          "label": "Supporters",
+          "path": "/supporters",
+          "description": "The people and organizations who support the initiative.",
+          "emoji": "🙌"
+        },
+        {
           "id": "donate",
           "label": "Donate",
           "path": "/donate",

@@ -78,7 +78,7 @@ function Hero() {
             </ul>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="w-full gap-1 text-base sm:w-auto">
-                <a href="#help">Partner with us <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
+                <a href="/support">Show your support <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
               </Button>
               <Button asChild size="lg" variant="outline" className="w-full gap-1 text-base sm:w-auto">
                 <a href="#how-it-works">See how it should actually work <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
