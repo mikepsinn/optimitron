@@ -11,12 +11,13 @@ describe("Partner sign-up browser form", () => {
     vi.restoreAllMocks();
   });
 
-  it("sends the type a partner card preselected, then thanks the sender", async () => {
+  it("sends the type a partner card preselected plus any other checked, then thanks the sender", async () => {
     const fetchMock = vi.fn(async () => Response.json({ ok: true, notified: true }));
     vi.stubGlobal("fetch", fetchMock);
     vi.spyOn(crypto, "randomUUID").mockReturnValue(submissionKey);
     render(<PartnerSignupForm initialType="advisory-board" />);
 
+    fireEvent.click(screen.getByRole("checkbox", { name: /Clinic or doctor/ }));
     fireEvent.change(screen.getByLabelText("Your name"), {
       target: { value: "Ada Ethicist" },
     });
@@ -33,7 +34,7 @@ describe("Partner sign-up browser form", () => {
       email: "ada@example.com",
       name: "Ada Ethicist",
       submissionKey,
-      type: "advisory-board",
+      types: ["clinic", "advisory-board"],
     });
     expect(await screen.findByRole("status")).toHaveTextContent(
       "Thank you, Ada Ethicist",

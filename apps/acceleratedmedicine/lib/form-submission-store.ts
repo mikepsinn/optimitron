@@ -32,7 +32,7 @@ export interface StoredForm {
   fields: readonly StoredFormField[];
 }
 
-export type StoredFormValues = Record<string, boolean | string>;
+export type StoredFormValues = Record<string, boolean | string | readonly string[]>;
 
 export class FormSubmissionRateLimitError extends Error {
   constructor() {

@@ -7,7 +7,11 @@ import { storePartnerSignup } from "@/lib/partner-signup-store";
 
 export const partnerSignupSchema = z.object({
   submissionKey: z.string().uuid(),
-  type: z.enum(PARTNER_TYPES),
+  types: z
+    .array(z.enum(PARTNER_TYPES))
+    .min(1)
+    .max(PARTNER_TYPES.length)
+    .transform(types => PARTNER_TYPES.filter(type => types.includes(type))),
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(320),
   organization: z.string().trim().max(200).optional().or(z.literal("")),
@@ -18,7 +22,7 @@ export const partnerSignupSchema = z.object({
 export type PartnerSignupInput = z.infer<typeof partnerSignupSchema>;
 
 export function buildPartnerSignupNotification(input: PartnerSignupInput) {
-  const type = PARTNER_TYPE_OPTIONS[input.type].label;
+  const type = input.types.map(value => PARTNER_TYPE_OPTIONS[value].label).join(", ");
   const organization = input.organization || "Not provided";
   const message = input.message || "Not provided";
   const subject = `[Partner sign-up] ${type}: ${input.name}${input.organization ? ` (${input.organization})` : ""}`;
