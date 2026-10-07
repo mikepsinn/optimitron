@@ -309,7 +309,47 @@ const PRIZE_PAGE_FILES = [
   "apps/optimitron/src/components/prize/VoterPrizeTreasuryDeposit.tsx",
 ];
 
+// The planet pages draw every image in their folders.
+const WISHONIA_PAGE_FILES = [
+  "apps/optimitron/src/app/wishonia/page.tsx",
+  ...[
+    "governance-1",
+    "hero-planet-1",
+    "super-intelligence-1",
+    "super-longevity-1",
+    "super-wellbeing-1",
+    "timeline-treaty-1",
+  ].map((name) => `apps/optimitron/public/images/wishonia/${name}.jpg`),
+];
+const MORONIA_PAGE_FILES = [
+  "apps/optimitron/src/app/moronia/page.tsx",
+  ...[
+    "ai-weapons-1",
+    "currency-collapse-1",
+    "hero-collapse-1",
+    "military-spiral-1",
+    "surveillance-state-1",
+    "two-futures-1",
+  ].map((name) => `apps/optimitron/public/images/moronia/${name}.jpg`),
+];
+
+// DemoPlayer's presenter uses the neutral expression and idle body, so it
+// draws only these sprites (head layers are stacked and toggled by opacity).
+const DEMO_PRESENTER_SPRITE_FILES = [
+  "blink-smile",
+  "body-idle",
+  "neutral-closed",
+  "neutral-ee",
+  "neutral-frown",
+  "neutral-oh",
+  "neutral-open",
+  "neutral-small",
+  "neutral-smile",
+].map((name) => `apps/optimitron/public/sprites/wishonia/${name}.png`);
+
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
+  [ROUTES.wishonia, WISHONIA_PAGE_FILES],
+  [ROUTES.moronia, MORONIA_PAGE_FILES],
   [ROUTES.admin, ["apps/optimitron/src/app/admin/page.tsx"]],
   [ROUTES.dashboard, ["apps/optimitron/src/app/dashboard/page.tsx"]],
   [ROUTES.donate, ["apps/optimitron/src/app/donate/page.tsx"]],
@@ -390,9 +430,16 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
   [ROUTES.tasksTree, "#task-tree"],
+  // The last image on each planet page.
+  [ROUTES.wishonia, 'img[src$="/images/wishonia/timeline-treaty-1.jpg"]'],
+  [ROUTES.moronia, 'img[src$="/images/moronia/two-futures-1.jpg"]'],
 ]);
 
-const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.profile]);
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
+  ROUTES.profile,
+  ROUTES.wishonia,
+  ROUTES.moronia,
+]);
 
 const BIOGUIDE_PHOTO_ORIGIN = "https://bioguide.congress.gov";
 
@@ -626,7 +673,11 @@ const SPECIAL_STATE_ROUTES: VisualRouteSpec[] = [
     requiredSelector: "section#fleet",
   },
   {
-    covers: [DEMO_PLAYER_FILE, CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE],
+    covers: [
+      DEMO_PLAYER_FILE,
+      CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE,
+      ...DEMO_PRESENTER_SPRITE_FILES,
+    ],
     name: "campaign-vote-and-share-slide",
     path: `${ROUTES.demo}?playlist=campaign-cut#campaign-vote-and-share`,
     required: true,
