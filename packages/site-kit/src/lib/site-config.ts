@@ -125,7 +125,6 @@ import type { Metadata } from "next";
 import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
-  ACCELERATED_MEDICINE_FAQ,
   CUREDAO_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
@@ -1251,11 +1250,11 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   "acceleratedmedicine.org": {
     name: "RTT",
     title: "Institute for Accelerated Medicine",
-    // The homepage is the institute overview. Right to Trial pages set their
-    // own titles and share metadata.
+    // The home page explains care-integrated clinical trials; /act describes the act. Its pages set their
+    // own titles and share metadata, and the app owns its FAQ (apps/acceleratedmedicine/lib/faq.ts).
     headerBrandLabel: "Accelerated Medicine",
     description:
-      "Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.",
+      "Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1334,7 +1333,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
     footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
-    faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,

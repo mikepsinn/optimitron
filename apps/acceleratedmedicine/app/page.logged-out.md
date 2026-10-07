@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Meta description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Open Graph description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Twitter description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 
 ## Visible Page Copy
 

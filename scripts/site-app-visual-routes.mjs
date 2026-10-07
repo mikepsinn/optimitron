@@ -938,6 +938,7 @@ export const publicSiteAppRoutes = Object.freeze({
       // The act, for legislators and staff who saw the deck or the video. The menu links to it from step 3.
       covers: [
         "apps/acceleratedmedicine/app/act/page.tsx",
+        "apps/acceleratedmedicine/lib/act-questions.ts",
         "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
         "apps/acceleratedmedicine/components/home/explainer-video.tsx",
         "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
@@ -1166,6 +1167,15 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
+      [
+        "/faq",
+        [
+          "apps/acceleratedmedicine/app/faq/page.tsx",
+          "apps/acceleratedmedicine/components/section-heading.tsx",
+          "apps/acceleratedmedicine/lib/act-questions.ts",
+          "apps/acceleratedmedicine/lib/faq.ts",
+        ],
+      ],
       [
         "/impact",
         [
