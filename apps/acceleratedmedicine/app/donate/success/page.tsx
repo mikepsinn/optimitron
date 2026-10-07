@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
 import { SuccessConfetti } from "@/components/donate/success-confetti"
-import { ROUTES } from "@/lib/routes"
 
 export const metadata: Metadata = {
   title: "Donation Received",
@@ -140,7 +139,7 @@ export default async function DonateSuccessPage({
               asChild
               className="h-14 text-lg font-black uppercase bg-brutal-cyan border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
             >
-              <Link href={ROUTES.survey}>TAKE THE STATE SURVEY</Link>
+              <Link href="/act">READ THE ACT</Link>
             </Button>
           </div>
         </Container>

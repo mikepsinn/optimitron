@@ -18,6 +18,8 @@ export function PrivacyPage() {
   const contactInfo = getContactInfo()
   const legalEntityName = getLegalEntityName()
   const features = new Set(config.enabledFeatures)
+  // Sites without local sign-in (acceleratedmedicine.org, curedao.org) have no accounts.
+  const hasAccounts = config.authEnabled !== false
 
   return (
     <Layout>
@@ -41,7 +43,10 @@ export function PrivacyPage() {
               <section>
                 <h2 className={headingClass}>2. Information we collect</h2>
                 <ul className="ml-4 list-inside list-disc space-y-2">
-                  <li>Account details you provide, such as your name and email address.</li>
+                  <li>
+                    {hasAccounts ? "Account details" : "Contact details"} you provide, such as your name and email
+                    address.
+                  </li>
                   {features.has(SITE_FEATURES.WISHOCRACY) ? (
                     <li>Your priority comparisons, category choices, and saved allocations.</li>
                   ) : null}
@@ -63,7 +68,10 @@ export function PrivacyPage() {
                 <ul className="ml-4 list-inside list-disc space-y-2">
                   <li>Provide, secure, maintain, and improve the website.</li>
                   <li>Save your choices and perform actions you request.</li>
-                  <li>Communicate with you about your account, submissions, and optional updates.</li>
+                  <li>
+                    Communicate with you about {hasAccounts ? "your account, submissions," : "your submissions"} and
+                    optional updates.
+                  </li>
                   <li>Measure aggregate usage and research results.</li>
                   <li>Prevent fraud, abuse, and security incidents.</li>
                   <li>Comply with legal obligations.</li>

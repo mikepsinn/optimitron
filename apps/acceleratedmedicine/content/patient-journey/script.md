@@ -181,7 +181,8 @@ Americans with Alzheimer's join a trial each year (USC Schaeffer Center; Alzheim
 results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
-costs, and collects no outcomes. FDA reports only 21 investigational drugs used under the law from
+costs, and sends the FDA only a yearly summary of patients treated and serious side effects (21 CFR
+300.200), not whether patients improved. FDA reports only 21 investigational drugs used under the law from
 May 30, 2018 to December 31, 2024, and does not publish how many patients got them
 (https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/). It does not cover
 existing drugs like the 573 at all.

@@ -38,7 +38,7 @@ export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
   const today = [
     {
       title: "Federal Right to Try",
-      text: `Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and no results are collected. Most states also passed their own Right to Try laws, with similar limits.`,
+      text: `Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and sends the FDA only a yearly count of patients treated and serious side effects, not whether patients improved. Most states also passed their own Right to Try laws, with similar limits.`,
       source: { href: STATE_FACT_SOURCES.federalRightToTryAct, label: "Right to Try Act (2018)" },
     },
     {

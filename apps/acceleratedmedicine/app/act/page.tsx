@@ -43,7 +43,7 @@ const questions = [
   {
     question: "How is this different from the federal Right to Try law?",
     answer: [
-      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and collects no outcomes. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
+      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA only a yearly count of patients treated and serious side effects, not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
       "Under this act, any patient whose doctor recommends a screened treatment can get it with written consent, clinics can charge a fair price, and every result is published.",
     ],
   },

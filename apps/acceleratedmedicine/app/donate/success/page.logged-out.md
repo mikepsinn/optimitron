@@ -22,7 +22,7 @@
 - Just donated? Your Stripe receipt email is the confirmation. Questions? Email [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org).
 ### KEEP THE MOMENTUM
 - [VOTE ON THE TREATY](https://warondisease.org/vote)
-- [TAKE THE STATE SURVEY](/survey)
+- [READ THE ACT](/act)
 - MISSION: TOTAL DISEASE ERADICATION
 #### LEGISLATION
 - [THE ACT](/act)

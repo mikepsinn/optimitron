@@ -19,14 +19,14 @@
 ### 1. INTRODUCTION
 - CureDAO operates CureDAO.org. This policy explains what information the website collects, why it uses that information, and the choices available to you.
 ### 2. INFORMATION WE COLLECT
-- Account details you provide, such as your name and email address.
+- Contact details you provide, such as your name and email address.
 - Messages, forms, and other content you choose to submit.
 - Basic technical data, such as browser type, device information, IP address, and request logs.
 - Usage and analytics events when analytics are enabled.
 ### 3. HOW WE USE INFORMATION
 - Provide, secure, maintain, and improve the website.
 - Save your choices and perform actions you request.
-- Communicate with you about your account, submissions, and optional updates.
+- Communicate with you about your submissions and optional updates.
 - Measure aggregate usage and research results.
 - Prevent fraud, abuse, and security incidents.
 - Comply with legal obligations.

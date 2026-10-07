@@ -1347,7 +1347,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
-  if ([VARIANTS.WAR_ON_DISEASE, VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
+  if ([VARIANTS.WAR_ON_DISEASE, VARIANTS.SURVEY].includes(siteVariant)) {
     routes.push({
       label: "Pragmatic clinical trials explanation",
       routeName: "pragmatic-trials-dialog",

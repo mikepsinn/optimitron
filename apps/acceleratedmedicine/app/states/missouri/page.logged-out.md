@@ -27,7 +27,7 @@
 - [Alzheimer's disease](https://www.alz.org/alzheimers-dementia/facts-figures)~140,000
 - Estimates: national counts scaled to Missouri's share of the US population ([Census, 2025](https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html)). Each condition links to its national source.
 ### What Missouri has today
-- Federal Right to Try Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and no results are collected. Most states also passed their own Right to Try laws, with similar limits. [Right to Try Act (2018)](https://www.congress.gov/bill/115th-congress/senate-bill/204)
+- Federal Right to Try Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and sends the FDA only a yearly count of patients treated and serious side effects, not whether patients improved. Most states also passed their own Right to Try laws, with similar limits. [Right to Try Act (2018)](https://www.congress.gov/bill/115th-congress/senate-bill/204)
 - Few patients helped The FDA reports only 21 investigational drugs used under the federal law from May 2018 to December 2024. It does not cover existing drugs approved for other conditions. [FDA summary, via FactCheck.org (2026)](https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/)
 - A state that went further In 2025, Montana licensed experimental treatment centers with SB 535. Its first clinics are expected around the end of 2026. [The Montana precedent](/montana)
 ### Organizations in Missouri
