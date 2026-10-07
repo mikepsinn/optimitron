@@ -18,7 +18,9 @@ jobs:
   changes:
     name: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Checkout downloads about 440 MB of tracked files. That usually takes under a minute but has taken
+    # over 5 when GitHub is slow, and a cancelled changes job fails the whole run.
+    timeout-minutes: 15
     permissions:
       contents: read
     outputs:
@@ -271,7 +273,7 @@ jobs:
   leak-scan:
     name: leak-scan
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -294,7 +296,7 @@ jobs:
       fromJSON(needs.changes.outputs.automation || 'false') == true)
     needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
