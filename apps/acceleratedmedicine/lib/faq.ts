@@ -58,7 +58,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         id: "screening",
         question: "Who decides a treatment is safe enough to offer?",
         answer: [
-          "An independent review board with at least a physician, an outcomes researcher and an ethicist, and no financial ties to the clinic or the maker. A treatment qualifies after Phase I safety testing in people or with a documented record of safe use in people. The board also approves each clinic and consent form.",
+          "An independent review board of at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. A treatment qualifies through early safety testing in people, a documented record of safe use in people, a well-understood biological method with supporting lab or animal data, or evidence specific to a device. The board also approves each clinic and consent form.",
         ],
       },
       {
@@ -102,7 +102,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         id: "who",
         question: "Who runs this?",
         answer: [
-          "Accelerated Medicine Foundation Inc., a 501(c)(3) nonprofit, doing business as the Institute for Accelerated Medicine. Its board and legal facts are on the About page.",
+          "The Institute for Accelerated Medicine runs the initiative. It is a 501(c)(3) nonprofit, legally named Accelerated Medicine Foundation Inc. Its board and legal facts are on the About page.",
         ],
         link: { href: "/about", label: "About us" },
       },

@@ -6,7 +6,7 @@ import { isPartnerType } from "@/lib/partner-signup-options"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Partner with us | Institute for Accelerated Medicine",
+  title: "Partner with us | Care-Integrated Clinical Trials Initiative",
   description:
     "Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.",
   path: "/contact",

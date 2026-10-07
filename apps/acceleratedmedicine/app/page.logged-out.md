@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Institute for Accelerated Medicine
+- Page title: Care-Integrated Clinical Trials Initiative
 - Meta description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Canonical: https://acceleratedmedicine.org
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Care-Integrated Clinical Trials Initiative
 - Open Graph description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Care-Integrated Clinical Trials Initiative
 - Twitter description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 
 ## Visible Page Copy
@@ -267,9 +267,6 @@
 - Outcome data from the first patients, not only at the end of a multi-year trial
 - Rankings update as new evidence arrives
 ### Partner with us
-#### Donors and funders
-- Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.
-- [Discuss a major gift](/contact?type=funder)
 #### Clinics and doctors
 - Run a pilot site or advise us on the protocol.
 - [Talk to us](/contact?type=clinic)

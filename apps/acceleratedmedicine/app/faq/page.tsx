@@ -10,7 +10,7 @@ import { FAQ_SECTIONS } from "@/lib/faq"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Frequently Asked Questions | Institute for Accelerated Medicine",
+  title: "Frequently Asked Questions | Care-Integrated Clinical Trials Initiative",
   description:
     "How care-integrated clinical trials work, how patients are kept safe, what happens to their data, and what the Care-Integrated Clinical Trials Act does.",
   path: "/faq",

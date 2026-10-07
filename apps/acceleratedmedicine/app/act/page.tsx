@@ -10,9 +10,9 @@ import { recovery, threeChanges } from "@/components/present/patient-journey/ope
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "The Care-Integrated Clinical Trials Act | Institute for Accelerated Medicine",
+  title: "The Care-Integrated Clinical Trials Act",
   description:
-    "Proposed state legislation that lets any patient get a screened, promising treatment through their own doctor, lets clinics charge a fair price, and publishes every result.",
+    "Proposed state legislation that lets any patient get a screened, promising treatment through their own doctor, lets clinics charge for it, and publishes every result.",
   path: "/act",
 })
 
@@ -22,9 +22,9 @@ export const metadata: Metadata = rightToTrialMetadata({
 // slides' own lists, and the details and answers come from the slides' If asked notes.
 const provisionDetails: Record<string, string> = {
   "Review:":
-    "The board has at least three members, including a physician, an outcomes researcher and an ethicist, with no financial ties to the clinic or the maker. A treatment qualifies after Phase I safety testing in people or with a documented record of safe use in people. One approval can cover many qualified clinics.",
+    "The board has at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. A treatment qualifies through early safety testing in people, a documented record of safe use in people, a well-understood biological method with supporting lab or animal data, or evidence specific to a device. One approval can cover many qualified clinics.",
   "Access:":
-    "A patient does not need a life-threatening illness, to be unable to join a trial, or to have used up approved drugs first. The consent form covers the treatment, realistic outcomes, other options, known and unknown risks, the cost, and what data is collected. If a patient cannot consent, a legal representative can.",
+    "The treating doctor records the reason for the treatment in the medical record. A patient does not need a life-threatening illness, to be unable to join a trial, or to have used up approved drugs first. The consent form covers the treatment, realistic outcomes, other options, known and unknown risks, the cost, and what data is collected. If a patient cannot consent, a legal representative can.",
   "Payment:":
     "The patient, family, charities, employers, research sponsors, and insurers that choose to can pay. The consent form states who pays and what the patient may owe.",
   "Safety:":

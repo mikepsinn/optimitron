@@ -8,7 +8,7 @@ export const ACT_QUESTIONS: ActQuestion[] = [
     question: "Who pays, and what does it cost the state?",
     answer: [
       "No insurer or state program has to pay. The patient, family, charities, employers, research sponsors, and insurers that choose to can pay.",
-      "Clinics may charge a fair price, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.",
+      "Clinics may charge for treatment, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.",
     ],
   },
   {
@@ -16,14 +16,14 @@ export const ACT_QUESTIONS: ActQuestion[] = [
     question: "How is this different from the federal Right to Try law?",
     answer: [
       "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
-      "Under this act, any patient whose doctor recommends a screened treatment can get it with written consent, clinics can charge a fair price, and every result is published.",
+      "Under this act, any patient whose doctor recommends a screened treatment and records the reason can get it with written consent, clinics can charge for it, and every result is published.",
     ],
   },
   {
     id: "liability",
     question: "Who is liable if something goes wrong?",
     answer: [
-      "The bill protects people who take part in good faith from liability under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing safety information. Federal law still applies, and the federal Right to Try law's protections cover only patients who meet its rules.",
+      "The bill protects doctors, clinics and review boards that take part in good faith from liability under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing safety information. Makers of the treatments stay liable under ordinary state law. Federal law still applies, and the federal Right to Try law's protections cover only patients who meet its rules.",
     ],
   },
   {

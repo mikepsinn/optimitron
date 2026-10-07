@@ -2,20 +2,20 @@
 
 ## Metadata
 
-- Page title: About us
-- Meta description: About the Institute for Accelerated Medicine
+- Page title: About us | Care-Integrated Clinical Trials Initiative
+- Meta description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
 - Canonical: https://acceleratedmedicine.org/about
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Open Graph title: About us | Care-Integrated Clinical Trials Initiative
+- Open Graph description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Twitter title: About us | Care-Integrated Clinical Trials Initiative
+- Twitter description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
 
 ## Visible Page Copy
 
 - About us
-## Institute for Accelerated Medicine
-- We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published.
+## The Care-Integrated Clinical Trials Initiative
+- We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published. The Institute for Accelerated Medicine, a Wyoming 501(c)(3) nonprofit, runs the initiative.
 ### Board of directors
 - President Mike Sinn
 - Treasurer Ian Whitmore

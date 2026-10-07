@@ -2,24 +2,24 @@
 
 ## Metadata
 
-- Page title: Institute for Accelerated Medicine
-- Meta description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Page title: Care-Integrated Clinical Trials Initiative
+- Meta description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Canonical: https://acceleratedmedicine.org/terms
-- Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Open Graph title: Care-Integrated Clinical Trials Initiative
+- Open Graph description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
-- Twitter description: Find out which treatments work, and get them to patients faster. Our plan: the Decentralized Framework for Drug Assessment, Right to Trial, and the 1% Treaty.
+- Twitter title: Care-Integrated Clinical Trials Initiative
+- Twitter description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 
 ## Visible Page Copy
 
-- [ACCELERATED MEDICINE](/)
+- [CARE-INTEGRATED CLINICAL TRIALS](/)
 ## TERMS OF SERVICE
 - Last updated: August 2026
 ### 1. ACCEPTANCE OF TERMS
 - By using AcceleratedMedicine.org, you agree to these terms. If you do not agree, do not use the website. Institute for Accelerated Medicine may update these terms by publishing a revised version here.
 ### 2. THE SERVICE
-- Institute for Accelerated Medicine provides the information and interactive features described on this website. Features may change as the service develops.
+- Care-Integrated Clinical Trials Initiative provides the information and interactive features described on this website. Features may change as the service develops.
 - Make voluntary donations through a payment processor.
 ### 3. ACCEPTABLE USE
 - Do not use the website to:

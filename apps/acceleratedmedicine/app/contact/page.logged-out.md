@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Partner with us | Institute for Accelerated Medicine
+- Page title: Partner with us | Care-Integrated Clinical Trials Initiative
 - Meta description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
 - Canonical: https://acceleratedmedicine.org/contact
-- Open Graph title: Partner with us | Institute for Accelerated Medicine
+- Open Graph title: Partner with us | Care-Integrated Clinical Trials Initiative
 - Open Graph description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Partner with us | Institute for Accelerated Medicine
+- Twitter title: Partner with us | Care-Integrated Clinical Trials Initiative
 - Twitter description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
 
 ## Visible Page Copy

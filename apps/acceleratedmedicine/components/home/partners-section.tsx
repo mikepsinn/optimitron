@@ -1,8 +1,7 @@
 import Link from "next/link"
-import { Building2, Database, HeartHandshake, Stethoscope, Users } from "lucide-react"
+import { Building2, Database, Stethoscope, Users } from "lucide-react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
-import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 
 import type { PartnerType } from "@/lib/partner-signup-options"
 
@@ -13,14 +12,6 @@ const codeUrl = "https://github.com/mikepsinn/dfda"
 const signUp = (type: PartnerType) => `/contact?type=${type}`
 
 const partners = [
-  {
-    icon: HeartHandshake,
-    title: "Donors and funders",
-    text: "Your donation pays for public education, pragmatic-trial research and the open software behind the rankings and labels.",
-    // The shared donate switch hides donation links on every site; a major gift is still a conversation.
-    links: SHOW_DONATE_LINKS ? [{ href: "/donate", label: "Donate" }] : [],
-    talk: { label: "Discuss a major gift", href: signUp("funder") },
-  },
   {
     icon: Stethoscope,
     title: "Clinics and doctors",

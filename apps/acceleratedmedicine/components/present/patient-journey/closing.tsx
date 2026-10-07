@@ -11,8 +11,8 @@ type Props = { s: ScriptSlide };
 // What the act does, on slide 18 and the /act page.
 export const actProvisions = [
   { icon: ClipboardCheck, lead: "Review:", text: "An independent board approves each treatment, clinic and consent form." },
-  { icon: Stethoscope, lead: "Access:", text: "A treating doctor's recommendation and written consent are all a patient needs." },
-  { icon: Wallet, lead: "Payment:", text: "Clinics may charge a fair price. No insurer or state program has to pay." },
+  { icon: Stethoscope, lead: "Access:", text: "A treating doctor's documented recommendation and written consent are all a patient needs." },
+  { icon: Wallet, lead: "Payment:", text: "Clinics may charge for treatment. No insurer or state program has to pay." },
   { icon: ShieldCheck, lead: "Safety:", text: "Serious side effects reach the board within days, and it can pause new patients." },
   { icon: FileText, lead: "Results:", text: "Every outcome is reported in one open format and published, de-identified." },
 ];
@@ -59,7 +59,7 @@ export function CloseSlide({ s }: Props) {
 
 const closeText: Record<string, string> = {
   "Any patient": "the most promising treatments through their own doctor.",
-  "Clinics can charge a fair price,": "so they offer treatments nobody else will fund.",
+  "Clinics can charge for treatment,": "so they offer treatments nobody else will fund.",
   "Every result is published,": "producing treatment rankings and outcome labels.",
 };
 

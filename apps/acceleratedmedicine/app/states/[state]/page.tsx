@@ -25,7 +25,7 @@ export async function generateMetadata({
   if (!campaign) return {};
 
   return rightToTrialMetadata({
-    title: `${campaign.name}: Care-Integrated Clinical Trials | Institute for Accelerated Medicine`,
+    title: `${campaign.name}: Care-Integrated Clinical Trials`,
     description: campaign.summary,
     path: `/states/${campaign.slug}`,
   });

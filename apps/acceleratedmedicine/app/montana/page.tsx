@@ -19,7 +19,7 @@ import { RIGHT_TO_TRY_SOURCES } from "@/lib/right-to-try"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Montana's Universal Right to Try Law | Institute for Accelerated Medicine",
+  title: "Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative",
   description:
     "A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.",
   path: "/montana",
