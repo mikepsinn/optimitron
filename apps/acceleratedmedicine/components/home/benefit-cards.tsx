@@ -19,7 +19,7 @@ const benefits = [
     icon: DollarSign,
     intro: "Pragmatic trials show what is possible:",
     points: [
-      "The RECOVERY trial cost about $500 per patient, compared with about $41,000 for a typical trial",
+      "The RECOVERY trial cost about $500 per patient, compared with about $41,000 in the pivotal trials behind new FDA approvals",
       "Data collection runs inside routine care",
       "Automated analysis replaces manual site work",
     ],

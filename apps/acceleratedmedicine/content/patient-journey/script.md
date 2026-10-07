@@ -321,8 +321,8 @@ is.
   patient's real-world outcome. Side-effect reports from clinics and doctors.
 
 **Visual:** The prototype's Lecanemab outcome label, drawn by its own components: effectiveness
-55/100 and safety 50/100 across the top, the primary outcomes on the left (CDR-SB +27%, 0.45 points
-less decline than placebo) and the side effects on the right (infusion reactions 26%, brain
+55/100 and safety 50/100 across the top, the primary outcomes on the left (CDR-SB: 27% less decline than placebo,
+0.45 points) and the side effects on the right (infusion reactions 26%, brain
 swelling (ARIA-E) 13%, brain bleeding (ARIA-H) 17%, headache 11%), each with its "Source: FDA
 label" link. The three evidence sources run along the bottom with amber icons.
 

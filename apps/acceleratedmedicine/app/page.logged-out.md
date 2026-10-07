@@ -50,16 +50,13 @@
 - Clinical Dementia Rating-Sum of Boxes (CDR-SB)
 - Baseline: 3.17 points (CDR-SB 0-18 scale)
 - [Source: FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf)
-- +27%
-- (-0.45 points (less increase compared to placebo's change from baseline))
+- 27% less decline than placebo (-0.45 points)
 - Alzheimer's Disease Assessment Scale-Cognitive Subscale 14 (ADAS-Cog14)
 - Baseline: 24.45 points (ADAS-Cog14 0-90 scale)
-- +26%
-- (-1.44 points (less increase compared to placebo's change from baseline))
+- 26% less decline than placebo (-1.44 points)
 - Alzheimer's Disease Cooperative Study-Activities of Daily Living (ADCS-MCI-ADL)
 - Baseline: 41.2 points (ADCS-MCI-ADL 0-53 scale)
-- +37%
-- (+2.0 points (less decrease compared to placebo's change from baseline))
+- 37% less decline than placebo (+2.0 points)
 - Brain Amyloid Plaque (PET Centiloids)
 - Baseline: Not provided
 - [Source: Published study](https://doi.org/10.1056/NEJMoa2212948)
@@ -256,7 +253,7 @@
 - Open to patients whom standard trials exclude
 #### Lower Cost per Patient
 - Pragmatic trials show what is possible:
-- The RECOVERY trial cost about $500 per patient, compared with about $41,000 for a typical trial
+- The RECOVERY trial cost about $500 per patient, compared with about $41,000 in the pivotal trials behind new FDA approvals
 - Data collection runs inside routine care
 - Automated analysis replaces manual site work
 - Sources: Manhattan Institute, 2023 (RECOVERY); Moore et al., JAMA Internal Medicine, 2018.

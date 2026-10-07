@@ -20,7 +20,7 @@ export function Step3JoinTrial() {
             <div className="font-bold">Informed Consent</div>
             <div className="space-y-3">
               <div className="text-sm">
-                I understand that this treatment is experimental and that my outcome will be recorded.
+                I understand this treatment's known and unknown risks, and that my outcome will be recorded.
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
@@ -32,7 +32,7 @@ export function Step3JoinTrial() {
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
                   <div className="h-2 w-2 bg-primary rounded-sm"></div>
                 </div>
-                <div className="text-sm">I understand the known and unknown risks</div>
+                <div className="text-sm">I know the other options, including none</div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
