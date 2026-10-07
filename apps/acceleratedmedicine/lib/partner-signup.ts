@@ -4,6 +4,7 @@ import { z } from "zod";
 import { escapeHtml } from "@/lib/escape-html";
 import { PARTNER_TYPE_OPTIONS, PARTNER_TYPES } from "@/lib/partner-signup-options";
 import { storePartnerSignup } from "@/lib/partner-signup-store";
+import { SITE } from "@/lib/site-settings";
 
 export const partnerSignupSchema = z.object({
   submissionKey: z.string().uuid(),
@@ -79,8 +80,8 @@ export async function sendPartnerSignup(
   const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
   const result = await new Resend(apiKey).emails.send(
     {
-      from: `Institute for Accelerated Medicine <${fromAddress}>`,
-      to: "hello@acceleratedmedicine.org",
+      from: `${SITE.emailFromName} <${fromAddress}>`,
+      to: SITE.email,
       replyTo: input.email,
       ...buildPartnerSignupNotification(input),
     },

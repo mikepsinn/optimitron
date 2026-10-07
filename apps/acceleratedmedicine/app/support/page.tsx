@@ -37,7 +37,7 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl">
           <SectionHeading id="organization-heading" title="Endorse as an organization">
             Patient groups, clinics, hospitals, research groups and companies can endorse the initiative. We list each
-            one on the supporters page and, if it works in one state, on that state&apos;s page.
+            one on the supporters page.
           </SectionHeading>
           <div className="mt-6"><OrganizationForm /></div>
         </div>

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "../../shared-globals.css";
+/* shared-globals.css scans site-kit for class names. This app uses no site-kit components. */
+@source not "../../../packages/site-kit/src";
 
 /* The Accelerated Medicine look (components/accelerated-medicine-chrome.tsx), adapted from the
    decentralized-fda prototype: purple, light borders and rounded corners. :has() also reaches menus that

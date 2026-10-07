@@ -2,6 +2,7 @@ import { Resend } from "resend"
 import { z } from "zod"
 
 import { escapeHtml } from "@/lib/escape-html"
+import { SITE } from "@/lib/site-settings"
 import { supportLinkUrl, verifySupportLink } from "@/lib/support-links"
 import { ORGANIZATION_STATES, SUPPORTER_STATES } from "@/lib/support-options"
 import {
@@ -15,8 +16,8 @@ import {
   type StoredSupporter,
 } from "@/lib/support-store"
 
-const INBOX = "hello@acceleratedmedicine.org"
-const INITIATIVE = "Care-Integrated Clinical Trials Initiative"
+const INBOX = SITE.email
+const INITIATIVE = SITE.title
 const SIGNATURE_TEXT = [
   `The ${INITIATIVE}`,
   "A project of the Institute for Accelerated Medicine (Accelerated Medicine Foundation Inc), a 501(c)(3) nonprofit",

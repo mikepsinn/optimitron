@@ -1,11 +1,8 @@
 import type { Metadata } from "next"
 
-import { getSiteConfigForVariant } from "@optimitron/site-kit/lib/site-config"
-import { VARIANTS } from "@optimitron/site-kit/lib/site-variant-types"
+import { OPEN_GRAPH_IMAGE_URL, SITE } from "@/lib/site-settings"
 
-const SITE_URL = "https://acceleratedmedicine.org"
-const { ogMetadata } = getSiteConfigForVariant(VARIANTS.ACCELERATED_MEDICINE)
-const ogImage = `${SITE_URL}${ogMetadata.image}`
+const { openGraphImage } = SITE
 
 /**
  * Right to Trial pages share as Right to Trial pages. Without their own
@@ -20,7 +17,7 @@ export function rightToTrialMetadata({
   description: string
   path: string
 }): Metadata {
-  const url = `${SITE_URL}${path}`
+  const url = `${SITE.url}${path}`
   return {
     title,
     description,
@@ -30,10 +27,10 @@ export function rightToTrialMetadata({
       description,
       images: [
         {
-          alt: ogMetadata.alt,
-          height: ogMetadata.height,
-          url: ogImage,
-          width: ogMetadata.width,
+          alt: openGraphImage.alt,
+          height: openGraphImage.height,
+          url: OPEN_GRAPH_IMAGE_URL,
+          width: openGraphImage.width,
         },
       ],
       url,
@@ -42,7 +39,7 @@ export function rightToTrialMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [ogImage],
+      images: [OPEN_GRAPH_IMAGE_URL],
     },
   }
 }

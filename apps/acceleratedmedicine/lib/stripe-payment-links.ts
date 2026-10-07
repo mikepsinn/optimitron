@@ -1,0 +1,98 @@
+// A COPY of packages/site-kit/src/lib/stripe-payment-links.ts, which scripts/setup-stripe-products.ts
+// generates. Do not hand-edit the links: rerun that script, then copy its links and IDs here.
+// tests/unit/stripe-payment-links.test.ts fails if this copy differs from the generated file, or if any link
+// leaves the foundation's nonprofit Stripe account.
+//
+// These are direct links to Stripe-hosted checkout pages. After payment, Stripe sends every donor to
+// https://acceleratedmedicine.org/donate/success?session_id={CHECKOUT_SESSION_ID}.
+
+/** The Stripe account every Payment Link in this file was created on. */
+export const STRIPE_PAYMENT_LINKS_ACCOUNT_ID = "acct_1TPCJFD5epyB9qRx" as const
+
+export const PAYMENT_LINKS = {
+  oneTime: {
+    1: "https://buy.stripe.com/6oUdR87rN47e7VQ50y6Ri00",
+    5: "https://buy.stripe.com/4gM8wObI37jq1xsgJg6Ri01",
+    10: "https://buy.stripe.com/eVq3cu13p5bi0to2Sq6Ri02",
+    25: "https://buy.stripe.com/7sYbJ03bxeLS5NIeB86Ri03",
+    50: "https://buy.stripe.com/28E00i7rNeLS2BwfFc6Ri04",
+    100: "https://buy.stripe.com/00w7sK13p9ryb8264C6Ri05",
+    250: "https://buy.stripe.com/eVqeVceUfdHO3FA8cK6Ri06",
+    500: "https://buy.stripe.com/7sY3cucM71Z6foi8cK6Ri07",
+    1000: "https://buy.stripe.com/8x2dR86nJgU08ZUeB86Ri08",
+  },
+  monthly: {
+    1: "https://buy.stripe.com/fZubJ05jFavC0to50y6Ri09",
+    5: "https://buy.stripe.com/8x25kC5jF33a1xsgJg6Ri0a",
+    10: "https://buy.stripe.com/fZu4gy4fB0V2eke0Ki6Ri0b",
+    25: "https://buy.stripe.com/00w4gy3bx47egsm8cK6Ri0c",
+    50: "https://buy.stripe.com/7sY5kC8vR9ry4JEct06Ri0d",
+    100: "https://buy.stripe.com/14AfZg4fB8nu2Bw3Wu6Ri0e",
+    250: "https://buy.stripe.com/4gM28qdQbavCdga78G6Ri0f",
+    500: "https://buy.stripe.com/3cI14mh2navCgsm1Om6Ri0g",
+    1000: "https://buy.stripe.com/4gMcN427tbzG3FAdx46Ri0h",
+  },
+} as const
+
+/**
+ * Payment Link object IDs, same shape as PAYMENT_LINKS. Stripe object IDs
+ * embed the owning account's suffix, which lets tests verify the account
+ * without an API call.
+ */
+export const PAYMENT_LINK_IDS = {
+  oneTime: {
+    1: "plink_1U9YDED5epyB9qRx8yWfZ9kM",
+    5: "plink_1U9YDFD5epyB9qRxUpQJgvsk",
+    10: "plink_1U9YDGD5epyB9qRxV2O70ORf",
+    25: "plink_1U9YDHD5epyB9qRxcv8mSAo4",
+    50: "plink_1U9YDHD5epyB9qRxVMXbhyRE",
+    100: "plink_1U9YDID5epyB9qRxIJ5H5P91",
+    250: "plink_1U9YDJD5epyB9qRxz7U4tjnq",
+    500: "plink_1U9YDKD5epyB9qRxsjzxff6K",
+    1000: "plink_1U9YDLD5epyB9qRxnslFvA8o",
+  },
+  monthly: {
+    1: "plink_1U9YDMD5epyB9qRxeqF9oEOT",
+    5: "plink_1U9YDND5epyB9qRx1i6tkCb8",
+    10: "plink_1U9YDOD5epyB9qRx4Xv0BJ5H",
+    25: "plink_1U9YDPD5epyB9qRxKdHW5nVH",
+    50: "plink_1U9YDQD5epyB9qRxSWPRveL3",
+    100: "plink_1U9YDQD5epyB9qRxOG11dLwA",
+    250: "plink_1U9YDRD5epyB9qRxAvXbL81L",
+    500: "plink_1U9YDSD5epyB9qRxK6EaN5Ml",
+    1000: "plink_1U9YDTD5epyB9qRxQVb2fNK1",
+  },
+} as const
+
+export type PresetAmount = 1 | 5 | 10 | 25 | 50 | 100 | 250 | 500 | 1000
+export type DonationType = "oneTime" | "monthly"
+
+/** The amounts the donation form offers, smallest first. Each has a one-time and a monthly link. */
+export const PRESET_AMOUNTS: readonly PresetAmount[] = [1, 5, 10, 25, 50, 100, 250, 500, 1000]
+
+/**
+ * Get the Payment Link URL for a preset amount
+ */
+export function getPaymentLink(
+  amount: PresetAmount,
+  type: DonationType,
+  email?: string,
+  name?: string
+): string {
+  const baseUrl = PAYMENT_LINKS[type][amount]
+
+  if (!baseUrl) {
+    throw new Error(`No payment link found for ${type} donation of $${amount}`)
+  }
+
+  // Add prefilled email and client reference ID
+  const params = new URLSearchParams()
+  if (email) {
+    params.set("prefilled_email", email)
+  }
+  if (name) {
+    params.set("client_reference_id", name)
+  }
+
+  return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl
+}

@@ -33,11 +33,13 @@ test("matches each app and its transitive workspace dependencies", () => {
       "packages/site-kit/src/lib/site-config.ts",
     ],
   );
+  // acceleratedmedicine.org does not use site-kit.
   assert.deepEqual(
     getVercelAppBuildMatches("acceleratedmedicine", [
-      "packages/survey-embed/src/index.ts",
+      "packages/neobrutalist-ui/src/ui/button.tsx",
+      "packages/site-kit/src/lib/site-config.ts",
     ]),
-    ["packages/survey-embed/src/index.ts"],
+    ["packages/neobrutalist-ui/src/ui/button.tsx"],
   );
   assert.deepEqual(
     getVercelAppBuildMatches("curedao", ["packages/survey-embed/src/index.ts"]),
