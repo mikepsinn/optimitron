@@ -13,38 +13,24 @@
 
 ## Visible Page Copy
 
-- [ACCELERATED MEDICINE](/)
-- ABOUT US
-## INSTITUTE FOR ACCELERATED MEDICINE
-- We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial for a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published.
-### OUR RESEARCH
-- [PAPER PATIENT'S RIGHT TO TRIAL ACT Models how much sooner treatments arrive if every state adopts the act. READ THE PAPER](https://rtt-impact.acceleratedmedicine.org/)
-- [PAPER CONTINUOUS EVIDENCE GENERATION PROTOCOL Finds treatment effects in real-world data, then confirms them with pragmatic trials. READ THE PAPER](https://dfda-spec.warondisease.org)
-### LEGAL FACTS
+- About us
+## Institute for Accelerated Medicine
+- We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published.
+### Board of directors
+- President Mike Sinn
+- Treasurer Ian Whitmore
+- Secretary Kathryn Bortko
+### Advisory board
+- We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on the protocol, patient safety and the law. Members will be listed here once they join.
+- [Apply to the advisory board](/contact?type=advisory-board)
+### Our research
+- Paper Patient's Right to Trial Act Models how much sooner treatments arrive if every state adopts the act. [Read the paper](https://rtt-impact.acceleratedmedicine.org/)
+- Paper Continuous Evidence Generation Protocol Finds treatment effects in real-world data, then confirms them with pragmatic trials. [Read the paper](https://dfda-spec.warondisease.org)
+### Legal facts
 - 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601
 - Copy address
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
-### BOARD OF DIRECTORS
-- PRESIDENT
-#### MIKE SINN
-- TREASURER
-#### IAN WHITMORE
-- SECRETARY
-#### KATHRYN BORTKO
-### SEE WHAT THE ACT WOULD CHANGE
-- [READ THE ACT](/act)
-- [FIND YOUR STATE](/states)
-- Ensure every patient can participate in clinical trials for the most promising treatments.
-#### LEGISLATION
-- [THE ACT](/act)
-- [YOUR STATE](/states)
-- [MONTANA PRECEDENT](/montana)
-#### EVIDENCE
-- [IMPACT](/impact)
-- [FAQ](/faq)
-- [ABOUT US](/about)
-#### SUPPORT
-- [PARTNER WITH US](/contact)
-#### CONTACT
-- [PRIVACY POLICY](/privacy)
-- [TERMS OF SERVICE](/terms)
+### Work with us
+- Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials Initiative.
+- [Partner with us](/contact)
+- [Read the act](/act)

@@ -15,7 +15,7 @@
 
 ## Help every patient join a trial for the most promising treatments
 - Tell us how you want to help make care-integrated clinical trials part of normal care. Your message goes to the Institute's inbox, and we reply by email.
-- Clinic or doctor Run a pilot site, serve on a review board, or advise on the protocol.
+- Clinic or doctor Run a pilot site or advise on the protocol.
 - Organization building its own version Build on the open protocol and code, and publish results in the same format.
 - Data partner Share outcome data from an app, record system, registry or wearable.
 - Donor or funder Fund public education, pragmatic-trial research and the open software.

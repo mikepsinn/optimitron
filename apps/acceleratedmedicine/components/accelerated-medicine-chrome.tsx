@@ -8,7 +8,7 @@ import { SHOW_DONATE_LINKS } from "@optimitron/site-kit/lib/navigation-features"
 import { getCopyrightText, getSiteConfig } from "@optimitron/site-kit/lib/site-config"
 
 import { MobileMenu } from "@/components/accelerated-medicine-mobile-menu"
-import { RESEARCH_LINKS } from "@/components/org-links"
+import { RESEARCH_LINKS } from "@/components/research-links"
 import { appNavigation } from "@/lib/navigation"
 
 // The Accelerated Medicine look: purple, light borders, rounded corners and Inter, adapted from the

@@ -21,7 +21,7 @@ export function MailingAddress({ showRecipient = true }: { showRecipient?: boole
 
   return (
     <div>
-      <address className="space-y-1 font-bold not-italic">
+      <address className="space-y-1 not-italic">
         {showRecipient && <p>{NONPROFIT.legalName}</p>}
         <p>{address}</p>
       </address>
