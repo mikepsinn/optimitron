@@ -10,9 +10,9 @@ const partnerSignupForm: StoredForm = {
   purpose: FormPurpose.INTAKE,
   fields: [
     {
-      key: "type",
+      key: "types",
       prompt: "How do you want to work with us?",
-      type: FormFieldType.SINGLE_SELECT,
+      type: FormFieldType.MULTI_SELECT,
       required: true,
       optionsJson: PARTNER_TYPES,
     },
@@ -51,7 +51,7 @@ export function storePartnerSignup(
   return storeFormSubmission(
     partnerSignupForm,
     {
-      type: input.type,
+      types: input.types,
       name: input.name,
       email: input.email,
       organization: input.organization || "",

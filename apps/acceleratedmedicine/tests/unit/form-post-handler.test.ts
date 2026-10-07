@@ -6,7 +6,7 @@ import { partnerSignupSchema } from "../../lib/partner-signup";
 
 const validSignup = {
   submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
-  type: "clinic",
+  types: ["clinic"],
   name: "Ada Clinician",
   email: "ada@example.com",
   organization: "",

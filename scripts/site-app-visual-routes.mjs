@@ -950,6 +950,51 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/acceleratedmedicine/app/act/page.tsx",
     },
     {
+      // People add their name and organizations endorse. The header's main button links here.
+      covers: [
+        "apps/acceleratedmedicine/app/support/page.tsx",
+        "apps/acceleratedmedicine/components/support-forms.tsx",
+        "apps/acceleratedmedicine/lib/support-options.ts",
+      ],
+      label: "Show your support",
+      routeName: "support",
+      routePath: "/support",
+      sourcePage: "apps/acceleratedmedicine/app/support/page.tsx",
+    },
+    {
+      // Confirmed people as a count, and approved organizations.
+      covers: [
+        "apps/acceleratedmedicine/app/supporters/page.tsx",
+        "apps/acceleratedmedicine/components/supporting-organizations.tsx",
+      ],
+      label: "Supporters",
+      routeName: "supporters",
+      routePath: "/supporters",
+      sourcePage: "apps/acceleratedmedicine/app/supporters/page.tsx",
+    },
+    {
+      // Opened from a supporter's confirmation email. Without a signed link it shows the bad-link state.
+      covers: [
+        "apps/acceleratedmedicine/app/support/confirm/page.tsx",
+        "apps/acceleratedmedicine/components/support-link-page.tsx",
+      ],
+      label: "Confirm support (bad link)",
+      routeName: "support-confirm",
+      routePath: "/support/confirm",
+      sourcePage: "apps/acceleratedmedicine/app/support/confirm/page.tsx",
+    },
+    {
+      // Opened from the endorsement alert in the Institute's inbox. Without a signed link it shows the bad-link state.
+      covers: [
+        "apps/acceleratedmedicine/app/support/approve/page.tsx",
+        "apps/acceleratedmedicine/components/support-link-page.tsx",
+      ],
+      label: "Approve listing (bad link)",
+      routeName: "support-approve",
+      routePath: "/support/approve",
+      sourcePage: "apps/acceleratedmedicine/app/support/approve/page.tsx",
+    },
+    {
       // A presenter's deck for meetings. Nothing on the site links to it.
       covers: [
         "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
@@ -1171,6 +1216,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "/faq",
         [
           "apps/acceleratedmedicine/app/faq/page.tsx",
+          "apps/acceleratedmedicine/components/open-faq-from-hash.tsx",
           "apps/acceleratedmedicine/components/section-heading.tsx",
           "apps/acceleratedmedicine/lib/act-questions.ts",
           "apps/acceleratedmedicine/lib/faq.ts",
@@ -1190,6 +1236,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         [
           "apps/acceleratedmedicine/app/montana/page.tsx",
           "apps/acceleratedmedicine/components/section-heading.tsx",
+          "apps/acceleratedmedicine/components/state-organizations.tsx",
           "apps/acceleratedmedicine/lib/right-to-try.ts",
         ],
       ],
@@ -1213,6 +1260,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       covers: [
         "apps/acceleratedmedicine/app/states/[state]/page.tsx",
         "apps/acceleratedmedicine/components/state-campaign-page.tsx",
+        "apps/acceleratedmedicine/components/state-organizations.tsx",
         "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/lib/right-to-try.ts",
         "apps/acceleratedmedicine/lib/state-facts.ts",

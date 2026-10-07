@@ -34,13 +34,6 @@ export const appNavigation: AppNavigation = {
       "emoji": "💝",
       "feature": "donate"
     },
-    {
-      "id": "aboutUs",
-      "label": "About us",
-      "path": "/about",
-      "description": "About the Institute for Accelerated Medicine",
-      "emoji": "ℹ️"
-    }
   ],
   "sidebarSections": [],
   "footerSections": [
@@ -102,6 +95,20 @@ export const appNavigation: AppNavigation = {
       "id": "support",
       "label": "SUPPORT",
       "resolvedItems": [
+        {
+          "id": "support",
+          "label": "Show your support",
+          "path": "/support",
+          "description": "Add your name, or endorse as an organization.",
+          "emoji": "✋"
+        },
+        {
+          "id": "supporters",
+          "label": "Supporters",
+          "path": "/supporters",
+          "description": "The people and organizations who support the initiative.",
+          "emoji": "🙌"
+        },
         {
           "id": "donate",
           "label": "Donate",

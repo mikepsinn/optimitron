@@ -20,7 +20,7 @@ const failureMessage = "We could not send this. Please try again or email hello@
 
 /** The partner and advisory-board sign-up on /contact. Each submission is stored and emailed to the Institute. */
 export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }) {
-  const [type, setType] = useState<PartnerType | undefined>(initialType)
+  const [types, setTypes] = useState<PartnerType[]>(initialType ? [initialType] : [])
   const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" })
   // An unchanged retry reuses its key, so it is stored and emailed once. An edited message is a new submission.
   const lastAttempt = useRef<{ key: string; payload: string }>()
@@ -35,11 +35,15 @@ export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (types.length === 0) {
+      setSubmission({ status: "error", message: "Choose at least one way to work with us." })
+      return
+    }
     const formData = new FormData(event.currentTarget)
     const name = String(formData.get("name") ?? "").trim()
     const email = String(formData.get("email") ?? "").trim()
     const fields = {
-      type: formData.get("type"),
+      types: PARTNER_TYPES.filter(value => types.includes(value)),
       name,
       email,
       organization: formData.get("organization"),
@@ -78,24 +82,27 @@ export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }
         <CheckCircle2 aria-hidden="true" className="mx-auto h-10 w-10 text-primary" />
         <h2 className="mt-4 text-2xl font-bold">Thank you, {submission.name}</h2>
         <p className="mt-2 text-muted-foreground">
-          Your message is with the Institute. We&apos;ll reply to {submission.email}.
+          We have your message and will reply to {submission.email}.
         </p>
       </div>
     )
   }
 
-  const placeholder = PARTNER_TYPE_OPTIONS[type ?? "other"].messagePlaceholder
+  // One choice gets its own prompt; several get the general one.
+  const placeholder = PARTNER_TYPE_OPTIONS[types.length === 1 ? types[0] : "other"].messagePlaceholder
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 rounded-lg border bg-card p-5 shadow-sm sm:p-8">
       <fieldset>
         <legend className="text-lg font-semibold">How do you want to work with us?</legend>
+        <p className="mt-1 text-sm text-muted-foreground">Choose all that apply.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {PARTNER_TYPES.map(value => (
             <label key={value}
               className="flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-              <input type="radio" name="type" value={value} required checked={type === value}
-                onChange={() => setType(value)} className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]" />
+              <input type="checkbox" value={value} checked={types.includes(value)}
+                onChange={event => setTypes(current => event.target.checked ? [...current, value] : current.filter(type => type !== value))}
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]" />
               <span>
                 <span className="block font-medium">{PARTNER_TYPE_OPTIONS[value].label}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{PARTNER_TYPE_OPTIONS[value].description}</span>

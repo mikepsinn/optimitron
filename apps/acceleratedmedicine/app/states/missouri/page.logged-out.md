@@ -31,5 +31,6 @@
 - Few patients helped The FDA reports only 21 investigational drugs used under the federal law from May 2018 to December 2024. It does not cover existing drugs approved for other conditions. [FDA summary, via FactCheck.org (2026)](https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/)
 - A state that went further In 2025, Montana licensed experimental treatment centers with SB 535. Its first clinics are expected around the end of 2026. [The Montana precedent](/montana)
 ### Organizations in Missouri
-- Patient groups, clinics, hospitals and researchers in Missouri can partner with the Care-Integrated Clinical Trials Initiative.
+- Patient groups, clinics, hospitals and researchers in Missouri can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.
+- [Endorse as an organization](/support#organization)
 - [Partner with us](/contact)

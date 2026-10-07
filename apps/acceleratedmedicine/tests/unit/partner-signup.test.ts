@@ -20,7 +20,7 @@ const resendEndpoint = "https://api.resend.com/emails";
 
 const validSignup = {
   submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
-  type: "advisory-board" as const,
+  types: ["advisory-board"],
   name: "Ada Ethicist",
   email: "ada@example.com",
   organization: "Example University",

@@ -33,14 +33,14 @@ const nextConfig = {
     return [
       { source: "/campaigns", destination: "/", permanent: false },
       { source: "/campaigns/:path*", destination: "/", permanent: false },
-      // Retired when the site refocused on the act (October 2026). Sign-up returns as /support,
-      // which needs no account.
+      // Retired when the site refocused on the act (October 2026). Sign-up lives on /support, which
+      // needs no account.
       { source: "/right-to-trial", destination: "/act", permanent: true },
       // Montana has its own page, not a generated state page.
       { source: "/states/montana", destination: "/montana", permanent: true },
-      { source: "/survey", destination: "/act", permanent: false },
-      { source: "/survey/:path*", destination: "/act", permanent: false },
-      { source: "/dashboard", destination: "/act", permanent: false },
+      { source: "/survey", destination: "/support", permanent: false },
+      { source: "/survey/:path*", destination: "/support", permanent: false },
+      { source: "/dashboard", destination: "/support", permanent: false },
       { source: "/auth/:path*", destination: "/", permanent: false },
       { source: "/the-plan", destination: "https://warondisease.org/the-plan", permanent: false },
       // The model framework differed from the act; /act describes it until the bill text is published.
