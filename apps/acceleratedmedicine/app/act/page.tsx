@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
+import { SectionHeading } from "@/components/section-heading"
 import { actProvisions } from "@/components/present/patient-journey/closing"
 import { recovery, threeChanges } from "@/components/present/patient-journey/opening"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
@@ -42,7 +43,7 @@ const questions = [
   {
     question: "How is this different from the federal Right to Try law?",
     answer: [
-      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and collects no outcomes. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
+      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
       "Under this act, any patient whose doctor recommends a screened treatment can get it with written consent, clinics can charge a fair price, and every result is published.",
     ],
   },
@@ -67,20 +68,11 @@ const questions = [
 ]
 
 const background = [
-  { href: "/right-to-trial", label: "Right to Trial", text: "Our earlier education campaign on patients' access to promising treatments." },
-  { href: "/model-act", label: "Model framework", text: "Provisions a state can start from, drawn from enacted text." },
+  { href: "/states", label: "Your state", text: "The patients waiting in each state, and what the act would change there." },
   { href: "/montana", label: "An enacted state precedent", text: "How one state already licenses experimental treatment centers." },
-  { href: "/right-to-trial#state-map", label: "State-by-state pages", text: "Where each state stands." },
+  { href: "/model-act", label: "Model framework", text: "Provisions a state can start from, drawn from enacted text." },
+  { href: "/impact", label: "Impact model", text: "How much sooner treatments could arrive if every state adopted the act." },
 ]
-
-function SectionHeading({ id, title, children }: { id: string; title: string; children?: string }) {
-  return (
-    <div className="mx-auto max-w-3xl text-center">
-      <h2 id={id} className="text-3xl font-bold tracking-tighter sm:text-4xl">{title}</h2>
-      {children && <p className="mt-3 text-muted-foreground md:text-lg">{children}</p>}
-    </div>
-  )
-}
 
 export default function ActPage() {
   return (

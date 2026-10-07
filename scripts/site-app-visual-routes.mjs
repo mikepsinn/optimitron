@@ -100,25 +100,6 @@ function getCampaignHomeFiles(appName) {
   ];
 }
 
-/** The Right to Trial campaign page, which was the acceleratedmedicine.org homepage. */
-function getRightToTrialPageFiles() {
-  return [
-    "apps/acceleratedmedicine/app/right-to-trial/page.tsx",
-    "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
-    "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-    "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-    "apps/acceleratedmedicine/lib/right-to-try.ts",
-    "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
-    "packages/site-kit/src/components/landing/problem-statement.tsx",
-    "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
-    "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
-    "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-    "packages/site-kit/src/components/landing/death-clock.tsx",
-    "packages/site-kit/src/lib/site-config.ts",
-    ...dfdaHowItWorksFiles,
-  ];
-}
-
 const warOnDiseaseDashboardFiles = [
   allocationBarFile,
   "packages/site-kit/src/components/dashboard/DashboardClient.tsx",
@@ -355,24 +336,6 @@ export const authenticatedSiteAppRoutes = Object.freeze({
         "apps/trialabundancesurvey/app/dashboard/pending-response-recovery.tsx",
     },
   ],
-  acceleratedmedicine: [
-    ...getAdminRoutes("acceleratedmedicine"),
-    // /contact has the Accelerated Medicine header, not the shared layout's menu.
-    getAuthenticatedMenuRoute("acceleratedmedicine", "/privacy"),
-    {
-      authenticated: true,
-      authRole: "user",
-      covers: [
-        "apps/acceleratedmedicine/app/dashboard/page.tsx",
-        "packages/site-kit/src/components/survey/SurveyDashboardPage.tsx",
-        ...surveyResultsFiles,
-      ],
-      label: "Survey dashboard — signed-in user",
-      routeName: "dashboard-authenticated",
-      routePath: "/dashboard?visual=1",
-      sourcePage: "apps/acceleratedmedicine/app/dashboard/page.tsx",
-    },
-  ],
   courtofhumanity: [
 
     ...getAdminRoutes("courtofhumanity"),
@@ -407,6 +370,10 @@ export const authenticatedSiteAppRouteExemptions = Object.freeze([
   {
     reason: "CureDAO has no local authentication; /admin redirects to the captured https://warondisease.org/admin hub.",
     sourcePage: "apps/curedao/app/admin/page.ts",
+  },
+  {
+    reason: "Accelerated Medicine has no local authentication; /admin redirects to the captured https://warondisease.org/admin hub.",
+    sourcePage: "apps/acceleratedmedicine/app/admin/page.ts",
   },
   {
     reason: "This page only redirects to the captured Wishocracy dashboard.",
@@ -1199,23 +1166,20 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
-      ["/right-to-trial", getRightToTrialPageFiles()],
       [
         "/impact",
         [
           "apps/acceleratedmedicine/app/impact/page.tsx",
           "apps/acceleratedmedicine/components/impact/right-to-trial-impact-explorer.tsx",
+          "apps/acceleratedmedicine/components/section-heading.tsx",
           "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
-          "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
-          "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
         ],
       ],
       [
         "/montana",
         [
           "apps/acceleratedmedicine/app/montana/page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+          "apps/acceleratedmedicine/components/section-heading.tsx",
           "apps/acceleratedmedicine/lib/right-to-try.ts",
         ],
       ],
@@ -1223,17 +1187,14 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "/model-act",
         [
           "apps/acceleratedmedicine/app/model-act/page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+          "apps/acceleratedmedicine/components/section-heading.tsx",
         ],
       ],
       [
-        "/states/missouri",
+        "/states",
         [
-          "apps/acceleratedmedicine/app/states/missouri/page.tsx",
-          "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+          "apps/acceleratedmedicine/app/states/page.tsx",
+          "apps/acceleratedmedicine/components/state-tile-map.tsx",
           "apps/acceleratedmedicine/lib/right-to-try.ts",
         ],
       ],
@@ -1243,41 +1204,18 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       if (covers) route.covers = covers;
     }
     routes.push({
-      label: "State education template",
-      routeName: "states-alabama",
-      routePath: "/states/alabama",
+      label: "State page",
+      routeName: "states-missouri",
+      routePath: "/states/missouri",
       covers: [
         "apps/acceleratedmedicine/app/states/[state]/page.tsx",
         "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/lib/right-to-try.ts",
+        "apps/acceleratedmedicine/lib/state-facts.ts",
       ],
       sourcePage: "apps/acceleratedmedicine/app/states/[state]/page.tsx",
     });
-    routes.push({
-      label: "Missouri clinician response",
-      routeName: "states-missouri-clinician",
-      routePath: "/states/missouri?role=clinician#state-support",
-      covers: [
-        "apps/acceleratedmedicine/app/states/missouri/page.tsx",
-        "apps/acceleratedmedicine/components/state-campaign-page.tsx",
-        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
-        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
-      ],
-      sourcePage: "apps/acceleratedmedicine/app/states/[state]/page.tsx",
-    });
-    const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
-    if (planRoute) {
-      planRoute.covers = [campaignPlanPageFile];
-    } else {
-      routes.push({
-        label: "Legacy campaign plan",
-        routeName: "the-plan",
-        routePath: "/the-plan",
-        covers: [campaignPlanPageFile],
-      });
-    }
     const aboutRoute = routes.find(({ routePath }) => routePath === "/about");
     if (aboutRoute) {
       aboutRoute.covers = [
@@ -1293,13 +1231,11 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
-  // acceleratedmedicine.org serves its survey on the Right to Trial page.
-  const surveyPath =
-    siteVariant === VARIANTS.ACCELERATED_MEDICINE ? "/right-to-trial" : "/";
-  if ([VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
+  const surveyPath = "/";
+  if (siteVariant === VARIANTS.SURVEY) {
     const surveyComponent =
       "packages/site-kit/src/components/landing/trial-abundance-survey-section.tsx";
-    const surveyRouteName = surveyPath === "/" ? "home" : "right-to-trial";
+    const surveyRouteName = "home";
     const landingRoute = routes.find(({ routePath }) => routePath === surveyPath);
     if (landingRoute) {
       landingRoute.covers = [...(landingRoute.covers ?? []), surveyComponent];
@@ -1411,7 +1347,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
     }
   }
 
-  if ([VARIANTS.WAR_ON_DISEASE, VARIANTS.SURVEY, VARIANTS.ACCELERATED_MEDICINE].includes(siteVariant)) {
+  if ([VARIANTS.WAR_ON_DISEASE, VARIANTS.SURVEY].includes(siteVariant)) {
     routes.push({
       label: "Pragmatic clinical trials explanation",
       routeName: "pragmatic-trials-dialog",

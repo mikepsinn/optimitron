@@ -56,40 +56,24 @@ export const appNavigation: AppNavigation = {
           "emoji": "📜"
         },
         {
-          "id": "rightToTrial",
-          "label": "Right to Trial",
-          "path": "/right-to-trial",
-          "description": "Let every patient join a pragmatic trial of a promising treatment at a licensed treatment center.",
-          "emoji": "🩺"
+          "id": "rightToTryStates",
+          "label": "Your state",
+          "path": "/states",
+          "description": "The patients waiting in each state, and what the act would change there.",
+          "emoji": "🗺️"
         },
         {
           "id": "rightToTryMontana",
-          "label": "Montana Model",
+          "label": "Montana precedent",
           "path": "/montana",
-          "description": "Read how Montana's Universal Right to Try law expands patient access while licensing experimental treatment centers.",
+          "description": "How Montana's law already licenses experimental treatment centers.",
           "emoji": "📍"
         },
         {
-          "id": "rightToTryStates",
-          "label": "Your State",
-          "path": "/right-to-trial#state-support",
-          "description": "Put your state on the Right to Trial map.",
-          "emoji": "🗺️",
-          "isHashLink": true,
-          "requiresScrollHandler": true
-        },
-        {
-          "id": "rightToTrySurvey",
-          "label": "Right to Trial Survey",
-          "path": "/survey",
-          "description": "Record your answer and put your state on the map.",
-          "emoji": "🗳️"
-        },
-        {
           "id": "rightToTryModelAct",
-          "label": "Model Act",
+          "label": "Model framework",
           "path": "/model-act",
-          "description": "See how every patient can join a pragmatic trial and providers can publish comparable results.",
+          "description": "Provisions a state can start from, drawn from enacted text.",
           "emoji": "📄"
         }
       ]
@@ -102,7 +86,7 @@ export const appNavigation: AppNavigation = {
           "id": "rightToTrialImpact",
           "label": "Impact",
           "path": "/impact",
-          "description": "See how Right to Trial can help patients join low-cost trials and find effective treatments sooner.",
+          "description": "A model of how much sooner treatments arrive if every state adopts the act.",
           "emoji": "⚡"
         },
         {
@@ -134,20 +118,11 @@ export const appNavigation: AppNavigation = {
           "feature": "donate"
         },
         {
-          "id": "shareIdea",
-          "label": "Share an Idea",
-          "path": "/#help",
-          "description": "Tell us what would get more patients into trials or find cures sooner.",
-          "emoji": "💡",
-          "isHashLink": true,
-          "requiresScrollHandler": true
-        },
-        {
-          "id": "rightToTryEmailUpdates",
-          "label": "Get Email Updates",
-          "path": "/survey",
-          "description": "Take the 30-second survey and check the updates box.",
-          "emoji": "📬"
+          "id": "partner",
+          "label": "Partner with us",
+          "path": "/contact",
+          "description": "Join as a partner organization or an advisory-board member.",
+          "emoji": "🤝"
         }
       ]
     }

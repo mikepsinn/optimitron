@@ -6,7 +6,8 @@ import type { Session } from "next-auth"
 import SharedLayout from "../../../../packages/site-kit/src/components/layout"
 import { NavigationProvider } from "../../../../packages/site-kit/src/components/navigation-provider"
 import { appNavigation } from "../../lib/navigation"
-import NotFoundPage from "../../../acceleratedmedicine/app/not-found"
+// A site with local sign-in (acceleratedmedicine.org and curedao.org have none).
+import NotFoundPage from "../../../dfda/app/not-found"
 import CureDaoNotFoundPage from "../../../curedao/app/not-found"
 import { VARIANTS } from "../../../../packages/site-kit/src/lib/site-variant-types"
 
@@ -68,7 +69,7 @@ it("does not expose admin navigation while the session is loading", () => {
 
 describe("fallback 404 session context", () => {
   it("recovers a signed-in admin session when the root provider is absent", async () => {
-    vi.stubEnv("NEXT_PUBLIC_SITE_VARIANT", VARIANTS.ACCELERATED_MEDICINE)
+    vi.stubEnv("NEXT_PUBLIC_SITE_VARIANT", VARIANTS.DFDA)
     vi.stubGlobal("fetch", vi.fn(async (url: string) =>
       new Response(JSON.stringify(url.includes("/api/auth/session") ? admin : { hasVoted: false })),
     ))

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { StateCampaignPage } from "@/components/state-campaign-page";
 import { getStateCampaign, STATE_CAMPAIGNS } from "@/lib/right-to-try";
@@ -9,7 +9,6 @@ export const dynamicParams = false;
 
 interface StatePageProps {
   params: Promise<{ state: string }>;
-  searchParams: Promise<{ role?: string }>;
 }
 
 export function generateStaticParams() {
@@ -22,34 +21,20 @@ export async function generateMetadata({
   params,
 }: StatePageProps): Promise<Metadata> {
   const { state } = await params;
-  if (state === "montana") return {};
-
   const campaign = getStateCampaign(state);
   if (!campaign) return {};
 
   return rightToTrialMetadata({
-    title: `${campaign.name} Right to Trial`,
+    title: `${campaign.name}: Care-Integrated Clinical Trials | Institute for Accelerated Medicine`,
     description: campaign.summary,
     path: `/states/${campaign.slug}`,
   });
 }
 
-export default async function StatePage({
-  params,
-  searchParams,
-}: StatePageProps) {
+export default async function StatePage({ params }: StatePageProps) {
   const { state } = await params;
-  if (state === "montana") permanentRedirect("/montana");
-
   const campaign = getStateCampaign(state);
   if (!campaign) notFound();
 
-  const { role } = await searchParams;
-
-  return (
-    <StateCampaignPage
-      campaign={campaign}
-      initialRole={role === "clinician" ? "clinician" : undefined}
-    />
-  );
+  return <StateCampaignPage campaign={campaign} />;
 }

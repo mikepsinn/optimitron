@@ -14,7 +14,6 @@
 ## Visible Page Copy
 
 - [ACCELERATED MEDICINE](/)
-- [Go to Dashboard](/dashboard)
 - ABOUT US
 ## INSTITUTE FOR ACCELERATED MEDICINE
 - We are a Wyoming 501(c)(3) nonprofit. We work so every patient can join a pragmatic clinical trial for a promising treatment, with a clinician, at a licensed center, and so every result is published.
@@ -45,24 +44,21 @@
 #### IAN WHITMORE
 - SECRETARY
 #### KATHRYN BORTKO
-### HELP BRING RIGHT TO TRIAL TO YOUR STATE
-- [TAKE THE SURVEY](/right-to-trial#state-support)
-- [READ THE PROPOSED LAW](/model-act)
+### SEE WHAT THE ACT WOULD CHANGE
+- [READ THE ACT](/act)
+- [FIND YOUR STATE](/states)
 - MISSION: TOTAL DISEASE ERADICATION
 #### LEGISLATION
 - [THE ACT](/act)
-- [RIGHT TO TRIAL](/right-to-trial)
-- [MONTANA MODEL](/montana)
-- [YOUR STATE](/right-to-trial#state-support)
-- [RIGHT TO TRIAL SURVEY](/survey)
-- [MODEL ACT](/model-act)
+- [YOUR STATE](/states)
+- [MONTANA PRECEDENT](/montana)
+- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [SHARE AN IDEA](/#help)
-- [GET EMAIL UPDATES](/survey)
+- [PARTNER WITH US](/contact)
 #### CONTACT
 - [PRIVACY POLICY](/privacy)
 - [TERMS OF SERVICE](/terms)

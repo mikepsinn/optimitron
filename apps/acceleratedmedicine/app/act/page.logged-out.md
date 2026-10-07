@@ -35,7 +35,7 @@
 - No insurer or state program has to pay. The patient, family, charities, employers, research sponsors, and insurers that choose to can pay.
 - Clinics may charge a fair price, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.
 #### How is this different from the federal Right to Try law?
-- The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and collects no outcomes. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.
+- The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.
 - Under this act, any patient whose doctor recommends a screened treatment can get it with written consent, clinics can charge a fair price, and every result is published.
 #### Who is liable if something goes wrong?
 - The bill protects people who take part in good faith from liability under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing safety information. Federal law still applies, and the federal Right to Try law's protections cover only patients who meet its rules.
@@ -45,7 +45,7 @@
 - Unproven stem-cell clinics show why people worry about this. The act answers it four ways. The board approves each clinic and protocol. The consent form states the cost and that the treatment is experimental. Serious side effects can pause new patients. Every result, including failures, is published, so a clinic cannot hide poor results.
 - The Right to Try figures come from the FDA's summary, as reported by [FactCheck.org (2026)](https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/).
 ### More background
-- [Right to Trial](/right-to-trial) Our earlier education campaign on patients' access to promising treatments.
-- [Model framework](/model-act) Provisions a state can start from, drawn from enacted text.
+- [Your state](/states) The patients waiting in each state, and what the act would change there.
 - [An enacted state precedent](/montana) How one state already licenses experimental treatment centers.
-- [State-by-state pages](/right-to-trial#state-map) Where each state stands.
+- [Model framework](/model-act) Provisions a state can start from, drawn from enacted text.
+- [Impact model](/impact) How much sooner treatments could arrive if every state adopted the act.

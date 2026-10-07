@@ -1244,9 +1244,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // ============================================================================
   // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Institute overview; the Right to Trial campaign lives at /right-to-trial
-  // Audience: Patients, caregivers, clinicians, researchers, funders, and state educators
-  // Goal: Explain the evidence, access, and funding plan and send visitors to the global survey
+  // Purpose: The Care-Integrated Clinical Trials Initiative: the idea, the act (/act) and its evidence
+  // Audience: State legislators and their staff, patient advocates, clinicians and researchers
+  // Goal: Explain the act and recruit partners and supporters. No accounts: forms need no sign-in.
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "RTT",
@@ -1263,14 +1263,13 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     defaultRoute: "/",
     // Educational nonprofit site: patient access, pragmatic trials, evidence, and donations.
     enabledFeatures: [
-      SITE_FEATURES.SURVEY,
       SITE_FEATURES.RESEARCH,
       SITE_FEATURES.EDUCATION,
       SITE_FEATURES.DONATE,
     ],
     showPoliticalContent: false,
-    authEnabled: true,
-    dashboardEnabled: true,
+    authEnabled: false,
+    dashboardEnabled: false,
     icons: {
       icon: [
         { url: "/assets/acceleratedmedicine/favicon.ico", sizes: "any" },

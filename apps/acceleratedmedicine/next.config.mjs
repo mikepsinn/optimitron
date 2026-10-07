@@ -29,22 +29,20 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  async headers() {
-    return [
-      {
-        source: "/survey/:slug*",
-        headers: [
-          { key: "X-Frame-Options", value: "ALLOWALL" },
-          { key: "Content-Security-Policy", value: "frame-ancestors *" },
-        ],
-      },
-    ]
-  },
   async redirects() {
     return [
       { source: "/campaigns", destination: "/", permanent: false },
       { source: "/campaigns/:path*", destination: "/", permanent: false },
-      { source: "/auth/signup", destination: "/auth/signin", permanent: false },
+      // Retired when the site refocused on the act (October 2026). Sign-up returns as /support,
+      // which needs no account.
+      { source: "/right-to-trial", destination: "/act", permanent: true },
+      // Montana has its own page, not a generated state page.
+      { source: "/states/montana", destination: "/montana", permanent: true },
+      { source: "/survey", destination: "/act", permanent: false },
+      { source: "/survey/:path*", destination: "/act", permanent: false },
+      { source: "/dashboard", destination: "/act", permanent: false },
+      { source: "/auth/:path*", destination: "/", permanent: false },
+      { source: "/the-plan", destination: "https://warondisease.org/the-plan", permanent: false },
       {
         source: "/knowledge/:path*",
         destination: "https://manual.warondisease.org/knowledge/:path*",

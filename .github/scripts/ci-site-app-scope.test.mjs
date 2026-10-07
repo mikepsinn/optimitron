@@ -27,10 +27,10 @@ test("a shared package builds every app that depends on it", () => {
 });
 
 test("a change to another app's folder that an app's build imports builds that app too", () => {
-  // The War on Disease and Accelerated Medicine auth configs load the survey app's test harness.
+  // The War on Disease auth config loads the survey app's test harness.
   assert.deepEqual(
     getAffectedSiteApps(["apps/trialabundancesurvey/tests/e2e/config.ts"]),
-    ["warondisease", "trialabundancesurvey", "acceleratedmedicine"],
+    ["warondisease", "trialabundancesurvey"],
   );
 });
 

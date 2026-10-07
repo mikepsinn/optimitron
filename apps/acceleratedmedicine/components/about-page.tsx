@@ -157,18 +157,18 @@ export function AboutPage() {
       <SectionContainer bgColor="yellow" borderPosition="none" padding="lg">
         <Container className="text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl">
-            Help bring Right to Trial to your state
+            See what the act would change
           </h2>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
             <Button asChild className={`${buttonShadow} bg-brutal-pink`} size="lg">
-              <Link href="/right-to-trial#state-support">Take the survey</Link>
+              <Link href="/act">Read the act</Link>
             </Button>
             <Button
               asChild
               className={`${buttonShadow} bg-background text-foreground`}
               size="lg"
             >
-              <Link href="/model-act">Read the proposed law</Link>
+              <Link href="/states">Find your state</Link>
             </Button>
           </div>
         </Container>

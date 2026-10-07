@@ -31,14 +31,14 @@ export const SUPPORTER_ROLES = [
 
 export type SupporterRole = (typeof SUPPORTER_ROLES)[number];
 
-export type StateCampaignStage = "enacted-model" | "listening";
+// Montana has an enacted precedent and its own page; every other state has a state page.
+export type StateCampaignStage = "enacted-model" | "state-page";
 
 export interface StateCampaign {
   abbreviation: StateAbbreviation;
   name: StateName;
   slug: string;
   stage: StateCampaignStage;
-  stageLabel: string;
   headline: string;
   summary: string;
 }
@@ -57,7 +57,6 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
         name,
         slug,
         stage: "enacted-model",
-        stageLabel: "Enacted precedent",
         headline: "Montana opened a broader, licensed path.",
         summary:
           "SB 535 created licensed experimental treatment centers and a supervised path for patients who have considered approved options.",
@@ -68,10 +67,9 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
       abbreviation,
       name,
       slug,
-      stage: "listening",
-      stageLabel: "Listening for support",
-      headline: `Should every patient in ${name} have the right to join a clinical trial for the most promising treatments?`,
-      summary: `Help bring pragmatic trials, shared results, and more treatment options to patients in ${name}.`,
+      stage: "state-page",
+      headline: `Care-integrated clinical trials in ${name}`,
+      summary: `How many people in ${name} live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.`,
     };
   },
 );

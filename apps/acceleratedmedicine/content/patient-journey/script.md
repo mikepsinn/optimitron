@@ -70,9 +70,6 @@ prototype render the app's own components with its data, not screenshots.
 - **Title wording** (slide 1).
 - **Bill text:** check slide 18 against the bill text. Confirm the price and liability provisions
   (slides 12 and 18).
-- **Backup B2:** the notes say 44.8% of people with a chronic disease would join a trial.
-  Research!America (2023) found 79% of U.S. adults very or somewhat likely to join if their doctor
-  recommended it. Confirm the model's source.
 - **Real people:** a real patient or caregiver could join or replace Margaret later.
 - **Length:** 19 main slides. For a 10-minute meeting, candidates to cut are 3, 7, 12 and 16.
 
@@ -181,7 +178,8 @@ Americans with Alzheimer's join a trial each year (USC Schaeffer Center; Alzheim
 results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
-costs, and collects no outcomes. FDA reports only 21 investigational drugs used under the law from
+costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side
+effects and their outcomes (21 CFR 300.200), but not whether patients improved. FDA reports only 21 investigational drugs used under the law from
 May 30, 2018 to December 31, 2024, and does not publish how many patients got them
 (https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/). It does not cover
 existing drugs like the 573 at all.
@@ -649,44 +647,45 @@ ICD-10 and ClinicalTrials.gov data).
 
 ## B2. When every disease could have a first treatment
 
-**Purpose:** Answer "what would this do at scale?" without overstating it.
+**Purpose:** Answer "what would the act do at scale?" without overstating it.
 
 **On screen**
 
 - Eyebrow: MODEL ESTIMATE
 - Title: When will every untreated disease have a first treatment?
 - 6,650 diseases have no treatment today. At today's pace, the last of them gets its first
-  treatment in about 443 years. With the system, in about 36.
+  treatment in about 443 years. If every state adopted the act, in about 81.
 - At today's pace (15 diseases a year): 443 years
-- With the system (about 185 diseases a year): 36 years
-- 12× more patients in trials: 1.9 million to 23 million a year
+- If every state adopts the act (about 82 diseases a year): 81 years
+- 181 years sooner, on average: for a disease's first treatment
 - 44× lower cost per patient: $41,000 to under $1,000
 - 8 years less waiting after safety tests: available after board review
 
-**Visual:** Two horizontal bars: a long grey bar for 443 years and a short purple bar for 36
+**Visual:** Two horizontal bars: a long grey bar for 443 years and a short purple bar for 81
 years. Three white stat cards beneath, each with a large purple figure.
 
 **Say:** This is also a model estimate. 6,650 diseases have no treatment today. At today's pace, the
-last of them gets a first treatment in about 443 years. With care-integrated trials, it takes about
-36, because 12 times more patients take part in research, at a much lower cost per patient.
+last of them gets a first treatment in about 443 years. If every state adopted the act, the model
+says about 81, and the average disease gets its first treatment 181 years sooner.
 
-**If asked:** What the numbers mean: 443 years is when the last untreated disease would get
-its first treatment at today's pace. It is not when diseases get cured, and most would get a first
-treatment much sooner. About 6,650 diseases have no approved treatment. Today about 15 diseases get
-their first treatment each year, so the last one would get it about 443 years from now. Today about
-1.9 million people join a clinical trial each year worldwide (IQVIA). About 2.4 billion people have
-a chronic disease, and about 44.8% say they would join a trial, about 1.08 billion people. If only
-23 million join each year, about 2%, research capacity rises about 12 times, to about 185 diseases
-a year, and the backlog clears in about 36 years. Cost: a traditional Phase III trial costs about
+**If asked:** What the numbers mean: 443 years is when the last untreated disease would get its
+first treatment at today's pace. It is not when diseases get cured, and most would get a first
+treatment much sooner. About 6,650 diseases have no approved treatment, and today about 15 get
+their first treatment each year, so the last one would get it about 443 years from now. The
+average untreated disease waits about half that, 222 years. The model assumes that if every state
+adopted the act and a pooled pragmatic-trial system operated, first treatments would arrive about
+5.5 times faster, about 82 a year. That is an assumption, not an observed effect, and its 90% range
+is wide (79 to 332 years sooner). The backlog then clears in about 81 years, and the average wait
+falls from 222 to about 41 years: 181 years sooner. Cost: a traditional Phase III trial costs about
 $41,000 per patient; embedded pragmatic trials such as RECOVERY (about $500) and ADAPTABLE (about
 $929) cost under $1,000, about 44 times less. Waiting: today a treatment that passes Phase I safety
 testing waits about 8.2 years for efficacy proof; here, patients can choose it after independent
-board review. Key assumption: discoveries rise in proportion to the number of patients studied;
-the impact paper states and tests this. Source:
-https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html
+board review. The impact page on acceleratedmedicine.org lets anyone change the 5.5 times
+assumption. Source:
+https://manual.warondisease.org/knowledge/appendix/state-right-to-trial-impact.html
 
-**Source line:** Assumes 2% of willing patients join and discoveries rise with patients studied.
-Source: How to End War and Disease, impact paper.
+**Source line:** Assumes every state adopts the act and first treatments arrive 5.5 times faster.
+Source: How to End War and Disease, "Universal Right to Try with Evidence" impact estimate.
 
 ## B3. Value for money
 
@@ -696,41 +695,45 @@ Source: How to End War and Disease, impact paper.
 
 - Eyebrow: MODEL ESTIMATE
 - Title: A year of healthy life for under $10
-- Cost per year of healthy life: $9.50 (Care-integrated trials; at scale, in everyday care). $89
+- Cost per year of healthy life: $9.50 (Care-integrated trials; at global scale, in everyday care). $184
   (Malaria bed nets; one of the best charities known). $100,000+ (A typical new drug; at the usual
   U.S. price limit).
 - Bar strip: Care-integrated trials, $9.50: too small to see at this scale. Malaria bed nets,
-  $89: about 1 pixel wide. A typical new drug, $100,000+.
-- About 9 times cheaper than bed nets. Over 10,000 times cheaper than a typical new drug.
+  $184: about 2 pixels wide. A typical new drug, $100,000+.
+- About 19 times cheaper than bed nets. Over 10,000 times cheaper than a typical new drug.
 
-**Visual:** Three cards: a purple-filled "$9.50" card, then "$89" in orange and "$100,000+" in
+**Visual:** Three cards: a purple-filled "$9.50" card, then "$184" in orange and "$100,000+" in
 navy on white. Beneath, a to-scale bar strip in which only the drug's dark bar is visible.
 
-**Say:** And a model estimate of value for money. At scale, care-integrated trials would cost about
-$9.50 per year of healthy life. That is far less than malaria bed nets, one of the best charities
+**Say:** And a model estimate of value for money. Run at global scale, care-integrated trials would
+cost about $9.50 per year of healthy life. That is far less than malaria bed nets, one of the best charities
 known, and over 10,000 times less than a typical new drug.
 
 **If asked:** This is the standard cost-effectiveness test every new drug must pass: what it
 costs to gain one year of healthy life (one disability-adjusted life year, or DALY: a year without
 early death or disability). Lower is better. The bar strip is drawn to scale: if the drug bar is
-1,220 pixels, bed nets are about 1 pixel and care-integrated trials about one tenth of a pixel,
+1,220 pixels, bed nets are about 2 pixels and care-integrated trials about one tenth of a pixel,
 so the empty space is the point. Care-integrated trials at scale, meaning pragmatic trials built
 into everyday care: about $9.50 per healthy year. The cost counts the full research cost of the
-trials, whoever pays: about 23.4 million patients a year at about $929 each, for the 36 years it
-takes to give every untreated disease a first treatment. The benefit is the healthy years gained
+trials, whoever pays, in the impact paper's global scenario: about 23.4 million patients a year at
+about $929 each, for the 36 years that scenario takes to give every untreated disease a first
+treatment. That is a larger scenario than slide B2's 50-state model, and B3 is not recomputed for
+that model: it has only a launch cost and an assumed discovery rate, with no patient numbers or trial
+spending to compute a research cost from. The act's own model counts only its $65 million launch
+cost, so the impact page shows a far smaller cost per healthy year for it. The benefit is the healthy years gained
 because treatments arrive sooner (How to End War and Disease, impact paper). Both costs and health are
 discounted at the standard 3% a year. With no discounting at all, it is about $1.39 per
 healthy year. The impact paper's headline of $0.84 discounts costs but not health, so we do not
-lead with it. Malaria bed nets: about $89 per healthy year (How to End War and Disease). That
-is about 9 times more than $9.50. A typical new drug: the usual U.S. limit is $100,000 to $150,000
+lead with it. Malaria bed nets: about $184 per healthy year (90% range $113 to $252), GiveWell's
+estimate as cited in How to End War and Disease. That is about 19 times more than $9.50. A typical new drug: the usual U.S. limit is $100,000 to $150,000
 per quality-adjusted life year (Institute for Clinical and Economic Review). $100,000 divided by
 $9.50 is about 10,500, so over 10,000 times more. Even if only half of disease deaths can ever be
 avoided (the manual's low estimate), the cost is still about $17.50 per healthy year. Source:
 https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html
 
-**Source line:** A year of healthy life = one year without early death or disability.
-Conservative: costs and health both discounted 3% a year. Sources: How to End War and Disease, impact
-paper; ICER.
+**Source line:** Pragmatic trials at global scale (about 23 million patients a year), not the 50-state
+model on slide B2. A year of healthy life = one year without early death or disability, discounted 3%
+a year. Sources: How to End War and Disease, impact paper; ICER.
 
 ---
 

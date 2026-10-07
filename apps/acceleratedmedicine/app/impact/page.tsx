@@ -1,22 +1,20 @@
 import type { Metadata } from "next";
 
-import Layout from "@/components/layout";
+import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome";
 import { RightToTrialImpactExplorer } from "@/components/impact/right-to-trial-impact-explorer";
-import DecentralizedFDASection from "@/components/landing/decentralized-fda-section";
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Right to Trial Impact | Right to Trial Initiative",
+  title: "Impact Model | Institute for Accelerated Medicine",
   description:
-    "See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.",
+    "A model of how much sooner treatments could arrive if every state adopted the Care-Integrated Clinical Trials Act, with every assumption you can change.",
   path: "/impact",
 });
 
-export default function RightToTrialImpactPage() {
+export default function ImpactPage() {
   return (
-    <Layout>
+    <AcceleratedMedicinePage>
       <RightToTrialImpactExplorer />
-      <DecentralizedFDASection showDisclaimer={false} />
-    </Layout>
+    </AcceleratedMedicinePage>
   );
 }

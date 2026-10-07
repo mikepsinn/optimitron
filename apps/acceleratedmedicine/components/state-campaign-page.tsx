@@ -1,157 +1,127 @@
-import { FileText, HeartPulse, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 
-import { Card } from "@optimitron/neobrutalist-ui/ui/card";
-import { Container } from "@optimitron/neobrutalist-ui/ui/container";
-import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
+import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
-import Layout from "@/components/layout";
-import { StateSupportSection } from "@/components/landing/right-to-try-sections";
-import type { StateCampaign, SupporterRole } from "@/lib/right-to-try";
+import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
+import { SectionHeading } from "@/components/section-heading"
+import type { StateCampaign } from "@/lib/right-to-try"
 import {
   estimatedRareDiseasePatients,
   estimateStateShare,
-  FEDERAL_RIGHT_TO_TRY_YEAR,
   formatPeopleApprox,
   NATIONAL_CONDITION_COUNTS,
   RARE_DISEASES_COUNT,
   STATE_FACT_SOURCES,
   STATE_POPULATIONS,
   UNTREATED_RARE_DISEASE_SHARE_PCT,
-} from "@/lib/state-facts";
+} from "@/lib/state-facts"
 
-export function StateCampaignPage({
-  campaign,
-  initialRole,
-}: {
-  campaign: StateCampaign;
-  initialRole?: SupporterRole;
-}) {
-  const rarePatients = formatPeopleApprox(
-    estimatedRareDiseasePatients(campaign.name),
-  );
-  const population = formatPeopleApprox(STATE_POPULATIONS[campaign.name]);
+const card = "rounded-lg border bg-card p-6 shadow-sm"
+const sourceLink = "font-medium text-primary hover:underline"
+const FDA_RIGHT_TO_TRY_SUMMARY = "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/"
 
-  const facts = [
+/**
+ * One state's page: the people there living with conditions better treatments could help, what the
+ * state has today, and what the act would add. It describes the act and asks nobody to contact a
+ * legislator, because the Institute is a 501(c)(3).
+ */
+export function StateCampaignPage({ campaign }: { campaign: StateCampaign }) {
+  const { name } = campaign
+  const rarePatients = formatPeopleApprox(estimatedRareDiseasePatients(name))
+  const population = formatPeopleApprox(STATE_POPULATIONS[name])
+  const conditions = NATIONAL_CONDITION_COUNTS
+    .map(condition => ({ ...condition, stateCount: estimateStateShare(name, condition.usCount) }))
+    .sort((a, b) => b.stateCount - a.stateCount)
+  const largestCount = conditions[0]?.stateCount ?? 1
+
+  const today = [
     {
-      icon: ShieldCheck,
-      title: `Legal here since ${FEDERAL_RIGHT_TO_TRY_YEAR}`,
-      text: `Right to Try has been federal law in ${campaign.name} since ${FEDERAL_RIGHT_TO_TRY_YEAR}. It lets some patients ask manufacturers for experimental treatments—but it built no clinics, pays no providers, and publishes no results.`,
-      linkLabel: "Federal Right to Try Act",
-      href: STATE_FACT_SOURCES.federalRightToTryAct,
-      color: "bg-background",
+      title: "Federal Right to Try",
+      text: `Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. Most states also passed their own Right to Try laws, with similar limits.`,
+      source: { href: STATE_FACT_SOURCES.federalRightToTryAct, label: "Right to Try Act (2018)" },
     },
     {
-      icon: HeartPulse,
-      title: `${rarePatients} neighbors`,
-      text: `About ${rarePatients} of ${campaign.name}'s ${population} people live with a rare disease—and ${UNTREATED_RARE_DISEASE_SHARE_PCT}% of the roughly ${RARE_DISEASES_COUNT.toLocaleString("en-US")} rare diseases have no approved treatment to try.`,
-      linkLabel: "GAO rare disease report",
-      href: STATE_FACT_SOURCES.usRareDiseasePatients,
-      color: "bg-brutal-cyan",
+      title: "Few patients helped",
+      text: "The FDA reports only 21 investigational drugs used under the federal law from May 2018 to December 2024. It does not cover existing drugs approved for other conditions.",
+      source: { href: FDA_RIGHT_TO_TRY_SUMMARY, label: "FDA summary, via FactCheck.org (2026)" },
     },
     {
-      icon: FileText,
-      title: "The missing half",
-      text: `Montana licensed experimental treatment centers with SB 535. Right to Trial adds the evidence half—pragmatic trials, provider payment, and published results. ${campaign.name} can adopt both at once.`,
-      linkLabel: "Read the model act",
-      href: "/model-act",
-      color: "bg-background",
+      title: "A state that went further",
+      text: "In 2025, Montana licensed experimental treatment centers with SB 535. Its first clinics are expected around the end of 2026.",
+      source: { href: "/montana", label: "The Montana precedent" },
     },
-  ];
-
-  const conditions = NATIONAL_CONDITION_COUNTS.map((condition) => ({
-    ...condition,
-    stateCount: estimateStateShare(campaign.name, condition.usCount),
-  })).sort((a, b) => b.stateCount - a.stateCount);
-  const largestCount = conditions[0]?.stateCount ?? 1;
+  ]
 
   return (
-    <Layout>
-      <StateSupportSection
-        body={campaign.summary}
-        heading={campaign.headline}
-        headingAs="h1"
-        initialRole={initialRole}
-        initialStateCode={campaign.abbreviation}
-      />
+    <AcceleratedMedicinePage>
+      <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
+        <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{name}</p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{campaign.headline}</h1>
+        <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">
+          About {rarePatients} of {name}&apos;s {population} people live with a rare disease, and{" "}
+          {UNTREATED_RARE_DISEASE_SHARE_PCT}% of the roughly {RARE_DISEASES_COUNT.toLocaleString("en-US")} rare
+          diseases have no approved treatment. The Care-Integrated Clinical Trials Act would let any patient get a
+          screened, promising treatment through their own doctor, let clinics charge enough to offer it, and publish
+          every result.
+        </p>
+        <Button asChild size="lg" className="mt-8">
+          <Link href="/act">Read the act <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></Link>
+        </Button>
+      </section>
 
-      <SectionContainer bgColor="pink" borderPosition="bottom">
-        <Container>
-          <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter text-brutal-pink-foreground sm:text-5xl md:text-6xl">
-            What {campaign.name} has today
-          </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {facts.map(({ icon: Icon, title, text, linkLabel, href, color }) => (
-              <Card
-                key={title}
-                className={`${color} gap-4 rounded-none border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
-              >
-                <Icon className="h-12 w-12" strokeWidth={3} />
-                <h3 className="text-2xl font-black uppercase">{title}</h3>
-                <p className="font-bold">{text}</p>
-                <Link
-                  className="font-black uppercase underline underline-offset-4"
-                  href={href}
-                >
-                  {linkLabel}
-                </Link>
-              </Card>
-            ))}
-          </div>
-          <p className="mx-auto mt-8 max-w-3xl text-center text-sm font-bold">
-            Patient estimate: {campaign.name}&apos;s share of the roughly 30
-            million Americans with a rare disease (GAO 2025), using Census 2025
-            population estimates.
-          </p>
-        </Container>
-      </SectionContainer>
-
-      <SectionContainer bgColor="yellow" borderPosition="bottom">
-        <Container>
-          <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl">
-            Who is still waiting in {campaign.name}
-          </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-center text-lg font-bold sm:text-xl">
-            Today&apos;s medicine manages these conditions. It cures none of
-            them.
-          </p>
-          <div className="mx-auto mt-10 flex max-w-3xl flex-col gap-5">
-            {conditions.map((condition) => (
-              <div key={condition.label}>
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <a
-                    className="font-black uppercase underline underline-offset-4"
-                    href={condition.sourceUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    {condition.label}
-                  </a>
-                  <span className="font-black">
-                    ~{formatPeopleApprox(condition.stateCount)} people
-                  </span>
-                </div>
-                <div className="mt-2 h-8 border-4 border-primary bg-background">
-                  <div
-                    className="h-full bg-brutal-pink"
-                    style={{
-                      width: `${Math.max(
-                        4,
-                        (condition.stateCount / largestCount) * 100,
-                      )}%`,
-                    }}
-                  />
-                </div>
+      <section aria-labelledby="conditions-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="conditions-heading" title={`People in ${name} living with these conditions`} />
+        <ul className="mx-auto mt-8 max-w-3xl space-y-4 rounded-lg border bg-card p-6 shadow-sm">
+          {conditions.map(condition => (
+            <li key={condition.label}>
+              <div className="flex items-baseline justify-between gap-4">
+                <a href={condition.sourceUrl} rel="noreferrer" target="_blank" className="font-medium hover:text-primary hover:underline">
+                  {condition.label}
+                </a>
+                <span className="shrink-0 font-semibold tabular-nums">~{formatPeopleApprox(condition.stateCount)}</span>
               </div>
-            ))}
-          </div>
-          <p className="mx-auto mt-8 max-w-3xl text-center text-sm font-bold">
-            Estimates: national counts scaled to {campaign.name}&apos;s share of
-            the US population (Census 2025). Each condition links to its
-            national source.
-          </p>
-        </Container>
-      </SectionContainer>
-    </Layout>
-  );
+              <div aria-hidden="true" className="mt-2 h-2 rounded-full bg-muted">
+                <div className="h-2 rounded-full bg-primary" style={{ width: `${(condition.stateCount / largestCount) * 100}%` }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="mx-auto mt-4 max-w-3xl text-sm text-muted-foreground">
+          Estimates: national counts scaled to {name}&apos;s share of the US population (
+          <a href={STATE_FACT_SOURCES.statePopulations} rel="noreferrer" target="_blank" className={sourceLink}>Census, 2025</a>
+          ). Each condition links to its national source.
+        </p>
+      </section>
+
+      <section aria-labelledby="today-heading" className="py-12 md:py-20">
+        <SectionHeading id="today-heading" title={`What ${name} has today`} />
+        <ul className="mx-auto mt-8 grid max-w-5xl gap-6 md:grid-cols-3">
+          {today.map(item => (
+            <li key={item.title} className={card}>
+              <h3 className="font-semibold">{item.title}</h3>
+              <p className="mt-2 text-muted-foreground">{item.text}</p>
+              <p className="mt-3 text-sm">
+                {item.source.href.startsWith("/")
+                  ? <Link href={item.source.href} className={sourceLink}>{item.source.label}</Link>
+                  : <a href={item.source.href} rel="noreferrer" target="_blank" className={sourceLink}>{item.source.label}</a>}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="partner-heading" className="border-t py-12 md:py-16">
+        <SectionHeading id="partner-heading" title={`Organizations in ${name}`}>
+          Patient groups, clinics, hospitals and researchers in {name} can partner with the Care-Integrated
+          Clinical Trials Initiative.
+        </SectionHeading>
+        <div className="mt-8 text-center">
+          <Button asChild size="lg" variant="outline">
+            <Link href="/contact">Partner with us</Link>
+          </Button>
+        </div>
+      </section>
+    </AcceleratedMedicinePage>
+  )
 }

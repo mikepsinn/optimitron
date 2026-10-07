@@ -1,9 +1,7 @@
-import { ROUTES } from "@optimitron/site-kit/lib/routes"
-
 /**
- * The Right to Trial page used to be the homepage, so shared links such as
- * `/#state-support` still point at the root. Send any anchor the new homepage
- * does not have to the same anchor on the Right to Trial page.
+ * The Right to Trial campaign used to be the homepage, so shared links such as
+ * `/#state-support` still point at the root. That campaign is now the act, so
+ * any anchor the homepage does not have goes to /act.
  */
 export function getLegacyHomeHashRedirect(
   hash: string,
@@ -11,5 +9,5 @@ export function getLegacyHomeHashRedirect(
 ): string | null {
   const id = hash.replace(/^#/, "")
   if (!id || homeHasAnchor(id)) return null
-  return `${ROUTES.rightToTrial}#${id}`
+  return "/act"
 }

@@ -14,7 +14,6 @@
 ## Visible Page Copy
 
 - [ACCELERATED MEDICINE](/)
-- [Go to Dashboard](/dashboard)
 ## FUND MEDICAL FREEDOM THAT LEARNS
 - Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
 - [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
@@ -50,18 +49,15 @@
 - MISSION: TOTAL DISEASE ERADICATION
 #### LEGISLATION
 - [THE ACT](/act)
-- [RIGHT TO TRIAL](/right-to-trial)
-- [MONTANA MODEL](/montana)
-- [YOUR STATE](/right-to-trial#state-support)
-- [RIGHT TO TRIAL SURVEY](/survey)
-- [MODEL ACT](/model-act)
+- [YOUR STATE](/states)
+- [MONTANA PRECEDENT](/montana)
+- [MODEL FRAMEWORK](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
 - [FAQ](/faq)
 - [ABOUT US](/about)
 #### SUPPORT
-- [SHARE AN IDEA](/#help)
-- [GET EMAIL UPDATES](/survey)
+- [PARTNER WITH US](/contact)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

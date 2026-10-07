@@ -107,11 +107,11 @@ export function PossibleSlide({ s }: Props) {
     <SlideFrame s={s}>
       <p className="max-w-[1500px] text-[30px] leading-snug text-muted-foreground">
         6,650 diseases have no treatment today. At today's pace, the last of them gets its first treatment in about 443
-        years. With the system, in about 36.
+        years. If every state adopted the act, in about 81.
       </p>
       <dl className="mt-12 space-y-8">
         {[{ label: "At today's pace", detail: "15 diseases a year", years: 443, color: "bg-slate-400" },
-          { label: "With the system", detail: "about 185 diseases a year", years: 36, color: "bg-primary" }].map(bar => (
+          { label: "If every state adopts the act", detail: "about 82 diseases a year", years: 81, color: "bg-primary" }].map(bar => (
           <div key={bar.label} className="grid grid-cols-[360px_1fr] items-center gap-8">
             <dt>
               <span className="block text-[30px] font-semibold">{bar.label}</span>
@@ -125,7 +125,7 @@ export function PossibleSlide({ s }: Props) {
         ))}
       </dl>
       <div className="mt-14 grid grid-cols-3 gap-10">
-        {[{ value: "12×", label: "more patients in trials", detail: "1.9 million to 23 million a year" },
+        {[{ value: "181 years", label: "sooner, on average", detail: "for a disease's first treatment" },
           { value: "44×", label: "lower cost per patient", detail: "$41,000 to under $1,000" },
           { value: "8 years", label: "less waiting after safety tests", detail: "available after board review" }].map(stat => (
           <Card key={stat.value} className="p-9">
@@ -139,6 +139,10 @@ export function PossibleSlide({ s }: Props) {
   );
 }
 
+// Backup slide B3 uses the impact paper's global scenario on purpose, and the slide and its source line
+// say so. It differs from slide B2's 50-state model, which has no patient numbers or trial spending to
+// compute a research cost from. The bed-net figure ($184) is the published manual's; the
+// BED_NETS_COST_PER_DALY parameter in @optimitron/data still holds an older $89.
 export function ValueSlide({ s }: Props) {
   return (
     <SlideFrame s={s}>
@@ -147,10 +151,10 @@ export function ValueSlide({ s }: Props) {
         <Card className="border-primary bg-primary p-10 text-primary-foreground">
           <p className="text-[88px] font-bold leading-none">$9.50</p>
           <p className="mt-5 text-[32px] font-semibold">Care-integrated trials</p>
-          <p className="mt-1 text-[24px] text-primary-foreground/85">at scale, in everyday care</p>
+          <p className="mt-1 text-[24px] text-primary-foreground/85">at global scale, in everyday care</p>
         </Card>
         <Card className="p-10">
-          <p className="text-[88px] font-bold leading-none text-amber-500">$89</p>
+          <p className="text-[88px] font-bold leading-none text-amber-500">$184</p>
           <p className="mt-5 text-[32px] font-semibold">Malaria bed nets</p>
           <p className="mt-1 text-[24px] text-muted-foreground">one of the best charities known</p>
         </Card>
@@ -162,21 +166,21 @@ export function ValueSlide({ s }: Props) {
       </div>
       <dl className="mt-12 space-y-4 text-[24px]">
         {[{ label: "Care-integrated trials", note: "$9.50: too small to see at this scale", width: 0 },
-          { label: "Malaria bed nets", note: "$89: about 1 pixel wide", width: 1 },
+          { label: "Malaria bed nets", note: "$184: about 2 pixels wide", width: 2 },
           { label: "A typical new drug", note: "$100,000+", width: 1220 }].map(row => (
           <div key={row.label} className="grid grid-cols-[320px_1fr] items-center gap-6">
             <dt className="font-semibold">{row.label}</dt>
             <dd className="flex h-11 items-center gap-4">
-              {row.width > 1 ? (
+              {row.width > 100 ? (
                 <span className="flex h-full items-center bg-slate-700 px-4 font-semibold text-white" style={{ width: row.width }}>{row.note}</span>
               ) : (
-                <>{row.width === 1 && <span aria-hidden="true" className="h-full w-px bg-amber-500" />}{row.note}</>
+                <>{row.width > 0 && <span aria-hidden="true" className="h-full bg-amber-500" style={{ width: row.width }} />}{row.note}</>
               )}
             </dd>
           </div>
         ))}
       </dl>
-      <p className="mt-10 text-[30px]">About <strong>9 times</strong> cheaper than bed nets. Over <strong>10,000 times</strong> cheaper than a typical new drug.</p>
+      <p className="mt-10 text-[30px]">About <strong>19 times</strong> cheaper than bed nets. Over <strong>10,000 times</strong> cheaper than a typical new drug.</p>
     </SlideFrame>
   );
 }
