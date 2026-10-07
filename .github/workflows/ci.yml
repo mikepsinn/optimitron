@@ -57,7 +57,10 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: actions/checkout@v6
         with:
+          # History only: the scope check reads commits and paths, not file contents, and a full
+          # checkout sometimes outlasted this job's 5-minute limit.
           fetch-depth: 0
+          filter: blob:none
           persist-credentials: false
 
       - name: Detect Optimitron production deployment scope
@@ -73,7 +76,8 @@ jobs:
             echo "web_deploy=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
+          # --no-renames lists both paths of a move and needs no file contents to detect it.
+          git diff --no-renames --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
           node --input-type=module <<'NODE'
           import { appendFileSync, readFileSync } from "node:fs";
           import { getOptimitronProductionDeployMatches } from "./.github/scripts/vercel-app-build-scope.mjs";
