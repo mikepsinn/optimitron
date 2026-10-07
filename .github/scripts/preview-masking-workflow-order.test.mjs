@@ -263,6 +263,11 @@ test("keeps visual review status pending until the Pages URL is live", () => {
     publishIndex < waitIndex,
     "workflow should wait for Pages only after publishing to gh-pages",
   );
+  const pagesJobIndex = workflow.indexOf("  web-visual-review-pages:");
+  assert.ok(
+    publishIndex < pagesJobIndex && pagesJobIndex < waitIndex,
+    "the Pages wait must run in its own job, not while holding the gh-pages lock",
+  );
   assert.ok(
     waitIndex < finalStatusIndex,
     "final Visual review status should be posted after the live-page wait",
@@ -282,11 +287,11 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
   assert.match(
     workflow,
-    /target_url="\$\{\{ steps\.prepare_pages\.outputs\.review_url \}\}"/,
+    /target_url="\$\{\{ needs\.web-visual-review\.outputs\.review_url \}\}"/,
   );
   assert.match(
     workflow,
-    /expected_sha="\$\{\{ steps\.prepare_pages\.outputs\.short_sha \}\}"/,
+    /expected_sha="\$\{\{ needs\.web-visual-review\.outputs\.short_sha \}\}"/,
   );
   assert.match(
     workflow,

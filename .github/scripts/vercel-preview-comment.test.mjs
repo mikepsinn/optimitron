@@ -4,8 +4,28 @@ import test from "node:test";
 import {
   getSuccessfulVercelDeploymentStatus,
   getVercelPreviewUrlsFromComment,
+  isVercelDeploymentBuilding,
   mergeVercelPreviewUrls,
 } from "./vercel-preview-comment.mjs";
+
+test("stops waiting on a skipped or finished deployment", () => {
+  assert.equal(
+    isVercelDeploymentBuilding([
+      { state: "inactive", description: "Skipped - Not affected" },
+    ]),
+    false,
+  );
+  assert.equal(isVercelDeploymentBuilding([{ state: "error" }]), false);
+  assert.equal(
+    isVercelDeploymentBuilding([{ state: "success" }, { state: "in_progress" }]),
+    false,
+  );
+  assert.equal(isVercelDeploymentBuilding([]), true);
+  assert.equal(
+    isVercelDeploymentBuilding([{ state: "in_progress" }, { state: "queued" }]),
+    true,
+  );
+});
 
 test("rejects skipped deployments even when GitHub supplies a preview URL", () => {
   assert.equal(
