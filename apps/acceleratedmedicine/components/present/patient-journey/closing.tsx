@@ -139,6 +139,10 @@ export function PossibleSlide({ s }: Props) {
   );
 }
 
+// Backup slide B3 uses the impact paper's global scenario on purpose, and the slide and its source line
+// say so. It differs from slide B2's 50-state model, which has no patient numbers or trial spending to
+// compute a research cost from. The bed-net figure ($184) is the published manual's; the
+// BED_NETS_COST_PER_DALY parameter in @optimitron/data still holds an older $89.
 export function ValueSlide({ s }: Props) {
   return (
     <SlideFrame s={s}>
@@ -147,7 +151,7 @@ export function ValueSlide({ s }: Props) {
         <Card className="border-primary bg-primary p-10 text-primary-foreground">
           <p className="text-[88px] font-bold leading-none">$9.50</p>
           <p className="mt-5 text-[32px] font-semibold">Care-integrated trials</p>
-          <p className="mt-1 text-[24px] text-primary-foreground/85">at scale, in everyday care</p>
+          <p className="mt-1 text-[24px] text-primary-foreground/85">at global scale, in everyday care</p>
         </Card>
         <Card className="p-10">
           <p className="text-[88px] font-bold leading-none text-amber-500">$184</p>

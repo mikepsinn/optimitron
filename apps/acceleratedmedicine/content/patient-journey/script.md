@@ -70,9 +70,6 @@ prototype render the app's own components with its data, not screenshots.
 - **Title wording** (slide 1).
 - **Bill text:** check slide 18 against the bill text. Confirm the price and liability provisions
   (slides 12 and 18).
-- **Backups B2 and B3 use different models.** B2 uses the act's own model (every state adopts
-  it). B3's cost per healthy year comes from the impact paper's global scenario, about 23.4 million
-  patients a year. Decide whether to recompute B3 for the 50-state model.
 - **Real people:** a real patient or caregiver could join or replace Margaret later.
 - **Length:** 19 main slides. For a 10-minute meeting, candidates to cut are 3, 7, 12 and 16.
 
@@ -698,7 +695,7 @@ Source: How to End War and Disease, "Universal Right to Try with Evidence" impac
 
 - Eyebrow: MODEL ESTIMATE
 - Title: A year of healthy life for under $10
-- Cost per year of healthy life: $9.50 (Care-integrated trials; at scale, in everyday care). $184
+- Cost per year of healthy life: $9.50 (Care-integrated trials; at global scale, in everyday care). $184
   (Malaria bed nets; one of the best charities known). $100,000+ (A typical new drug; at the usual
   U.S. price limit).
 - Bar strip: Care-integrated trials, $9.50: too small to see at this scale. Malaria bed nets,
@@ -708,8 +705,8 @@ Source: How to End War and Disease, "Universal Right to Try with Evidence" impac
 **Visual:** Three cards: a purple-filled "$9.50" card, then "$184" in orange and "$100,000+" in
 navy on white. Beneath, a to-scale bar strip in which only the drug's dark bar is visible.
 
-**Say:** And a model estimate of value for money. At scale, care-integrated trials would cost about
-$9.50 per year of healthy life. That is far less than malaria bed nets, one of the best charities
+**Say:** And a model estimate of value for money. Run at global scale, care-integrated trials would
+cost about $9.50 per year of healthy life. That is far less than malaria bed nets, one of the best charities
 known, and over 10,000 times less than a typical new drug.
 
 **If asked:** This is the standard cost-effectiveness test every new drug must pass: what it
@@ -720,7 +717,10 @@ so the empty space is the point. Care-integrated trials at scale, meaning pragma
 into everyday care: about $9.50 per healthy year. The cost counts the full research cost of the
 trials, whoever pays, in the impact paper's global scenario: about 23.4 million patients a year at
 about $929 each, for the 36 years that scenario takes to give every untreated disease a first
-treatment. That is a larger scenario than slide B2's 50-state model. The benefit is the healthy years gained
+treatment. That is a larger scenario than slide B2's 50-state model, and B3 is not recomputed for
+that model: it has only a launch cost and an assumed discovery rate, with no patient numbers or trial
+spending to compute a research cost from. The act's own model counts only its $65 million launch
+cost, so the impact page shows a far smaller cost per healthy year for it. The benefit is the healthy years gained
 because treatments arrive sooner (How to End War and Disease, impact paper). Both costs and health are
 discounted at the standard 3% a year. With no discounting at all, it is about $1.39 per
 healthy year. The impact paper's headline of $0.84 discounts costs but not health, so we do not
@@ -731,9 +731,9 @@ $9.50 is about 10,500, so over 10,000 times more. Even if only half of disease d
 avoided (the manual's low estimate), the cost is still about $17.50 per healthy year. Source:
 https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html
 
-**Source line:** A year of healthy life = one year without early death or disability.
-Conservative: costs and health both discounted 3% a year. Sources: How to End War and Disease, impact
-paper; ICER.
+**Source line:** Pragmatic trials at global scale (about 23 million patients a year), not the 50-state
+model on slide B2. A year of healthy life = one year without early death or disability, discounted 3%
+a year. Sources: How to End War and Disease, impact paper; ICER.
 
 ---
 
