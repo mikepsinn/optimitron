@@ -28,7 +28,7 @@
 
 ## Testing Rules
 
-Write tests for branching logic, transaction/state transitions, boundary conversion, authorization, and real regressions. Do not test framework passthroughs, transcribe implementations, assert mocks called mocks, or add symmetry/documentation tests.
+Write tests for branching logic on runtime or external input, transaction/state transitions, boundary conversion, authorization, and real regressions. Do not test framework passthroughs, transcribe implementations, assert mocks called mocks, or add symmetry/documentation tests.
 
 Tests must not depend on wall-clock time, real network or LLM calls, randomness, unordered Prisma results, shared mutable state, sleeps, or retries. Inject or mock at the real boundary.
 
