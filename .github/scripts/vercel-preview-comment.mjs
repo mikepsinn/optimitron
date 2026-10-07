@@ -28,6 +28,15 @@ export function getSuccessfulVercelDeploymentStatus(statuses) {
     : null;
 }
 
+// Vercel creates a GitHub deployment record for every app on every push, and
+// a skipped app's record gets one final "inactive" status. Only a record whose
+// newest status is still queued, pending or in progress can yet become a
+// preview. GitHub lists statuses newest first.
+export function isVercelDeploymentBuilding(statuses) {
+  const newest = statuses[0];
+  return !newest || ["queued", "pending", "in_progress"].includes(newest.state);
+}
+
 export function getVercelPreviewUrlsFromComment(
   body,
   targetAppNames = VERCEL_APP_PROJECTS.map(({ appName }) => appName),
