@@ -55,7 +55,18 @@ function useSubmission(endpoint: string) {
     }
   }
 
-  return { submission, submit, confirmation }
+  const fail = (message: string) => setSubmission({ status: "error", message })
+  return { submission, submit, fail, confirmation }
+}
+
+// Mirrors the server: a missing scheme becomes https://, and only http and https addresses count.
+function isWebAddress(value: string) {
+  try {
+    const url = new URL(/^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`)
+    return (url.protocol === "https:" || url.protocol === "http:") && url.hostname.includes(".")
+  } catch {
+    return false
+  }
 }
 
 function Field({ label, optional, children }: { label: string; optional?: boolean; children: ReactNode }) {
@@ -139,7 +150,7 @@ export function SupporterForm() {
 
 /** An organization endorses. It appears on /supporters and its state page after the Institute approves it. */
 export function OrganizationForm() {
-  const { submission, submit, confirmation } = useSubmission("/api/endorse")
+  const { submission, submit, fail, confirmation } = useSubmission("/api/endorse")
 
   if (submission.status === "success") {
     return (
@@ -151,7 +162,20 @@ export function OrganizationForm() {
   }
 
   return (
-    <form onSubmit={event => submit(event)} className={`${card} space-y-6`}>
+    <form onSubmit={event => {
+      const data = new FormData(event.currentTarget)
+      const website = String(data.get("website") ?? "").trim()
+      const logoUrl = String(data.get("logoUrl") ?? "").trim()
+      if (!isWebAddress(website)) {
+        event.preventDefault()
+        return fail("Enter the website as a web address, such as example.org.")
+      }
+      if (logoUrl && !isWebAddress(logoUrl)) {
+        event.preventDefault()
+        return fail("Enter the logo link as a web address, such as example.org/logo.png, or leave it empty.")
+      }
+      return submit(event)
+    }} className={`${card} space-y-6`}>
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Field label="Organization"><Input name="organization" autoComplete="organization" maxLength={200} required className="h-11" /></Field>

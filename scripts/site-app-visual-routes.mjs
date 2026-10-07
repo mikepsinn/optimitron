@@ -1254,6 +1254,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         [
           "apps/acceleratedmedicine/app/montana/page.tsx",
           "apps/acceleratedmedicine/components/section-heading.tsx",
+          "apps/acceleratedmedicine/components/state-organizations.tsx",
           "apps/acceleratedmedicine/lib/right-to-try.ts",
         ],
       ],
@@ -1277,6 +1278,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
       covers: [
         "apps/acceleratedmedicine/app/states/[state]/page.tsx",
         "apps/acceleratedmedicine/components/state-campaign-page.tsx",
+        "apps/acceleratedmedicine/components/state-organizations.tsx",
         "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/lib/right-to-try.ts",
         "apps/acceleratedmedicine/lib/state-facts.ts",

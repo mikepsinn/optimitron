@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 }
 
 /** Opened from the endorsement alert in the Institute's inbox. Approving lists the organization publicly. */
-export default async function ApproveListingPage({ searchParams }: { searchParams: Promise<{ s?: string; t?: string }> }) {
-  const { s = "", t = "" } = await searchParams
+export default async function ApproveListingPage({ searchParams }: { searchParams: Promise<{ s?: string; t?: string; failed?: string }> }) {
+  const { s = "", t = "", failed } = await searchParams
   const link = await checkOrganizationLink(s, t)
 
   if (link.status === "invalid") {
@@ -40,7 +40,7 @@ export default async function ApproveListingPage({ searchParams }: { searchParam
   }
   return (
     <SupportLinkPage status="pending" title={`List ${organization}?`} buttonLabel="Approve listing"
-      action={approveOrganizationAction.bind(null, s, t)}>
+      action={approveOrganizationAction.bind(null, s, t)} failed={failed === "1"}>
       <p>Check that the organization is real and that the contact can speak for it. Approving lists its name, website,
         logo and state in public, and emails the contact.</p>
       {details}

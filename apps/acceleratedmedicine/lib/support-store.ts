@@ -201,7 +201,10 @@ export interface SupportSummary {
   organizations: ListedOrganization[]
 }
 
-/** What /supporters and the state pages show. Builds without a database (in CI) get an empty summary. */
+/**
+ * What /supporters and the state pages show. A build without a database (CI) gets an empty summary. At run
+ * time a failed read throws, so Next.js keeps serving the last good page instead of caching an empty one.
+ */
 export async function getSupportSummary(): Promise<SupportSummary> {
   if (!process.env.DATABASE_URL) return { confirmedPeople: 0, organizations: [] }
   try {
@@ -216,6 +219,7 @@ export async function getSupportSummary(): Promise<SupportSummary> {
     }
   } catch (error) {
     console.error("Support summary is unavailable", error)
-    return { confirmedPeople: 0, organizations: [] }
+    if (process.env.NEXT_PHASE === "phase-production-build") return { confirmedPeople: 0, organizations: [] }
+    throw error
   }
 }

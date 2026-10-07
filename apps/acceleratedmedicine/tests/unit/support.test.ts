@@ -89,6 +89,23 @@ describe("confirming a supporter", () => {
     expect(again.subscribe).not.toHaveBeenCalled();
   });
 
+  it("leaves the confirmation pending when the updates subscription fails, so the next click retries", async () => {
+    const deps = { ...dependencies(false), subscribe: vi.fn(async () => { throw new Error("Resend is down"); }) };
+    await expect(confirmSupporter("sub_1", signSupportLink("confirm-supporter", "sub_1"), deps)).rejects.toThrow("Resend is down");
+    expect(deps.recordSupportEvent).not.toHaveBeenCalled();
+  });
+
+  it("leaves an organization unlisted when the listing email fails, so the next click retries", async () => {
+    const deps = {
+      getOrganization: vi.fn(async () => organization),
+      hasSupportEvent: vi.fn(async () => false),
+      recordSupportEvent: vi.fn(async () => ({ submissionId: "event_3" })),
+      notifyListed: vi.fn(async () => { throw new Error("The listing email was not accepted"); }),
+    };
+    await expect(approveOrganization("org_1", signSupportLink("approve-organization", "org_1"), deps)).rejects.toThrow();
+    expect(deps.recordSupportEvent).not.toHaveBeenCalled();
+  });
+
   it("lists an organization only through its own approval link", async () => {
     const deps = {
       getOrganization: vi.fn(async () => organization),
