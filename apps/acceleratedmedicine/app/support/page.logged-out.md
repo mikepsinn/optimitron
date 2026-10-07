@@ -24,7 +24,7 @@
 - Add my name
 - We show how many people support the initiative, never their names. We email you only to confirm and, if you ask, to send updates.
 ### Endorse as an organization
-- Patient groups, clinics, hospitals, research groups and companies can endorse the initiative. We list each one on the supporters page and, if it works in one state, on that state's page.
+- Patient groups, clinics, hospitals, research groups and companies can endorse the initiative. We list each one on the supporters page.
 - Organization
 - Website
 - Logo link (optional)
