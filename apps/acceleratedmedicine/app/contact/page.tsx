@@ -29,7 +29,7 @@ export default async function ContactPage({
         </h1>
         <p className="mt-4 text-muted-foreground md:text-xl">
           Tell us how you want to help make care-integrated clinical trials part of normal care. Your message goes
-          to the Institute&apos;s inbox, and we reply by email.
+          to our inbox, and we reply by email.
         </p>
         <div className="mt-8">
           <PartnerSignupForm initialType={isPartnerType(type) ? type : undefined} />

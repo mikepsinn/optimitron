@@ -15,8 +15,13 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { SectionHeading } from "@/components/section-heading"
+import { StateOrganizations } from "@/components/state-organizations"
 import { RIGHT_TO_TRY_SOURCES } from "@/lib/right-to-try"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
+import { getSupportSummary } from "@/lib/support-store"
+
+// Montana's supporting organizations refresh every few minutes, and at once when one is approved.
+export const revalidate = 300
 
 export const metadata: Metadata = rightToTrialMetadata({
   title: "Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative",
@@ -99,7 +104,8 @@ const sources = [
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 const externalLink = "font-medium text-primary hover:underline"
 
-export default function MontanaPage() {
+export default async function MontanaPage() {
+  const { organizations } = await getSupportSummary()
   return (
     <AcceleratedMedicinePage>
       <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
@@ -175,7 +181,7 @@ export default function MontanaPage() {
         <SectionHeading id="act-heading" title="How the act differs">
           Montana opens access through state-licensed centers. The Care-Integrated Clinical Trials Act takes a
           different route: an independent review board screens each treatment, clinic and consent form, a
-          doctor&apos;s recommendation and written consent are all a patient needs, and every outcome is published,
+          doctor&apos;s documented recommendation and written consent are all a patient needs, and every outcome is published,
           so the next patient chooses better.
         </SectionHeading>
         <div className="mt-8 text-center">
@@ -184,6 +190,8 @@ export default function MontanaPage() {
           </Button>
         </div>
       </section>
+
+      <StateOrganizations name="Montana" organizations={organizations.filter(organization => organization.state === "Montana")} />
 
       <section aria-labelledby="sources-heading" className="border-t py-12 md:py-16">
         <SectionHeading id="sources-heading" title="Official Montana sources" />

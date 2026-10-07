@@ -18,7 +18,9 @@ jobs:
   changes:
     name: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Checkout downloads about 440 MB of tracked files. That usually takes under a minute but has taken
+    # over 5 when GitHub is slow, and a cancelled changes job fails the whole run.
+    timeout-minutes: 15
     permissions:
       contents: read
     outputs:
@@ -57,7 +59,10 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: actions/checkout@v6
         with:
+          # History only: the scope check reads commits and paths, not file contents, and a full
+          # checkout sometimes outlasted this job's 5-minute limit.
           fetch-depth: 0
+          filter: blob:none
           persist-credentials: false
 
       - name: Detect Optimitron production deployment scope
@@ -73,7 +78,8 @@ jobs:
             echo "web_deploy=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
+          # --no-renames lists both paths of a move and needs no file contents to detect it.
+          git diff --no-renames --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
           node --input-type=module <<'NODE'
           import { appendFileSync, readFileSync } from "node:fs";
           import { getOptimitronProductionDeployMatches } from "./.github/scripts/vercel-app-build-scope.mjs";
@@ -267,7 +273,7 @@ jobs:
   leak-scan:
     name: leak-scan
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -290,7 +296,7 @@ jobs:
       fromJSON(needs.changes.outputs.automation || 'false') == true)
     needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -940,6 +946,11 @@ jobs:
       issues: write
       pull-requests: write
       statuses: write
+    # web-visual-review-pages reads these to wait for the published page.
+    outputs:
+      review_url: ${{ steps.prepare_pages.outputs.review_url }}
+      short_sha: ${{ steps.prepare_pages.outputs.short_sha }}
+      publish_outcome: ${{ steps.visual_review_pages.outcome }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -1111,6 +1122,24 @@ jobs:
                 .map(({ appName }) => appName)
             );
             if (targetApps.size === 0) return '{}';
+            // Vercel's ignore step never builds these apps' previews on this
+            // branch (vercel-ignore-build.mjs), so a preview link can only
+            // come from the Vercel comment. Collect it, but do not wait.
+            const headRef = context.payload.pull_request.head.ref;
+            const noPreviewBuildApps = new Set(
+              [...targetApps].filter(
+                (appName) =>
+                  !scopeModule.shouldAutoBuildPreview(appName, {
+                    VERCEL_ENV: 'preview',
+                    VERCEL_GIT_COMMIT_REF: headRef,
+                  }).build
+              )
+            );
+            if (noPreviewBuildApps.size > 0) {
+              console.log(
+                `No preview builds on ${headRef} for: ${[...noPreviewBuildApps].join(', ')}`
+              );
+            }
 
             const commits = await github.paginate(github.rest.pulls.listCommits, {
               owner, repo, pull_number: issue_number, per_page: 100,
@@ -1142,11 +1171,12 @@ jobs:
             }
             async function collectPreviewUrls() {
               const freshUrls = {};
-              // Vercel creates a GitHub deployment record for every build it
-              // runs, including failed ones, but creates none at all when its
-              // ignore step skips an app. "No record anywhere in this PR"
-              // therefore means Vercel decided the app did not change.
+              // Vercel creates a GitHub deployment record for every app on
+              // every push, including apps it skips ("Skipped - Not
+              // affected"). The newest record per app says whether Vercel
+              // still owes a preview; older records are history.
               const appsWithDeployment = new Set();
+              const appsBuilding = new Set();
               for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
                 const commit = commits[commitIndex];
                 const deployments = await github.paginate(github.rest.repos.listDeployments, {
@@ -1155,20 +1185,32 @@ jobs:
                 for (const deployment of deployments) {
                   if ((deployment.environment || '').startsWith('visual-review')) continue;
                   const environmentName = deployment.environment || '';
-                  for (const { appName, projectName } of projectModule.VERCEL_APP_PROJECTS) {
-                    if (
+                  const deploymentApp = projectModule.VERCEL_APP_PROJECTS.find(
+                    ({ appName, projectName }) =>
                       targetApps.has(appName) &&
                       environmentName === `Preview – ${projectName}`
-                    ) {
-                      appsWithDeployment.add(appName);
-                    }
-                  }
+                  );
                   const statuses = await github.rest.repos.listDeploymentStatuses({
                     owner,
                     repo,
                     deployment_id: deployment.id,
                     per_page: 20,
                   });
+                  // Commits and their deployments are walked newest first,
+                  // so the first record seen for an app is its newest. Only a
+                  // record from the app's latest affected commit (or later)
+                  // counts, so an older finished record cannot end the wait
+                  // before Vercel registers the new preview.
+                  if (
+                    deploymentApp &&
+                    !appsWithDeployment.has(deploymentApp.appName) &&
+                    commitIndex >= (latestAffectedCommitIndex.get(deploymentApp.appName) ?? 0)
+                  ) {
+                    appsWithDeployment.add(deploymentApp.appName);
+                    if (previewCommentModule.isVercelDeploymentBuilding(statuses.data)) {
+                      appsBuilding.add(deploymentApp.appName);
+                    }
+                  }
                   const ready = previewCommentModule.getSuccessfulVercelDeploymentStatus(
                     statuses.data,
                   );
@@ -1202,26 +1244,32 @@ jobs:
                   [...targetApps],
                 ),
                 appsWithDeployment,
+                appsBuilding,
               };
             }
 
             let previewUrls = {};
             let appsWithDeployment = new Set();
+            let appsBuilding = new Set();
             const maxAttempts = 18;
             // Vercel registers its deployment records moments after the push,
             // so an app can legitimately have no record on the first lookups.
             // Keep polling those for a grace period before concluding Vercel
             // skipped them, otherwise a slow registration would be mistaken
             // for a skip and the preview dropped from the review silently.
+            // After that, wait only for a build Vercel is still running: a
+            // skipped or failed record never turns into a preview.
             const graceAttempts = 6;
             const pendingApps = (attempt) =>
               [...targetApps].filter(
                 (appName) =>
+                  !noPreviewBuildApps.has(appName) &&
                   !previewUrls[appName] &&
-                  (appsWithDeployment.has(appName) || attempt <= graceAttempts)
+                  (appsBuilding.has(appName) ||
+                    (!appsWithDeployment.has(appName) && attempt <= graceAttempts))
               );
             for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-              ({ previewUrls, appsWithDeployment } = await collectPreviewUrls());
+              ({ previewUrls, appsWithDeployment, appsBuilding } = await collectPreviewUrls());
               const waitingApps = pendingApps(attempt);
               if (waitingApps.length === 0) break;
               if (attempt < maxAttempts) {
@@ -1232,20 +1280,24 @@ jobs:
               }
             }
 
+            const stillBuilding = (appName) =>
+              appsBuilding.has(appName) && !noPreviewBuildApps.has(appName);
             const skippedApps = [...targetApps].filter(
-              (appName) => !previewUrls[appName] && !appsWithDeployment.has(appName)
+              (appName) => !previewUrls[appName] && !stillBuilding(appName)
             );
             if (skippedApps.length > 0) {
-              // Not a failure: Vercel judged these apps unchanged, so there is
-              // no new rendering to review. The build matrix still compiles
-              // them, and their routes keep their existing screenshots.
+              // Not a failure: Vercel judged these apps unchanged, or its
+              // ignore step does not build them on this branch, so there is no
+              // new rendering to review. The build matrix still compiles them,
+              // and their routes keep their existing screenshots. A failed
+              // preview build also lands here; deployment smoke reports it.
               console.log(
                 `Vercel skipped deploying (no preview to review): ${skippedApps.join(', ')}`
               );
             }
 
             const missingApps = [...targetApps].filter(
-              (appName) => !previewUrls[appName] && appsWithDeployment.has(appName)
+              (appName) => !previewUrls[appName] && stillBuilding(appName)
             );
             if (missingApps.length > 0) {
               core.warning(
@@ -1522,69 +1574,12 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
-      - name: Wait for visual review page
-        id: wait_visual_review_pages
-        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' }}
-        shell: bash
-        run: |
-          target_url="${{ steps.prepare_pages.outputs.review_url }}"
-          expected_sha="${{ steps.prepare_pages.outputs.short_sha }}"
-          echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
-          echo "available=false" >> "$GITHUB_OUTPUT"
-          echo "Waiting for $target_url to show commit $expected_sha"
-          max_attempts=180
-          for attempt in $(seq 1 "$max_attempts"); do
-            status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
-            if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
-              if grep -q "$expected_sha" /tmp/visual-review-latest.html; then
-                echo "available=true" >> "$GITHUB_OUTPUT"
-                echo "Visual review page is live for commit $expected_sha after attempt $attempt."
-                exit 0
-              fi
-              echo "Attempt $attempt/$max_attempts returned HTTP 200, but commit $expected_sha is not visible yet; retrying in 10s."
-            else
-              echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 10s."
-            fi
-            if [ "$attempt" -lt "$max_attempts" ]; then
-              sleep 10
-            fi
-          done
-          echo "::error::Visual review page did not become available before the wait limit: $target_url"
-          echo "The review artifact was uploaded and the gh-pages publish step completed, but the public GitHub Pages URL stayed unavailable."
-
-      - name: Post Visual review commit status
-        if: ${{ always() && steps.prepare_pages.outcome == 'success' && !cancelled() }}
-        continue-on-error: true
-        uses: actions/github-script@v8
-        env:
-          VISUAL_REVIEW_AVAILABLE: ${{ steps.wait_visual_review_pages.outputs.available }}
-          VISUAL_REVIEW_PUBLISH_OUTCOME: ${{ steps.visual_review_pages.outcome }}
-          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const headSha = context.payload.pull_request.head.sha;
-            const shortSha = headSha.slice(0, 12);
-            const available = process.env.VISUAL_REVIEW_AVAILABLE === 'true';
-            const publishOutcome = process.env.VISUAL_REVIEW_PUBLISH_OUTCOME || 'unknown';
-            await github.rest.repos.createCommitStatus({
-              owner,
-              repo,
-              sha: headSha,
-              state: available ? 'success' : 'failure',
-              context: 'Visual review',
-              description: available
-                ? `Ready · ${shortSha}`
-                : `Not live after Pages wait (${publishOutcome})`,
-              target_url: process.env.VISUAL_REVIEW_URL,
-            });
-
-      - name: Fail if visual review page is unavailable
-        if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' && steps.wait_visual_review_pages.outputs.available != 'true' }}
-        run: exit 1
-
+      # The link goes out as soon as gh-pages holds the page. Pages serves it
+      # a minute or two later; web-visual-review-pages waits for that and
+      # sets the "Visual review" status, so this job does not hold the
+      # gh-pages lock or delay pr-validate while Pages builds.
       - name: Update PR review packet with visual review
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' && steps.pr_preview_urls.outputs.result != '{}' }}
+        if: ${{ !cancelled() && steps.visual_review_pages.outcome == 'success' && steps.pr_preview_urls.outputs.result != '{}' }}
         uses: actions/github-script@v8
         env:
           APP_PREVIEW_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
@@ -1650,6 +1645,85 @@ jobs:
                 body,
               });
             }
+
+  # Waits for GitHub Pages to serve the page web-visual-review pushed, then
+  # sets the "Visual review" commit status. It runs outside the gh-pages
+  # concurrency group, and pr-validate does not need it, so the Pages build
+  # neither blocks other PRs' publishes nor delays the required checks.
+  web-visual-review-pages:
+    name: web-visual-review-pages
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && needs.web-visual-review.outputs.review_url != '' }}
+    needs:
+      - web-visual-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      statuses: write
+    steps:
+      - name: Wait for visual review page
+        id: wait_visual_review_pages
+        if: ${{ needs.web-visual-review.outputs.publish_outcome == 'success' }}
+        shell: bash
+        run: |
+          target_url="${{ needs.web-visual-review.outputs.review_url }}"
+          expected_sha="${{ needs.web-visual-review.outputs.short_sha }}"
+          echo "target_url=$target_url" >> "$GITHUB_OUTPUT"
+          echo "available=false" >> "$GITHUB_OUTPUT"
+          echo "Waiting for $target_url to show commit $expected_sha"
+          max_attempts=180
+          # Stop after 25 minutes even if curl keeps timing out, so this job (35-minute limit) still posts
+          # the Visual review status instead of being cancelled with it pending.
+          deadline=$((SECONDS + 25 * 60))
+          for attempt in $(seq 1 "$max_attempts"); do
+            status="$(curl -L -sS --connect-timeout 3 --max-time 4 -o /tmp/visual-review-latest.html -w "%{http_code}" "$target_url" || true)"
+            if [ "$status" = "200" ] && [ -s /tmp/visual-review-latest.html ]; then
+              if grep -q "$expected_sha" /tmp/visual-review-latest.html; then
+                echo "available=true" >> "$GITHUB_OUTPUT"
+                echo "Visual review page is live for commit $expected_sha after attempt $attempt."
+                exit 0
+              fi
+              echo "Attempt $attempt/$max_attempts returned HTTP 200, but commit $expected_sha is not visible yet; retrying in 10s."
+            else
+              echo "Attempt $attempt/$max_attempts returned HTTP $status; retrying in 10s."
+            fi
+            if [ "$attempt" -ge "$max_attempts" ] || [ "$SECONDS" -ge "$deadline" ]; then
+              break
+            fi
+            sleep 10
+          done
+          echo "::error::Visual review page did not become available before the wait limit: $target_url"
+          echo "The review artifact was uploaded and the gh-pages publish step completed, but the public GitHub Pages URL stayed unavailable."
+
+      - name: Post Visual review commit status
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/github-script@v8
+        env:
+          VISUAL_REVIEW_AVAILABLE: ${{ steps.wait_visual_review_pages.outputs.available }}
+          VISUAL_REVIEW_PUBLISH_OUTCOME: ${{ needs.web-visual-review.outputs.publish_outcome }}
+          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || needs.web-visual-review.outputs.review_url }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const headSha = context.payload.pull_request.head.sha;
+            const shortSha = headSha.slice(0, 12);
+            const available = process.env.VISUAL_REVIEW_AVAILABLE === 'true';
+            const publishOutcome = process.env.VISUAL_REVIEW_PUBLISH_OUTCOME || 'unknown';
+            await github.rest.repos.createCommitStatus({
+              owner,
+              repo,
+              sha: headSha,
+              state: available ? 'success' : 'failure',
+              context: 'Visual review',
+              description: available
+                ? `Ready · ${shortSha}`
+                : `Not live after Pages wait (${publishOutcome})`,
+              target_url: process.env.VISUAL_REVIEW_URL,
+            });
+
+      - name: Fail if visual review page is unavailable
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available != 'true' }}
+        run: exit 1
 
   pr-validate:
     name: pr-validate

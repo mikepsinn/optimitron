@@ -39,7 +39,7 @@ const partners = [
   {
     icon: Users,
     title: "Advisory board",
-    text: "We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on the protocol, patient safety and the law.",
+    text: "We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the initiative on the protocol, patient safety and the law.",
     links: [],
     talk: { label: "Apply to the board", href: signUp("advisory-board") },
   },
