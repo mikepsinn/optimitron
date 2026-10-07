@@ -37,9 +37,9 @@ export function Step1ReviewPatientMatches() {
                     <div className="font-medium">{option.name}</div>
                     <Badge variant="outline">Eligible</Badge>
                   </div>
-                  {[["Effectiveness", option.effectiveness], ["Safety", option.safetyScore]].map(([label, score]) => (
+                  {[["Effectiveness estimate", option.effectiveness], ["Safety estimate", option.safetyScore]].map(([label, score]) => (
                     <div key={label} className="mt-2 flex items-center gap-2">
-                      <div className="w-24 shrink-0 text-xs text-muted-foreground">{label}:</div>
+                      <div className="w-32 shrink-0 text-xs text-muted-foreground">{label}:</div>
                       <div className="w-full bg-muted rounded-full h-2">
                         <div className="bg-primary rounded-full h-2" style={{ width: `${score}%` }}></div>
                       </div>

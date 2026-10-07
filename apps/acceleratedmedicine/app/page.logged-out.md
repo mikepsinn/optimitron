@@ -46,7 +46,7 @@
 - Evidence-based decision making
 - Lecanemab
 - Alzheimer's disease
-- Changes are relative to the baselines shown.
+- Changes are compared with placebo in lecanemab's trials.
 - Clinical Dementia Rating-Sum of Boxes (CDR-SB)
 - Baseline: 3.17 points (CDR-SB 0-18 scale)
 - [Source: FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf)
@@ -64,10 +64,6 @@
 - Baseline: Not provided
 - [Source: Published study](https://doi.org/10.1056/NEJMoa2212948)
 - -59.1 Centiloids compared with placebo
-- CSF p-tau181
-- Baseline: 23.0 pg/mL
-- -20.6%
-- (-4.7 pg/mL)
 - Plasma Aβ42/40 ratio
 - Baseline: 0.088
 - +0.007 compared with placebo

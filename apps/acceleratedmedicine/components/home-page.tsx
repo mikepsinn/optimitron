@@ -119,6 +119,10 @@ function Rankings() {
 }
 
 const lecanemab = alzheimers.treatments.find(treatment => treatment.slug === "lecanemab")!
+// Only values with a cited source; the dataset's AI estimates (CSF p-tau181) are left out.
+const lecanemabLabel = treatmentOutcomeCategories(lecanemab).map(category => ({
+  ...category, items: category.items.filter(item => item.source),
+}))
 
 function OutcomeLabels() {
   return (
@@ -140,8 +144,8 @@ function OutcomeLabels() {
             </ul>
           </div>
           <OutcomeLabel title={lecanemab.name} tag="Alzheimer's disease"
-            subtitle="Changes are relative to the baselines shown."
-            data={treatmentOutcomeCategories(lecanemab)} showBars={false} />
+            subtitle="Changes are compared with placebo in lecanemab's trials."
+            data={lecanemabLabel} showBars={false} />
         </div>
       </div>
     </section>

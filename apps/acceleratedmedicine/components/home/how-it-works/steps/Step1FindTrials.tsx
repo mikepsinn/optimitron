@@ -29,7 +29,7 @@ export function Step1FindTrials() {
               <span className="font-medium">Alzheimer&apos;s disease</span>
             </div>
 
-            <div className="text-sm font-medium mb-2">Comparative Effectiveness Rankings</div>
+            <div className="text-sm font-medium mb-2">Comparative Effectiveness Rankings (estimated, out of 100)</div>
 
             <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
               {ranked.map(treatment => (
