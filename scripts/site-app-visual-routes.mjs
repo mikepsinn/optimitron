@@ -1216,6 +1216,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "/faq",
         [
           "apps/acceleratedmedicine/app/faq/page.tsx",
+          "apps/acceleratedmedicine/components/open-faq-from-hash.tsx",
           "apps/acceleratedmedicine/components/section-heading.tsx",
           "apps/acceleratedmedicine/lib/act-questions.ts",
           "apps/acceleratedmedicine/lib/faq.ts",

@@ -43,10 +43,23 @@ export const FAQ_SECTIONS: FaqSection[] = [
       },
       {
         id: "advice",
-        question: "Does the Institute tell patients which treatment to choose?",
+        question: "Does the initiative tell patients which treatment to choose?",
         answer: [
-          "No. Treatment decisions belong to patients and their doctors. The Institute explains the evidence and the research methods, and gives no medical advice.",
+          "No. Treatment decisions belong to patients and their doctors. We explain the evidence and the research methods, and give no medical advice.",
         ],
+      },
+      {
+        id: "who",
+        question: "Who runs the initiative?",
+        answer: ["The Institute for Accelerated Medicine, a 501(c)(3) nonprofit."],
+      },
+      {
+        id: "help",
+        question: "How can I help?",
+        answer: [
+          "Add your name, or endorse the initiative as an organization. Clinics, researchers, data partners and funders can also partner with us.",
+        ],
+        link: { href: "/support", label: "Show your support" },
       },
     ],
   },
@@ -93,27 +106,5 @@ export const FAQ_SECTIONS: FaqSection[] = [
       href: "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/",
       label: "FactCheck.org (2026)",
     },
-  },
-  {
-    id: "institute",
-    title: "The Institute",
-    questions: [
-      {
-        id: "who",
-        question: "Who runs this?",
-        answer: [
-          "The Institute for Accelerated Medicine runs the initiative. It is a 501(c)(3) nonprofit, legally named Accelerated Medicine Foundation Inc. Its board and legal facts are on the About page.",
-        ],
-        link: { href: "/about", label: "About us" },
-      },
-      {
-        id: "help",
-        question: "How can clinics, researchers and organizations help?",
-        answer: [
-          "Run a pilot site, build on the open protocol, share outcome data, fund the work, or join the advisory board.",
-        ],
-        link: { href: "/contact", label: "Partner with us" },
-      },
-    ],
   },
 ]

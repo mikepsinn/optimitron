@@ -19,7 +19,6 @@ const headerLinks = [
   { href: "/#how-it-works", label: "How it should work" },
   { href: "/act", label: "The act" },
   { href: "/faq", label: "FAQ" },
-  { href: "/about", label: "About us" },
 ]
 
 const inter = Inter({ subsets: ["latin"] })

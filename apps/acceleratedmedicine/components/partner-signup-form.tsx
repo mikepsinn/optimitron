@@ -82,7 +82,7 @@ export function PartnerSignupForm({ initialType }: { initialType?: PartnerType }
         <CheckCircle2 aria-hidden="true" className="mx-auto h-10 w-10 text-primary" />
         <h2 className="mt-4 text-2xl font-bold">Thank you, {submission.name}</h2>
         <p className="mt-2 text-muted-foreground">
-          Your message is with the Institute. We&apos;ll reply to {submission.email}.
+          We have your message and will reply to {submission.email}.
         </p>
       </div>
     )

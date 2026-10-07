@@ -279,5 +279,5 @@
 - Apps, health record systems, registries and wearable makers would share outcome data through an open API, so their users' results count toward the rankings and labels.
 - [Talk to us](/contact?type=data-partner)
 #### Advisory board
-- We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on the protocol, patient safety and the law.
+- We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the initiative on the protocol, patient safety and the law.
 - [Apply to the board](/contact?type=advisory-board)

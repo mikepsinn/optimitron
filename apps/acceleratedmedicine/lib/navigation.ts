@@ -34,13 +34,6 @@ export const appNavigation: AppNavigation = {
       "emoji": "💝",
       "feature": "donate"
     },
-    {
-      "id": "aboutUs",
-      "label": "About us",
-      "path": "/about",
-      "description": "About the Institute for Accelerated Medicine",
-      "emoji": "ℹ️"
-    }
   ],
   "sidebarSections": [],
   "footerSections": [
