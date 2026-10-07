@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function ConfirmSupportPage({ searchParams }: { searchParams: Promise<{ s?: string; t?: string }> }) {
-  const { s = "", t = "" } = await searchParams
+export default async function ConfirmSupportPage({ searchParams }: { searchParams: Promise<{ s?: string; t?: string; failed?: string }> }) {
+  const { s = "", t = "", failed } = await searchParams
   const link = await checkSupporterLink(s, t)
 
   if (link.status === "invalid") {
@@ -28,7 +28,7 @@ export default async function ConfirmSupportPage({ searchParams }: { searchParam
   }
   return (
     <SupportLinkPage status="pending" title="Confirm your support" buttonLabel="Confirm"
-      action={confirmSupporterAction.bind(null, s, t)}>
+      action={confirmSupporterAction.bind(null, s, t)} failed={failed === "1"}>
       <p>{link.record.name}, click Confirm to add your support for the Care-Integrated Clinical Trials Initiative.</p>
     </SupportLinkPage>
   )

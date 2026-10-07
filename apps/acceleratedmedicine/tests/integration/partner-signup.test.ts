@@ -11,7 +11,7 @@ const keys = Array.from(
 );
 const signup = {
   submissionKey: keys[0],
-  type: "clinic",
+  types: ["clinic"],
   name: "Integration Clinician",
   email: "clinician@example.invalid",
   organization: "Integration Clinic",
@@ -85,7 +85,7 @@ describe("Partner sign-up POST with PostgreSQL", () => {
     expect(saved.formRevision.form.sourceKey).toBe("acceleratedmedicine:partner-signup");
     expect(Object.fromEntries(saved.responses.map((item) => [item.field.key, item.valueJson])))
       .toMatchObject({
-        type: "clinic",
+        types: ["clinic"],
         name: "Integration Clinician",
         email: "clinician@example.invalid",
         organization: "Integration Clinic",

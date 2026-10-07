@@ -13,12 +13,14 @@ export function SupportLinkPage({
   children,
   action,
   buttonLabel,
+  failed,
 }: {
   status: "invalid" | "pending" | "done"
   title: string
   children: ReactNode
   action?: () => Promise<void>
   buttonLabel?: string
+  failed?: boolean
 }) {
   const Icon = status === "invalid" ? CircleAlert : CheckCircle2
   return (
@@ -30,6 +32,11 @@ export function SupportLinkPage({
           )}
           <h1 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
           <div className="mt-3 space-y-3 text-muted-foreground">{children}</div>
+          {status === "pending" && failed && (
+            <p role="alert" className="mt-4 text-sm font-medium text-destructive">
+              That did not go through, usually because an email failed to send. Try again in a minute.
+            </p>
+          )}
           {status === "pending" && action && (
             <form action={action} className="mt-6">
               <Button type="submit" size="lg">{buttonLabel}</Button>

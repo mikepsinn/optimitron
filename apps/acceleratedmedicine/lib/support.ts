@@ -148,12 +148,11 @@ export async function sendSupporterSignup(
   // Silently accept bot submissions, so bots learn nothing and spam stays out of the store.
   if (input.companyWebsite) return { sentConfirmation: false }
 
-  const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const email = emailClient()
   if (!email) {
-    console.error("Supporter email service is not configured")
-    return { sentConfirmation: false }
+    throw new Error("Supporter email service is not configured")
   }
+  const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const result = await email.resend.emails.send(
     { from: email.from, to: input.email, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
     { idempotencyKey: `supporter-confirmation/${submissionId}` },
@@ -175,12 +174,11 @@ export async function sendOrganizationEndorsement(
   const input = organizationSchema.parse(rawInput)
   if (input.companyWebsite) return { notified: false }
 
-  const { submissionId } = await (options.store ?? storeOrganization)(input, input.submissionKey, options.clientKey)
   const email = emailClient()
   if (!email) {
-    console.error("Endorsement email service is not configured")
-    return { notified: false }
+    throw new Error("Endorsement email service is not configured")
   }
+  const { submissionId } = await (options.store ?? storeOrganization)(input, input.submissionKey, options.clientKey)
   const alert = await email.resend.emails.send(
     { from: email.from, to: INBOX, replyTo: input.contactEmail, ...buildOrganizationAlert(input, supportLinkUrl("approve-organization", submissionId)) },
     { idempotencyKey: `organization-alert/${submissionId}` },
@@ -188,13 +186,15 @@ export async function sendOrganizationEndorsement(
   if (alert.error || !alert.data?.id) {
     throw new Error(`The endorsement alert was not accepted: ${alert.error?.message ?? "no email id"}`)
   }
-  try {
-    await email.resend.emails.send(
+  // The receipt is a courtesy; the alert above is what gets the organization listed.
+  const receipt = await email.resend.emails
+    .send(
       { from: email.from, to: input.contactEmail, replyTo: INBOX, ...buildOrganizationReceipt(input) },
       { idempotencyKey: `organization-receipt/${submissionId}` },
     )
-  } catch (error) {
-    console.error("Endorsement receipt email failed", error)
+    .catch((error: unknown) => ({ error, data: null }))
+  if (receipt.error || !receipt.data?.id) {
+    console.error("Endorsement receipt email failed", receipt.error)
   }
   return { notified: true }
 }
@@ -223,11 +223,16 @@ async function subscribeToUpdates(address: string) {
 
 async function emailListed(organization: StoredOrganization) {
   const email = emailClient()
-  if (!email) return
-  await email.resend.emails.send(
+  if (!email) {
+    throw new Error("Listing email service is not configured")
+  }
+  const result = await email.resend.emails.send(
     { from: email.from, to: organization.contactEmail, replyTo: INBOX, ...buildOrganizationListed(organization) },
     { idempotencyKey: `organization-listed/${organization.id}` },
   )
+  if (result.error || !result.data?.id) {
+    throw new Error(`The listing email was not accepted: ${result.error?.message ?? "no email id"}`)
+  }
 }
 
 const defaults: LinkDependencies = {
@@ -248,15 +253,16 @@ export async function checkSupporterLink(id: string, token: string, deps: Partia
   return { status: (await has("confirm-supporter", id)) ? "done" : "pending", record }
 }
 
-/** Confirms a person once. Their updates subscription starts here, so nobody is subscribed without clicking. */
+/**
+ * Confirms a person once. Their updates subscription starts here, so nobody is subscribed without clicking.
+ * It subscribes before recording, so a failed subscription leaves the link pending and the next click retries.
+ */
 export async function confirmSupporter(id: string, token: string, deps: Partial<LinkDependencies> = {}): Promise<LinkResult<StoredSupporter>> {
   const all = { ...defaults, ...deps }
   const checked = await checkSupporterLink(id, token, all)
   if (checked.status !== "pending") return checked
+  if (checked.record.updates) await all.subscribe(checked.record.email)
   await all.recordSupportEvent("confirm-supporter", id)
-  if (checked.record.updates) {
-    await all.subscribe(checked.record.email).catch(error => console.error("Supporter subscription failed", error))
-  }
   return { status: "done", record: checked.record }
 }
 
@@ -268,12 +274,15 @@ export async function checkOrganizationLink(id: string, token: string, deps: Par
   return { status: (await has("approve-organization", id)) ? "done" : "pending", record }
 }
 
-/** Lists an organization once and tells its contact. */
+/**
+ * Lists an organization once and tells its contact. The email goes first, so a failed email leaves the
+ * organization unlisted and the next click retries; its idempotency key stops a second copy.
+ */
 export async function approveOrganization(id: string, token: string, deps: Partial<LinkDependencies> = {}): Promise<LinkResult<StoredOrganization>> {
   const all = { ...defaults, ...deps }
   const checked = await checkOrganizationLink(id, token, all)
   if (checked.status !== "pending") return checked
+  await all.notifyListed(checked.record)
   await all.recordSupportEvent("approve-organization", id)
-  await all.notifyListed(checked.record).catch(error => console.error("Listing email failed", error))
   return { status: "done", record: checked.record }
 }
