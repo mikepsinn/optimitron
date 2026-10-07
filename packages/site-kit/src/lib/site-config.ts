@@ -1328,7 +1328,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: "The Right to Trial poster: patients and a doctor beside a sign that reads \"Montana proved it. Now it's your state.\"",
+      alt: "The Care-Integrated Clinical Trials Initiative: see your doctor, compare rankings, check the outcome label, and every clinic adds results.",
     },
     copyrightText:
       "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
