@@ -28,7 +28,7 @@
 - Source: [PubMed Central, PMC10512468](https://pmc.ncbi.nlm.nih.gov/articles/PMC10512468/)
 - Are the trials randomized?
 - Most patients choose a screened treatment with their doctor, and their outcomes are recorded and pooled. That shows patterns quickly, but on its own it does not prove that a treatment caused the result.
-- Patients can also choose to join centrally run randomized comparisons, as RECOVERY did. The trial, not the doctor, assigns each patient a treatment at random. There is no placebo arm. Every published result says which method produced it.
+- Patients can also choose to join centrally run comparisons, as RECOVERY did. The trial, not the doctor, assigns each patient's treatment, at random or by another scientifically justified method. The approved protocol sets what is compared and whether a placebo is used. Every published result says which method produced it.
 - Why do they cost less?
 - They use existing clinics and routine records instead of building a separate research site for each study. RECOVERY cost about $500 per patient, compared with about $41,000 per patient in the trials behind new FDA approvals (Manhattan Institute, 2023; Moore et al., JAMA Internal Medicine, 2018).
 - Does the initiative tell patients which treatment to choose?
@@ -40,7 +40,7 @@
 - Who decides a treatment is safe enough to offer?
 - An independent review board of at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. The board also approves each clinic and consent form.
 - What happens if something goes wrong?
-- Serious side effects reach the board within days, and the board can pause new patients until the problem is resolved. Current patients can continue if stopping would be riskier. Every protocol is reviewed at least once a year.
+- The clinic must report serious side effects to the review board and the state health department within five days. If a serious safety problem is unresolved, the board must stop treating new patients until it is resolved. A current patient can continue only if their doctor and the board decide that stopping suddenly is riskier. Every protocol is reviewed at least once a year.
 - Are bad results published?
 - Yes. Each board publishes a yearly report for each protocol, including results that were bad, null or unclear. Boards may not leave them out.
 - What happens to patients' data?
@@ -53,23 +53,23 @@
 - Schedule I drugs never qualify.
 - Who pays, and what does it cost the state?
 - No insurer or state program has to pay. The patient, family, charities, employers, research sponsors, and insurers that choose to can pay.
-- Clinics may charge for treatment, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.
+- Clinics may charge for treatment, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who agree to share more data than the required outcome record.
 - Running the act costs the state about $200,000 to $500,000 a year by our estimate, with a planning figure of $300,000. It is not an official fiscal note. The state pays for no treatment, runs no trial platform or database, and licenses no facilities. Review-board fees, $500 to register and $250 a year, offset part of the cost.
 - Does the act change a patient's regular insurance coverage?
 - No. Insurers do not have to cover experimental treatment under the act, and coverage mandates and network rules do not apply to it. Coverage for everything else stays the same, and insurers may choose to pay.
 - How is this different from the federal Right to Try law?
-- The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.
+- The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA's yearly summaries list only 12 drugs and biologics provided under the law from May 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025. It does not cover drugs already approved for other conditions.
 - Under this act, any patient whose doctor recommends a screened treatment and records the reason can get it with written consent, clinics can charge for it, and every result is published.
-- Source: [FDA summary, via FactCheck.org (2026)](https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/)
+- Source: [FDA, Right to Try annual reporting summary](https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try-annual-reporting-summary)
 - Who is liable if something goes wrong?
-- The bill protects doctors, clinics and review boards that take part in good faith from liability under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing safety information. Makers of the treatments stay liable under ordinary state law. Federal law still applies, and the federal Right to Try law's protections cover only patients who meet its rules.
+- The bill limits liability under state law for the people who review, provide or give a treatment under the act. The limit does not cover gross negligence, reckless or willful misconduct, intentional harm, fraud, concealing safety information, or a material violation of the act. Makers of the treatments stay liable under ordinary state law. Federal law still applies, and the federal Right to Try law's protections cover only patients who meet its rules.
 - Could clinics exploit patients by charging for experimental treatment?
-- Unproven stem-cell clinics show why people worry about this. The act answers it four ways. The board approves each clinic and protocol. The consent form states the cost and that the treatment is experimental. Serious side effects can pause new patients. Every result, including failures, is published, so a clinic cannot hide poor results.
+- Unproven stem-cell clinics show why people worry about this. The act answers it four ways. The board approves each protocol and each clinic that offers it. The consent form says the treatment is experimental and that insurance does not have to pay. An unresolved serious safety problem stops new patients. Every result, including failures, is published, so a clinic cannot hide poor results.
 - [Read all five provisions of the act](/act)
 ### Doctors and clinics
 - What does this cost a small practice?
 - Taking part is optional. A practice can show competence with a statement from its medical director. The outcome record uses what is already in the chart: boards must accept medical records, and no one may require duplicate entry. The practice can let its electronic health record, a central sponsor or a contractor submit for it.
-- Trials through ordinary care pay practices for consent, treatment, follow-up and data submission.
+- A trial's approved protocol may pay practices for consent, treatment, follow-up and data submission.
 - [Partner with us](/contact?type=clinic)
 - Does the act stop the medical board from disciplining bad doctors?
 - No. The state keeps its authority over gross negligence, incompetence, exploitation, fraud, concealment and practice outside lawful scope. It cannot discipline a doctor merely for recommending or giving a treatment the act permits.

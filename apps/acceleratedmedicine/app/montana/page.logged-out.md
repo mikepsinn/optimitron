@@ -36,7 +36,7 @@
 - First applications filed Treatments for neuropathy and hearing loss are already under review. The first licensed clinics are expected around the end of 2026.
 - Reported by [MIT Technology Review (July 30, 2026)](https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/). Board details at [montanaetrb.org](https://montanaetrb.org).
 ### How the act builds on Montana
-- Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials Act builds on it. Patients get screened treatments through their own doctor's practice as well as at dedicated centers. Every outcome is published, including failures. And doctors can enroll patients in randomized trials during ordinary care, so the next patient chooses better.
+- Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials Act builds on it. Patients get screened treatments through their own doctor's practice as well as at dedicated centers. Every patient's outcome is recorded, and each protocol's yearly public report must include failures. And doctors can enroll patients in randomized trials during ordinary care, so the next patient chooses better.
 - [Read the act](/act)
 ### Organizations in Montana
 - Patient groups, clinics, hospitals and researchers in Montana can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.

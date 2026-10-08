@@ -182,7 +182,7 @@ export default async function MontanaPage() {
         <SectionHeading id="act-heading" title="How the act builds on Montana">
           Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials
           Act builds on it. Patients get screened treatments through their own doctor&apos;s practice as well as at
-          dedicated centers. Every outcome is published, including failures. And doctors can enroll patients in
+          dedicated centers. Every patient&apos;s outcome is recorded, and each protocol&apos;s yearly public report must include failures. And doctors can enroll patients in
           randomized trials during ordinary care, so the next patient chooses better.
         </SectionHeading>
         <div className="mt-8 text-center">

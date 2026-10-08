@@ -177,7 +177,7 @@
 ##### Monitor Your Patients' Outcomes
 - Track how your patients are doing, report side effects in minutes, and see the same outcome categories the board publishes.
 - Outcome reports straight from routine medical records
-- Serious side effects reach the review board within days
+- Serious side effects reach the review board within five days
 - Good, bad and unclear results are all recorded
 - Compare your patients with every clinic's pooled results
 - Outcome reports due this week
