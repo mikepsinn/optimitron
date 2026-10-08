@@ -1295,9 +1295,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/research-links.tsx",
         "apps/acceleratedmedicine/lib/board-members.ts",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/ian-whitmore.jpg",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/kathryn-bortko.jpg",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/mike-sinn.jpg",
       ];
     }
   }

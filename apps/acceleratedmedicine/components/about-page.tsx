@@ -35,16 +35,11 @@ export function AboutPage() {
 
       <section aria-labelledby="board-heading" className="band-muted py-12 md:py-20">
         <SectionHeading id="board-heading" title="Board of directors" />
-        <ul className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3 sm:gap-6">
+        <ul className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-3 sm:gap-6">
           {BOARD_MEMBERS.map(member => (
-            <li key={member.name} className="overflow-hidden rounded-lg border bg-card shadow-sm">
-              <div className="aspect-square w-full overflow-hidden bg-primary/10">
-                <img alt={member.photoAlt} className="h-full w-full object-cover" src={member.photoSrc} />
-              </div>
-              <div className="p-3 sm:p-4">
-                <p className="text-xs font-medium text-primary sm:text-sm">{member.role}</p>
-                <h3 className="mt-1 text-sm font-semibold leading-tight sm:text-lg">{member.name}</h3>
-              </div>
+            <li key={member.name} className="rounded-lg border bg-card p-4 text-center shadow-sm">
+              <p className="text-sm font-medium text-primary">{member.role}</p>
+              <h3 className="mt-1 font-semibold">{member.name}</h3>
             </li>
           ))}
         </ul>
