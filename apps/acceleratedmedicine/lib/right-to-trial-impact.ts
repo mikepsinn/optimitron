@@ -136,8 +136,9 @@ export const RIGHT_TO_TRIAL_CANONICAL_RESULTS = {
 
 export const PHASE_1_PASSED_COMPOUNDS = PHASE_1_PASSED_COMPOUNDS_GLOBAL;
 
+// The impact paper's section on why nobody funds trials of unpatentable treatments.
 export const OFF_PATENT_ECONOMICS_URL =
-  "https://manual.warondisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html";
+  "https://papers.acceleratedmedicine.org/right-to-trial-impact.html#why-treatments-that-cannot-attract-conventional-funding-matter";
 
 export const RIGHT_TO_TRIAL_DOIS = [
   {
