@@ -47,5 +47,5 @@
 - Unproven stem-cell clinics show why people worry about this. The act answers it four ways. The board approves each clinic and protocol. The consent form states the cost and that the treatment is experimental. Serious side effects can pause new patients. Every result, including failures, is published, so a clinic cannot hide poor results.
 ### More background
 - [Your state](/states) The patients waiting in each state, and what the act would change there.
-- [An enacted state precedent](/montana) How one state already licenses experimental treatment centers.
+- [The state that went first](/montana) How one state's 2025 law opened access through licensed centers, and how this act builds on it.
 - [Impact model](/impact) How much sooner treatments could arrive if every state adopted the act.

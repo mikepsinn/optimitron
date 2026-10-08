@@ -36,7 +36,7 @@ const provisionDetails: Record<string, string> = {
 
 const background = [
   { href: "/states", label: "Your state", text: "The patients waiting in each state, and what the act would change there." },
-  { href: "/montana", label: "An enacted state precedent", text: "How one state already licenses experimental treatment centers." },
+  { href: "/montana", label: "The state that went first", text: "How one state's 2025 law opened access through licensed centers, and how this act builds on it." },
   { href: "/impact", label: "Impact model", text: "How much sooner treatments could arrive if every state adopted the act." },
 ]
 
