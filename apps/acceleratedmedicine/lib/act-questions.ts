@@ -1,6 +1,7 @@
 // Common questions about the act, from the deck's speaker notes (content/patient-journey/script.md). The act
 // page shows all of them, and the FAQ reuses them, so the answers live in one place.
-export type ActQuestion = { id: string; question: string; answer: string[] }
+/** `source` backs a figure in the answer and shows under it. */
+export type ActQuestion = { id: string; question: string; answer: string[]; source?: { href: string; label: string } }
 
 export const ACT_QUESTIONS: ActQuestion[] = [
   {
@@ -18,6 +19,10 @@ export const ACT_QUESTIONS: ActQuestion[] = [
       "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
       "Under this act, any patient whose doctor recommends a screened treatment and records the reason can get it with written consent, clinics can charge for it, and every result is published.",
     ],
+    source: {
+      href: "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/",
+      label: "FDA summary, via FactCheck.org (2026)",
+    },
   },
   {
     id: "liability",

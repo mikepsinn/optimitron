@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
-import { ArrowRight, ChevronDown } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
+import { FaqList } from "@/components/faq-list"
 import { OpenFaqFromHash } from "@/components/open-faq-from-hash"
 import { SectionHeading } from "@/components/section-heading"
 import { FAQ_SECTIONS } from "@/lib/faq"
@@ -42,40 +43,12 @@ export default function FaqPage() {
           className={`scroll-mt-20 py-12 md:py-16 ${index % 2 === 0 ? "band-muted" : ""}`}>
           <SectionHeading id={`${section.id}-heading`} title={section.title} />
           <div className="mx-auto mt-8 max-w-3xl space-y-6">
-            {/* Questions start closed, so a reader scans them and opens the ones they care about. */}
-            <div className="divide-y rounded-lg border bg-card shadow-sm">
-              {section.questions.map(item => (
-                <details key={item.id} id={`${section.id}-${item.id}`} className="group scroll-mt-20">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-lg font-semibold hover:text-primary [&::-webkit-details-marker]:hidden">
-                    <h3>{item.question}</h3>
-                    <ChevronDown aria-hidden="true" className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-                  </summary>
-                  <div className="px-5 pb-5">
-                    {item.answer.map(paragraph => (
-                      <p key={paragraph.slice(0, 40)} className="mt-3 first:mt-0 text-muted-foreground">{paragraph}</p>
-                    ))}
-                    {item.link && (
-                      <p className="mt-3">
-                        <Link href={item.link.href} className={textLink}>
-                          {item.link.label} <ArrowRight aria-hidden="true" className="inline h-4 w-4" />
-                        </Link>
-                      </p>
-                    )}
-                  </div>
-                </details>
-              ))}
-            </div>
+            <FaqList questions={section.questions} idPrefix={section.id} />
             {section.id === "act" && (
               <p>
                 <Link href="/act" className={textLink}>
                   Read all five provisions of the act <ArrowRight aria-hidden="true" className="inline h-4 w-4" />
                 </Link>
-              </p>
-            )}
-            {section.source && (
-              <p className="text-sm text-muted-foreground">
-                {section.source.text}{" "}
-                <a href={section.source.href} rel="noreferrer" target="_blank" className={textLink}>{section.source.label}</a>.
               </p>
             )}
           </div>

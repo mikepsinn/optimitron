@@ -3,9 +3,8 @@ import { ACT_QUESTIONS, type ActQuestion } from "@/lib/act-questions"
 // The FAQ's answers come from the act page, the deck's speaker notes (content/patient-journey/script.md)
 // and the earlier FAQ. Questions about the act are the act page's own, so the two pages cannot disagree.
 export type FaqLink = { href: string; label: string }
-export type FaqQuestion = { id: string; question: string; answer: string[]; link?: FaqLink }
-// A section can end with a source note: its text, then a link.
-export type FaqSection = { id: string; title: string; questions: FaqQuestion[]; source?: FaqLink & { text: string } }
+export type FaqQuestion = { id: string; question: string; answer: string[]; link?: FaqLink; source?: FaqLink }
+export type FaqSection = { id: string; title: string; questions: FaqQuestion[] }
 
 const actQuestion = (id: ActQuestion["id"]): FaqQuestion => {
   const found = ACT_QUESTIONS.find(question => question.id === id)
@@ -96,10 +95,5 @@ export const FAQ_SECTIONS: FaqSection[] = [
     id: "act",
     title: "The act",
     questions: [actQuestion("who-pays"), actQuestion("right-to-try"), actQuestion("liability"), actQuestion("exploitation")],
-    source: {
-      text: "The Right to Try figures come from the FDA's summary, as reported by",
-      href: "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/",
-      label: "FactCheck.org (2026)",
-    },
   },
 ]

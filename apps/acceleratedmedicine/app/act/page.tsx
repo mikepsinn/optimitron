@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
+import { FaqList } from "@/components/faq-list"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
 import { SectionHeading } from "@/components/section-heading"
 import { ACT_QUESTIONS } from "@/lib/act-questions"
@@ -109,23 +110,9 @@ export default function ActPage() {
 
       <section aria-labelledby="questions-heading" className="py-12 md:py-20">
         <SectionHeading id="questions-heading" title="Common questions" />
-        <div className="mx-auto mt-8 max-w-3xl space-y-8">
-          {ACT_QUESTIONS.map(item => (
-            <div key={item.question}>
-              <h3 className="text-xl font-semibold">{item.question}</h3>
-              {item.answer.map(paragraph => (
-                <p key={paragraph.slice(0, 40)} className="mt-3 text-muted-foreground">{paragraph}</p>
-              ))}
-            </div>
-          ))}
+        <div className="mx-auto mt-8 max-w-3xl">
+          <FaqList questions={ACT_QUESTIONS} idPrefix="questions" />
         </div>
-        <p className="mx-auto mt-8 max-w-3xl text-sm text-muted-foreground">
-          The Right to Try figures come from the FDA&apos;s summary, as reported by{" "}
-          <a href="https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/" className="text-primary hover:underline">
-            FactCheck.org (2026)
-          </a>
-          .
-        </p>
       </section>
 
       <section aria-labelledby="background-heading" className="border-t py-12 md:py-16">
