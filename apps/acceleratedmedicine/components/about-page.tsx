@@ -4,23 +4,13 @@ import Link from "next/link"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
-import { MailingAddress } from "@/components/mailing-address"
 import { RESEARCH_LINKS } from "@/components/research-links"
 import { SectionHeading } from "@/components/section-heading"
-import { BOARD_MEMBERS } from "@/lib/board-members"
-import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity"
-import { SITE } from "@/lib/site-settings"
+import { NONPROFIT } from "@/lib/nonprofit-identity"
 
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 
 export function AboutPage() {
-  const address = formatNonprofitAddress()
-  const legalFacts = [
-    { term: "Legal name", detail: NONPROFIT.legalName },
-    { term: "EIN", detail: NONPROFIT.ein },
-    { term: "Status", detail: `501(c)(3) public charity, incorporated in ${NONPROFIT.incorporatedIn}` },
-  ]
-
   return (
     <AcceleratedMedicinePage>
       <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
@@ -31,37 +21,6 @@ export function AboutPage() {
           doctor, at a clinic an independent board has approved, and so every result is published. The Institute for
           Accelerated Medicine, a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit, runs the initiative.
         </p>
-      </section>
-
-      <section aria-labelledby="board-heading" className="band-muted py-12 md:py-20">
-        <SectionHeading id="board-heading" title="Board of directors" />
-        <ul className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3 sm:gap-6">
-          {BOARD_MEMBERS.map(member => (
-            <li key={member.name} className="overflow-hidden rounded-lg border bg-card shadow-sm">
-              <div className="aspect-square w-full overflow-hidden bg-primary/10">
-                <img alt={member.photoAlt} className="h-full w-full object-cover" src={member.photoSrc} />
-              </div>
-              <div className="p-3 sm:p-4">
-                <p className="text-xs font-medium text-primary sm:text-sm">{member.role}</p>
-                <h3 className="mt-1 text-sm font-semibold leading-tight sm:text-lg">{member.name}</h3>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="advisors-heading" className="py-12 md:py-20">
-        <SectionHeading id="advisors-heading" title="Advisory board">
-          We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on
-          the protocol, patient safety and the law. Members will be listed here once they join.
-        </SectionHeading>
-        <div className="mt-8 text-center">
-          <Button asChild size="lg">
-            <Link href="/contact?type=advisory-board">
-              Apply to the advisory board <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </section>
 
       <section aria-labelledby="research-heading" className="band-muted py-12 md:py-20">
@@ -83,33 +42,30 @@ export function AboutPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="legal-heading" className="py-12 md:py-20">
-        <SectionHeading id="legal-heading" title="Legal facts" />
-        <dl className={`mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3 ${card}`}>
-          {legalFacts.map(fact => (
-            <div key={fact.term}>
-              <dt className="text-sm font-medium text-muted-foreground">{fact.term}</dt>
-              <dd className="mt-1">{fact.detail}</dd>
-            </div>
-          ))}
-          {address ? (
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">Mailing address</dt>
-              <dd className="mt-1"><MailingAddress showRecipient={false} /></dd>
-            </div>
-          ) : null}
-          <div>
-            <dt className="text-sm font-medium text-muted-foreground">Contact</dt>
-            <dd className="mt-1">
-              <a className="font-medium text-primary hover:underline" href={`mailto:${SITE.email}`}>
-                {SITE.email}
-              </a>
-            </dd>
-          </div>
-        </dl>
+      <section aria-labelledby="advisors-heading" className="py-12 md:py-20">
+        <SectionHeading id="advisors-heading" title="Advisory board">
+          We are recruiting clinicians, researchers, ethicists, lawyers and patient advocates to advise the Institute on
+          the protocol, patient safety and the law. Members will be listed here once they join.
+        </SectionHeading>
+        <div className="mt-8 text-center">
+          <Button asChild size="lg">
+            <Link href="/contact?type=advisory-board">
+              Apply to the advisory board <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </section>
 
-      <section aria-labelledby="work-heading" className="border-t py-12 md:py-16">
+      <section aria-labelledby="who-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="who-heading" title="Who we are">
+          We&apos;re basically just concerned citizens trying to coordinate humanity to make it possible for anyone to
+          participate in clinical trials for the most promising treatment, considering everyone we&apos;ve ever loved
+          is being slowly tortured and will be eventually murdered by horrible diseases. The Institute&apos;s board of
+          directors is Mike Sinn, Ian Whitmore and Kathryn Bortko.
+        </SectionHeading>
+      </section>
+
+      <section aria-labelledby="work-heading" className="py-12 md:py-16">
         <SectionHeading id="work-heading" title="Work with us">
           Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials
           Initiative.

@@ -1,7 +1,6 @@
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { withSentryConfig } from "@sentry/nextjs"
-import { pinAppNextAuthInstance } from "../shared-next-config.mjs"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const monorepoRoot = path.join(__dirname, "../..")
@@ -13,9 +12,6 @@ const nextConfig = {
   // The presentation reads its script at request time (lib/present-script.ts).
   outputFileTracingIncludes: {
     "/present/patient-journey": ["./content/patient-journey/script.md"],
-  },
-  webpack(config) {
-    return pinAppNextAuthInstance(config, __dirname)
   },
   eslint: {
     ignoreDuringBuilds: true,

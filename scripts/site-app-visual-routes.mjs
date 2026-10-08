@@ -1022,6 +1022,7 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/acceleratedmedicine/app/donate/page.tsx",
         "apps/acceleratedmedicine/components/donate/donation-form.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
       ],
       label: "Donate",
       routeName: "donate",
@@ -1292,12 +1293,7 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/components/about-page.tsx",
         "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
         "apps/acceleratedmedicine/components/section-heading.tsx",
-        "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/research-links.tsx",
-        "apps/acceleratedmedicine/lib/board-members.ts",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/ian-whitmore.jpg",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/kathryn-bortko.jpg",
-        "apps/acceleratedmedicine/public/assets/acceleratedmedicine/board/mike-sinn.jpg",
       ];
     }
   }

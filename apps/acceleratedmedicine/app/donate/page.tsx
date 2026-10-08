@@ -4,7 +4,9 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { DonationForm } from "@/components/donate/donation-form"
+import { MailingAddress } from "@/components/mailing-address"
 import { SectionHeading } from "@/components/section-heading"
+import { NONPROFIT } from "@/lib/nonprofit-identity"
 import { SITE } from "@/lib/site-settings"
 
 const uses = [
@@ -36,7 +38,7 @@ export default async function DonatePage({ searchParams }: { searchParams: Promi
       <section className="mx-auto max-w-3xl pb-10 text-center md:py-4">
         <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">Donate</p>
         <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-          Fund medical freedom that learns
+          Fund the Care-Integrated Clinical Trials Initiative
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground md:text-xl">
           Help patients understand their options and turn treatment outcomes into useful evidence. Your donation
@@ -64,6 +66,16 @@ export default async function DonatePage({ searchParams }: { searchParams: Promi
                 <Mail aria-hidden="true" /> Send email
               </a>
             </Button>
+          </div>
+        </div>
+
+        <div className="rounded-lg border p-5 sm:p-6">
+          <h2 className="font-semibold">Give by check</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Make the check payable to {NONPROFIT.legalName} and mail it to:
+          </p>
+          <div className="mt-3">
+            <MailingAddress />
           </div>
         </div>
       </section>
