@@ -18,7 +18,7 @@ export function Step2AssignIntervention() {
         "Recommend any screened treatment, with written consent",
         "Offer willing patients a randomized comparison",
         "The trial assigns treatments at random; you never pick an arm",
-        "No placebo arm",
+        "Compares treatments, doses or usual care, as the protocol sets",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
