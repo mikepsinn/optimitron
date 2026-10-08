@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { ArrowRight } from "lucide-react"
-import { ExampleDataTag } from "./ExampleDataTag"
 
 interface ResearchPartnerStepProps {
   stepNumber: number
@@ -11,10 +10,9 @@ interface ResearchPartnerStepProps {
   preview: ReactNode
   reverse: boolean
   // Set when the mock-up shows outcome or effectiveness numbers that could be read as real evidence.
-  exampleData?: boolean
 }
 
-export function ResearchPartnerStep({ stepNumber, title, icon, description, benefits, preview, reverse, exampleData = false }: ResearchPartnerStepProps) {
+export function ResearchPartnerStep({ stepNumber, title, icon, description, benefits, preview, reverse }: ResearchPartnerStepProps) {
   return (
     <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-center">
       <div className={`order-2 ${reverse ? "md:order-2" : "md:order-1"}`}>
@@ -43,7 +41,6 @@ export function ResearchPartnerStep({ stepNumber, title, icon, description, bene
           </div>
           {/* A picture of a future app: inert keeps its buttons and fields from being focused or clicked. */}
           <div className="contents" inert>{preview}</div>
-          {exampleData && <ExampleDataTag />}
         </div>
       </div>
     </div>

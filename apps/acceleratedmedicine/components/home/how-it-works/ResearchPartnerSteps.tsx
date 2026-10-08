@@ -6,6 +6,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@optimitron/neobrutalist-ui/ui/badge"
 import { ResearchPartnerStep } from "./ResearchPartnerStep"
 
+// Share of patients improved from week 0 to week 12: a screened treatment against usual care.
+const treatmentCurve = [4, 12, 21, 29, 34, 37, 38]
+const usualCareCurve = [4, 7, 10, 12, 14, 15, 15]
+
+/** The dashboard's effectiveness chart. Usual care is dashed, so the two lines differ by more than color. */
+function EffectivenessChart() {
+  const width = 280
+  const height = 64
+  const max = 40
+  const points = (values: number[]) =>
+    values.map((value, index) => `${(index / (values.length - 1)) * width},${height - (value / max) * height}`).join(" ")
+  return (
+    <figure className="rounded-lg border p-2">
+      <div className="flex gap-3 text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1"><span className="h-0.5 w-3 rounded-full bg-primary" />New treatment</span>
+        <span className="flex items-center gap-1"><span className="w-3 border-t-2 border-dashed border-muted-foreground" />Usual care</span>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="mt-1 h-16 w-full overflow-visible" role="img"
+        aria-label="Patients improved over 12 weeks: more with the new treatment than with usual care">
+        <line x1="0" y1={height} x2={width} y2={height} className="stroke-border" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <polyline points={points(usualCareCurve)} fill="none" className="stroke-muted-foreground" strokeWidth="2" strokeDasharray="4 3"
+          strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <polyline points={points(treatmentCurve)} fill="none" className="stroke-primary" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <figcaption className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+        <span>Week 0</span><span>Patients improved</span><span>Week 12</span>
+      </figcaption>
+    </figure>
+  )
+}
+
 export function ResearchPartnerSteps() {
   return (
     <div className="space-y-16 relative">
@@ -252,7 +284,6 @@ export function ResearchPartnerSteps() {
 
       {/* Step 5: Manage Your Trial */}
       <ResearchPartnerStep
-        exampleData
         stepNumber={5}
         title="Analyze Trial Data"
         icon={<BarChart3 className="h-5 w-5 text-primary" />}
@@ -272,9 +303,7 @@ export function ResearchPartnerSteps() {
             <div className="p-4 space-y-4">
               <div className="space-y-2">
                 <div className="text-xs font-medium">Trial Performance</div>
-                <div className="h-20 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">Effectiveness graph</div>
-                </div>
+                <EffectivenessChart />
               </div>
 
               <div className="space-y-2">

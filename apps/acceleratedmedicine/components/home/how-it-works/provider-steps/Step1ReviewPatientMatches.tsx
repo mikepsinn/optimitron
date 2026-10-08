@@ -13,7 +13,6 @@ const options = rankTreatments(alzheimers.treatments, "effectiveness").slice(0, 
 export function Step1ReviewPatientMatches() {
   return (
     <HowItWorksStep
-      exampleData
       stepNumber={1}
       title="Review Screened Options for Your Patient"
       icon={<Users className="h-5 w-5 text-primary" />}

@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 ## Ensure every patient can participate in clinical trials for the most promising treatments
-- This is how your doctor's visit should actually work, with a global Open Treatment Evidence Network.
+- This is how your doctor's visit should actually work, with a global, open treatment evidence network.
 - Treatment rankings based on real-world outcomes
 - An Outcome Label for every treatment
 - Patient data that stays with patients and their clinics
@@ -92,7 +92,6 @@
 - 43/100
 - 42/100
 - 40/100
-- Example data
 ##### View Outcome Labels
 - Review what is known about a treatment before deciding, with the source of every number.
 - See results from trials and from treated patients
@@ -243,6 +242,9 @@
 - Participant compliance tracking
 - Advanced statistical analysis tools
 - Regulatory submission preparation
+- New treatment
+- Usual care
+- Week 0 Patients improved Week 12
 - View Full Analytics
 ### Why Care-Integrated Clinical Trials Matter
 - What the network would deliver for patients, clinicians and researchers
