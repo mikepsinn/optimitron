@@ -17,7 +17,7 @@ export const ACT_QUESTIONS: ActQuestion[] = [
     id: "right-to-try",
     question: "How is this different from the federal Right to Try law?",
     answer: [
-      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA's yearly summaries list only 12 drugs and biologics provided under the law from May 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025. It does not cover drugs already approved for other conditions.",
+      "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA's yearly summaries count only 12 drugs and biologics with Right to Try use reported from May 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025. It does not cover drugs already approved for other conditions.",
       "Under this act, any patient whose doctor recommends a screened treatment and records the reason can get it with written consent, clinics can charge for it, and every result is published.",
     ],
     source: {

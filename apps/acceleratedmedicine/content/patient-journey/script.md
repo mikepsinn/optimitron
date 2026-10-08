@@ -165,7 +165,7 @@ Society, Cancer Statistics 2026.
   no company can profit from testing a drug it can't patent.
 - No one learns from patients. 99.8%: of Alzheimer's patients are in no study, so nothing is
   learned from their treatment.
-- Right to Try gives makers no incentive. 21: drugs made available to patients in over six years,
+- Right to Try gives makers no incentive. 4–6: drugs a year reported under Right to Try since 2023,
   because the federal law lets drug makers charge only their costs.
 
 **Visual:** Three white cards side by side, each with a heading, a large purple number and
@@ -179,9 +179,10 @@ results. Three: the federal Right to Try Act (2018) lets a patient with a life-t
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
 costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side
-effects and their outcomes (21 CFR 300.200), but not whether patients improved. The FDA's yearly summaries list only 12 drugs and biologics
-provided under the law from May 30, 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025, counted per
-period rather than as a running total, and do not say how many patients got them
+effects and their outcomes (21 CFR 300.200), but not whether patients improved. The FDA's yearly summaries count only 12 drugs and biologics
+with Right to Try use reported from May 30, 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025:
+products whose outcome data the FDA did not use in a marketing review, counted per period rather than
+as a running total. They do not say how many patients got them
 (https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try-annual-reporting-summary). It does not cover
 existing drugs like the 573 at all.
 
@@ -191,7 +192,7 @@ And the federal Right to Try law lets drug makers charge only their costs, so th
 to take part: only 21 drugs have been made available in over six years.
 
 **Source line:** Sources: Frontiers in Pharmacology, 2023; USC Schaeffer Center; Alzheimer's
-Association, 2026 Facts and Figures; FDA right-to-try summary, via FactCheck.org, 2026.
+Association, 2026 Facts and Figures; FDA, Right to Try annual reporting summary.
 
 ## 5. It has worked before
 
