@@ -90,7 +90,6 @@ function AcceleratedMedicineFooter() {
             ))}
           </div>
           <p>{SITE.copyright}</p>
-          <p>{SITE.footerNotice}</p>
         </div>
       </div>
     </footer>

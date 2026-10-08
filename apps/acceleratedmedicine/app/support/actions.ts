@@ -1,5 +1,6 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -14,6 +15,7 @@ async function attempt(step: () => Promise<unknown>): Promise<string> {
     return ""
   } catch (error) {
     console.error("Support link step failed", error)
+    Sentry.captureException(error)
     return "&failed=1"
   }
 }

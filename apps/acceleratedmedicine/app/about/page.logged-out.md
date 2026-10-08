@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: About us | Care-Integrated Clinical Trials Initiative
-- Meta description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
+- Meta description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
 - Canonical: https://acceleratedmedicine.org/about
 - Open Graph title: About us | Care-Integrated Clinical Trials Initiative
-- Open Graph description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
+- Open Graph description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: About us | Care-Integrated Clinical Trials Initiative
-- Twitter description: The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Its board, advisory board, research and legal facts.
+- Twitter description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
 
 ## Visible Page Copy
 

@@ -18,11 +18,8 @@ import {
 
 const INBOX = SITE.email
 const INITIATIVE = SITE.title
-const SIGNATURE_TEXT = [
-  `The ${INITIATIVE}`,
-  "A project of the Institute for Accelerated Medicine (Accelerated Medicine Foundation Inc), a 501(c)(3) nonprofit",
-].join("\n")
-const SIGNATURE_HTML = `<p><strong>The ${INITIATIVE}</strong><br>A project of the Institute for Accelerated Medicine (Accelerated Medicine Foundation Inc), a 501(c)(3) nonprofit</p>`
+const SIGNATURE_TEXT = `The ${INITIATIVE}`
+const SIGNATURE_HTML = `<p><strong>The ${INITIATIVE}</strong></p>`
 
 // People type "example.org" as often as "https://example.org". Anything that is not http or https, such as
 // a javascript: link, is rejected, because the site links to these addresses.
@@ -62,7 +59,7 @@ export type OrganizationInput = z.infer<typeof organizationSchema>
 function emailClient() {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return undefined
-  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth"
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.acceleratedmedicine.org"
   return { resend: new Resend(apiKey), from: `${INITIATIVE} <${fromAddress}>` }
 }
 
@@ -155,7 +152,7 @@ export async function sendSupporterSignup(
   }
   const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const result = await email.resend.emails.send(
-    { from: email.from, to: input.email, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
+    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
     { idempotencyKey: `supporter-confirmation/${submissionId}` },
   )
   if (result.error || !result.data?.id) {

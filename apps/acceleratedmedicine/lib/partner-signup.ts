@@ -77,7 +77,7 @@ export async function sendPartnerSignup(
     return { notified: false };
   }
 
-  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.acceleratedmedicine.org";
   const result = await new Resend(apiKey).emails.send(
     {
       from: `${SITE.emailFromName} <${fromAddress}>`,

@@ -43,7 +43,7 @@ describe("Partner sign-up submission", () => {
   const options = { clientKey: "0".repeat(64), store };
 
   beforeAll(() => {
-    vi.stubEnv("EMAIL_FROM_ADDRESS", "no-reply@updates.dfda.earth");
+    vi.stubEnv("EMAIL_FROM_ADDRESS", "no-reply@updates.acceleratedmedicine.org");
     vi.stubEnv("RESEND_API_KEY", "re_test_partner_signup");
     server.listen({ onUnhandledRequest: "error" });
   });
@@ -68,7 +68,7 @@ describe("Partner sign-up submission", () => {
     expect(sentMessages).toEqual([
       {
         body: expect.objectContaining({
-          from: "Institute for Accelerated Medicine <no-reply@updates.dfda.earth>",
+          from: "Institute for Accelerated Medicine <no-reply@updates.acceleratedmedicine.org>",
           reply_to: "ada@example.com",
           subject: "[Partner sign-up] Advisory board: Ada Ethicist (Example University)",
           to: "hello@acceleratedmedicine.org",

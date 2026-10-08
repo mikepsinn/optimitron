@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { ZodError, type ZodType } from "zod";
 
@@ -60,7 +61,9 @@ export function createFormPostHandler<Result extends object>(
         );
       }
 
+      // The visitor sees a generic message, so Sentry is where the cause shows up.
       console.error("Form submission failed", error);
+      Sentry.captureException(error);
       return NextResponse.json(
         {
           ok: false,

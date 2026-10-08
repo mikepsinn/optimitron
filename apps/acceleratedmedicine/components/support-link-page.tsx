@@ -5,6 +5,7 @@ import type { ReactNode } from "react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
+import { SHOW_SUPPORTERS_LINKS } from "@/lib/navigation"
 
 /** The page a confirmation or approval link opens: a bad link, a button to click, or the result. */
 export function SupportLinkPage({
@@ -45,7 +46,7 @@ export function SupportLinkPage({
           {status === "invalid" && (
             <Button asChild size="lg" variant="outline" className="mt-6"><Link href="/support">Go to the support page</Link></Button>
           )}
-          {status === "done" && (
+          {status === "done" && SHOW_SUPPORTERS_LINKS && (
             <Button asChild size="lg" variant="outline" className="mt-6"><Link href="/supporters">See who supports the initiative</Link></Button>
           )}
         </div>

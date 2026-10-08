@@ -1,13 +1,16 @@
 /** The donation pages stay reachable at /donate, but no menu links to them. Set this to true to show the links. */
 export const SHOW_DONATE_LINKS = false
 
+/** /supporters stays reachable, but nothing links to it until a few organizations are approved. */
+export const SHOW_SUPPORTERS_LINKS = false
+
 export interface NavigationItem {
   id: string
   label: string
   path: string
   isExternal?: boolean
-  /** A donate link appears only when SHOW_DONATE_LINKS is true. */
-  feature?: "donate"
+  /** A donate link appears only when SHOW_DONATE_LINKS is true, a supporters link only when SHOW_SUPPORTERS_LINKS is. */
+  feature?: "donate" | "supporters"
 }
 
 export interface NavigationSection {
@@ -17,8 +20,11 @@ export interface NavigationSection {
 }
 
 /** The links each menu shows now. */
-export function visibleNavigationItems(items: NavigationItem[], showDonateLinks = SHOW_DONATE_LINKS) {
-  return items.filter(item => item.feature !== "donate" || showDonateLinks)
+export function visibleNavigationItems(items: NavigationItem[]) {
+  return items.filter(
+    item =>
+      (item.feature !== "donate" || SHOW_DONATE_LINKS) && (item.feature !== "supporters" || SHOW_SUPPORTERS_LINKS),
+  )
 }
 
 const donate: NavigationItem = { id: "donate", label: "Donate", path: "/donate", feature: "donate" }
@@ -34,7 +40,7 @@ export const appNavigation: {
   legalItems: NavigationItem[]
 } = {
   topLevelItems: [
-    { id: "homeHowItWorks", label: "How it should work", path: "/#how-it-works" },
+    { id: "homeHowItWorks", label: "How medicine should work", path: "/#how-it-works" },
     { id: "act", label: "The act", path: "/act" },
     { id: "faq", label: "FAQ", path: "/faq" },
     // The header shows this one as a button.
@@ -65,7 +71,7 @@ export const appNavigation: {
       label: "Support",
       resolvedItems: [
         { id: "support", label: "Show your support", path: "/support" },
-        { id: "supporters", label: "Supporters", path: "/supporters" },
+        { id: "supporters", label: "Supporters", path: "/supporters", feature: "supporters" },
         donate,
         { id: "partner", label: "Partner with us", path: "/contact" },
       ],

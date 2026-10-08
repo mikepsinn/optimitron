@@ -26,8 +26,6 @@ export const SITE = {
     height: 630,
     alt: "The Care-Integrated Clinical Trials Initiative: see your doctor, compare rankings, check the outcome label, and every clinic adds results.",
   },
-  footerNotice:
-    "A project of the Institute for Accelerated Medicine, a DBA of the Accelerated Medicine Foundation Inc. and a 501(c)(3) nonprofit. EIN: 41-2555651.",
   copyright: "© 2025 Accelerated Medicine Foundation Inc | CC BY-NC 4.0",
   icons: {
     icon: [
