@@ -1292,7 +1292,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/components/about-page.tsx",
         "apps/acceleratedmedicine/components/accelerated-medicine-chrome.tsx",
         "apps/acceleratedmedicine/components/section-heading.tsx",
-        "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/research-links.tsx",
       ];
     }

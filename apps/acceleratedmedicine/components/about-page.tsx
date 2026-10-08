@@ -4,22 +4,13 @@ import Link from "next/link"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
-import { MailingAddress } from "@/components/mailing-address"
 import { RESEARCH_LINKS } from "@/components/research-links"
 import { SectionHeading } from "@/components/section-heading"
-import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity"
-import { SITE } from "@/lib/site-settings"
+import { NONPROFIT } from "@/lib/nonprofit-identity"
 
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 
 export function AboutPage() {
-  const address = formatNonprofitAddress()
-  const legalFacts = [
-    { term: "Legal name", detail: NONPROFIT.legalName },
-    { term: "EIN", detail: NONPROFIT.ein },
-    { term: "Status", detail: `501(c)(3) public charity, incorporated in ${NONPROFIT.incorporatedIn}` },
-  ]
-
   return (
     <AcceleratedMedicinePage>
       <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
@@ -74,33 +65,7 @@ export function AboutPage() {
         </SectionHeading>
       </section>
 
-      <section aria-labelledby="legal-heading" className="py-12 md:py-20">
-        <SectionHeading id="legal-heading" title="Legal facts" />
-        <dl className={`mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3 ${card}`}>
-          {legalFacts.map(fact => (
-            <div key={fact.term}>
-              <dt className="text-sm font-medium text-muted-foreground">{fact.term}</dt>
-              <dd className="mt-1">{fact.detail}</dd>
-            </div>
-          ))}
-          {address ? (
-            <div>
-              <dt className="text-sm font-medium text-muted-foreground">Mailing address</dt>
-              <dd className="mt-1"><MailingAddress showRecipient={false} /></dd>
-            </div>
-          ) : null}
-          <div>
-            <dt className="text-sm font-medium text-muted-foreground">Contact</dt>
-            <dd className="mt-1">
-              <a className="font-medium text-primary hover:underline" href={`mailto:${SITE.email}`}>
-                {SITE.email}
-              </a>
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section aria-labelledby="work-heading" className="border-t py-12 md:py-16">
+      <section aria-labelledby="work-heading" className="py-12 md:py-16">
         <SectionHeading id="work-heading" title="Work with us">
           Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials
           Initiative.

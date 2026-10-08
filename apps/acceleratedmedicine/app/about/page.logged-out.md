@@ -24,10 +24,6 @@
 - [Apply to the advisory board](/contact?type=advisory-board)
 ### Who we are
 - We're basically just concerned citizens trying to coordinate humanity to make it possible for anyone to participate in clinical trials for the most promising treatment, considering everyone we've ever loved is being slowly tortured and will be eventually murdered by horrible diseases. The Institute's board of directors is Mike Sinn, Ian Whitmore and Kathryn Bortko.
-### Legal facts
-- 150 E B St Lbby #1810, SMB#99818, Casper, WY 82601
-- Copy address
-- [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 ### Work with us
 - Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials Initiative.
 - [Partner with us](/contact)
