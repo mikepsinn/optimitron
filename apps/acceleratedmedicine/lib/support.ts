@@ -152,7 +152,7 @@ export async function sendSupporterSignup(
   }
   const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const result = await email.resend.emails.send(
-    { from: email.from, to: input.email, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
+    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
     { idempotencyKey: `supporter-confirmation/${submissionId}` },
   )
   if (result.error || !result.data?.id) {
