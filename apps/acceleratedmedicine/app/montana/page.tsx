@@ -81,7 +81,7 @@ const provisions = [
 const progress = [
   {
     title: "Rules in force",
-    text: "The operating rules for experimental treatment centers took effect July 25, 2026, with an independent expert review board evaluating treatments.",
+    text: "The operating rules for experimental treatment centers took effect July 25, 2026. The Montana Experimental Treatment Review Board, an independent board formed by Infinita, evaluates treatments.",
   },
   {
     title: "$12,500 to apply",
@@ -115,7 +115,8 @@ export default async function MontanaPage() {
         </h1>
         <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">
           Montana SB 535 creates a licensed, supervised path for eligible patients to consider experimental
-          treatment after reviewing approved choices with a treating clinician.
+          treatment after reviewing approved choices with a treating clinician. Niklas Anzinger and Infinita led the
+          push for the law, and Infinita formed the state&apos;s first experimental treatment review board.
         </p>
         <Button asChild size="lg" className="mt-8">
           <a href={RIGHT_TO_TRY_SOURCES.montanaSb535} rel="noreferrer" target="_blank">
@@ -178,11 +179,11 @@ export default async function MontanaPage() {
       </section>
 
       <section aria-labelledby="act-heading" className="py-12 md:py-20">
-        <SectionHeading id="act-heading" title="How the act differs">
-          Montana opens access through state-licensed centers. The Care-Integrated Clinical Trials Act takes a
-          different route: an independent review board screens each treatment, clinic and consent form, a
-          doctor&apos;s documented recommendation and written consent are all a patient needs, and every outcome is published,
-          so the next patient chooses better.
+        <SectionHeading id="act-heading" title="How the act builds on Montana">
+          Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials
+          Act builds on it. Patients get screened treatments through their own doctor&apos;s practice as well as at
+          dedicated centers. Every outcome is published, including failures. And doctors can enroll patients in
+          randomized trials during ordinary care, so the next patient chooses better.
         </SectionHeading>
         <div className="mt-8 text-center">
           <Button asChild size="lg">

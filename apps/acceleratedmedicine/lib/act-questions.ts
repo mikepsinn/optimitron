@@ -1,6 +1,7 @@
 // Common questions about the act, from the deck's speaker notes (content/patient-journey/script.md). The act
 // page shows all of them, and the FAQ reuses them, so the answers live in one place.
-export type ActQuestion = { id: string; question: string; answer: string[] }
+/** `source` backs a figure in the answer and shows under it. */
+export type ActQuestion = { id: string; question: string; answer: string[]; source?: { href: string; label: string } }
 
 export const ACT_QUESTIONS: ActQuestion[] = [
   {
@@ -9,6 +10,7 @@ export const ACT_QUESTIONS: ActQuestion[] = [
     answer: [
       "No insurer or state program has to pay. The patient, family, charities, employers, research sponsors, and insurers that choose to can pay.",
       "Clinics may charge for treatment, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.",
+      "Running the act costs the state about $200,000 to $500,000 a year by our estimate, with a planning figure of $300,000. It is not an official fiscal note. The state pays for no treatment, runs no trial platform or database, and licenses no facilities. Review-board fees, $500 to register and $250 a year, offset part of the cost.",
     ],
   },
   {
@@ -18,6 +20,10 @@ export const ACT_QUESTIONS: ActQuestion[] = [
       "The federal Right to Try Act (2018) lets a patient with a life-threatening illness, who has used up approved options and cannot join a trial, ask a maker for a drug that has passed Phase I and is still in development. The maker does not have to agree, may charge only its direct costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. The FDA reports only 21 investigational drugs used under the law from May 2018 to December 2024. It does not cover drugs already approved for other conditions.",
       "Under this act, any patient whose doctor recommends a screened treatment and records the reason can get it with written consent, clinics can charge for it, and every result is published.",
     ],
+    source: {
+      href: "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/",
+      label: "FDA summary, via FactCheck.org (2026)",
+    },
   },
   {
     id: "liability",

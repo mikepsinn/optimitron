@@ -6,6 +6,7 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { MobileMenu } from "@/components/accelerated-medicine-mobile-menu"
 import { RESEARCH_LINKS } from "@/components/research-links"
 import { SHOW_DONATE_LINKS, appNavigation, visibleNavigationItems } from "@/lib/navigation"
+import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity"
 import { SITE } from "@/lib/site-settings"
 
 // The Accelerated Medicine look: purple, light borders, rounded corners and Inter (set on <body> by
@@ -89,7 +90,10 @@ function AcceleratedMedicineFooter() {
               <a key={item.path} href={item.path} className="hover:text-foreground hover:underline">{item.label}</a>
             ))}
           </div>
-          <p>{SITE.copyright}</p>
+          {/* The legal facts that grant and verification programs (for example Google for Nonprofits) look for.
+              Non-breaking spaces keep short items whole when the lines wrap. */}
+          <p>© 2025 {NONPROFIT.legalName}, dba {NONPROFIT.registeredDba} | CC&nbsp;BY-NC&nbsp;4.0</p>
+          <p>501(c)(3)&nbsp;nonprofit | EIN&nbsp;{NONPROFIT.ein} | {formatNonprofitAddress()}</p>
         </div>
       </div>
     </footer>

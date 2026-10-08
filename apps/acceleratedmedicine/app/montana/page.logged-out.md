@@ -15,7 +15,7 @@
 
 - Enacted precedent
 ## What Montana's Universal Right to Try law does
-- Montana SB 535 creates a licensed, supervised path for eligible patients to consider experimental treatment after reviewing approved choices with a treating clinician.
+- Montana SB 535 creates a licensed, supervised path for eligible patients to consider experimental treatment after reviewing approved choices with a treating clinician. Niklas Anzinger and Infinita led the push for the law, and Infinita formed the state's first experimental treatment review board.
 - [Read the enrolled SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 ### Patients can reach treatments, and providers can deliver them
 - Montana removed the terminal-illness restriction in 2023. In 2025, SB 535 created licensed experimental treatment centers, direct provider-patient payment agreements, outcome monitoring, adverse event reporting, and an access requirement funded by 2% of each center's net annual profits.
@@ -31,12 +31,12 @@
 - Professional accountability Licensing boards keep authority over professional conduct and care provided under the law.
 - A broader treatment definition The statute covers drugs, biologics, devices, procedures, and individualized treatments that meet its conditions.
 ### This is already happening
-- Rules in force The operating rules for experimental treatment centers took effect July 25, 2026, with an independent expert review board evaluating treatments.
+- Rules in force The operating rules for experimental treatment centers took effect July 25, 2026. The Montana Experimental Treatment Review Board, an independent board formed by Infinita, evaluates treatments.
 - $12,500 to apply A company with a drug through preliminary safety testing pays $12,500 to ask the review board for approval to offer it in Montana.
 - First applications filed Treatments for neuropathy and hearing loss are already under review. The first licensed clinics are expected around the end of 2026.
 - Reported by [MIT Technology Review (July 30, 2026)](https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/). Board details at [montanaetrb.org](https://montanaetrb.org).
-### How the act differs
-- Montana opens access through state-licensed centers. The Care-Integrated Clinical Trials Act takes a different route: an independent review board screens each treatment, clinic and consent form, a doctor's documented recommendation and written consent are all a patient needs, and every outcome is published, so the next patient chooses better.
+### How the act builds on Montana
+- Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials Act builds on it. Patients get screened treatments through their own doctor's practice as well as at dedicated centers. Every outcome is published, including failures. And doctors can enroll patients in randomized trials during ordinary care, so the next patient chooses better.
 - [Read the act](/act)
 ### Organizations in Montana
 - Patient groups, clinics, hospitals and researchers in Montana can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.
