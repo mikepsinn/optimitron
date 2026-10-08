@@ -35,7 +35,11 @@ export const VERCEL_APP_ENV_REQUIREMENTS = Object.freeze({
   wishocracy: authRequirements(),
   trialabundancesurvey: authRequirements(),
   curedao: requirements(),
-  acceleratedmedicine: authRequirements(["RIGHT_TO_TRY_RATE_LIMIT_SECRET"]),
+  // No sign-in: the site stores form submissions and sends email.
+  acceleratedmedicine: requirements(
+    ["DATABASE_URL"],
+    ["RESEND_API_KEY", "RIGHT_TO_TRY_RATE_LIMIT_SECRET"],
+  ),
   courtofhumanity: authRequirements(),
 });
 

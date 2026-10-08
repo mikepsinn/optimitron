@@ -126,11 +126,11 @@ test("reports all missing variables without exposing values", () => {
     RIGHT_TO_TRY_RATE_LIMIT_SECRET: "rate-limit-secret",
   };
   assert.deepEqual(
-    getMissingVercelAppEnvironmentVariables("acceleratedmedicine", environment),
+    getMissingVercelAppEnvironmentVariables("wishocracy", environment),
     ["NEXTAUTH_URL", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
   );
   assert.throws(
-    () => validateVercelAppEnvironment("acceleratedmedicine", environment),
+    () => validateVercelAppEnvironment("wishocracy", environment),
     (error) =>
       error.message.includes("GOOGLE_CLIENT_ID") &&
       !error.message.includes("postgresql://example") &&

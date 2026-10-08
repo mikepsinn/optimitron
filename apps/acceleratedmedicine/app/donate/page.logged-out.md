@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 - Donate
-## Fund medical freedom that learns
+## Fund the Care-Integrated Clinical Trials Initiative
 - Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
 - One-time
 - Monthly
