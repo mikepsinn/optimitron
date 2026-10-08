@@ -7,7 +7,6 @@ import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrom
 import { MailingAddress } from "@/components/mailing-address"
 import { RESEARCH_LINKS } from "@/components/research-links"
 import { SectionHeading } from "@/components/section-heading"
-import { BOARD_MEMBERS } from "@/lib/board-members"
 import { NONPROFIT, formatNonprofitAddress } from "@/lib/nonprofit-identity"
 import { SITE } from "@/lib/site-settings"
 
@@ -33,13 +32,20 @@ export function AboutPage() {
         </p>
       </section>
 
-      <section aria-labelledby="board-heading" className="band-muted py-12 md:py-20">
-        <SectionHeading id="board-heading" title="Board of directors" />
-        <ul className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-3 sm:gap-6">
-          {BOARD_MEMBERS.map(member => (
-            <li key={member.name} className="rounded-lg border bg-card p-4 text-center shadow-sm">
-              <p className="text-sm font-medium text-primary">{member.role}</p>
-              <h3 className="mt-1 font-semibold">{member.name}</h3>
+      <section aria-labelledby="research-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="research-heading" title="Our research" />
+        <ul className="mx-auto mt-8 grid max-w-4xl gap-6 md:grid-cols-2">
+          {RESEARCH_LINKS.map(item => (
+            <li key={item.href} className={`${card} flex flex-col`}>
+              <p className="flex items-center gap-2 text-sm font-medium text-primary">
+                <item.icon aria-hidden="true" className="h-4 w-4" /> {item.label}
+              </p>
+              <h3 className="mt-2 font-semibold">{item.title}</h3>
+              <p className="mt-2 flex-1 text-muted-foreground">{item.text}</p>
+              <a href={item.href} rel="noreferrer" target="_blank"
+                className="mt-4 inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                {item.action} <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </a>
             </li>
           ))}
         </ul>
@@ -59,23 +65,13 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section aria-labelledby="research-heading" className="band-muted py-12 md:py-20">
-        <SectionHeading id="research-heading" title="Our research" />
-        <ul className="mx-auto mt-8 grid max-w-4xl gap-6 md:grid-cols-2">
-          {RESEARCH_LINKS.map(item => (
-            <li key={item.href} className={`${card} flex flex-col`}>
-              <p className="flex items-center gap-2 text-sm font-medium text-primary">
-                <item.icon aria-hidden="true" className="h-4 w-4" /> {item.label}
-              </p>
-              <h3 className="mt-2 font-semibold">{item.title}</h3>
-              <p className="mt-2 flex-1 text-muted-foreground">{item.text}</p>
-              <a href={item.href} rel="noreferrer" target="_blank"
-                className="mt-4 inline-flex items-center gap-1 font-medium text-primary hover:underline">
-                {item.action} <ArrowRight aria-hidden="true" className="h-4 w-4" />
-              </a>
-            </li>
-          ))}
-        </ul>
+      <section aria-labelledby="who-heading" className="band-muted py-12 md:py-20">
+        <SectionHeading id="who-heading" title="Who we are">
+          We&apos;re basically just concerned citizens trying to coordinate humanity to make it possible for anyone to
+          participate in clinical trials for the most promising treatment, considering everyone we&apos;ve ever loved
+          is being slowly tortured and will be eventually murdered by horrible diseases. The Institute&apos;s board of
+          directors is Mike Sinn, Ian Whitmore and Kathryn Bortko.
+        </SectionHeading>
       </section>
 
       <section aria-labelledby="legal-heading" className="py-12 md:py-20">

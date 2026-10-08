@@ -1294,7 +1294,6 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/components/mailing-address.tsx",
         "apps/acceleratedmedicine/components/research-links.tsx",
-        "apps/acceleratedmedicine/lib/board-members.ts",
       ];
     }
   }
