@@ -10,7 +10,6 @@ const ranked = rankTreatments(alzheimers.treatments, "effectiveness")
 export function Step1FindTrials() {
   return (
     <HowItWorksStep
-      exampleData
       stepNumber={1}
       title="Compare the Most Promising Treatments for Your Condition"
       icon={<Search className="h-5 w-5 text-primary" />}

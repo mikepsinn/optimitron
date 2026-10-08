@@ -10,7 +10,6 @@ import { Badge } from "@optimitron/neobrutalist-ui/ui/badge";
 export function Step2AssignIntervention() {
   return (
     <HowItWorksStep
-      exampleData
       stepNumber={2}
       title="Recommend a Treatment, or Offer a Randomized Comparison"
       icon={<FlaskConical className="h-5 w-5 text-primary" />}

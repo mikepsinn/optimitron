@@ -15,7 +15,6 @@ const outcomes = [
 export function Step3MonitorProgress() {
   return (
     <HowItWorksStep
-      exampleData
       stepNumber={3}
       title="Monitor Your Patients' Outcomes"
       icon={<TrendingUp className="h-5 w-5 text-primary" />}
