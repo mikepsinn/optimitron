@@ -684,10 +684,10 @@ $929) cost under $1,000, about 44 times less. Waiting: today a treatment that pa
 testing waits about 8.2 years for efficacy proof; here, patients can choose it after independent
 board review. The impact page on acceleratedmedicine.org lets anyone change the 5.5 times
 assumption. Source:
-https://manual.warondisease.org/knowledge/appendix/state-right-to-trial-impact.html
+https://papers.acceleratedmedicine.org/right-to-trial-impact.html
 
 **Source line:** Assumes every state adopts the act and first treatments arrive 5.5 times faster.
-Source: How to End War and Disease, "Universal Right to Try with Evidence" impact estimate.
+Source: Patient's Right to Trial Act impact paper, papers.acceleratedmedicine.org.
 
 ## B3. Value for money
 
@@ -723,7 +723,7 @@ treatment. That is a larger scenario than slide B2's 50-state model, and B3 is n
 that model: it has only a launch cost and an assumed discovery rate, with no patient numbers or trial
 spending to compute a research cost from. The act's own model counts only its $65 million launch
 cost, so the impact page shows a far smaller cost per healthy year for it. The benefit is the healthy years gained
-because treatments arrive sooner (How to End War and Disease, impact paper). Both costs and health are
+because treatments arrive sooner (Ubiquitous Pragmatic Trial Impact Analysis). Both costs and health are
 discounted at the standard 3% a year. With no discounting at all, it is about $1.39 per
 healthy year. The impact paper's headline of $0.84 discounts costs but not health, so we do not
 lead with it. Malaria bed nets: about $184 per healthy year (90% range $113 to $252), GiveWell's
@@ -731,11 +731,11 @@ estimate as cited in How to End War and Disease. That is about 19 times more tha
 per quality-adjusted life year (Institute for Clinical and Economic Review). $100,000 divided by
 $9.50 is about 10,500, so over 10,000 times more. Even if only half of disease deaths can ever be
 avoided (the manual's low estimate), the cost is still about $17.50 per healthy year. Source:
-https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html
+https://papers.acceleratedmedicine.org/dfda-impact.html
 
 **Source line:** Pragmatic trials at global scale (about 23 million patients a year), not the 50-state
 model on slide B2. A year of healthy life = one year without early death or disability, discounted 3%
-a year. Sources: How to End War and Disease, impact paper; ICER.
+a year. Sources: Ubiquitous Pragmatic Trial Impact Analysis, papers.acceleratedmedicine.org; ICER.
 
 ---
 
