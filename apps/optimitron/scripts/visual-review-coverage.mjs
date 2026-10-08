@@ -132,6 +132,15 @@ function isSocialPreviewImage(publicRelative) {
   return /(?:^|-)og-|^twitter-image/i.test(baseName);
 }
 
+/**
+ * `public/site-assets/` holds other campaigns' brand files from when this app
+ * served their domains. No page draws them; they stay so old public URLs
+ * resolve, and changes to them are compression only.
+ */
+function isLegacySiteAsset(webRelative) {
+  return webRelative.startsWith("public/site-assets/");
+}
+
 /** Rendered web source that requires a registered screenshot state when changed. */
 export function isVisualUiSourceFile(filePath) {
   const normalized = normalizeRepoPath(filePath);
@@ -153,7 +162,9 @@ export function isVisualUiSourceFile(filePath) {
     if (
       /^public\/.*\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(webRelative)
     ) {
-      return !isSocialPreviewImage(webRelative);
+      return (
+        !isSocialPreviewImage(webRelative) && !isLegacySiteAsset(webRelative)
+      );
     }
     return /^(?:postcss|tailwind)\.config\.[cm]?[jt]s$/.test(webRelative);
   }

@@ -10,8 +10,11 @@
  *   - <key>         optional object key in the bucket. Defaults to basename.
  *
  * Examples:
- *   tsx scripts/upload-media-to-r2.ts public/media/chaplin-great-dictator-320.mp4
- *   tsx scripts/upload-media-to-r2.ts ./video.mp4 chaplin-great-dictator-320.mp4
+ *   tsx scripts/upload-media-to-r2.ts public/media/new-clip.mp4
+ *   tsx scripts/upload-media-to-r2.ts ./video.mp4 new-clip.mp4
+ *
+ * public/media/ is gitignored. Keep the local copy out of Git and load the
+ * uploaded file from the CDN, as ChaplinReference.tsx does.
  *
  * Required env (loaded from monorepo root .env then apps/optimitron/.env):
  *   R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT, R2_BUCKET, R2_PUBLIC_URL

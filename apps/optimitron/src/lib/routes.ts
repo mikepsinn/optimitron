@@ -513,6 +513,7 @@ export const moroniaLink: NavItem = {
   emoji: "💀",
   description: `A planet with a 94.7% correlation to yours. It spent ${milToTrialRatio}x more on weapons than cures. It no longer exists.`,
   tagline: "A planet like yours — it no longer exists",
+  screenshot: true,
   cta: "See Moronia",
 };
 
@@ -1917,6 +1918,7 @@ export const routeReviewNavItems = [
   voteLink,
   treatyLink,
   wishoniaWorldLink,
+  moroniaLink,
   agenciesLink,
   dcongressLink,
   referendumLink,
