@@ -10,6 +10,7 @@ export const ACT_QUESTIONS: ActQuestion[] = [
     answer: [
       "No insurer or state program has to pay. The patient, family, charities, employers, research sponsors, and insurers that choose to can pay.",
       "Clinics may charge for treatment, so they have a reason to offer new treatments, and one board approval can cover many clinics. Other ways to pay include installments or memberships, crowdfunding, patient-aid groups, free supply from the maker, and lower prices for patients who share outcome data.",
+      "Running the act costs the state about $200,000 to $500,000 a year by our estimate, with a planning figure of $300,000. It is not an official fiscal note. The state pays for no treatment, runs no trial platform or database, and licenses no facilities. Review-board fees, $500 to register and $250 a year, offset part of the cost.",
     ],
   },
   {

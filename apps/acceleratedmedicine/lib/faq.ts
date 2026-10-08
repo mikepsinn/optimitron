@@ -1,7 +1,7 @@
 import { ACT_QUESTIONS, type ActQuestion } from "@/lib/act-questions"
 
-// The FAQ's answers come from the act page, the deck's speaker notes (content/patient-journey/script.md)
-// and the earlier FAQ. Questions about the act are the act page's own, so the two pages cannot disagree.
+// The FAQ's answers come from the act page, the deck's speaker notes (content/patient-journey/script.md),
+// the earlier FAQ and the questions-and-answers page in Notion (answers marked ready for the site). Questions about the act are the act page's own, so the two pages cannot disagree.
 export type FaqLink = { href: string; label: string }
 export type FaqQuestion = { id: string; question: string; answer: string[]; link?: FaqLink; source?: FaqLink }
 export type FaqSection = { id: string; title: string; questions: FaqQuestion[] }
@@ -24,6 +24,14 @@ export const FAQ_SECTIONS: FaqSection[] = [
           "A clinical trial built into ordinary medical care. A patient gets a screened treatment through their own doctor, and their outcome is recorded from routine medical records and pooled with every other clinic's.",
           "The UK's RECOVERY trial worked this way in hospitals during COVID-19. In 89 days it showed that dexamethasone, a cheap steroid, cut deaths among the sickest patients by up to a third.",
         ],
+      },
+      {
+        id: "existing-trials",
+        question: "Why not just use existing clinical trials?",
+        answer: [
+          "Most patients cannot join one, because eligibility rules exclude them or the nearest site is too far away. Repurposed generic drugs rarely get trials at all, because no company can recover the cost. One ten-year review found 573 existing drugs that researchers had proposed as Alzheimer's treatments.",
+        ],
+        source: { href: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10512468/", label: "PubMed Central, PMC10512468" },
       },
       {
         id: "randomized",
@@ -65,7 +73,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         id: "screening",
         question: "Who decides a treatment is safe enough to offer?",
         answer: [
-          "An independent review board of at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. A treatment qualifies through early safety testing in people, a documented record of safe use in people, a well-understood biological method with supporting lab or animal data, or evidence specific to a device. The board also approves each clinic and consent form.",
+          "An independent review board of at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. The board also approves each clinic and consent form.",
         ],
       },
       {
@@ -94,6 +102,55 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     id: "act",
     title: "The act",
-    questions: [actQuestion("who-pays"), actQuestion("right-to-try"), actQuestion("liability"), actQuestion("exploitation")],
+    questions: [
+      {
+        id: "who-qualifies",
+        question: "Who can get treatment under the act?",
+        answer: [
+          "Any patient whose doctor recommends a screened treatment and records the clinical reason in the medical record, with written informed consent. A patient does not need a life-threatening illness, to be unable to join a trial, or to have used up approved options first.",
+        ],
+      },
+      {
+        id: "which-treatments",
+        question: "Which treatments qualify?",
+        answer: [
+          "A treatment qualifies in one of four ways. It has passed Phase I or comparable early testing in people. It has a documented record of safe use in people, including evidence gathered under regulators on the World Health Organization's published list. It is built on a well-understood biological method, such as a genetic treatment made for one patient, with supporting lab or animal data and a safety review every six months or every ten patients. Or, for a device, it has been studied under FDA device rules, is judged not significant-risk, or is authorized by a qualifying regulator.",
+          "Schedule I drugs never qualify.",
+        ],
+      },
+      actQuestion("who-pays"),
+      {
+        id: "insurance",
+        question: "Does the act change a patient's regular insurance coverage?",
+        answer: [
+          "No. Insurers do not have to cover experimental treatment under the act, and coverage mandates and network rules do not apply to it. Coverage for everything else stays the same, and insurers may choose to pay.",
+        ],
+      },
+      actQuestion("right-to-try"),
+      actQuestion("liability"),
+      actQuestion("exploitation"),
+    ],
+  },
+  {
+    id: "doctors",
+    title: "Doctors and clinics",
+    questions: [
+      {
+        id: "small-practice",
+        question: "What does this cost a small practice?",
+        answer: [
+          "Taking part is optional. A practice can show competence with a statement from its medical director. The outcome record uses what is already in the chart: boards must accept medical records, and no one may require duplicate entry. The practice can let its electronic health record, a central sponsor or a contractor submit for it.",
+          "Trials through ordinary care pay practices for consent, treatment, follow-up and data submission.",
+        ],
+        link: { href: "/contact?type=clinic", label: "Partner with us" },
+      },
+      {
+        id: "discipline",
+        question: "Does the act stop the medical board from disciplining bad doctors?",
+        answer: [
+          "No. The state keeps its authority over gross negligence, incompetence, exploitation, fraud, concealment and practice outside lawful scope. It cannot discipline a doctor merely for recommending or giving a treatment the act permits.",
+        ],
+      },
+    ],
   },
 ]
