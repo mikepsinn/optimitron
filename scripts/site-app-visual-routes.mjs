@@ -1022,6 +1022,7 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/acceleratedmedicine/app/donate/page.tsx",
         "apps/acceleratedmedicine/components/donate/donation-form.tsx",
+        "apps/acceleratedmedicine/components/mailing-address.tsx",
       ],
       label: "Donate",
       routeName: "donate",
