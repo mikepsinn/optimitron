@@ -19,7 +19,7 @@
 - An Outcome Label for every treatment
 - Patient data that stays with patients and their clinics
 - [Show your support](/support)
-- [See how it should actually work](#how-it-works)
+- [See how medicine should work](#how-it-works)
 ### Every patient helps the next
 - 1 Compare You and your doctor see which treatments worked for people like you.
 - 2 Join You start one as part of your normal care, in a pragmatic trial.
@@ -76,7 +76,7 @@
 - 17%
 - Headache
 - 11%
-### How It Should Actually Work
+### How Medicine Should Actually Work
 - Patients would report outcomes, doctors would see what has worked for patients like theirs, and researchers would run trials on the same network.
 - FOR PATIENTS
 #### How Your Doctor's Visit Should Actually Work

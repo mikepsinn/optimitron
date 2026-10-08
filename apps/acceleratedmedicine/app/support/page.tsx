@@ -4,6 +4,7 @@ import Link from "next/link"
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { SectionHeading } from "@/components/section-heading"
 import { OrganizationForm, SupporterForm } from "@/components/support-forms"
+import { SHOW_SUPPORTERS_LINKS } from "@/lib/navigation"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
@@ -43,9 +44,11 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <p className="py-10 text-center">
-        <Link href="/supporters" className="font-medium text-primary hover:underline">See who supports the initiative</Link>
-      </p>
+      {SHOW_SUPPORTERS_LINKS && (
+        <p className="py-10 text-center">
+          <Link href="/supporters" className="font-medium text-primary hover:underline">See who supports the initiative</Link>
+        </p>
+      )}
     </AcceleratedMedicinePage>
   )
 }

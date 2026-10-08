@@ -81,7 +81,7 @@ function Hero() {
                 <a href="/support">Show your support <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
               </Button>
               <Button asChild size="lg" variant="outline" className="w-full gap-1 text-base sm:w-auto">
-                <a href="#how-it-works">See how it should actually work <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
+                <a href="#how-it-works">See how medicine should work <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></a>
               </Button>
             </div>
           </div>
@@ -159,7 +159,7 @@ function HowItShouldWork() {
       <span id="initiatives" className="block scroll-mt-16" />
       {/* The page container already pads phones; the wide mock-ups need that width. */}
       <div className="container px-0 sm:px-4 md:px-6">
-        <SectionHeading title="How It Should Actually Work">
+        <SectionHeading title="How Medicine Should Actually Work">
           Patients would report outcomes, doctors would see what has worked for patients like theirs, and
           researchers would run trials on the same network.
         </SectionHeading>
