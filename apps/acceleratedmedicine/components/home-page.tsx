@@ -17,8 +17,8 @@ import { RankingsPreview } from "@/components/home/rankings-preview"
 import { alzheimers, treatmentOutcomeCategories } from "@/components/present/patient-journey/alzheimers"
 import { LegacyHomeHashRedirect } from "@/components/legacy-home-hash-redirect"
 
-// The home page shows how care-integrated clinical trials would work for patients with a global Open
-// Treatment Evidence Network. Its sections and look come from the decentralized-fda prototype's home page
+// The home page shows how care-integrated clinical trials would work for patients with a global, open
+// treatment evidence network. Its sections and look come from the decentralized-fda prototype's home page
 // (mikepsinn/dfda, apps/web), without links into the prototype. AcceleratedMedicinePage gives it the
 // site's header, footer and colors.
 //
@@ -65,8 +65,8 @@ function Hero() {
               <span className="text-primary">most promising treatments</span>
             </h1>
             <p className="max-w-[600px] text-muted-foreground md:text-xl">
-              This is how your doctor&apos;s visit should actually work, with a global Open Treatment Evidence
-              Network.
+              This is how your doctor&apos;s visit should actually work, with a global, open treatment evidence
+              network.
             </p>
             <ul className="space-y-4">
               {highlights.map(highlight => (
