@@ -119,6 +119,8 @@ test("excludes tests, stories, email renderers, and server-only JSX", () => {
     "apps/optimitron/public/og-image.jpg",
     "apps/optimitron/public/twitter-image.jpg",
     "apps/optimitron/public/site-assets/dfda/dfda-og-1200x630.png",
+    // Legacy campaign brand files are never drawn on a page.
+    "apps/optimitron/public/site-assets/dih/dih-icon-square.png",
   ];
   for (const filePath of excluded) {
     assert.equal(isVisualUiSourceFile(filePath), false, filePath);
