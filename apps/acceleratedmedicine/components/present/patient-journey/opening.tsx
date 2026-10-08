@@ -92,7 +92,7 @@ export function MillionsSlide({ s }: Props) {
 const reasons = [
   { heading: "No one pays to test old drugs", value: "573", text: "drugs proposed for Alzheimer's are mostly untested, because no company can profit from testing a drug it can't patent." },
   { heading: "No one learns from patients", value: "99.8%", text: "of Alzheimer's patients are in no study, so nothing is learned from their treatment." },
-  { heading: "Right to Try gives makers no incentive", value: "4–6", text: "drugs a year reported under Right to Try since 2023, because the federal law lets drug makers charge only their costs." },
+  { heading: "Right to Try gives makers no incentive", value: "$0", text: "profit allowed under Right to Try: makers may charge only their costs, so few offer their drugs." },
 ];
 
 export function ReasonsSlide({ s }: Props) {

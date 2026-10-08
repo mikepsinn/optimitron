@@ -165,8 +165,8 @@ Society, Cancer Statistics 2026.
   no company can profit from testing a drug it can't patent.
 - No one learns from patients. 99.8%: of Alzheimer's patients are in no study, so nothing is
   learned from their treatment.
-- Right to Try gives makers no incentive. 4–6: drugs a year reported under Right to Try since 2023,
-  because the federal law lets drug makers charge only their costs.
+- Right to Try gives makers no incentive. $0: profit allowed under Right to Try: makers may charge
+  only their costs, so few offer their drugs.
 
 **Visual:** Three white cards side by side, each with a heading, a large purple number and
 one sentence.
@@ -192,7 +192,7 @@ And the federal Right to Try law lets drug makers charge only their costs, so th
 to take part: only 21 drugs have been made available in over six years.
 
 **Source line:** Sources: Frontiers in Pharmacology, 2023; USC Schaeffer Center; Alzheimer's
-Association, 2026 Facts and Figures; FDA, Right to Try annual reporting summary.
+Association, 2026 Facts and Figures; Right to Try Act, 2018.
 
 ## 5. It has worked before
 

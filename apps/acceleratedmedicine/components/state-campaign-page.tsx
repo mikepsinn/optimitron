@@ -44,8 +44,8 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
       source: { href: STATE_FACT_SOURCES.federalRightToTryAct, label: "Right to Try Act (2018)" },
     },
     {
-      title: "Few drugs reported",
-      text: "The FDA's yearly summaries count 12 drugs and biologics with Right to Try use reported from May 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025. It does not cover existing drugs approved for other conditions.",
+      title: "Few drugs offered",
+      text: "The FDA's yearly reports list only a handful of drugs given under the federal law, because makers may charge only their costs. It does not cover existing drugs approved for other conditions.",
       source: { href: FDA_RIGHT_TO_TRY_SUMMARY, label: "FDA Right to Try annual summary" },
     },
     {
