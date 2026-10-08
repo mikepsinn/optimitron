@@ -6,7 +6,7 @@ import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 export const metadata: Metadata = rightToTrialMetadata({
   title: "About us | Care-Integrated Clinical Trials Initiative",
   description:
-    "The Care-Integrated Clinical Trials Initiative is run by the Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Who we are, our research and the advisory board.",
+    "Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.",
   path: "/about",
 })
 
