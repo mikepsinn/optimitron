@@ -114,6 +114,23 @@ export function buildOrganizationAlert(input: OrganizationInput, approveUrl: str
   return { html, subject, text }
 }
 
+function buildSupporterConfirmedAlert(supporter: StoredSupporter) {
+  const rows: Array<[string, string]> = [
+    ["Name", supporter.name],
+    ["Email", supporter.email],
+    ["State", supporter.state],
+    ["Wants updates", supporter.updates ? "Yes" : "No"],
+  ]
+  const subject = `[Supporter] ${supporter.name} (${supporter.state}) confirmed`
+  const text = [...rows.map(([label, value]) => `${label}: ${value}`), "", "Reply to this email to write to them."].join("\n")
+  const html = `
+    <h1>Supporter confirmed</h1>
+    ${rows.map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`).join("\n")}
+    <p>Reply to this email to write to them.</p>
+  `.trim()
+  return { html, subject, text }
+}
+
 function buildOrganizationReceipt(input: OrganizationInput) {
   const subject = `We received ${input.organization}'s endorsement`
   const body = `Thank you for endorsing the ${INITIATIVE}. We check each organization before listing it, and we will email you when ${input.organization} appears on acceleratedmedicine.org/supporters.`
@@ -205,6 +222,7 @@ interface LinkDependencies {
   hasSupportEvent: typeof hasSupportEvent
   recordSupportEvent: typeof recordSupportEvent
   subscribe: (email: string) => Promise<void>
+  notifyConfirmed: (supporter: StoredSupporter) => Promise<void>
   notifyListed: (organization: StoredOrganization) => Promise<void>
 }
 
@@ -217,6 +235,20 @@ async function subscribeToUpdates(address: string) {
   }
   const result = await email.resend.contacts.create({ audienceId, email: address, unsubscribed: false })
   if (result.error) throw new Error(result.error.message)
+}
+
+async function emailSupporterConfirmed(supporter: StoredSupporter) {
+  const email = emailClient()
+  if (!email) {
+    throw new Error("Supporter alert email service is not configured")
+  }
+  const result = await email.resend.emails.send(
+    { from: email.from, to: INBOX, replyTo: supporter.email, ...buildSupporterConfirmedAlert(supporter) },
+    { idempotencyKey: `supporter-confirmed/${supporter.id}` },
+  )
+  if (result.error || !result.data?.id) {
+    throw new Error(`The supporter alert was not accepted: ${result.error?.message ?? "no email id"}`)
+  }
 }
 
 async function emailListed(organization: StoredOrganization) {
@@ -239,6 +271,7 @@ const defaults: LinkDependencies = {
   hasSupportEvent,
   recordSupportEvent,
   subscribe: subscribeToUpdates,
+  notifyConfirmed: emailSupporterConfirmed,
   notifyListed: emailListed,
 }
 
@@ -254,6 +287,7 @@ export async function checkSupporterLink(id: string, token: string, deps: Partia
 /**
  * Confirms a person once. Their updates subscription starts here, so nobody is subscribed without clicking.
  * It subscribes before recording, so a failed subscription leaves the link pending and the next click retries.
+ * The alert to the Institute goes last and is only a courtesy, so its failure never undoes a confirmation.
  */
 export async function confirmSupporter(id: string, token: string, deps: Partial<LinkDependencies> = {}): Promise<LinkResult<StoredSupporter>> {
   const all = { ...defaults, ...deps }
@@ -261,6 +295,7 @@ export async function confirmSupporter(id: string, token: string, deps: Partial<
   if (checked.status !== "pending") return checked
   if (checked.record.updates) await all.subscribe(checked.record.email)
   await all.recordSupportEvent("confirm-supporter", id)
+  await all.notifyConfirmed(checked.record).catch((error: unknown) => console.error("Supporter confirmation alert failed", error))
   return { status: "done", record: checked.record }
 }
 

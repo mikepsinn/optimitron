@@ -65,6 +65,7 @@ describe("confirming a supporter", () => {
       hasSupportEvent: vi.fn(async () => confirmed),
       recordSupportEvent: vi.fn(async () => ({ submissionId: "event_1" })),
       subscribe: vi.fn(async () => undefined),
+      notifyConfirmed: vi.fn(async () => undefined),
     };
   }
 
@@ -82,11 +83,20 @@ describe("confirming a supporter", () => {
     expect((await confirmSupporter("sub_1", token, first)).status).toBe("done");
     expect(first.recordSupportEvent).toHaveBeenCalledWith("confirm-supporter", "sub_1");
     expect(first.subscribe).toHaveBeenCalledWith("ada@example.com");
+    expect(first.notifyConfirmed).toHaveBeenCalledWith(supporter);
 
     const again = dependencies(true);
     expect((await confirmSupporter("sub_1", token, again)).status).toBe("done");
     expect(again.recordSupportEvent).not.toHaveBeenCalled();
     expect(again.subscribe).not.toHaveBeenCalled();
+    expect(again.notifyConfirmed).not.toHaveBeenCalled();
+  });
+
+  it("keeps the confirmation when the alert to the Institute fails", async () => {
+    const deps = { ...dependencies(false), notifyConfirmed: vi.fn(async () => { throw new Error("Resend is down"); }) };
+    const result = await confirmSupporter("sub_1", signSupportLink("confirm-supporter", "sub_1"), deps);
+    expect(result.status).toBe("done");
+    expect(deps.recordSupportEvent).toHaveBeenCalledWith("confirm-supporter", "sub_1");
   });
 
   it("leaves the confirmation pending when the updates subscription fails, so the next click retries", async () => {
