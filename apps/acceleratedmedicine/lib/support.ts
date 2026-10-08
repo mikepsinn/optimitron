@@ -62,7 +62,7 @@ export type OrganizationInput = z.infer<typeof organizationSchema>
 function emailClient() {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return undefined
-  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth"
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.acceleratedmedicine.org"
   return { resend: new Resend(apiKey), from: `${INITIATIVE} <${fromAddress}>` }
 }
 

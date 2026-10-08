@@ -134,7 +134,7 @@ export async function sendRightToTrySupport(
 
   const resend = new Resend(apiKey);
   const fromAddress =
-    process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
+    process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.acceleratedmedicine.org";
   const from = `${SITE.emailFromName} <${fromAddress}>`;
   const notification = buildSupportNotification(input);
   try {

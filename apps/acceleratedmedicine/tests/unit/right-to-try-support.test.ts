@@ -49,7 +49,7 @@ describe("Right to Trial participation submission", () => {
   beforeAll(() => {
     previousEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
     previousResendApiKey = process.env.RESEND_API_KEY;
-    process.env.EMAIL_FROM_ADDRESS = "no-reply@updates.dfda.earth";
+    process.env.EMAIL_FROM_ADDRESS = "no-reply@updates.acceleratedmedicine.org";
     process.env.RESEND_API_KEY = "re_test_right_to_try";
     server.listen({ onUnhandledRequest: "error" });
   });
@@ -83,7 +83,7 @@ describe("Right to Trial participation submission", () => {
     expect(sentMessages).toHaveLength(2);
     expect(sentMessages[0]).toEqual(
       expect.objectContaining({
-        from: "Institute for Accelerated Medicine <no-reply@updates.dfda.earth>",
+        from: "Institute for Accelerated Medicine <no-reply@updates.acceleratedmedicine.org>",
         to: "hello@acceleratedmedicine.org",
         reply_to: "patient@example.com",
         subject: "[Right to Trial] Missouri: Supports the proposal",
