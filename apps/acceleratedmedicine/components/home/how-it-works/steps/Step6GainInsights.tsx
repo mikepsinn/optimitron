@@ -1,18 +1,18 @@
-import { Lightbulb } from "lucide-react"
+import { LineChart } from "lucide-react"
 import { HowItWorksStep } from "../HowItWorksStep"
 
 export function Step6GainInsights() {
   return (
     <HowItWorksStep
       stepNumber={6}
-      title="Gain Personal Insights"
-      icon={<Lightbulb className="h-5 w-5 text-primary" />}
-      description="View personalized analytics about your health and treatment response."
+      title="See Whether It's Working"
+      icon={<LineChart className="h-5 w-5 text-primary" />}
+      description="Your check-ins are charted over time next to patients on the same treatment, so you and your doctor can decide whether to continue, change the dose or stop."
       benefits={[
-        "See how your response compares to others",
-        "Identify patterns in your symptoms and triggers",
-        "Track your progress over time",
-        "Flag patterns for your doctor to review",
+        "Your scores over time, from your check-ins",
+        "Next to patients on the same treatment",
+        "Your doctor sees the same chart",
+        "Problems you report are flagged for your next visit",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
@@ -35,9 +35,9 @@ export function Step6GainInsights() {
                 </div>
               </div>
               <div className="rounded-lg border p-3 bg-card">
-                <div className="font-medium text-sm">Insight</div>
+                <div className="font-medium text-sm">Next to others on this treatment</div>
                 <div className="text-sm mt-1">
-                  Your cognitive function scores improve on days following social activities.
+                  Your score is in the middle of the range for patients six months into this treatment.
                 </div>
               </div>
               <div className="rounded-lg border p-3 bg-card">

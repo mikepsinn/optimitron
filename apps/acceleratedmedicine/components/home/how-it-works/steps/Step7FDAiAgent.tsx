@@ -5,15 +5,14 @@ export function Step7FDAiAgent() {
   return (
     <HowItWorksStep
       stepNumber={7}
-      title="Connect with Your AI Health Agent"
+      title="Check In by Phone or Text"
       icon={<Bot className="h-5 w-5 text-primary" />}
-      description="Receive personalized daily check-ins from your AI health agent that monitors your progress, collects data, and provides insights in a conversational way."
+      description="A short daily call or text asks how you feel and records your answer, so you don't fill in forms."
       benefits={[
-        "Daily check-ins via phone or text to monitor your well-being",
-        "Natural conversation interface for easy data collection",
-        "Personalized insights based on your treatment response",
-        "Immediate alerts for potential side effects or concerns",
-        "Medication reminders and adherence support",
+        "Answer in your own words",
+        "Side effects you mention go to your doctor",
+        "A reminder when a dose is due",
+        "Ask how your check-ins compare with others on the same treatment",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
@@ -22,8 +21,8 @@ export function Step7FDAiAgent() {
               <Bot className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h4 className="font-medium">Health Agent</h4>
-              <p className="text-sm text-muted-foreground">Your personal health assistant</p>
+              <h4 className="font-medium">Daily check-in</h4>
+              <p className="text-sm text-muted-foreground">By phone or text</p>
             </div>
           </div>
 
@@ -70,7 +69,7 @@ export function Step7FDAiAgent() {
             </div>
 
             <div className="mt-2 text-xs text-center text-muted-foreground">
-              Daily check-ins help track your progress and provide personalized insights
+              Your answers go into your record, and your doctor sees any side effects you mention
             </div>
           </div>
         </div>

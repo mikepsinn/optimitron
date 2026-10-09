@@ -40,10 +40,10 @@
 - Rank 5 Mirtazapine 75/ 100 Effectiveness estimate Safety estimate: 60 / 100
 - Top 5 of 6 treatments. Scores use a 0–100 scale, not response percentages.
 ### Outcome Labels
-- Every treatment would have a label showing its effects on all measurable aspects of health
-- Comprehensive health impact data
-- Both positive and negative effects
-- Evidence-based decision making
+- Every treatment would have a label showing how much it helps and how often it harms, compared with placebo, usual care or other treatments
+- How much it helps, on the scales doctors use
+- How often each side effect happens, next to the comparison group
+- Where every number comes from
 - Lecanemab
 - Alzheimer's disease
 - Changes are compared with placebo in lecanemab's trials.
@@ -118,40 +118,39 @@
 - The cost, and who pays, before you start
 - Stop at any time
 ##### Coordinate Your Care
-- Schedule lab tests, provider visits, and import your health records.
-- Book appointments with just a few clicks
-- Import data from your existing health records
-- Attend virtual check-ins from anywhere
-- Receive reminders for upcoming appointments
+- Book the trial's lab tests and visits at the clinic you already use.
+- Labs and visits at your usual clinic
+- Video check-ins instead of trips to a trial site
+- Your records come in, so you don't repeat your history
+- A reminder before each appointment
 ##### Track Outcomes
 - Quick check-ins record how you're doing. Every result, good or bad, improves the outcome labels for the next patient.
-- Simple mobile app for daily tracking
-- Automatic data collection from wearables
-- Customized tracking based on your trial
-- Secure and private data storage
+- A short check-in by app, text or phone
+- Wearables can add sleep and activity
+- Only the measures your trial needs
+- Your data stays with you and your clinic
 - / 30
 - Morning dose
 - Taken 8:02 AM
 - Evening dose
 - Due 8:00 PM
 - Answered by phone, no side effects
-##### Gain Personal Insights
-- View personalized analytics about your health and treatment response.
-- See how your response compares to others
-- Identify patterns in your symptoms and triggers
-- Track your progress over time
-- Flag patterns for your doctor to review
+##### See Whether It's Working
+- Your check-ins are charted over time next to patients on the same treatment, so you and your doctor can decide whether to continue, change the dose or stop.
+- Your scores over time, from your check-ins
+- Next to patients on the same treatment
+- Your doctor sees the same chart
+- Problems you report are flagged for your next visit
 - Month 1
 - Month 6
-##### Connect with Your AI Health Agent
-- Receive personalized daily check-ins from your AI health agent that monitors your progress, collects data, and provides insights in a conversational way.
-- Daily check-ins via phone or text to monitor your well-being
-- Natural conversation interface for easy data collection
-- Personalized insights based on your treatment response
-- Immediate alerts for potential side effects or concerns
-- Medication reminders and adherence support
-##### Health Agent
-- Your personal health assistant
+##### Check In by Phone or Text
+- A short daily call or text asks how you feel and records your answer, so you don't fill in forms.
+- Answer in your own words
+- Side effects you mention go to your doctor
+- A reminder when a dose is due
+- Ask how your check-ins compare with others on the same treatment
+##### Daily check-in
+- By phone or text
 - Good morning, Sarah! How are you feeling today after your treatment yesterday?
 - I'm feeling better today. The headache is gone but I still feel a bit tired.
 - Thanks, Sarah. I've recorded that, and I'll let your doctor know you still feel tired. Would you like to see how your check-ins compare with other patients on the same treatment?
@@ -206,19 +205,19 @@
 #### How Clinical Trials Should Work
 ##### Create a Trial
 - Upload protocols, pre/post-clinical data, and register your supply chain in one place.
-- Simple protocol builder with templates
-- Automated regulatory compliance checks
-- Secure data storage and management
+- Start from a protocol template
+- Submit the protocol to an independent review board
+- Keep the protocol, data and approvals in one record
 - Trial Name
 - Therapeutic Area
 - Endocrinology
 - Protocol Upload
 - Continue
 ##### Get Liability Insurance
-- Automatically receive and select liability insurance quotes per subject with transparent pricing.
-- Competitive quotes from multiple providers
-- Risk-based pricing tailored to your trial
-- One-click policy activation
+- See liability insurance priced per participant before you enroll anyone.
+- Compare quotes side by side
+- Priced for your trial's risks
+- Cover starts before the first patient enrolls
 - Recommended
 - Per participant:
 - $45
@@ -241,29 +240,29 @@
 - Diet
 - Save Parameters
 ##### Manage Supply Chain & Orders
-- Track inventory, fulfill patient orders, and manage the entire treatment supply chain with end-to-end visibility.
-- Automated inventory tracking and alerts
-- Secure patient order processing and fulfillment
-- Temperature-controlled shipping monitoring
+- Ship treatment to participating clinics and track each order and shipment.
+- Stock at each clinic, with low-stock alerts
+- Patient orders filled through the clinic
+- Temperature logged in transit
 - An audit trail for every shipment
 - New
 - Manage Inventory
-##### Analyze Trial Data
-- Access real-time insights, analyze effectiveness data, and make informed decisions with comprehensive dashboards and reporting tools.
-- Real-time effectiveness monitoring
-- Participant compliance tracking
-- Advanced statistical analysis tools
-- Regulatory submission preparation
+##### See Results as They Come In
+- Outcomes from every clinic, pooled and compared across the trial's arms while it runs.
+- Results from the first patients, not only at the end
+- Whether patients took their doses
+- Who stopped, and who was lost to follow-up
+- De-identified data to export for regulators and journals
 - New treatment
 - Usual care
 - Week 0 Patients improved Week 12
-- View Full Analytics
+- See all results
 ### Why Care-Integrated Clinical Trials Matter
 - What the network would deliver for patients, clinicians and researchers
-#### Improved Patient Experience
-- Designed to make participation easier and more rewarding:
-- Take part from home instead of traveling to a trial site
-- Personalized health insights for every participant
+#### Easier for Patients
+- Taking part fits into ordinary care:
+- Join through your own doctor and take part from home, instead of traveling to a trial site
+- See your results next to others on the same treatment
 - Open to patients whom standard trials exclude
 #### Lower Cost per Patient
 - Pragmatic trials show what is possible:
@@ -277,7 +276,7 @@
 - Every number shows where it came from
 - An open API for independent analysis
 #### Faster Access to Treatments
-- Reduce the wait for life-changing treatments:
+- Patients learn sooner what works:
 - Outcome data from the first patients, not only at the end of a multi-year trial
 - Rankings update as new evidence arrives
 ### Partner with us

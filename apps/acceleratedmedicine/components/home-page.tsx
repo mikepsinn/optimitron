@@ -33,9 +33,9 @@ const highlights = [
 ]
 
 const labelFeatures = [
-  "Comprehensive health impact data",
-  "Both positive and negative effects",
-  "Evidence-based decision making",
+  "How much it helps, on the scales doctors use",
+  "How often each side effect happens, next to the comparison group",
+  "Where every number comes from",
 ]
 
 const audiences = [
@@ -132,7 +132,7 @@ function OutcomeLabels() {
           <div className="space-y-4">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Outcome Labels</h2>
             <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed">
-              Every treatment would have a label showing its effects on all measurable aspects of health
+              Every treatment would have a label showing how much it helps and how often it harms, compared with placebo, usual care or other treatments
             </p>
             <ul className="grid gap-2">
               {labelFeatures.map(feature => (

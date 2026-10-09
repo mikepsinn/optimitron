@@ -48,9 +48,9 @@ export function ResearchPartnerSteps() {
         icon={<Upload className="h-5 w-5 text-primary" />}
         description="Upload protocols, pre/post-clinical data, and register your supply chain in one place."
         benefits={[
-          "Simple protocol builder with templates",
-          "Automated regulatory compliance checks",
-          "Secure data storage and management",
+          "Start from a protocol template",
+          "Submit the protocol to an independent review board",
+          "Keep the protocol, data and approvals in one record",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
@@ -96,11 +96,11 @@ export function ResearchPartnerSteps() {
         stepNumber={2}
         title="Get Liability Insurance"
         icon={<Shield className="h-5 w-5 text-primary" />}
-        description="Automatically receive and select liability insurance quotes per subject with transparent pricing."
+        description="See liability insurance priced per participant before you enroll anyone."
         benefits={[
-          "Competitive quotes from multiple providers",
-          "Risk-based pricing tailored to your trial",
-          "One-click policy activation",
+          "Compare quotes side by side",
+          "Priced for your trial's risks",
+          "Cover starts before the first patient enrolls",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
@@ -216,11 +216,11 @@ export function ResearchPartnerSteps() {
         stepNumber={4}
         title="Manage Supply Chain & Orders"
         icon={<Package className="h-5 w-5 text-primary" />}
-        description="Track inventory, fulfill patient orders, and manage the entire treatment supply chain with end-to-end visibility."
+        description="Ship treatment to participating clinics and track each order and shipment."
         benefits={[
-          "Automated inventory tracking and alerts",
-          "Secure patient order processing and fulfillment",
-          "Temperature-controlled shipping monitoring",
+          "Stock at each clinic, with low-stock alerts",
+          "Patient orders filled through the clinic",
+          "Temperature logged in transit",
           "An audit trail for every shipment",
         ]}
         preview={
@@ -285,36 +285,36 @@ export function ResearchPartnerSteps() {
       {/* Step 5: Manage Your Trial */}
       <ResearchPartnerStep
         stepNumber={5}
-        title="Analyze Trial Data"
+        title="See Results as They Come In"
         icon={<BarChart3 className="h-5 w-5 text-primary" />}
-        description="Access real-time insights, analyze effectiveness data, and make informed decisions with comprehensive dashboards and reporting tools."
+        description="Outcomes from every clinic, pooled and compared across the trial's arms while it runs."
         benefits={[
-          "Real-time effectiveness monitoring",
-          "Participant compliance tracking",
-          "Advanced statistical analysis tools",
-          "Regulatory submission preparation",
+          "Results from the first patients, not only at the end",
+          "Whether patients took their doses",
+          "Who stopped, and who was lost to follow-up",
+          "De-identified data to export for regulators and journals",
         ]}
         preview={
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
             {/* Mini Analytics Dashboard Preview */}
             <div className="p-3 border-b bg-muted/30">
-              <div className="text-sm font-medium">Trial Analytics Dashboard</div>
+              <div className="text-sm font-medium">Trial results</div>
             </div>
             <div className="p-4 space-y-4">
               <div className="space-y-2">
-                <div className="text-xs font-medium">Trial Performance</div>
+                <div className="text-xs font-medium">Outcomes so far</div>
                 <EffectivenessChart />
               </div>
 
               <div className="space-y-2">
-                <div className="text-xs font-medium">Patient Compliance</div>
+                <div className="text-xs font-medium">Doses and check-ins</div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">Overall Rate</div>
+                    <div className="text-xs text-muted-foreground">Doses on time</div>
                     <div className="text-sm font-bold">92%</div>
                   </div>
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">Submissions</div>
+                    <div className="text-xs text-muted-foreground">Check-ins</div>
                     <div className="text-sm font-bold">4,265</div>
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export function ResearchPartnerSteps() {
               </div>
 
               <Button size="sm" className="w-full text-xs" disabled>
-                View Full Analytics
+                See all results
               </Button>
             </div>
           </div>
