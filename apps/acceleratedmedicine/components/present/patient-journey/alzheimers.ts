@@ -54,7 +54,8 @@ const plainNames: Record<string, string> = {
   "Alzheimer's Disease Cooperative Study-Activities of Daily Living (ADCS-MCI-ADL)": "Daily activities (ADCS-MCI-ADL)",
   "Infusion-related reactions": "Infusion reactions",
   "ARIA-E (edema)": "Brain swelling (ARIA-E)",
-  "ARIA-H (hemorrhage)": "Small brain bleeds (ARIA-H)",
+  // ARIA-H counts small bleeds and iron deposits on the brain's surface (superficial siderosis).
+  "ARIA-H (hemorrhage)": "Signs of brain bleeding (ARIA-H)",
 }
 
 export function plainName(name: string) {

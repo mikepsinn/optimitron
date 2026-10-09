@@ -12,7 +12,7 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 export async function printWhenReady() {
   const images = Array.from(document.images)
   for (const image of images) image.loading = "eager"
-  await Promise.all(
+  const loaded = Promise.all(
     images
       .filter(image => !image.complete)
       .map(image => new Promise(resolve => {
@@ -20,6 +20,8 @@ export async function printWhenReady() {
         image.addEventListener("error", resolve, { once: true })
       })),
   )
+  // A stalled image request should not keep the print window from opening.
+  await Promise.race([loaded, new Promise(resolve => window.setTimeout(resolve, 5000))])
   await document.fonts.ready
   window.print()
 }

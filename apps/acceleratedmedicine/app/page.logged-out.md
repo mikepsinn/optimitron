@@ -81,7 +81,7 @@
 - Brain swelling (ARIA-E)
 - 13%
 - 2%
-- Small brain bleeds (ARIA-H)
+- Signs of brain bleeding (ARIA-H)
 - 17%
 - 9%
 - Headache
