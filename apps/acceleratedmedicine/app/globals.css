@@ -105,12 +105,9 @@
 }
 
 /* Presentations (components/present/deck.tsx): print or save as PDF with one
-   1920 × 1080 page per slide, without the controls. */
+   1920 × 1080 page per slide, without the controls. The deck sets the page size itself, so other
+   pages print on ordinary paper. */
 @media print {
-  @page {
-    size: 1920px 1080px;
-    margin: 0;
-  }
   .deck {
     display: block;
     height: auto;

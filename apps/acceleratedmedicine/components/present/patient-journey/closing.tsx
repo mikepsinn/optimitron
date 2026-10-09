@@ -8,7 +8,7 @@ import type { ScriptSlide } from "@/lib/present-script";
 
 type Props = { s: ScriptSlide };
 
-// What the act does, on slide 18 and the /act page.
+// What the act does, on slide 18, the /act page and the one-page overview.
 export const actProvisions = [
   { icon: ClipboardCheck, lead: "Review:", text: "An independent board approves each treatment, clinic and consent form." },
   { icon: Stethoscope, lead: "Access:", text: "A treating doctor's documented recommendation and written consent are all a patient needs." },

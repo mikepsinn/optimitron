@@ -65,7 +65,8 @@ export function MargaretSlide({ s }: Props) {
   );
 }
 
-const millions = [
+// On slide 3 and the one-page overview (app/one-pager).
+export const millions = [
   { value: "7.4M", label: "Americans with Alzheimer's" },
   { value: "30M", label: "Americans with a rare disease" },
   { value: "2.1M", label: "Americans diagnosed with cancer each year" },
@@ -89,7 +90,8 @@ export function MillionsSlide({ s }: Props) {
   );
 }
 
-const reasons = [
+// On slide 4 and the one-page overview.
+export const reasons = [
   { heading: "No one pays to test old drugs", value: "573", text: "drugs proposed for Alzheimer's are mostly untested, because no company can profit from testing a drug it can't patent." },
   { heading: "No one learns from patients", value: "99.8%", text: "of Alzheimer's patients are in no study, so nothing is learned from their treatment." },
   { heading: "Right to Try gives makers no incentive", value: "$0", text: "profit allowed under Right to Try: makers may charge only their costs, so few offer their drugs." },
@@ -111,7 +113,7 @@ export function ReasonsSlide({ s }: Props) {
   );
 }
 
-// RECOVERY's results, on slide 5 and the /act page.
+// RECOVERY's results, on slide 5, the /act page and the one-page overview.
 export const recovery = [
   { value: "89 days", text: "to show that a cheap steroid cuts deaths among the sickest COVID patients by up to a third. Typical trials take years." },
   { value: "4", text: "treatments found that save lives, out of more than a dozen tested side by side." },

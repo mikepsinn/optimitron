@@ -145,7 +145,7 @@ function OutcomeLabels() {
           </div>
           <OutcomeLabel title={lecanemab.name} tag="Alzheimer's disease"
             subtitle="Changes are compared with placebo in lecanemab's trials."
-            data={lecanemabLabel} showBars={false} />
+            data={lecanemabLabel} />
         </div>
       </div>
     </section>

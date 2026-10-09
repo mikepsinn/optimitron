@@ -1,6 +1,6 @@
 // The two-minute explainer, built from videos/care-integrated-clinical-trials and hosted on the static R2
 // bucket. The files are cached for a year, so each new render gets a new dated name.
-const video = "https://static.warondisease.org/care-integrated-clinical-trials-explainer-2026-10-05.mp4"
+export const EXPLAINER_VIDEO = "https://static.warondisease.org/care-integrated-clinical-trials-explainer-2026-10-05.mp4"
 const poster = "https://static.warondisease.org/care-integrated-clinical-trials-explainer-2026-10-05-poster.jpg"
 
 export function ExplainerVideoSection() {
@@ -17,7 +17,7 @@ export function ExplainerVideoSection() {
           preload="none"
           poster={poster}
         >
-          <source src={video} type="video/mp4" />
+          <source src={EXPLAINER_VIDEO} type="video/mp4" />
         </video>
       </div>
     </section>

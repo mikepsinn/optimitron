@@ -63,6 +63,7 @@ export const appNavigation: {
       resolvedItems: [
         { id: "rightToTrialImpact", label: "Impact", path: "/impact" },
         { id: "faq", label: "FAQ", path: "/faq" },
+        { id: "resources", label: "Presentations and handouts", path: "/resources" },
         { id: "aboutUs", label: "About us", path: "/about" },
       ],
     },

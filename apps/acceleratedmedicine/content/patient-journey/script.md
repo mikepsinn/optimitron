@@ -322,11 +322,14 @@ is.
 - Where the evidence comes from: Clinical trials, including the ones that failed. Every treated
   patient's real-world outcome. Side-effect reports from clinics and doctors.
 
-**Visual:** The prototype's Lecanemab outcome label, drawn by its own components: effectiveness
-55/100 and safety 50/100 across the top, the primary outcomes on the left (CDR-SB: 27% less decline than placebo,
-0.45 points) and the side effects on the right (infusion reactions 26%, brain
-swelling (ARIA-E) 13%, brain bleeding (ARIA-H) 17%, headache 11%), each with its "Source: FDA
-label" link. The three evidence sources run along the bottom with amber icons.
+**Visual:** Lecanemab's outcome label as paired bars, a purple bar for lecanemab above a gray bar
+for placebo. On the left, decline over 18 months on three measures, each with its percentage less
+decline: dementia severity (CDR-SB) 1.21 against 1.66 points, 27% less; thinking and memory
+(ADAS-Cog14) 4.14 against 5.58, 26% less; daily activities (ADCS-MCI-ADL) 3.5 against 5.5, 37%
+less. On the right, the share of patients with each side effect: infusion reactions 26% against 7%,
+brain swelling (ARIA-E) 13% against 2%, signs of brain bleeding (ARIA-H) 17% against 9%, headache 11%
+against 8%. The three evidence sources run along the bottom with amber icons, and one source line
+names the FDA label.
 
 **Say:** This is the prototype's outcome label for lecanemab, built from its FDA label. Today a label
 draws on trials alone. With care-integrated trials, every treated patient's outcome is added, so the
@@ -334,7 +337,12 @@ label gets better with every patient, even for old drugs that nobody would fund 
 
 **If asked:** An outcome label puts what is known about a treatment on one page: how much it helps
 and compared with what, its side effects, its cost, and how strong the evidence is. Lecanemab's
-values come from its FDA prescribing information and published trial.
+values come from its FDA prescribing information: Study 2 (Clarity AD), 1,795 patients over 18
+months. Decline is the adjusted mean change from baseline in each arm (Table 8); the side effects
+are the share of patients in each arm (sections 5.1 and 5.3, and Table 5 in section 6.1 for headache). Each decline's bars are drawn to
+scale, with placebo's at full length; the side-effect bars share one scale.
+
+**Source line:** Source: Leqembi (lecanemab) FDA prescribing information, 2023, Study 2.
 
 ## 10. Independent treatment review
 

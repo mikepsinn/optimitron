@@ -5,7 +5,7 @@ import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrom
 import { FaqList } from "@/components/faq-list"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
 import { SectionHeading } from "@/components/section-heading"
-import { ACT_QUESTIONS } from "@/lib/act-questions"
+import { ACT_QUESTIONS, ACT_SUMMARY } from "@/lib/act-questions"
 import { actProvisions } from "@/components/present/patient-journey/closing"
 import { recovery, threeChanges } from "@/components/present/patient-journey/opening"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
@@ -47,11 +47,7 @@ export default function ActPage() {
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
           The Care-Integrated Clinical Trials Act
         </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">
-          Every patient&apos;s treatment can help the next patient. This proposed state law lets any patient get a
-          screened, promising treatment through their own doctor, lets clinics charge enough to offer it, and
-          publishes every result.
-        </p>
+        <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">{ACT_SUMMARY}</p>
         <ul className="mt-10 grid gap-6 text-left md:grid-cols-3">
           {threeChanges.map(change => (
             <li key={change.lead} className="rounded-lg border bg-card p-6 shadow-sm">

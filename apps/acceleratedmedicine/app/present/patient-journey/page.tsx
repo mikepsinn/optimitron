@@ -4,6 +4,7 @@ import { AcceleratedMedicineTheme } from "@/components/accelerated-medicine-chro
 import { Deck } from "@/components/present/deck"
 import { alzheimers } from "@/components/present/patient-journey/alzheimers"
 import { patientJourneySlides } from "@/components/present/patient-journey/slides"
+import { PrintOnRequest } from "@/components/print-pdf"
 import { loadScript } from "@/lib/present-script"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     description: "How one patient gets a promising treatment through her own doctor, and how every result helps the next patient.",
     path: "/present/patient-journey",
   }),
-  // A presenter's deck for meetings. Share the link directly; nothing on the site links to it.
+  // A presenter's deck for meetings, linked from /resources. A deck makes a poor search result.
   robots: { index: false, follow: false },
 }
 
@@ -26,11 +27,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: 1280, initialScale: undefined }
 
 // Arrow keys or space move between slides, N shows the speaker notes, F goes full screen, and
-// printing saves a PDF with one page per slide.
+// printing saves a PDF with one page per slide (/resources links here with ?print to do that).
 export default function PatientJourneyPresentation() {
   return (
     <AcceleratedMedicineTheme>
       <Deck title={title} slides={patientJourneySlides(loadScript("patient-journey"), alzheimers)} />
+      <PrintOnRequest />
     </AcceleratedMedicineTheme>
   )
 }

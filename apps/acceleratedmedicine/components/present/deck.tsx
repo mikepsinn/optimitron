@@ -78,6 +78,9 @@ export function Deck({ title, slides }: { title: string; slides: DeckSlide[] }) 
   const current = slides[index];
   return (
     <div className="deck flex h-dvh flex-col bg-slate-950 text-slate-100">
+      {/* One page per slide when printed (app/globals.css). Set here, not in the global styles, so it
+          leaves when the deck does and other pages print on ordinary paper. */}
+      <style>{"@media print { @page { size: 1920px 1080px; margin: 0; } }"}</style>
       <h1 className="sr-only">{title}</h1>
       <div ref={stage} className="deck-stage relative min-h-0 flex-1 overflow-hidden">
         <div className="deck-canvas absolute left-1/2 top-1/2"
