@@ -9,17 +9,23 @@ import {
 } from "./vercel-app-build-scope.mjs";
 
 /**
+ * The official Postgres image from AWS's public mirror. Docker Hub limits
+ * anonymous pulls per IP, and GitHub's shared runners hit that limit.
+ */
+const POSTGRES_IMAGE = "public.ecr.aws/docker/library/postgres:16";
+
+/**
  * One CI build per site app. scripts/smoke-site-apps.mjs serves each app on
  * the same port.
  */
 export const SITE_APP_MATRIX = Object.freeze([
-  { app: "warondisease", variant: "warondisease.org", port: 4010, postgres_image: "postgres:16", requires_database: true },
-  { app: "dfda", variant: "dfda", port: 4011, postgres_image: "postgres:16", requires_database: true },
-  { app: "wishocracy", variant: "wishocracy.org", port: 4013, postgres_image: "postgres:16", requires_database: true },
-  { app: "trialabundancesurvey", variant: "trialabundancesurvey.org", port: 4014, postgres_image: "postgres:16", requires_database: true },
+  { app: "warondisease", variant: "warondisease.org", port: 4010, postgres_image: POSTGRES_IMAGE, requires_database: true },
+  { app: "dfda", variant: "dfda", port: 4011, postgres_image: POSTGRES_IMAGE, requires_database: true },
+  { app: "wishocracy", variant: "wishocracy.org", port: 4013, postgres_image: POSTGRES_IMAGE, requires_database: true },
+  { app: "trialabundancesurvey", variant: "trialabundancesurvey.org", port: 4014, postgres_image: POSTGRES_IMAGE, requires_database: true },
   { app: "curedao", variant: "curedao.org", port: 4015, postgres_image: "", requires_database: false },
-  { app: "acceleratedmedicine", variant: "acceleratedmedicine.org", port: 4016, postgres_image: "postgres:16", requires_database: true },
-  { app: "courtofhumanity", variant: "courtofhumanity.org", port: 4017, postgres_image: "postgres:16", requires_database: true },
+  { app: "acceleratedmedicine", variant: "acceleratedmedicine.org", port: 4016, postgres_image: POSTGRES_IMAGE, requires_database: true },
+  { app: "courtofhumanity", variant: "courtofhumanity.org", port: 4017, postgres_image: POSTGRES_IMAGE, requires_database: true },
 ]);
 
 const siteAppNames = SITE_APP_MATRIX.map(({ app }) => app);
