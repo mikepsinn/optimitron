@@ -40,9 +40,9 @@
 - Rank 5 Mirtazapine 75/ 100 Effectiveness estimate Safety estimate: 60 / 100
 - Top 5 of 6 treatments. Scores use a 0–100 scale, not response percentages.
 ### Outcome Labels
-- Every treatment would have a label showing how much it helps and how often it harms, compared with placebo or usual care
+- Every treatment would have a label showing how much it helps and how often it harms, compared with placebo, usual care or other treatments
 - How much it helps, on the scales doctors use
-- How often each side effect happens, next to placebo
+- How often each side effect happens, next to the comparison group
 - Where every number comes from
 - Lecanemab
 - Alzheimer's disease
@@ -248,7 +248,7 @@
 - New
 - Manage Inventory
 ##### See Results as They Come In
-- Outcomes from every clinic, pooled and compared with usual care while the trial runs.
+- Outcomes from every clinic, pooled and compared across the trial's arms while it runs.
 - Results from the first patients, not only at the end
 - Whether patients took their doses
 - Who stopped, and who was lost to follow-up

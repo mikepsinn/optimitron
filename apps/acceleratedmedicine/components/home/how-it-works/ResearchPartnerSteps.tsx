@@ -287,7 +287,7 @@ export function ResearchPartnerSteps() {
         stepNumber={5}
         title="See Results as They Come In"
         icon={<BarChart3 className="h-5 w-5 text-primary" />}
-        description="Outcomes from every clinic, pooled and compared with usual care while the trial runs."
+        description="Outcomes from every clinic, pooled and compared across the trial's arms while it runs."
         benefits={[
           "Results from the first patients, not only at the end",
           "Whether patients took their doses",
