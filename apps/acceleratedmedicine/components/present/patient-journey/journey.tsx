@@ -6,12 +6,11 @@ import {
 import { cn } from "@optimitron/neobrutalist-ui/cn";
 
 import { TrackOutcomesPreview } from "@/components/home/how-it-works/steps/Step5TrackData";
-import { OutcomeLabel } from "@/components/home/outcome-label";
 import { Card } from "@/components/present/card";
 import {
-  rankTreatments, treatmentOutcomeCategories, type DemoCondition, type TreatmentEstimate,
+  plainName, rankTreatments, type DemoCondition, type TreatmentEstimate,
 } from "@/components/present/patient-journey/alzheimers";
-import { TreatmentRankingCard, TreatmentScores } from "@/components/present/patient-journey/treatment-cards";
+import { TreatmentRankingCard } from "@/components/present/patient-journey/treatment-cards";
 import { Eyebrow, IconBadge, SlideFrame } from "@/components/present/slide";
 import type { ScriptSlide } from "@/lib/present-script";
 
@@ -69,39 +68,99 @@ const evidenceSources = [
   { icon: AlertTriangle, title: "Side-effect reports", text: "From clinics and doctors" },
 ];
 
+// One arm's bar, as a share of the longest bar in its group, with its value beside it.
+function ArmBar({ value, max, text, treatment }: { value: number; max: number; text: string; treatment: boolean }) {
+  return (
+    <div className="grid grid-cols-[1fr_140px] items-center gap-5">
+      <div className="h-[26px]">
+        <div className={cn("h-full rounded-r-md", treatment ? "bg-primary" : "bg-slate-300")}
+          style={{ width: `${(value / max) * 100}%` }} />
+      </div>
+      <span className={cn("text-[24px] leading-none tabular-nums", treatment ? "font-semibold" : "text-muted-foreground")}>{text}</span>
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <p className="flex items-center gap-8 text-[24px]">
+      <span className="flex items-center gap-3"><span aria-hidden="true" className="h-6 w-10 rounded bg-primary" /> Lecanemab</span>
+      <span className="flex items-center gap-3"><span aria-hidden="true" className="h-6 w-10 rounded bg-slate-300" /> Placebo</span>
+    </p>
+  );
+}
+
 export function LabelSlide({ s, treatment }: Props & { treatment: TreatmentEstimate }) {
-  const [primary, , sideEffects] = treatmentOutcomeCategories(treatment);
+  const declines = treatment.primaryOutcomes.flatMap(outcome =>
+    outcome.treatmentDecline !== undefined && outcome.placeboDecline !== undefined && outcome.percentageChange
+      ? [{ name: plainName(outcome.name), treatment: outcome.treatmentDecline, placebo: outcome.placeboDecline, less: outcome.percentageChange }]
+      : []);
+  const sideEffects = treatment.sideEffects.flatMap(effect =>
+    effect.percentage != null && effect.placeboPercentage !== undefined
+      ? [{ name: plainName(effect.name), treatment: effect.percentage, placebo: effect.placeboPercentage }]
+      : []);
+  const sideEffectMax = Math.max(...sideEffects.map(effect => effect.treatment));
   return (
     <SlideFrame s={s}>
-      <div className="[zoom:1.08]">
-        <Card className="p-6">
-          <div className="flex items-start justify-between gap-8 border-b pb-4">
-            <div>
-              <p className="text-2xl font-bold">{treatment.name}</p>
-              <p className="text-sm text-muted-foreground">For Alzheimer's disease</p>
-            </div>
-            <div className="w-[420px]"><TreatmentScores effectiveness={treatment.effectiveness} safetyScore={treatment.safetyScore} /></div>
+      <div className="flex items-end justify-between gap-8">
+        <p className="text-[40px] font-bold leading-none">
+          {treatment.name} <span className="font-normal text-muted-foreground">for early Alzheimer&apos;s disease</span>
+        </p>
+        <Legend />
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-10">
+        <Card className="px-10 py-6">
+          <div className="flex items-baseline justify-between gap-6">
+            <h3 className="text-[30px] font-semibold">Decline over 18 months</h3>
+            <p className="text-[22px] text-muted-foreground">Points lost. Shorter is better.</p>
           </div>
-          <div className="mt-4 grid grid-cols-[1.35fr_1fr] gap-8">
-            <OutcomeLabel title="" data={[primary]} showBars={false} className="max-w-none border-0 p-0" />
-            <OutcomeLabel title="" data={[sideEffects]} showBars={false} className="max-w-none border-0 p-0" />
+          <ul className="mt-6 space-y-10">
+            {declines.map(decline => (
+              <li key={decline.name}>
+                <div className="flex items-baseline justify-between gap-6">
+                  <h4 className="text-[26px] font-medium leading-tight">{decline.name}</h4>
+                  <p className="shrink-0 text-[26px] font-bold text-primary">{decline.less}% less</p>
+                </div>
+                <div className="mt-2 space-y-1.5">
+                  <ArmBar treatment value={decline.treatment} max={decline.placebo} text={`${decline.treatment} points`} />
+                  <ArmBar treatment={false} value={decline.placebo} max={decline.placebo} text={`${decline.placebo} points`} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <Card className="px-10 py-6">
+          <div className="flex items-baseline justify-between gap-6">
+            <h3 className="text-[30px] font-semibold">Side effects</h3>
+            <p className="text-[22px] text-muted-foreground">Share of patients.</p>
           </div>
+          <ul className="mt-5 space-y-4">
+            {sideEffects.map(effect => (
+              <li key={effect.name}>
+                <h4 className="text-[26px] font-medium leading-tight">{effect.name}</h4>
+                <div className="mt-2 space-y-1.5">
+                  <ArmBar treatment value={effect.treatment} max={sideEffectMax} text={`${effect.treatment}%`} />
+                  <ArmBar treatment={false} value={effect.placebo} max={sideEffectMax} text={`${effect.placebo}%`} />
+                </div>
+              </li>
+            ))}
+          </ul>
         </Card>
       </div>
-      <Eyebrow className="mt-5">Where the evidence comes from</Eyebrow>
-      <ul className="mt-4 grid grid-cols-3 gap-8">
-        {evidenceSources.map(source => (
-          <li key={source.title} className="flex gap-5">
-            <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-              <source.icon className="h-7 w-7" />
-            </span>
-            <div>
-              <h3 className="text-[30px] font-semibold leading-tight">{source.title}</h3>
-              <p className="mt-1 text-[24px] leading-snug text-muted-foreground">{source.text}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-6 flex items-center gap-10">
+        <Eyebrow className="shrink-0">Where the evidence comes from</Eyebrow>
+        <ul className="flex flex-1 justify-between gap-8">
+          {evidenceSources.map(source => (
+            <li key={source.title} className="flex items-center gap-4">
+              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                <source.icon className="h-6 w-6" />
+              </span>
+              <p className="text-[24px] leading-snug"><strong className="font-semibold">{source.title}:</strong>{" "}
+                <span className="text-muted-foreground">{source.text.toLowerCase()}</span></p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </SlideFrame>
   );
 }

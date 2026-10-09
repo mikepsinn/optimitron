@@ -47,16 +47,23 @@
 - Lecanemab
 - Alzheimer's disease
 - Changes are compared with placebo in lecanemab's trials.
-- Clinical Dementia Rating-Sum of Boxes (CDR-SB)
+- Bars show points of decline by the end of the trial. Shorter is better.
+- Dementia severity (CDR-SB)
 - Baseline: 3.17 points (CDR-SB 0-18 scale)
-- [Source: FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf)
 - 27% less decline than placebo (-0.45 points)
-- Alzheimer's Disease Assessment Scale-Cognitive Subscale 14 (ADAS-Cog14)
+- 1.21 points
+- Placebo
+- 1.66 points
+- Thinking and memory (ADAS-Cog14)
 - Baseline: 24.45 points (ADAS-Cog14 0-90 scale)
 - 26% less decline than placebo (-1.44 points)
-- Alzheimer's Disease Cooperative Study-Activities of Daily Living (ADCS-MCI-ADL)
+- 4.14 points
+- 5.58 points
+- Daily activities (ADCS-MCI-ADL)
 - Baseline: 41.2 points (ADCS-MCI-ADL 0-53 scale)
 - 37% less decline than placebo (+2.0 points)
+- 3.5 points
+- 5.5 points
 - Brain Amyloid Plaque (PET Centiloids)
 - Baseline: Not provided
 - [Source: Published study](https://doi.org/10.1056/NEJMoa2212948)
@@ -67,15 +74,20 @@
 - Plasma p-tau181
 - Baseline: 3.70 pg/mL
 - -0.78 pg/mL compared with placebo
-- Frequency, from the cited source where one is shown.
-- Infusion-related reactions
+- Share of patients who had each one.
+- Infusion reactions
 - 26%
-- ARIA-E (edema)
+- 7%
+- Brain swelling (ARIA-E)
 - 13%
-- ARIA-H (hemorrhage)
+- 2%
+- Small brain bleeds (ARIA-H)
 - 17%
+- 9%
 - Headache
 - 11%
+- 8%
+- Source: [FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf), unless noted
 ### How Medicine Should Actually Work
 - Patients would report outcomes, doctors would see what has worked for patients like theirs, and researchers would run trials on the same network.
 - FOR PATIENTS
@@ -98,6 +110,7 @@
 - Understand potential side effects and their frequency
 - Compare with standard of care treatments
 - Check the source of every value
+- Source: [FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf)
 ##### Decide in Writing
 - Sign a plain-language consent with your doctor: the treatment, the risks, the unknowns and the cost.
 - Sign online, after talking it over with your doctor
@@ -167,7 +180,6 @@
 - Screened
 - Decline on CDR-SB at 18 months
 - 27% slower
-- Brain swelling (ARIA-E)
 - Recommend lecanemab
 - Offer a randomized comparison
 - Optional
