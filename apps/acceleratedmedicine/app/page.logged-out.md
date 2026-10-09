@@ -162,7 +162,7 @@
 - Recommend any screened treatment, with written consent
 - Offer willing patients a randomized comparison
 - The trial assigns treatments at random; you never pick an arm
-- No placebo arm
+- Compares treatments, doses or usual care, as the protocol sets
 - Recommend a treatment
 - Screened
 - Decline on CDR-SB at 18 months
@@ -177,7 +177,7 @@
 ##### Monitor Your Patients' Outcomes
 - Track how your patients are doing, report side effects in minutes, and see the same outcome categories the board publishes.
 - Outcome reports straight from routine medical records
-- Serious side effects reach the review board within days
+- Serious side effects reach the review board within five days
 - Good, bad and unclear results are all recorded
 - Compare your patients with every clinic's pooled results
 - Outcome reports due this week

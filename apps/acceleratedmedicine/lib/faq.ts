@@ -38,7 +38,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         question: "Are the trials randomized?",
         answer: [
           "Most patients choose a screened treatment with their doctor, and their outcomes are recorded and pooled. That shows patterns quickly, but on its own it does not prove that a treatment caused the result.",
-          "Patients can also choose to join centrally run randomized comparisons, as RECOVERY did. The trial, not the doctor, assigns each patient a treatment at random. There is no placebo arm. Every published result says which method produced it.",
+          "Patients can also choose to join centrally run comparisons, as RECOVERY did. The trial, not the doctor, assigns each patient's treatment, at random or by another scientifically justified method. The approved protocol sets what is compared and whether a placebo is used. Every published result says which method produced it.",
         ],
       },
       {
@@ -80,7 +80,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         id: "side-effects",
         question: "What happens if something goes wrong?",
         answer: [
-          "Serious side effects reach the board within days, and the board can pause new patients until the problem is resolved. Current patients can continue if stopping would be riskier. Every protocol is reviewed at least once a year.",
+          "The clinic must report serious side effects to the review board and the state health department within five days. If a serious safety problem is unresolved, the board must stop treating new patients until it is resolved. A current patient can continue only if their doctor and the board decide that stopping suddenly is riskier. Every protocol is reviewed at least once a year.",
         ],
       },
       {
@@ -140,7 +140,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
         question: "What does this cost a small practice?",
         answer: [
           "Taking part is optional. A practice can show competence with a statement from its medical director. The outcome record uses what is already in the chart: boards must accept medical records, and no one may require duplicate entry. The practice can let its electronic health record, a central sponsor or a contractor submit for it.",
-          "Trials through ordinary care pay practices for consent, treatment, follow-up and data submission.",
+          "A trial's approved protocol may pay practices for consent, treatment, follow-up and data submission.",
         ],
         link: { href: "/contact?type=clinic", label: "Partner with us" },
       },

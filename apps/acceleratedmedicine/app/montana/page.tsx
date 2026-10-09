@@ -81,7 +81,7 @@ const provisions = [
 const progress = [
   {
     title: "Rules in force",
-    text: "The operating rules for experimental treatment centers took effect July 25, 2026. The Montana Experimental Treatment Review Board, an independent board formed by Infinita, evaluates treatments.",
+    text: "The operating rules for experimental treatment centers took effect July 25, 2026, with an independent review board evaluating treatments.",
   },
   {
     title: "$12,500 to apply",
@@ -167,14 +167,27 @@ export default async function MontanaPage() {
             </li>
           ))}
         </ul>
+        <div className="mx-auto mt-6 flex max-w-5xl flex-col gap-4 rounded-lg border border-primary/30 bg-primary/5 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="font-semibold">The Montana Experimental Treatment Review Board is taking submissions</h3>
+            <p className="mt-2 text-muted-foreground">
+              Infinita formed this independent board of physicians, scientists and ethicists. It reviews treatments that
+              have passed Phase I for Montana&apos;s centers, and it has issued its first decision.
+            </p>
+          </div>
+          <Button asChild className="shrink-0">
+            <a href="https://montanaetrb.org" rel="noreferrer" target="_blank">
+              Visit montanaetrb.org <ExternalLink aria-hidden="true" className="ml-1 h-4 w-4" />
+            </a>
+          </Button>
+        </div>
         <p className="mx-auto mt-6 max-w-5xl text-sm text-muted-foreground">
           Reported by{" "}
           <a className={externalLink} href="https://www.technologyreview.com/2026/07/30/1140942/montana-experimental-medical-hub-pushed-forward-right-to-try/"
             rel="noreferrer" target="_blank">
             MIT Technology Review (July 30, 2026)
           </a>
-          . Board details at{" "}
-          <a className={externalLink} href="https://montanaetrb.org" rel="noreferrer" target="_blank">montanaetrb.org</a>.
+          .
         </p>
       </section>
 
@@ -182,7 +195,7 @@ export default async function MontanaPage() {
         <SectionHeading id="act-heading" title="How the act builds on Montana">
           Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials
           Act builds on it. Patients get screened treatments through their own doctor&apos;s practice as well as at
-          dedicated centers. Every outcome is published, including failures. And doctors can enroll patients in
+          dedicated centers. Every patient&apos;s outcome is recorded, and each protocol&apos;s yearly public report must include failures. And doctors can enroll patients in
           randomized trials during ordinary care, so the next patient chooses better.
         </SectionHeading>
         <div className="mt-8 text-center">

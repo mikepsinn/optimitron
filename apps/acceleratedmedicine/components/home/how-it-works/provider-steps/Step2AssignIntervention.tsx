@@ -6,7 +6,7 @@ import { Badge } from "@optimitron/neobrutalist-ui/ui/badge";
 
 // The act's two paths: the doctor recommends a screened treatment the patient chooses, or, if the
 // patient agrees, enrolls them in a centrally run randomized comparison, as RECOVERY did. The doctor
-// never picks an arm, and there is no placebo arm. Lecanemab's figures are from its FDA label.
+// never picks an arm, and the protocol decides whether a placebo is used. Lecanemab's figures are from its FDA label.
 export function Step2AssignIntervention() {
   return (
     <HowItWorksStep
@@ -18,7 +18,7 @@ export function Step2AssignIntervention() {
         "Recommend any screened treatment, with written consent",
         "Offer willing patients a randomized comparison",
         "The trial assigns treatments at random; you never pick an arm",
-        "No placebo arm",
+        "Compares treatments, doses or usual care, as the protocol sets",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">

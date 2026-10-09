@@ -223,7 +223,7 @@ export function TrackingSlide({ s }: Props) {
 }
 
 const safetySteps = [
-  { icon: AlertTriangle, title: "Serious side effect", text: "Reported to the board within days." },
+  { icon: AlertTriangle, title: "Serious side effect", text: "Reported to the board within five days." },
   { icon: Eye, title: "Board reassesses", text: "Also if a trial elsewhere stops for safety." },
   { icon: PauseCircle, title: "New patients paused", text: "Until a serious safety problem is resolved." },
   { icon: ShieldCheck, title: "Current patients protected", text: "They can continue if stopping is riskier." },

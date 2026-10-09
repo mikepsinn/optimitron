@@ -165,8 +165,8 @@ Society, Cancer Statistics 2026.
   no company can profit from testing a drug it can't patent.
 - No one learns from patients. 99.8%: of Alzheimer's patients are in no study, so nothing is
   learned from their treatment.
-- Right to Try gives makers no incentive. 21: drugs made available to patients in over six years,
-  because the federal law lets drug makers charge only their costs.
+- Right to Try gives makers no incentive. $0: profit allowed under Right to Try: makers may charge
+  only their costs, so few offer their drugs.
 
 **Visual:** Three white cards side by side, each with a heading, a large purple number and
 one sentence.
@@ -179,9 +179,11 @@ results. Three: the federal Right to Try Act (2018) lets a patient with a life-t
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
 costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side
-effects and their outcomes (21 CFR 300.200), but not whether patients improved. FDA reports only 21 investigational drugs used under the law from
-May 30, 2018 to December 31, 2024, and does not publish how many patients got them
-(https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/). It does not cover
+effects and their outcomes (21 CFR 300.200), but not whether patients improved. The FDA's yearly summaries count only 12 drugs and biologics
+with Right to Try use reported from May 30, 2018 through 2022, 4 in 2023, 5 in 2024 and 6 in 2025:
+products whose outcome data the FDA did not use in a marketing review, counted per period rather than
+as a running total. They do not say how many patients got them
+(https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try-annual-reporting-summary). It does not cover
 existing drugs like the 573 at all.
 
 **Say (video line 2):** There are three reasons. Old drugs can't be patented, so no company pays to
@@ -190,7 +192,7 @@ And the federal Right to Try law lets drug makers charge only their costs, so th
 to take part: only 21 drugs have been made available in over six years.
 
 **Source line:** Sources: Frontiers in Pharmacology, 2023; USC Schaeffer Center; Alzheimer's
-Association, 2026 Facts and Figures; FDA right-to-try summary, via FactCheck.org, 2026.
+Association, 2026 Facts and Figures; Right to Try Act, 2018.
 
 ## 5. It has worked before
 
@@ -446,7 +448,7 @@ phone check-ins track how she's doing.
 
 - Eyebrow: SAFETY NET
 - Title: If something goes wrong, the system reacts
-- 1 Serious side effect: Reported to the board within days.
+- 1 Serious side effect: Reported to the board within five days.
 - 2 Board reassesses: Also if a trial elsewhere stops for safety.
 - 3 New patients paused: Until a serious safety problem is resolved.
 - 4 Current patients protected: They can continue if stopping is riskier.
@@ -458,7 +460,7 @@ icon. Below, a full-width dark navy banner with a clock icon holding the last li
 **Say (video line 8):** Any serious side effect reaches the board within days, and it can pause new
 patients.
 
-**If asked:** Serious side effects go to the review board within days. The board must
+**If asked:** Serious side effects go to the review board and the state health department within five days. The board must
 reassess if a trial of the same treatment elsewhere stops for safety or lack of effect, and an
 unresolved serious safety finding immediately stops treatment of new patients. Current patients
 may continue if stopping suddenly is more dangerous.
@@ -549,7 +551,7 @@ is good, bad or neutral, so the evidence shows what really happens.
 - Review: An independent board approves each treatment, clinic and consent form.
 - Access: A treating doctor's documented recommendation and written consent are all a patient needs.
 - Payment: Clinics may charge for treatment. No insurer or state program has to pay.
-- Safety: Serious side effects reach the board within days, and it can pause new patients.
+- Safety: Serious side effects are reported within five days, and an unresolved safety finding stops new patients.
 - Results: Every outcome is reported in one open format and published, de-identified.
 
 **Visual:** A single white card with five rows, each a small purple icon, a bold lead-in and one
@@ -566,14 +568,15 @@ so they have a reason to offer new treatments, and one board approval can cover 
 federal Right to Try, by contrast, the drug maker may charge only its direct costs (21 CFR
 312.8(d)(1)), so almost nobody offers drugs. Expect the concern that charging patients for
 experimental treatment invites exploitation, as with unproven stem-cell clinics. The safeguards:
-the board approves each clinic and protocol; the consent form states the cost and that the
-treatment is experimental; serious side effects can pause new patients; and every result,
+the board approves each protocol and each clinic that offers it; the consent form says the
+treatment is experimental and that insurance does not have to pay; an unresolved serious safety
+problem stops new patients; and every result,
 including failures, is published, so a clinic cannot hide poor results. Liability:
-the bill protects doctors, clinics and review boards that take part in good faith from liability
-under state law, except for gross negligence, reckless or willful misconduct, fraud, or concealing
-safety information. Makers stay liable under ordinary state law. Federal law still applies, and federal Right to Try's protections cover only patients who meet its rules. Other payment
+the bill limits liability under state law for the people who review, provide or give a treatment
+under the act. The limit does not cover gross negligence, reckless or willful misconduct, intentional
+harm, fraud, concealing safety information, or a material violation of the act. Makers stay liable under ordinary state law. Federal law still applies, and federal Right to Try's protections cover only patients who meet its rules. Other payment
 options: installments or memberships, crowdfunding, patient-aid groups, free supply from the
-maker, and lower prices for patients who share outcome data.
+maker, and lower prices for patients who agree to share more data than the required outcome record.
 
 ## 19. Close
 

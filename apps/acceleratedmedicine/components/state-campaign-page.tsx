@@ -21,7 +21,7 @@ import {
 
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 const sourceLink = "font-medium text-primary hover:underline"
-const FDA_RIGHT_TO_TRY_SUMMARY = "https://www.factcheck.org/2026/06/no-evidence-for-trumps-right-to-try-claim/"
+const FDA_RIGHT_TO_TRY_SUMMARY = "https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try-annual-reporting-summary"
 
 /**
  * One state's page: the people there living with conditions better treatments could help, what the
@@ -44,9 +44,9 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
       source: { href: STATE_FACT_SOURCES.federalRightToTryAct, label: "Right to Try Act (2018)" },
     },
     {
-      title: "Few patients helped",
-      text: "The FDA reports only 21 investigational drugs used under the federal law from May 2018 to December 2024. It does not cover existing drugs approved for other conditions.",
-      source: { href: FDA_RIGHT_TO_TRY_SUMMARY, label: "FDA summary, via FactCheck.org (2026)" },
+      title: "Few drugs offered",
+      text: "The FDA's yearly reports list only a handful of drugs given under the federal law, because makers may charge only their costs. It does not cover existing drugs approved for other conditions.",
+      source: { href: FDA_RIGHT_TO_TRY_SUMMARY, label: "FDA Right to Try annual summary" },
     },
     {
       title: "A state that went further",

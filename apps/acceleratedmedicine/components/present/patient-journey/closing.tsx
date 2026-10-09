@@ -13,7 +13,7 @@ export const actProvisions = [
   { icon: ClipboardCheck, lead: "Review:", text: "An independent board approves each treatment, clinic and consent form." },
   { icon: Stethoscope, lead: "Access:", text: "A treating doctor's documented recommendation and written consent are all a patient needs." },
   { icon: Wallet, lead: "Payment:", text: "Clinics may charge for treatment. No insurer or state program has to pay." },
-  { icon: ShieldCheck, lead: "Safety:", text: "Serious side effects reach the board within days, and it can pause new patients." },
+  { icon: ShieldCheck, lead: "Safety:", text: "Serious side effects are reported within five days, and an unresolved safety finding stops new patients." },
   { icon: FileText, lead: "Results:", text: "Every outcome is reported in one open format and published, de-identified." },
 ];
 
