@@ -227,17 +227,19 @@ export function Globe({ className }: { className?: string }) {
       if (visible && !frame) loop()
     })
 
+    // Reduced motion and an off-screen globe draw once, so a change in the canvas's size redraws it.
+    const resized = new ResizeObserver(() => draw())
+
     const image = new Image()
     image.onload = () => {
       land = landPoints(image)
       draw()
       observer.observe(canvas)
+      resized.observe(canvas)
     }
     image.src = LAND_MAP
-    // Reduced motion draws once, so a resize redraws it.
-    window.addEventListener("resize", draw)
     return () => {
-      window.removeEventListener("resize", draw)
+      resized.disconnect()
       observer.disconnect()
       cancelAnimationFrame(frame)
       image.onload = null
