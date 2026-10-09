@@ -75,6 +75,9 @@ const acceleratedmedicineHomeFiles = [
   "apps/acceleratedmedicine/components/home/outcome-label.tsx",
   "apps/acceleratedmedicine/components/home/partners-section.tsx",
   "apps/acceleratedmedicine/components/home/rankings-preview.tsx",
+  // Lecanemab's outcome label (the label section and walkthrough step 2).
+  "apps/acceleratedmedicine/components/present/patient-journey/alzheimers.json",
+  "apps/acceleratedmedicine/components/present/patient-journey/alzheimers.ts",
 ];
 
 function getCampaignHomeFiles(appName) {
@@ -996,12 +999,41 @@ export const publicSiteAppRoutes = Object.freeze({
       sourcePage: "apps/acceleratedmedicine/app/support/approve/page.tsx",
     },
     {
-      // A presenter's deck for meetings. Nothing on the site links to it.
+      // The presentations and handouts, linked from the footer. Each can be saved as a PDF.
+      covers: [
+        "apps/acceleratedmedicine/app/resources/page.tsx",
+        "apps/acceleratedmedicine/components/home/explainer-video.tsx",
+        "apps/acceleratedmedicine/lib/navigation.ts",
+      ],
+      label: "Presentations and handouts",
+      routeName: "resources",
+      routePath: "/resources",
+      sourcePage: "apps/acceleratedmedicine/app/resources/page.tsx",
+    },
+    {
+      // A handout that prints on one letter-size page, from the deck's figures.
+      covers: [
+        "apps/acceleratedmedicine/app/one-pager/page.tsx",
+        "apps/acceleratedmedicine/components/print-pdf.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/opening.tsx",
+        "apps/acceleratedmedicine/content/patient-journey/script.md",
+        "apps/acceleratedmedicine/lib/act-questions.ts",
+      ],
+      label: "One-page overview",
+      routeName: "one-pager",
+      routePath: "/one-pager",
+      sourcePage: "apps/acceleratedmedicine/app/one-pager/page.tsx",
+    },
+    {
+      // A presenter's deck for meetings, linked from /resources.
       covers: [
         "apps/acceleratedmedicine/app/present/patient-journey/page.tsx",
+        "apps/acceleratedmedicine/components/print-pdf.tsx",
         "apps/acceleratedmedicine/components/present/card.tsx",
         "apps/acceleratedmedicine/components/present/deck.tsx",
         "apps/acceleratedmedicine/components/present/slide.tsx",
+        "apps/acceleratedmedicine/components/present/patient-journey/alzheimers.json",
         "apps/acceleratedmedicine/components/present/patient-journey/alzheimers.ts",
         "apps/acceleratedmedicine/components/present/patient-journey/closing.tsx",
         "apps/acceleratedmedicine/components/present/patient-journey/journey.tsx",

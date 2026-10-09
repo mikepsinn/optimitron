@@ -1,5 +1,9 @@
 // Common questions about the act, from the deck's speaker notes (content/patient-journey/script.md). The act
 // page shows all of them, and the FAQ reuses them, so the answers live in one place.
+/** The act in two sentences: the lead on /act and on the one-page overview (app/one-pager). */
+export const ACT_SUMMARY =
+  "Every patient's treatment can help the next patient. This proposed state law lets any patient get a screened, promising treatment through their own doctor, lets clinics charge enough to offer it, and publishes every result."
+
 /** `source` backs a figure in the answer and shows under it. */
 export type ActQuestion = { id: string; question: string; answer: string[]; source?: { href: string; label: string } }
 
