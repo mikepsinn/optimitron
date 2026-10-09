@@ -5,12 +5,12 @@ import { Clock, DollarSign, LineChart, Users } from "lucide-react"
 // performance claims here.
 const benefits = [
   {
-    title: "Improved Patient Experience",
+    title: "Easier for Patients",
     icon: Users,
-    intro: "Designed to make participation easier and more rewarding:",
+    intro: "Taking part fits into ordinary care:",
     points: [
-      "Take part from home instead of traveling to a trial site",
-      "Personalized health insights for every participant",
+      "Join through your own doctor and take part from home, instead of traveling to a trial site",
+      "See your results next to others on the same treatment",
       "Open to patients whom standard trials exclude",
     ],
   },
@@ -38,7 +38,7 @@ const benefits = [
   {
     title: "Faster Access to Treatments",
     icon: Clock,
-    intro: "Reduce the wait for life-changing treatments:",
+    intro: "Patients learn sooner what works:",
     points: [
       "Outcome data from the first patients, not only at the end of a multi-year trial",
       "Rankings update as new evidence arrives",

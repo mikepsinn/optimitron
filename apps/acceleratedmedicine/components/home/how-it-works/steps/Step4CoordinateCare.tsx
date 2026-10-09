@@ -7,12 +7,12 @@ export function Step4CoordinateCare() {
       stepNumber={4}
       title="Coordinate Your Care"
       icon={<Calendar className="h-5 w-5 text-primary" />}
-      description="Schedule lab tests, provider visits, and import your health records."
+      description="Book the trial's lab tests and visits at the clinic you already use."
       benefits={[
-        "Book appointments with just a few clicks",
-        "Import data from your existing health records",
-        "Attend virtual check-ins from anywhere",
-        "Receive reminders for upcoming appointments",
+        "Labs and visits at your usual clinic",
+        "Video check-ins instead of trips to a trial site",
+        "Your records come in, so you don't repeat your history",
+        "A reminder before each appointment",
       ]}
       preview={
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
