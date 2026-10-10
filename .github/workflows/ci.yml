@@ -322,7 +322,7 @@ jobs:
       DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
     services:
       postgres:
-        image: postgres:16
+        image: public.ecr.aws/docker/library/postgres:16
         env:
           POSTGRES_DB: ci
           POSTGRES_USER: ci
@@ -401,7 +401,7 @@ jobs:
       SKIP_DB_TEST_SETUP: "1"
     services:
       postgres:
-        image: postgres:16
+        image: public.ecr.aws/docker/library/postgres:16
         env:
           POSTGRES_DB: test
           POSTGRES_USER: test
@@ -635,7 +635,7 @@ jobs:
       NEXTAUTH_URL: http://127.0.0.1:3001
     services:
       postgres:
-        image: postgres:16
+        image: public.ecr.aws/docker/library/postgres:16
         env:
           POSTGRES_DB: test
           POSTGRES_USER: test
@@ -719,7 +719,7 @@ jobs:
       PLAYWRIGHT_BROWSER_CHANNEL: chrome
     services:
       postgres:
-        image: postgres:16
+        image: public.ecr.aws/docker/library/postgres:16
         env:
           POSTGRES_DB: test
           POSTGRES_USER: test

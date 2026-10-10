@@ -56,6 +56,7 @@ const acceleratedmedicineHomeFiles = [
   "apps/acceleratedmedicine/components/accelerated-medicine-mobile-menu.tsx",
   "apps/acceleratedmedicine/components/home/benefit-cards.tsx",
   "apps/acceleratedmedicine/components/home/explainer-video.tsx",
+  "apps/acceleratedmedicine/components/home/globe.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/HowItWorksStep.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/PatientSteps.tsx",
   "apps/acceleratedmedicine/components/home/how-it-works/ProviderSteps.tsx",

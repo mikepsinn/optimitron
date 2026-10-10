@@ -1,4 +1,4 @@
-import { ArrowRight, Check, CheckCircle2 } from "lucide-react"
+import { ArrowRight, Check, CheckCircle2, Database, Hospital, RefreshCw } from "lucide-react"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@optimitron/neobrutalist-ui/ui/card"
@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@opti
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { BenefitCards } from "@/components/home/benefit-cards"
 import { ExplainerVideoSection } from "@/components/home/explainer-video"
+import { Globe } from "@/components/home/globe"
 import { PatientSteps } from "@/components/home/how-it-works/PatientSteps"
 import { ProviderSteps } from "@/components/home/how-it-works/ProviderSteps"
 import { ResearchPartnerSteps } from "@/components/home/how-it-works/ResearchPartnerSteps"
@@ -152,6 +153,48 @@ function OutcomeLabels() {
   )
 }
 
+// Where the rankings and labels get their evidence: every treated patient, in every country.
+const networkSteps = [
+  { icon: Hospital, text: "Any clinic, in any country, reports outcomes in one open format." },
+  { icon: Database, text: "De-identified results are pooled in one public database. The records stay with patients and their clinics." },
+  { icon: RefreshCw, text: "Rankings and outcome labels update as results arrive, for every patient, everywhere." },
+]
+
+function GlobalNetwork() {
+  return (
+    <section aria-labelledby="global-network-heading" className="dark band-background w-full py-12 text-foreground md:py-24">
+      <div className="container px-4 md:px-6">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Globe className="mx-auto aspect-square w-full max-w-[340px] sm:max-w-[520px]" />
+          <div>
+            <h2 id="global-network-heading" className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Every patient on Earth helps the next one
+            </h2>
+            <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
+              Today, results stay inside the hospital, company or country that collected them, and most treated patients
+              add nothing to what doctors know. In one open network, a patient in Nairobi who reports how a treatment
+              worked improves the outcome label a doctor reads in Seoul.
+            </p>
+            <ul className="mt-6 space-y-4">
+              {networkSteps.map(step => (
+                <li key={step.text} className="flex gap-4">
+                  <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                    <step.icon className="h-5 w-5" />
+                  </span>
+                  <span className="pt-2">{step.text}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 font-semibold md:text-lg">
+              Every disease gets studied in every country at once, and nobody waits for someone else&apos;s trial.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function HowItShouldWork() {
   return (
     <section id="how-it-works" className="w-full scroll-mt-16 py-12 md:py-24 lg:py-32">
@@ -198,6 +241,7 @@ export function HomePage() {
       <ExplainerVideoSection />
       <Rankings />
       <OutcomeLabels />
+      <GlobalNetwork />
       <HowItShouldWork />
       <Benefits />
       <PartnersSection />

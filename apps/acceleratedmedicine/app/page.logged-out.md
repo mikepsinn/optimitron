@@ -88,6 +88,12 @@
 - 11%
 - 8%
 - Source: [FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/761269Orig1s001lbl.pdf), unless noted
+### Every patient on Earth helps the next one
+- Today, results stay inside the hospital, company or country that collected them, and most treated patients add nothing to what doctors know. In one open network, a patient in Nairobi who reports how a treatment worked improves the outcome label a doctor reads in Seoul.
+- Any clinic, in any country, reports outcomes in one open format.
+- De-identified results are pooled in one public database. The records stay with patients and their clinics.
+- Rankings and outcome labels update as results arrive, for every patient, everywhere.
+- Every disease gets studied in every country at once, and nobody waits for someone else's trial.
 ### How Medicine Should Actually Work
 - Patients would report outcomes, doctors would see what has worked for patients like theirs, and researchers would run trials on the same network.
 - FOR PATIENTS

@@ -61,6 +61,10 @@
   .band-muted-fade {
     border-image: linear-gradient(color-mix(in srgb, var(--muted) 50%, transparent), var(--muted)) fill 0 / 0 / 0 100vmax;
   }
+  /* The page's own background color. In a .dark section, that is the dark slides' navy. */
+  .band-background {
+    border-image: linear-gradient(var(--background), var(--background)) fill 0 / 0 / 0 100vmax;
+  }
   .band-fade {
     border-image: linear-gradient(var(--background), color-mix(in srgb, var(--muted) 50%, transparent)) fill 0 / 0 / 0 100vmax;
   }
