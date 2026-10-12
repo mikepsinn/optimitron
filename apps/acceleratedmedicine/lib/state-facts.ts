@@ -4,6 +4,7 @@ import {
 } from "@optimitron/data/parameters";
 
 import type { StateName } from "./right-to-try";
+import type { TrialConditionId } from "./state-trials";
 
 export const STATE_FACT_SOURCES = {
   federalRightToTryAct:
@@ -102,6 +103,8 @@ export interface NationalConditionCount {
   usCount: number;
   sourceUrl: string;
   sourceLabel: string;
+  /** Its drug trials in lib/state-trials.json. Rare diseases span thousands of conditions, so they have none. */
+  trials?: TrialConditionId;
 }
 
 /**
@@ -111,12 +114,14 @@ export interface NationalConditionCount {
 export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
   {
     label: "Diabetes",
+    trials: "diabetes",
     usCount: 40_000_000,
     sourceUrl: "https://diabetes.org/about-diabetes/statistics/about-diabetes",
     sourceLabel: "American Diabetes Association, 2023 CDC data",
   },
   {
     label: "Chronic kidney disease",
+    trials: "kidney",
     usCount: 35_500_000,
     sourceUrl:
       "https://www.niddk.nih.gov/health-information/health-statistics/kidney-disease",
@@ -130,18 +135,21 @@ export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
   },
   {
     label: "Major depression (past year)",
+    trials: "depression",
     usCount: 21_000_000,
     sourceUrl: "https://www.nimh.nih.gov/health/statistics/major-depression",
     sourceLabel: "NIMH, 2021",
   },
   {
     label: "Living with or after cancer",
+    trials: "cancer",
     usCount: 18_100_000,
     sourceUrl: "https://www.cancer.gov/about-cancer/understanding/statistics",
     sourceLabel: "National Cancer Institute, 2022",
   },
   {
     label: "COPD",
+    trials: "copd",
     usCount: 11_700_000,
     sourceUrl:
       "https://www.lung.org/lung-health-diseases/lung-disease-lookup/copd/learn-about-copd",
@@ -149,6 +157,7 @@ export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
   },
   {
     label: "Alzheimer's disease",
+    trials: "alzheimers",
     usCount: 7_400_000,
     sourceUrl: "https://www.alz.org/alzheimers-dementia/facts-figures",
     sourceLabel: "Alzheimer's Association, 2026",

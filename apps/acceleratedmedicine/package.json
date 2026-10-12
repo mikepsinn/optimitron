@@ -13,7 +13,8 @@
     "test:unit": "vitest run --exclude 'tests/integration/**'",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "smoke:db": "tsx scripts/smoke-treaty-db.ts",
-    "video:narration": "tsx scripts/video-narration.ts"
+    "video:narration": "tsx scripts/video-narration.ts",
+    "state-trials": "tsx scripts/state-trials.ts"
   },
   "dependencies": {
     "@optimitron/data": "workspace:^",

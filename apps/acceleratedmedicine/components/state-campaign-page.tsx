@@ -18,6 +18,7 @@ import {
   STATE_POPULATIONS,
   UNTREATED_RARE_DISEASE_SHARE_PCT,
 } from "@/lib/state-facts"
+import { STATE_TRIALS, stateTrialsUrl } from "@/lib/state-trials"
 
 const card = "rounded-lg border bg-card p-6 shadow-sm"
 const sourceLink = "font-medium text-primary hover:underline"
@@ -36,6 +37,10 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
     .map(condition => ({ ...condition, stateCount: estimateStateShare(name, condition.usCount) }))
     .sort((a, b) => b.stateCount - a.stateCount)
   const largestCount = conditions[0]?.stateCount ?? 1
+  const trials = STATE_TRIALS.states[name]
+  // A count over MAX_LISTED_TRIALS links to ClinicalTrials.gov's broader search, which the note explains.
+  const broadSearch = conditions.some(condition => condition.trials && !trials[condition.trials].ids)
+  const asOf = new Date(`${STATE_TRIALS.asOf}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })
 
   const today = [
     {
@@ -86,6 +91,18 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
               <div aria-hidden="true" className="mt-2 h-2 rounded-full bg-muted">
                 <div className="h-2 rounded-full bg-primary" style={{ width: `${(condition.stateCount / largestCount) * 100}%` }} />
               </div>
+              {condition.trials && (
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  {trials[condition.trials].count === 0
+                    ? `No drug trials recruiting in ${name}`
+                    : (
+                      <a href={stateTrialsUrl(name, condition.trials)} rel="noreferrer" target="_blank" className={sourceLink}>
+                        {trials[condition.trials].count.toLocaleString("en-US")} drug{" "}
+                        {trials[condition.trials].count === 1 ? "trial" : "trials"} recruiting in {name}
+                      </a>
+                    )}
+                </p>
+              )}
             </li>
           ))}
         </ul>
@@ -93,6 +110,12 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
           Estimates: national counts scaled to {name}&apos;s share of the US population (
           <a href={STATE_FACT_SOURCES.statePopulations} rel="noreferrer" target="_blank" className={sourceLink}>Census, 2025</a>
           ). Each condition links to its national source.
+        </p>
+        <p className="mx-auto mt-2 max-w-3xl text-sm text-muted-foreground">
+          Trials: drug and biologic trials with a recruiting site in {name}, from{" "}
+          <a href="https://clinicaltrials.gov" rel="noreferrer" target="_blank" className={sourceLink}>ClinicalTrials.gov</a>{" "}
+          on {asOf}. Each count opens its trials
+          {broadSearch && ", except the largest, which open a broader search that also lists other kinds of trials"}.
         </p>
       </section>
 

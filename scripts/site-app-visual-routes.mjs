@@ -1317,6 +1317,8 @@ export function getSiteAppScreenshotRoutes(appName, siteVariant) {
         "apps/acceleratedmedicine/components/section-heading.tsx",
         "apps/acceleratedmedicine/lib/right-to-try.ts",
         "apps/acceleratedmedicine/lib/state-facts.ts",
+        "apps/acceleratedmedicine/lib/state-trials.json",
+        "apps/acceleratedmedicine/lib/state-trials.ts",
       ],
       sourcePage: "apps/acceleratedmedicine/app/states/[state]/page.tsx",
     });
