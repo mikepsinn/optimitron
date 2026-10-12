@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import {
-  CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE,
+  CURRENT_PATIENT_PARTICIPATION_RATE,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   EFFICACY_LAG_YEARS,
@@ -61,9 +61,9 @@ const graveyardStats: GraveyardStat[] = [
   {
     value: (
       <ParameterValue
-        param={CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE}
+        param={CURRENT_PATIENT_PARTICIPATION_RATE}
         valueOverride={`${(
-          CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE.value * 100
+          CURRENT_PATIENT_PARTICIPATION_RATE.value * 100
         ).toFixed(2)}%`}
       />
     ),

@@ -134,7 +134,7 @@
 - [102M deaths](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html)
 #### MODELED DEATHS DURING THE WAIT
 - The model's primary estimate for 1962–2024. Inspect the assumptions.
-- [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
+- [0.08%](https://manual.WarOnDisease.org/knowledge/problem.html)
 #### CURRENT ANNUAL TRIAL PARTICIPATION
 - About [1.08 billion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) patients are willing. The current system enrolls [1.9 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year.
 - [READ THE RECEIPTS](https://invisible-graveyard.warondisease.org)
@@ -260,7 +260,7 @@
 - REDDIT
 - COPY LINK
 - [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
-- 1.7 YEARS OVERDUE
+- 1.8 YEARS OVERDUE
 - TIME REQUIRED: 1.6 HOURS COMBINED
 - [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
 - Humanity maintains enough nuclear weapons to trigger a civilization-ending nuclear winter [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. This treaty asks us to settle for enough weapons to do it 121.2 times in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
@@ -280,31 +280,22 @@
 - ⏱ TIME
 - REMIND
 - [Donald Trump](/tasks/1-pct-treaty-signer-us)
-- [[initials]](/people/donald-trump-us)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-us)
 - [Li Qiang](/tasks/1-pct-treaty-signer-cn)
-- [[initials]](/people/li-qiang-cn)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-cn)
 - [Yulia Svyrydenko](/tasks/1-pct-treaty-signer-ua)
-- [[initials]](/people/yulia-svyrydenko-ua)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ua)
 - [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
-- [[initials]](/people/mikhail-mishustin-ru)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
 - [Narendra Modi](/tasks/1-pct-treaty-signer-in)
-- [[initials]](/people/narendra-modi-in)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
 - [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
-- [[initials]](/people/donald-tusk-pl)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
 - [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
-- [[initials]](/people/salman-bin-abdulaziz-al-saud-sa)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
 - [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
-- [[initials]](/people/keir-starmer-gb)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
 - [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
-- [[initials]](/people/friedrich-merz-de)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)
