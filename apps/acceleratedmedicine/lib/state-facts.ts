@@ -102,6 +102,8 @@ export interface NationalConditionCount {
   usCount: number;
   sourceUrl: string;
   sourceLabel: string;
+  /** A sourced line shown under the condition. */
+  note?: { text: string; sourceUrl: string; sourceLabel: string };
 }
 
 /**
@@ -152,6 +154,11 @@ export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
     usCount: 7_400_000,
     sourceUrl: "https://www.alz.org/alzheimers-dementia/facts-figures",
     sourceLabel: "Alzheimer's Association, 2026",
+    note: {
+      text: "About 99% of people who could join an Alzheimer's trial never consider one or are never referred.",
+      sourceUrl: "https://schaeffer.usc.edu/research/due-to-complex-barriers-the-overwhelming-majority-of-alzheimers-patients-do-not-participate-in-clinical-trials/",
+      sourceLabel: "USC Schaeffer Center, 2020",
+    },
   },
 ];
 
