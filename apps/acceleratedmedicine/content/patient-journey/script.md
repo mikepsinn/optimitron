@@ -163,8 +163,8 @@ Society, Cancer Statistics 2026.
 - Title: Why promising treatments go untested
 - No one pays to test old drugs. 573: drugs proposed for Alzheimer's are mostly untested, because
   no company can profit from testing a drug it can't patent.
-- No one learns from patients. 99%: of people who could join an Alzheimer's trial never consider
-  one or are never referred, so nothing is learned from their treatment.
+- No one learns from patients. 99%: of Alzheimer's patients are in no drug trial, so nothing is
+  learned from their treatment.
 - Right to Try gives makers no incentive. $0: profit allowed under Right to Try: makers may charge
   only their costs, so few offer their drugs.
 
@@ -172,10 +172,10 @@ Society, Cancer Statistics 2026.
 one sentence.
 
 **If asked:** One: no financial incentive. Many of the 573 drugs are off patent, so no company
-can earn back the cost of a trial. Two: no learning. The USC Schaeffer Center estimates that about 99% of
-potential participants in Alzheimer's trials either never consider a trial or are never referred to
-one (2020, https://schaeffer.usc.edu/research/due-to-complex-barriers-the-overwhelming-majority-of-alzheimers-patients-do-not-participate-in-clinical-trials/). So almost every patient is treated outside any study, and nobody records, pools or publishes
-their results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
+can earn back the cost of a trial. Two: no learning. The 182 Alzheimer's drug trials under way in 2025 involve
+about 50,000 people worldwide (Cummings et al., 2025, https://doi.org/10.1002/trc2.70098). Even if every one were
+an American with Alzheimer's, that is under 1% of the 7.4 million. So almost every patient is treated
+outside any study, and nobody records, pools or publishes their results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
 costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side
@@ -191,8 +191,8 @@ test them. Almost no Alzheimer's patients are in any study, so nobody learns fro
 And the federal Right to Try law lets drug makers charge only their costs, so they have no reason
 to take part: only 21 drugs have been made available in over six years.
 
-**Source line:** Sources: Frontiers in Pharmacology, 2023; USC Schaeffer Center, 2020; Right to Try
-Act, 2018.
+**Source line:** Sources: Frontiers in Pharmacology, 2023; Cummings et al., 2025; Alzheimer's
+Association, 2026 Facts and Figures; Right to Try Act, 2018.
 
 ## 5. It has worked before
 

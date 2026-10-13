@@ -155,9 +155,9 @@ export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
     sourceUrl: "https://www.alz.org/alzheimers-dementia/facts-figures",
     sourceLabel: "Alzheimer's Association, 2026",
     note: {
-      text: "About 99% of people who could join an Alzheimer's trial never consider one or are never referred.",
-      sourceUrl: "https://schaeffer.usc.edu/research/due-to-complex-barriers-the-overwhelming-majority-of-alzheimers-patients-do-not-participate-in-clinical-trials/",
-      sourceLabel: "USC Schaeffer Center, 2020",
+      text: "Over 99% are in no drug trial.",
+      sourceUrl: "https://doi.org/10.1002/trc2.70098",
+      sourceLabel: "Cummings et al., 2025",
     },
   },
 ];
