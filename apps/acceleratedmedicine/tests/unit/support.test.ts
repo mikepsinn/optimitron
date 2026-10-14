@@ -72,7 +72,7 @@ describe("organization web addresses", () => {
 });
 
 describe("where a supporter lives", () => {
-  const base = { submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae", firstName: "Ada", email: "ada@example.com" };
+  const base = { submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae", firstName: "Ada", lastName: "Lovelace", email: "ada@example.com" };
 
   it("requires a state in the US and drops a stale one elsewhere", () => {
     expect(supporterSchema.safeParse({ ...base, countryCode: "US", state: "" }).success).toBe(false);

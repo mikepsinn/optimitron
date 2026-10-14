@@ -65,7 +65,7 @@ export function placeLabel({ countryCode, state }: { countryCode: string; state:
   return countryCode ? countryName(countryCode) : OUTSIDE_US
 }
 
-/** "Ada Lovelace", or just "Ada" for someone with one name. */
+/** "Ada Lovelace". Sign-ups from before the last name box have only a first name. */
 export function fullName(firstName: string, lastName: string): string {
   return [firstName, lastName].filter(Boolean).join(" ")
 }

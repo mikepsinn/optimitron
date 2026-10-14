@@ -153,7 +153,7 @@ export function SupporterForm({ countries }: { countries: readonly CountryOption
     <form onSubmit={event => submit(event, { updates })} className={`${card} space-y-6`}>
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="First name"><Input name="firstName" autoComplete="given-name" maxLength={80} required className="h-11" /></Field>
-        <Field label="Last name" optional><Input name="lastName" autoComplete="family-name" maxLength={80} className="h-11" /></Field>
+        <Field label="Last name"><Input name="lastName" autoComplete="family-name" maxLength={80} required className="h-11" /></Field>
         <div className="sm:col-span-2">
           <Field label="Email"><Input name="email" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
         </div>
@@ -205,7 +205,7 @@ export function OrganizationForm({ countries }: { countries: readonly CountryOpt
         <Field label="Website"><Input name="website" type="text" inputMode="url" autoComplete="url" maxLength={1000} required placeholder="example.org" className="h-11" /></Field>
         <Field label="Logo link" optional><Input name="logoUrl" type="text" inputMode="url" maxLength={1000} placeholder="example.org/logo.png" className="h-11" /></Field>
         <Field label="Contact first name"><Input name="contactFirstName" autoComplete="given-name" maxLength={80} required className="h-11" /></Field>
-        <Field label="Contact last name" optional><Input name="contactLastName" autoComplete="family-name" maxLength={80} className="h-11" /></Field>
+        <Field label="Contact last name"><Input name="contactLastName" autoComplete="family-name" maxLength={80} required className="h-11" /></Field>
         <div className="sm:col-span-2">
           <Field label="Contact email"><Input name="contactEmail" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
         </div>

@@ -33,8 +33,7 @@ const webAddress = z.preprocess(
 
 const honeypot = z.string().max(500).optional().default("")
 const firstName = z.string().trim().min(1).max(80)
-// Some people have one name, so a last name is optional.
-const lastName = z.string().trim().max(80).optional().default("")
+const lastName = z.string().trim().min(1).max(80)
 
 /**
  * A US submission names a state from `states`. Anywhere else, the state is dropped: the forms hide it, and a

@@ -14,7 +14,7 @@ const supporterForm: StoredForm = {
   purpose: FormPurpose.INTAKE,
   fields: [
     { key: "firstName", prompt: "First name", type: FormFieldType.SHORT_TEXT, required: true },
-    { key: "lastName", prompt: "Last name", type: FormFieldType.SHORT_TEXT, required: false },
+    { key: "lastName", prompt: "Last name", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "email", prompt: "Email", type: FormFieldType.EMAIL, required: true },
     { key: "countryCode", prompt: "Country", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: COUNTRY_CODES },
     // Required in the US only, so the field itself is optional.
@@ -32,7 +32,7 @@ const organizationForm: StoredForm = {
     { key: "website", prompt: "Website", type: FormFieldType.URL, required: true },
     { key: "logoUrl", prompt: "Logo link", type: FormFieldType.URL, required: false },
     { key: "contactFirstName", prompt: "Contact first name", type: FormFieldType.SHORT_TEXT, required: true },
-    { key: "contactLastName", prompt: "Contact last name", type: FormFieldType.SHORT_TEXT, required: false },
+    { key: "contactLastName", prompt: "Contact last name", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "contactEmail", prompt: "Contact email", type: FormFieldType.EMAIL, required: true },
     { key: "countryCode", prompt: "Country", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: COUNTRY_CODES },
     { key: "state", prompt: "Where it works", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: ORGANIZATION_STATES },
