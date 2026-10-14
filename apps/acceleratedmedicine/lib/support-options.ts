@@ -9,9 +9,10 @@ export const OUTSIDE_US = "Outside the United States"
 
 export const US = "US"
 
-const stateNames: string[] = US_STATES.map(([name]) => name)
+// Washington, D.C. is not a state, but people and organizations there need a choice too.
+const stateNames: string[] = [...US_STATES.map(([name]) => name), "District of Columbia"].sort((a, b) => a.localeCompare(b, "en"))
 
-/** A US supporter picks their state. */
+/** A US supporter picks their state, or the District of Columbia. */
 export const SUPPORTER_STATES = stateNames as [string, ...string[]]
 
 /** A US organization picks the state it works in, or says it works nationwide. */
