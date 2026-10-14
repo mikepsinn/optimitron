@@ -172,9 +172,9 @@ Society, Cancer Statistics 2026.
 one sentence.
 
 **If asked:** One: no financial incentive. Many of the 573 drugs are off patent, so no company
-can earn back the cost of a trial. Two: no learning. The 182 Alzheimer's drug trials under way in 2025 involve
-about 50,000 people worldwide (Cummings et al., 2025, https://doi.org/10.1002/trc2.70098). Even if every one were
-an American with Alzheimer's, that is under 1% of the 7.4 million. So almost every patient is treated
+can earn back the cost of a trial. Two: no learning. The 182 Alzheimer's drug trials under way in 2025 need
+about 50,000 participants to fill them, worldwide (Cummings et al., 2025, https://doi.org/10.1002/trc2.70098). Even if every place
+went to an American with Alzheimer's, that is under 1% of the 7.4 million. So almost every patient is treated
 outside any study, and nobody records, pools or publishes their results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
