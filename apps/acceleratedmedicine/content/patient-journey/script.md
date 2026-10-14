@@ -296,10 +296,11 @@ pooled results improve the rankings and labels, so the next patient chooses bett
 - Public directory: every participating clinic, with location and status.
 - Tag: Prototype
 
-**Visual:** The prototype tag, then the prototype's own ranking cards for the top three Alzheimer's treatments,
-large enough to read: Donanemab (effectiveness 57, safety 48, $38,000 a year), Lecanemab (55, 50,
-$36,500) and Donepezil (45, 60, $525). The two features run along the bottom with lavender
-icons.
+**Visual:** On the left, the prototype tag and the two features with lavender icons. On the right,
+the prototype's rankings for Alzheimer's, one row per treatment for the top five by estimated
+effectiveness, each with its effectiveness and safety bars, yearly cost and time to effect: Donanemab
+(57, 48, $38,000), Lecanemab (55, 50, $36,500), Donepezil (45, 60, $525), Rivastigmine (43, 58, $600)
+and Galantamine (42, 58, $550).
 
 **If asked:** This is the working prototype. It ranks Alzheimer's treatments by estimated
 effectiveness and safety. Today it lists approved drugs. In a care-integrated system, screened

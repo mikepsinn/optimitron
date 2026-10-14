@@ -1,62 +1,39 @@
-import { ArrowRight } from "lucide-react"
-
-import { Button } from "@optimitron/neobrutalist-ui/ui/button"
-
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/present/card"
+import { Card } from "@/components/present/card"
 import type { TreatmentEstimate } from "@/components/present/patient-journey/alzheimers"
 
-// The decentralized-fda prototype's treatment ranking card and scores (apps/web/components/demo), drawn on
-// slide 8 as a picture of the product. The prototype's links to its Outcome Label pages are left out.
+// Treatment rankings in the decentralized-fda prototype's style (apps/web/components/demo), drawn on slide 8 as a
+// picture of the product: one row per treatment, ranked by estimated effectiveness.
 const dollars = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 
-export function TreatmentScores({ effectiveness, safetyScore }: { effectiveness: number; safetyScore: number }) {
+// The two score columns, shared by the header and every row so they line up.
+export const RANKING_COLUMNS = "grid grid-cols-[72px_minmax(0,1fr)_210px_210px] items-center gap-8"
+
+function Score({ value }: { value: number }) {
   return (
-    <dl className="grid grid-cols-2 gap-6">
-      {[
-        { label: "Effectiveness estimate", value: effectiveness },
-        { label: "Safety estimate", value: safetyScore },
-      ].map(metric => (
-        <div key={metric.label}>
-          <dt className="min-h-10 text-sm text-muted-foreground sm:min-h-0">{metric.label}</dt>
-          <dd className="mt-1 text-3xl font-semibold tabular-nums tracking-tight">
-            {metric.value}<span className="ml-1 text-sm font-normal text-muted-foreground">/ 100</span>
-          </dd>
-          <div aria-hidden="true" className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${metric.value}%` }} />
-          </div>
-        </div>
-      ))}
-    </dl>
+    <div className="flex items-center gap-4">
+      <div aria-hidden="true" className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${value}%` }} />
+      </div>
+      <span className="w-14 text-right text-[30px] font-semibold tabular-nums">{value}</span>
+    </div>
   )
 }
 
-export function TreatmentRankingCard({ treatment, rank }: { treatment: TreatmentEstimate; rank: number }) {
+export function TreatmentRankingRow({ treatment, rank }: { treatment: TreatmentEstimate; rank: number }) {
+  const cost = treatment.annualCost == null ? "Cost not available" : `${dollars.format(treatment.annualCost)} a year`
   return (
-    <Card className="flex h-full flex-col">
-      <CardHeader className="flex-row items-start gap-3 space-y-0 md:min-h-[100px]">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary"
-          aria-label={`Rank ${rank} by estimated effectiveness`}>{rank}</span>
-        <h3 className="pt-1 text-lg font-semibold leading-snug">{treatment.name}</h3>
-      </CardHeader>
-      <CardContent className="flex-1 space-y-5">
-        <TreatmentScores effectiveness={treatment.effectiveness} safetyScore={treatment.safetyScore} />
-        <dl className="grid grid-cols-2 gap-4 border-t pt-4 text-sm">
-          <div>
-            <dt className="text-muted-foreground">Annual cost estimate</dt>
-            <dd className="mt-1 font-medium tabular-nums">
-              {treatment.annualCost == null ? "Not available" : dollars.format(treatment.annualCost)}{" "}
-              <span className="font-normal text-muted-foreground">USD</span>
-            </dd>
-          </div>
-          <div><dt className="text-muted-foreground">Time to effect</dt><dd className="mt-1 font-medium">{treatment.timeToEffect || "Not available"}</dd></div>
-        </dl>
-      </CardContent>
-      <CardFooter className="flex-col items-stretch gap-2">
-        {/* Drawn like the prototype's button, but nothing to open from a slide. */}
-        <Button asChild variant="outline" className="justify-between gap-2">
-          <span aria-hidden="true">View Outcome Label <ArrowRight className="h-4 w-4" /></span>
-        </Button>
-      </CardFooter>
+    <Card className={`${RANKING_COLUMNS} px-8 py-5`}>
+      <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-[26px] font-semibold text-primary"
+        aria-label={`Rank ${rank} by estimated effectiveness`}>{rank}</span>
+      <div className="min-w-0">
+        <h3 className="truncate text-[32px] font-semibold leading-tight">{treatment.name}</h3>
+        <p className="mt-1 text-[22px] text-muted-foreground">
+          {cost}
+          {treatment.timeToEffect && <> · effect in {treatment.timeToEffect}</>}
+        </p>
+      </div>
+      <Score value={treatment.effectiveness} />
+      <Score value={treatment.safetyScore} />
     </Card>
   )
 }
