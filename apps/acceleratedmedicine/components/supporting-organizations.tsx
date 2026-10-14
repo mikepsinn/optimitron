@@ -1,3 +1,4 @@
+import { placeLabel } from "@/lib/support-options"
 import type { ListedOrganization } from "@/lib/support-store"
 
 /** Approved organizations, each linked to its own website. */
@@ -20,7 +21,7 @@ export function SupportingOrganizations({ organizations, showState = true }: { o
             <a href={organization.website} rel="noreferrer nofollow" target="_blank" className="font-semibold hover:text-primary hover:underline">
               {organization.organization}
             </a>
-            {showState && <p className="text-sm text-muted-foreground">{organization.state}</p>}
+            {showState && <p className="text-sm text-muted-foreground">{placeLabel(organization)}</p>}
           </div>
         </li>
       ))}

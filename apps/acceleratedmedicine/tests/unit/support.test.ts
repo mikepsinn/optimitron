@@ -2,18 +2,29 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { approveOrganization, confirmSupporter, organizationSchema, sendOrganizationEndorsement } from "../../lib/support";
+import { approveOrganization, confirmSupporter, organizationSchema, sendOrganizationEndorsement, supporterSchema } from "../../lib/support";
 import { signSupportLink, verifySupportLink } from "../../lib/support-links";
-import { countConfirmedPeople, listApprovedOrganizations, type StoredOrganization, type StoredSupporter } from "../../lib/support-store";
+import { countConfirmedPeople, listApprovedOrganizations, toOrganization, toSupporter, type StoredOrganization, type StoredSupporter } from "../../lib/support-store";
 
-const supporter: StoredSupporter = { id: "sub_1", name: "Ada", email: "ada@example.com", state: "Illinois", updates: true };
+const supporter: StoredSupporter = {
+  id: "sub_1",
+  firstName: "Ada",
+  lastName: "Lovelace",
+  name: "Ada Lovelace",
+  email: "ada@example.com",
+  countryCode: "US",
+  state: "Illinois",
+  updates: true,
+};
 const organization: StoredOrganization = {
   id: "org_1",
   organization: "Illinois Patient Group",
   website: "https://example.org",
   logoUrl: "",
-  contactName: "Bea",
+  contactFirstName: "Bea",
+  contactLastName: "Smith",
   contactEmail: "bea@example.org",
+  countryCode: "US",
   state: "Illinois",
 };
 
@@ -41,8 +52,10 @@ describe("organization web addresses", () => {
   const base = {
     submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
     organization: "Illinois Patient Group",
-    contactName: "Bea",
+    contactFirstName: "Bea",
+    contactLastName: "Smith",
     contactEmail: "bea@example.org",
+    countryCode: "US",
     state: "Illinois",
   };
 
@@ -55,6 +68,27 @@ describe("organization web addresses", () => {
   it("rejects links the site must not render, such as javascript:", () => {
     expect(organizationSchema.safeParse({ ...base, website: "javascript:alert(1)" }).success).toBe(false);
     expect(organizationSchema.safeParse({ ...base, website: "https://example.org", logoUrl: "data:image/svg+xml,<svg/>" }).success).toBe(false);
+  });
+});
+
+describe("where a supporter lives", () => {
+  const base = { submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae", firstName: "Ada", email: "ada@example.com" };
+
+  it("requires a state in the US and drops a stale one elsewhere", () => {
+    expect(supporterSchema.safeParse({ ...base, countryCode: "US", state: "" }).success).toBe(false);
+    expect(supporterSchema.safeParse({ ...base, countryCode: "US", state: "Nationwide" }).success).toBe(false);
+    expect(supporterSchema.parse({ ...base, countryCode: "US", state: "Illinois" }).state).toBe("Illinois");
+    expect(supporterSchema.parse({ ...base, countryCode: "DE", state: "Illinois" }).state).toBe("");
+    expect(supporterSchema.safeParse({ ...base, countryCode: "ZZ" }).success).toBe(false);
+  });
+
+  it("reads sign-ups from before the forms asked for a country and a first and last name", () => {
+    expect(toSupporter({ id: "old_1", values: { name: "Ada Lovelace", email: "ada@example.com", state: "Illinois", updates: true } }))
+      .toMatchObject({ firstName: "Ada Lovelace", lastName: "", name: "Ada Lovelace", countryCode: "US", state: "Illinois" });
+    expect(toSupporter({ id: "old_2", values: { name: "Bo", email: "bo@example.com", state: "Outside the United States" } }))
+      .toMatchObject({ countryCode: "", state: "" });
+    expect(toOrganization({ id: "old_3", values: { organization: "Group", contactName: "Bea", state: "Nationwide" } }))
+      .toMatchObject({ contactFirstName: "Bea", countryCode: "US", state: "Nationwide" });
   });
 });
 
@@ -184,8 +218,10 @@ describe("an endorsement alert", () => {
         organization: "Illinois Patient Group",
         website: "example.org",
         logoUrl: "",
-        contactName: "Bea",
+        contactFirstName: "Bea",
+        contactLastName: "Smith",
         contactEmail: "bea@example.org",
+        countryCode: "US",
         state: "Illinois",
       },
       { clientKey: "0".repeat(64), store },

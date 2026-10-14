@@ -4,6 +4,7 @@ import Link from "next/link"
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { SectionHeading } from "@/components/section-heading"
 import { OrganizationForm, SupporterForm } from "@/components/support-forms"
+import { COUNTRY_OPTIONS } from "@/lib/support-options"
 import { SHOW_SUPPORTERS_LINKS } from "@/lib/navigation"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
@@ -31,7 +32,7 @@ export default function SupportPage() {
 
       <section aria-labelledby="people-heading" className="mx-auto max-w-3xl pb-12 md:pb-16">
         <SectionHeading id="people-heading" title="Add your name" />
-        <div className="mt-6"><SupporterForm /></div>
+        <div className="mt-6"><SupporterForm countries={COUNTRY_OPTIONS} /></div>
       </section>
 
       <section id="organization" aria-labelledby="organization-heading" className="band-muted scroll-mt-20 py-12 md:py-16">
@@ -40,7 +41,7 @@ export default function SupportPage() {
             Patient groups, clinics, hospitals, research groups and companies can endorse the initiative. We list each
             one on the supporters page.
           </SectionHeading>
-          <div className="mt-6"><OrganizationForm /></div>
+          <div className="mt-6"><OrganizationForm countries={COUNTRY_OPTIONS} /></div>
         </div>
       </section>
 

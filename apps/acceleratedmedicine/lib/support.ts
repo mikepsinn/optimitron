@@ -4,7 +4,7 @@ import { z } from "zod"
 import { escapeHtml } from "@/lib/escape-html"
 import { SITE } from "@/lib/site-settings"
 import { supportLinkUrl, verifySupportLink } from "@/lib/support-links"
-import { ORGANIZATION_STATES, SUPPORTER_STATES } from "@/lib/support-options"
+import { COUNTRY_CODES, ORGANIZATION_STATES, SUPPORTER_STATES, US, fullName, placeLabel } from "@/lib/support-options"
 import {
   getOrganization,
   getSupporter,
@@ -32,26 +32,47 @@ const webAddress = z.preprocess(
 )
 
 const honeypot = z.string().max(500).optional().default("")
+const firstName = z.string().trim().min(1).max(80)
+// Some people have one name, so a last name is optional.
+const lastName = z.string().trim().max(80).optional().default("")
+
+/**
+ * A US submission names a state from `states`. Anywhere else, the state is dropped: the forms hide it, and a
+ * stale value from switching countries must not be stored.
+ */
+function withState<T extends { countryCode: string; state: string }>(states: readonly string[]) {
+  return (value: T, context: z.RefinementCtx) => {
+    if (value.countryCode === US && !states.includes(value.state)) {
+      context.addIssue({ code: z.ZodIssueCode.custom, path: ["state"], message: "Choose a state" })
+    }
+  }
+}
+const dropStateOutsideUs = <T extends { countryCode: string; state: string }>(value: T): T =>
+  value.countryCode === US ? value : { ...value, state: "" }
 
 export const supporterSchema = z.object({
   submissionKey: z.string().uuid(),
-  name: z.string().trim().min(1).max(120),
+  firstName,
+  lastName,
   email: z.string().trim().email().max(320),
-  state: z.enum(SUPPORTER_STATES),
+  countryCode: z.enum(COUNTRY_CODES),
+  state: z.string().trim().max(80).optional().default(""),
   updates: z.boolean().default(false),
   companyWebsite: honeypot,
-})
+}).superRefine(withState(SUPPORTER_STATES)).transform(dropStateOutsideUs)
 
 export const organizationSchema = z.object({
   submissionKey: z.string().uuid(),
   organization: z.string().trim().min(1).max(200),
   website: webAddress,
   logoUrl: z.union([z.literal(""), webAddress]).optional().default(""),
-  contactName: z.string().trim().min(1).max(120),
+  contactFirstName: firstName,
+  contactLastName: lastName,
   contactEmail: z.string().trim().email().max(320),
-  state: z.enum(ORGANIZATION_STATES),
+  countryCode: z.enum(COUNTRY_CODES),
+  state: z.string().trim().max(80).optional().default(""),
   companyWebsite: honeypot,
-})
+}).superRefine(withState(ORGANIZATION_STATES)).transform(dropStateOutsideUs)
 
 export type SupporterInput = z.infer<typeof supporterSchema>
 export type OrganizationInput = z.infer<typeof organizationSchema>
@@ -92,10 +113,10 @@ export function buildOrganizationAlert(input: OrganizationInput, approveUrl: str
     ["Organization", input.organization],
     ["Website", input.website],
     ["Logo", input.logoUrl || "Not provided"],
-    ["Where it works", input.state],
-    ["Contact", `${input.contactName} <${input.contactEmail}>`],
+    ["Where it works", placeLabel(input)],
+    ["Contact", `${fullName(input.contactFirstName, input.contactLastName)} <${input.contactEmail}>`],
   ]
-  const subject = `[Endorsement] ${input.organization} (${input.state})`
+  const subject = `[Endorsement] ${input.organization} (${placeLabel(input)})`
   const text = [
     ...rows.map(([label, value]) => `${label}: ${value}`),
     "",
@@ -118,10 +139,10 @@ function buildSupporterConfirmedAlert(supporter: StoredSupporter) {
   const rows: Array<[string, string]> = [
     ["Name", supporter.name],
     ["Email", supporter.email],
-    ["State", supporter.state],
+    ["Where", placeLabel(supporter)],
     ["Wants updates", supporter.updates ? "Yes" : "No"],
   ]
-  const subject = `[Supporter] ${supporter.name} (${supporter.state}) confirmed`
+  const subject = `[Supporter] ${supporter.name} (${placeLabel(supporter)}) confirmed`
   const text = [...rows.map(([label, value]) => `${label}: ${value}`), "", "Reply to this email to write to them."].join("\n")
   const html = `
     <h1>Supporter confirmed</h1>
@@ -136,8 +157,8 @@ function buildOrganizationReceipt(input: OrganizationInput) {
   const body = `Thank you for endorsing the ${INITIATIVE}. We check each organization before listing it, and we will email you when ${input.organization} appears on acceleratedmedicine.org/supporters.`
   return {
     subject,
-    text: [`Hi ${input.contactName},`, "", body, "", SIGNATURE_TEXT].join("\n"),
-    html: `<main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px"><p>Hi ${escapeHtml(input.contactName)},</p><p>${escapeHtml(body)}</p>${SIGNATURE_HTML}</main>`,
+    text: [`Hi ${input.contactFirstName},`, "", body, "", SIGNATURE_TEXT].join("\n"),
+    html: `<main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px"><p>Hi ${escapeHtml(input.contactFirstName)},</p><p>${escapeHtml(body)}</p>${SIGNATURE_HTML}</main>`,
   }
 }
 
@@ -146,8 +167,8 @@ function buildOrganizationListed(organization: StoredOrganization) {
   const body = `${organization.organization} now appears among the organizations supporting the ${INITIATIVE}: https://acceleratedmedicine.org/supporters`
   return {
     subject,
-    text: [`Hi ${organization.contactName},`, "", body, "", SIGNATURE_TEXT].join("\n"),
-    html: `<main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px"><p>Hi ${escapeHtml(organization.contactName)},</p><p>${escapeHtml(body)}</p>${SIGNATURE_HTML}</main>`,
+    text: [`Hi ${organization.contactFirstName},`, "", body, "", SIGNATURE_TEXT].join("\n"),
+    html: `<main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px"><p>Hi ${escapeHtml(organization.contactFirstName)},</p><p>${escapeHtml(body)}</p>${SIGNATURE_HTML}</main>`,
   }
 }
 
@@ -169,7 +190,7 @@ export async function sendSupporterSignup(
   }
   const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const result = await email.resend.emails.send(
-    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.name, supportLinkUrl("confirm-supporter", submissionId)) },
+    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.firstName, supportLinkUrl("confirm-supporter", submissionId)) },
     { idempotencyKey: `supporter-confirmation/${submissionId}` },
   )
   if (result.error || !result.data?.id) {
