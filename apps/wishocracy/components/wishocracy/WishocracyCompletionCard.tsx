@@ -57,6 +57,7 @@ export function WishocracyCompletionCard({
   // Calculate top priorities from allocations
   const allocations = calculateAllocationsFromPairwise(comparisons)
   const topPriorities = Object.entries(allocations)
+    .filter(([, percentage]) => percentage > 0)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
     .map(([categoryId, percentage]) => {
@@ -130,11 +131,13 @@ export function WishocracyCompletionCard({
       </div>
 
       {/* Share Section */}
-      <div className="mb-6 text-center">
-        <Button asChild variant="outline" className="h-auto whitespace-normal font-bold">
-          <Link href={ROUTES.wishocracyResults}>Compare with the public results</Link>
-        </Button>
-      </div>
+      {!isAuthenticated ? (
+        <div className="mb-6 text-center">
+          <Button asChild variant="outline" className="h-auto whitespace-normal font-bold">
+            <Link href={ROUTES.wishocracyResults}>See what other people would fund</Link>
+          </Button>
+        </div>
+      ) : null}
       <div className="bg-brutal-cyan/20 border-4 border-primary p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6">
         <h3 className="font-black text-md uppercase mb-3 text-center">
           Share Your Priorities
@@ -191,7 +194,7 @@ export function WishocracyCompletionCard({
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 text-brutal-pink flex-shrink-0" />
-                <span>View your dashboard to see all your activity</span>
+                <span>See your split next to other people&apos;s and the government&apos;s</span>
               </div>
             </>
           )}
@@ -213,11 +216,11 @@ export function WishocracyCompletionCard({
           ) : (
             <Button
               onClick={() => {
-                window.location.href = '/dashboard'
+                window.location.href = ROUTES.wishocracyResults
               }}
               className="w-full font-black uppercase bg-brutal-pink hover:bg-brutal-pink/90 text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
-              Go to Dashboard
+              See how you compare
             </Button>
           )}
         </div>

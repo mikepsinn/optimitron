@@ -10,6 +10,18 @@ const researchPageFile =
 const allocationBarFile = "packages/neobrutalist-ui/src/ui/allocation-bar.tsx";
 const spendingChartFile = "packages/site-kit/src/components/landing/war-vs-cures-chart.tsx";
 const wishocracyBarsFile = "apps/wishocracy/components/wishocracy/BudgetAllocationBars.tsx";
+const wishocracyResultsFiles = [
+  "apps/wishocracy/app/results/page.tsx",
+  "apps/wishocracy/components/wishocracy/WishocracyGapChart.tsx",
+  "apps/wishocracy/lib/wishocracy-results.ts",
+  "apps/wishocracy/lib/wishocracy-public-allocations.ts",
+  "apps/wishocracy/lib/wishocracy-visual.ts",
+];
+const wishocracyYourAnswersFiles = [
+  "apps/wishocracy/components/wishocracy/WishocracyYourAnswers.tsx",
+  "apps/wishocracy/components/wishocracy/WishocracyAnswerEditor.tsx",
+  "apps/wishocracy/lib/wishocracy-calculations.ts",
+];
 const surveyResultsFiles = [
   allocationBarFile,
   "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
@@ -299,11 +311,11 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       authRole: "user",
       covers: [
         "apps/wishocracy/app/dashboard/page.tsx",
-        "apps/wishocracy/app/dashboard/dashboard-client.tsx",
-        wishocracyBarsFile,
-        allocationBarFile,
+        ...wishocracyResultsFiles,
+        ...wishocracyYourAnswersFiles,
+        "apps/wishocracy/lib/wishocracy-results.server.ts",
       ],
-      label: "Allocation dashboard — signed-in user",
+      label: "Results with your answers — signed-in user (via /dashboard)",
       routeName: "dashboard-authenticated",
       routePath: "/dashboard",
       sourcePage: "apps/wishocracy/app/dashboard/page.tsx",
@@ -791,14 +803,21 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   wishocracy: [
     {
-      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile, "apps/wishocracy/lib/wishocracy-visual.ts", "apps/wishocracy/lib/wishocracy-public-allocations.ts"],
+      covers: wishocracyResultsFiles,
       label: "Public allocation results",
       routeName: "results",
       routePath: "/results?visual=1",
       sourcePage: "apps/wishocracy/app/results/page.tsx",
     },
     {
-      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile],
+      covers: [...wishocracyResultsFiles, ...wishocracyYourAnswersFiles],
+      label: "Results with your answers",
+      routeName: "results-personal",
+      routePath: "/results?visual=personal",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
+    },
+    {
+      covers: wishocracyResultsFiles,
       label: "Results without responses",
       routeName: "results-empty",
       routePath: "/results?visual=empty",

@@ -44,6 +44,10 @@ export const OPTIMITRON_LINKS = {
     url: optimitronUrl("/profile#missions"),
     label: "optimitron.com/profile",
   },
+  politicianAlignment: {
+    url: optimitronUrl("/agencies/dfec/alignment"),
+    label: "optimitron.com/agencies/dfec/alignment",
+  },
 } as const
 
 export type OptimitronLinkId = keyof typeof OPTIMITRON_LINKS

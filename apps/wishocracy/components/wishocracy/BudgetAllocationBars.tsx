@@ -18,7 +18,7 @@ interface BudgetAllocationBarsProps {
 
 const allocationLabels = {
   user: "Your preferred allocation",
-  average: "Average preferred allocation",
+  average: "People's preferred allocation",
   government: "Current government allocation",
 }
 
@@ -98,14 +98,14 @@ export function BudgetAllocationBars({ comparisons, initialResults }: BudgetAllo
 
   return (
     <div>
-      {!results && !failed && <p role="status" className="mb-4">Loading average allocations…</p>}
+      {!results && !failed && <p role="status" className="mb-4">Loading people's allocations…</p>}
       {failed && (
         <div role="alert" className="mb-4 flex flex-wrap items-center gap-3">
-          <p>Average allocations could not be loaded.</p>
+          <p>People's allocations could not be loaded.</p>
           <Button variant="outline" onClick={() => { setFailed(false); setAttempt((value) => value + 1) }}>Try again</Button>
         </div>
       )}
-      {results?.totalUsers === 0 && <p className="mb-4">Add your priorities to start the average allocation.</p>}
+      {results?.totalUsers === 0 && <p className="mb-4">Add your priorities to start the results.</p>}
       {/* Search and Sort Controls */}
       <div className="mb-4 space-y-3">
         <Input

@@ -15,7 +15,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 it("shows public averages without personal allocations or participant counts", () => {
   render(<BudgetAllocationBars initialResults={results(123456)} />)
   expect(screen.getAllByRole("figure").length).toBeGreaterThan(0)
-  expect(screen.getAllByText("Average preferred allocation", { exact: true }).length).toBeGreaterThan(0)
+  expect(screen.getAllByText("People's preferred allocation", { exact: true }).length).toBeGreaterThan(0)
   expect(screen.queryByText("Your preferred allocation", { exact: true })).toBeNull()
   expect(screen.queryByText(/123456/)).toBeNull()
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "no matching program" } })
@@ -30,9 +30,9 @@ it("does not show missing or failed averages as zero, and supports retry", async
   vi.stubGlobal("fetch", fetch)
   render(<BudgetAllocationBars comparisons={[]} />)
   expect(screen.getByRole("status")).toBeTruthy()
-  expect(screen.queryByText("Average preferred allocation", { exact: true })).toBeNull()
+  expect(screen.queryByText("People's preferred allocation", { exact: true })).toBeNull()
   await screen.findByRole("alert")
-  expect(screen.queryByText("Average preferred allocation", { exact: true })).toBeNull()
+  expect(screen.queryByText("People's preferred allocation", { exact: true })).toBeNull()
   fireEvent.click(screen.getByRole("button", { name: "Try again" }))
   expect(await screen.findByText("100.0%", { exact: true })).toBeTruthy()
   expect(screen.queryByRole("alert")).toBeNull()
@@ -41,6 +41,6 @@ it("does not show missing or failed averages as zero, and supports retry", async
 
 it("keeps government allocations available when no responses exist", () => {
   render(<BudgetAllocationBars initialResults={results(0)} />)
-  expect(screen.queryByText("Average preferred allocation", { exact: true })).toBeNull()
+  expect(screen.queryByText("People's preferred allocation", { exact: true })).toBeNull()
   expect(screen.getAllByText("Current government allocation", { exact: true }).length).toBeGreaterThan(0)
 })

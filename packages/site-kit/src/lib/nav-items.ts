@@ -67,7 +67,7 @@ export const NAV_ITEMS_MAP = {
     id: "wishocracyResults",
     label: "Results",
     path: ROUTES.wishocracyResults,
-    description: "Compare average preferred budget allocations with current US government allocations across the same spending areas.",
+    description: "Compare what people would fund with what the US government funds now, across the same programs.",
     pageTitle: "Wishocracy Results",
     canonicalVariant: VARIANTS.WISHOCRACY,
     allowedVariants: [VARIANTS.WISHOCRACY, VARIANTS.SURVEY],

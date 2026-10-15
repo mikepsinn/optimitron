@@ -34,7 +34,7 @@ export const appNavigation: AppNavigation = {
           "id": "wishocracyResults",
           "label": "Results",
           "path": "/results",
-          "description": "Compare average preferred budget allocations with current US government allocations across the same spending areas."
+          "description": "Compare what people would fund with what the US government funds now, across the same programs."
         },
         {
           "id": "faq",

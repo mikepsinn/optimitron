@@ -19,6 +19,7 @@ export type BudgetCategoryView = {
   icon: string
   /** Annual budget in billions USD. */
   annualBudget: number
+  budgetSourceUrl: string | null
   roiData: WishocraticItemRoiData | null
 }
 
@@ -32,6 +33,7 @@ function toBudgetCategoryView(
     description: item.description,
     icon: item.icon,
     annualBudget: item.annualBudgetBillions,
+    budgetSourceUrl: item.budgetSourceUrl,
     roiData: item.roiData,
   }
 }
