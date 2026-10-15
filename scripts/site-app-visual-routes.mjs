@@ -307,18 +307,20 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     ...getAdminRoutes("wishocracy"),
     getAuthenticatedMenuRoute("wishocracy"),
     {
+      // /results is public. The site-app visual fixtures give the demo user a
+      // saved answer, so this captures the signed-in view with their dots.
       authenticated: true,
       authRole: "user",
+      publicPageSignedInState: true,
       covers: [
-        "apps/wishocracy/app/dashboard/page.tsx",
         ...wishocracyResultsFiles,
         ...wishocracyYourAnswersFiles,
         "apps/wishocracy/lib/wishocracy-results.server.ts",
       ],
-      label: "Results with your answers — signed-in user (via /dashboard)",
-      routeName: "dashboard-authenticated",
-      routePath: "/dashboard",
-      sourcePage: "apps/wishocracy/app/dashboard/page.tsx",
+      label: "Results with your answers — signed-in user",
+      routeName: "results-authenticated",
+      routePath: "/results",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
     },
   ],
   trialabundancesurvey: [
@@ -392,7 +394,11 @@ export const authenticatedSiteAppRouteExemptions = Object.freeze([
     sourcePage: "apps/acceleratedmedicine/app/admin/page.ts",
   },
   {
-    reason: "This page only redirects to the captured Wishocracy dashboard.",
+    reason: "This page only redirects to the captured signed-in Wishocracy results page.",
+    sourcePage: "apps/wishocracy/app/dashboard/page.tsx",
+  },
+  {
+    reason: "This page only redirects to the captured signed-in Wishocracy results page.",
     sourcePage: "apps/wishocracy/app/dashboard/settings/page.tsx",
   },
 ]);

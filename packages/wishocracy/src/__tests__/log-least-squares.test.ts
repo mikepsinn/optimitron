@@ -97,4 +97,10 @@ describe('answerAgreement', () => {
     expect(agreement.total).toBe(3);
     expect(agreement.agreed).toBeLessThan(3);
   });
+
+  it('counts tied weights as matching neither side of an answer', () => {
+    const tied = { A: 0.5, B: 0.5 };
+    expect(answerAgreement([answer('A', 'B', 30)], tied)).toEqual({ agreed: 0, total: 1 });
+    expect(answerAgreement([answer('A', 'B', 70)], tied)).toEqual({ agreed: 0, total: 1 });
+  });
 });

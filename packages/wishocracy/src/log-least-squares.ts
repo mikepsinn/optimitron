@@ -192,7 +192,8 @@ export function logLeastSquaresConfidenceIntervals(
 
 /**
  * Count how many answers the weights reproduce: an answer that gave item A
- * more than item B agrees when A's weight is larger than B's.
+ * more than item B agrees when A's weight is strictly larger than B's. Tied
+ * weights agree with neither side.
  */
 export function answerAgreement(
   comparisons: PairwiseComparison[],
@@ -205,7 +206,8 @@ export function answerAgreement(
     const weightB = weights[comparison.itemBId];
     if (weightA === undefined || weightB === undefined || comparison.allocationA === 50) continue;
     total++;
-    if ((comparison.allocationA > 50) === (weightA > weightB)) agreed++;
+    const favored = comparison.allocationA > 50 ? weightA - weightB : weightB - weightA;
+    if (favored > 0) agreed++;
   }
   return { agreed, total };
 }

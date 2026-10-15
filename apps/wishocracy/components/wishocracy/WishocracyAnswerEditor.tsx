@@ -52,6 +52,9 @@ export function WishocracyAnswerEditor({ comparisons, selectedCategoryIds }: {
 
   return (
     <WishocracyEditSection
+      // The editor copies its props into state once. Remount it when the refreshed
+      // answers arrive so a later save cannot resend comparisons the server deleted.
+      key={JSON.stringify([comparisons, selectedCategoryIds])}
       comparisons={comparisons}
       selectedCategories={
         new Set(selectedCategoryIds.length > 0 ? selectedCategoryIds : (Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[]))
