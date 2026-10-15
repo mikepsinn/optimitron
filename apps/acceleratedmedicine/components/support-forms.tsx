@@ -209,10 +209,10 @@ export function OrganizationForm({ countries }: { countries: readonly CountryOpt
         <div className="sm:col-span-2">
           <Field label="Contact email"><Input name="contactEmail" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
         </div>
-        <PlaceFields countries={countries} stateLabel="Where it works" states={ORGANIZATION_STATES} />
+        <PlaceFields countries={countries} stateLabel="State" states={ORGANIZATION_STATES} />
       </div>
       <Footer submission={submission} label="Endorse the initiative"
-        note="We list the organization's name, website, logo and where it works. The contact's name and email stay private." />
+        note="We list the organization's name, website, logo and location. The contact's name and email stay private." />
     </form>
   )
 }

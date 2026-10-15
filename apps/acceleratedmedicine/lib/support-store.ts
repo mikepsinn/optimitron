@@ -35,7 +35,7 @@ const organizationForm: StoredForm = {
     { key: "contactLastName", prompt: "Contact last name", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "contactEmail", prompt: "Contact email", type: FormFieldType.EMAIL, required: true },
     { key: "countryCode", prompt: "Country", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: COUNTRY_CODES },
-    { key: "state", prompt: "Where it works", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: ORGANIZATION_STATES },
+    { key: "state", prompt: "State", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: ORGANIZATION_STATES },
   ],
 }
 

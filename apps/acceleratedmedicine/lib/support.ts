@@ -112,7 +112,7 @@ export function buildOrganizationAlert(input: OrganizationInput, approveUrl: str
     ["Organization", input.organization],
     ["Website", input.website],
     ["Logo", input.logoUrl || "Not provided"],
-    ["Where it works", placeLabel(input)],
+    ["Location", placeLabel(input)],
     ["Contact", `${fullName(input.contactFirstName, input.contactLastName)} <${input.contactEmail}>`],
   ]
   const subject = `[Endorsement] ${input.organization} (${placeLabel(input)})`

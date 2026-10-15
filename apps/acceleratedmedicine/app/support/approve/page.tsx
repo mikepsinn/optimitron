@@ -28,7 +28,7 @@ export default async function ApproveListingPage({ searchParams }: { searchParam
         <img src={logoUrl} alt={`${organization} logo`} referrerPolicy="no-referrer" className="mx-auto mb-2 h-16 w-auto object-contain" />
       )}
       <div><dt className="inline font-medium text-foreground">Website: </dt><dd className="inline break-all"><a href={website} rel="noreferrer nofollow" target="_blank" className="text-primary hover:underline">{website}</a></dd></div>
-      <div><dt className="inline font-medium text-foreground">Where it works: </dt><dd className="inline">{placeLabel(link.record)}</dd></div>
+      <div><dt className="inline font-medium text-foreground">Location: </dt><dd className="inline">{placeLabel(link.record)}</dd></div>
       <div><dt className="inline font-medium text-foreground">Contact: </dt><dd className="inline break-all">{fullName(contactFirstName, contactLastName)}, {contactEmail}</dd></div>
     </dl>
   )
