@@ -33,7 +33,7 @@ export function WishocracyAnswerEditor({ comparisons, selectedCategoryIds }: {
       }
 
       const allKeys = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[]
-      await fetch("/api/wishocracy/category-selections", {
+      const selectionsResponse = await fetch("/api/wishocracy/category-selections", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,6 +43,9 @@ export function WishocracyAnswerEditor({ comparisons, selectedCategoryIds }: {
           })),
         }),
       })
+      if (!selectionsResponse.ok) {
+        throw new Error("Failed to save category selections")
+      }
       router.refresh()
     } catch (error) {
       log.error("Failed to save wishocracy answers", { error })

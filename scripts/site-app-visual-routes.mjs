@@ -316,6 +316,9 @@ export const authenticatedSiteAppRoutes = Object.freeze({
         ...wishocracyResultsFiles,
         ...wishocracyYourAnswersFiles,
         "apps/wishocracy/lib/wishocracy-results.server.ts",
+        // Both only redirect signed-in people here.
+        "apps/wishocracy/app/dashboard/page.tsx",
+        "apps/wishocracy/app/dashboard/settings/page.tsx",
       ],
       label: "Results with your answers — signed-in user",
       routeName: "results-authenticated",
