@@ -791,7 +791,7 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   wishocracy: [
     {
-      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile, "apps/wishocracy/lib/wishocracy-visual.ts", "apps/wishocracy/lib/wishocracy-average-allocations.ts"],
+      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile, "apps/wishocracy/lib/wishocracy-visual.ts", "apps/wishocracy/lib/wishocracy-public-allocations.ts"],
       label: "Public allocation results",
       routeName: "results",
       routePath: "/results?visual=1",

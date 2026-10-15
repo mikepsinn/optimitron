@@ -1,4 +1,5 @@
-import { BUDGET_CATEGORIES } from './wishocracy-data'
+import { logLeastSquaresWeights, type PairwiseComparison } from "@optimitron/wishocracy"
+import { BUDGET_CATEGORIES, isBudgetCategoryId } from './wishocracy-data'
 
 export interface Comparison {
   categoryA: string
@@ -7,49 +8,55 @@ export interface Comparison {
   allocationB: number
 }
 
+/** The "fund neither" answer (0 and 0) says nothing about which program deserves more. */
+export function isNeitherAnswer(comparison: Pick<Comparison, "allocationA" | "allocationB">): boolean {
+  return comparison.allocationA + comparison.allocationB === 0
+}
+
+/** Convert saved answers to the RAPPA engine's format, dropping "fund neither" answers and unknown programs. */
+export function toPairwiseComparisons(comparisons: Comparison[], participantId: string): PairwiseComparison[] {
+  return comparisons
+    .filter((comparison) =>
+      !isNeitherAnswer(comparison) &&
+      comparison.categoryA !== comparison.categoryB &&
+      isBudgetCategoryId(comparison.categoryA) &&
+      isBudgetCategoryId(comparison.categoryB))
+    .map((comparison, index) => ({
+      id: `${participantId}-${index}`,
+      participantId,
+      itemAId: comparison.categoryA,
+      itemBId: comparison.categoryB,
+      allocationA: (comparison.allocationA / (comparison.allocationA + comparison.allocationB)) * 100,
+      timestamp: 0,
+    }))
+}
+
 /**
- * Calculate final budget allocations from pairwise comparisons
- * using simple win-loss ratio method
- *
- * Algorithm: Sum up all allocations for each category across all pairs,
- * then normalize to percentages that sum to 100%
+ * One person's budget split across the programs they compared, using the
+ * Wishocracy paper's log least squares method. A program gets 0% when the
+ * person never compared it or answered "fund neither" for it.
  */
 export function calculateAllocationsFromPairwise(
   comparisons: Comparison[]
 ): Record<string, number> {
-  const scores: Record<string, number> = {}
+  const allocations: Record<string, number> = Object.fromEntries(
+    Object.keys(BUDGET_CATEGORIES).map((id) => [id, 0]),
+  )
+  const pairwise = toPairwiseComparisons(comparisons, "self")
+  const comparedIds = [...new Set(pairwise.flatMap((row) => [row.itemAId, row.itemBId]))].sort()
+  const rejectedIds = new Set(
+    comparisons.filter(isNeitherAnswer).flatMap((row) => [row.categoryA, row.categoryB]),
+  )
+  // Fit with rejected programs included: their answers still place the others.
+  const weights = logLeastSquaresWeights(pairwise, comparedIds)
+  const fundedIds = comparedIds.filter((id) => !rejectedIds.has(id))
+  const fundedTotal = fundedIds.reduce((sum, id) => sum + (weights[id] ?? 0), 0)
+  if (fundedTotal === 0) return allocations
 
-  // Initialize all categories to 0
-  Object.keys(BUDGET_CATEGORIES).forEach(cat => {
-    scores[cat] = 0
-  })
-
-  // Sum up allocations across all pairs
-  // Note: 0/0 allocations (NEITHER button) naturally get skipped
-  // as they contribute 0 to both categories
-  comparisons.forEach(comp => {
-    scores[comp.categoryA] = (scores[comp.categoryA] || 0) + comp.allocationA
-    scores[comp.categoryB] = (scores[comp.categoryB] || 0) + comp.allocationB
-  })
-
-  // Normalize to percentages (sum to 100)
-  const total = Object.values(scores).reduce((sum, val) => sum + val, 0)
-
-  // Avoid division by zero
-  if (total === 0) {
-    return Object.keys(BUDGET_CATEGORIES).reduce((acc, cat) => {
-      acc[cat] = 0
-      return acc
-    }, {} as Record<string, number>)
+  for (const id of fundedIds) {
+    allocations[id] = Number((((weights[id] ?? 0) / fundedTotal) * 100).toFixed(1))
   }
-
-  const normalized: Record<string, number> = {}
-
-  Object.entries(scores).forEach(([cat, score]) => {
-    normalized[cat] = Number(((score / total) * 100).toFixed(1))
-  })
-
-  return normalized
+  return allocations
 }
 
 /**

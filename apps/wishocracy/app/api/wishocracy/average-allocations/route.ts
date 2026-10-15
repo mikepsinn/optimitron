@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { calculateAverageAllocations } from "@/lib/wishocracy-average-allocations"
+import { calculatePublicAllocations } from "@/lib/wishocracy-public-allocations"
 import { BUDGET_CATEGORIES } from "@/lib/wishocracy-data"
 import { createLogger } from "@/lib/logger"
 
@@ -26,7 +26,7 @@ export async function GET() {
         updatedAt: true,
       },
     })
-    return NextResponse.json(calculateAverageAllocations(allocations))
+    return NextResponse.json(calculatePublicAllocations(allocations))
   } catch (error) {
     log.error("Failed to calculate average allocations", { error })
     return NextResponse.json(

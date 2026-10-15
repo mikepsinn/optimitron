@@ -9,11 +9,11 @@ import { calculateAllocationsFromPairwise } from "@/lib/wishocracy-calculations"
 import type { Comparison } from "@/lib/wishocracy-calculations"
 import { ArrowUpDown } from "lucide-react"
 import { AllocationBar } from "@optimitron/neobrutalist-ui/ui/allocation-bar"
-import type { AverageAllocationResults } from "@/lib/wishocracy-average-allocations"
+import type { PublicAllocationResults } from "@/lib/wishocracy-public-allocations"
 
 interface BudgetAllocationBarsProps {
   comparisons?: Comparison[]
-  initialResults?: AverageAllocationResults
+  initialResults?: PublicAllocationResults
 }
 
 const allocationLabels = {
@@ -29,7 +29,7 @@ export function BudgetAllocationBars({ comparisons, initialResults }: BudgetAllo
   const [results, setResults] = useState(initialResults)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
-  const averageAllocations = results?.totalUsers ? results.averageAllocations : undefined
+  const averageAllocations = results?.totalUsers ? results.allocations : undefined
   const sortOptions: Array<"user" | "average" | "government"> = [
     ...(showPersonal ? ["user" as const] : []),
     ...(averageAllocations ? ["average" as const] : []),

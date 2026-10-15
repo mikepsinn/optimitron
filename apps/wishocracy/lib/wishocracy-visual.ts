@@ -1,5 +1,5 @@
 import { BUDGET_CATEGORIES } from "./wishocracy-data"
-import { calculateAverageAllocations } from "./wishocracy-average-allocations"
+import { calculatePublicAllocations } from "./wishocracy-public-allocations"
 
 /** Explicit, deterministic review data. Normal requests always use saved responses. */
 export function getWishocracyVisualFixture(visual?: string) {
@@ -9,7 +9,7 @@ export function getWishocracyVisualFixture(visual?: string) {
   const comparisons = ids.slice(1).map((id) => ({
     categoryA: ids[0]!, categoryB: id, allocationA: 65, allocationB: 35,
   }))
-  const results = calculateAverageAllocations(visual === "empty" ? [] : comparisons.map((row) => ({
+  const results = calculatePublicAllocations(visual === "empty" ? [] : comparisons.map((row) => ({
     id: `visual-${row.categoryA}-${row.categoryB}`,
     userId: "visual-review", itemAId: row.categoryA, itemBId: row.categoryB,
     allocationA: row.allocationA, allocationB: row.allocationB,
