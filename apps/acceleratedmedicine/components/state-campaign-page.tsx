@@ -86,6 +86,14 @@ export function StateCampaignPage({ campaign, organizations }: { campaign: State
               <div aria-hidden="true" className="mt-2 h-2 rounded-full bg-muted">
                 <div className="h-2 rounded-full bg-primary" style={{ width: `${(condition.stateCount / largestCount) * 100}%` }} />
               </div>
+              {condition.note && (
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  {condition.note.text}{" "}
+                  <a href={condition.note.sourceUrl} rel="noreferrer" target="_blank" className={sourceLink}>
+                    {condition.note.sourceLabel}
+                  </a>
+                </p>
+              )}
             </li>
           ))}
         </ul>

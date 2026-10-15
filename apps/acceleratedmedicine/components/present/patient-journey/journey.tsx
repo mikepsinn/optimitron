@@ -10,7 +10,7 @@ import { Card } from "@/components/present/card";
 import {
   plainName, rankTreatments, type DemoCondition, type TreatmentEstimate,
 } from "@/components/present/patient-journey/alzheimers";
-import { TreatmentRankingCard } from "@/components/present/patient-journey/treatment-cards";
+import { RANKING_COLUMNS, TreatmentRankingRow } from "@/components/present/patient-journey/treatment-cards";
 import { Eyebrow, IconBadge, SlideFrame } from "@/components/present/slide";
 import type { ScriptSlide } from "@/lib/present-script";
 
@@ -35,29 +35,39 @@ const exploreFeatures = [
   { icon: Search, title: "Public directory", text: "Every participating clinic, with location and status." },
 ];
 
+// The text on the left; the prototype's rankings for Alzheimer's on the right, top five by estimated effectiveness.
 export function ExploreSlide({ s, condition }: Props & { condition: DemoCondition }) {
-  const ranked = rankTreatments(condition.treatments, "effectiveness");
+  const ranked = rankTreatments(condition.treatments, "effectiveness").slice(0, 5);
   return (
     <SlideFrame s={s}>
-      <Tag>Prototype</Tag>
-      <ol className="mt-5 grid grid-cols-3 gap-6 [zoom:1.5]">
-        {ranked.slice(0, 3).map((treatment, index) => (
-          <li key={treatment.slug} className="min-w-0">
-            <TreatmentRankingCard treatment={treatment} rank={index + 1} />
-          </li>
-        ))}
-      </ol>
-      <ul className="mt-8 grid grid-cols-2 gap-10">
-        {exploreFeatures.map(feature => (
-          <li key={feature.title} className="flex gap-6">
-            <IconBadge icon={feature.icon} size={64} />
-            <div>
-              <h3 className="text-[28px] font-semibold leading-tight">{feature.title}</h3>
-              <p className="mt-1 text-[23px] leading-snug text-muted-foreground">{feature.text}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="grid h-full grid-cols-[440px_minmax(0,1fr)] gap-[72px]">
+        <div className="flex flex-col">
+          <div><Tag>Prototype</Tag></div>
+          <ul className="mt-12 space-y-12">
+            {exploreFeatures.map(feature => (
+              <li key={feature.title} className="flex gap-6">
+                <IconBadge icon={feature.icon} size={72} />
+                <div>
+                  <h3 className="text-[34px] font-semibold leading-tight">{feature.title}</h3>
+                  <p className="mt-2 text-[28px] leading-snug text-muted-foreground">{feature.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex min-w-0 flex-col">
+          <div className={`${RANKING_COLUMNS} px-8 text-[22px] text-muted-foreground`}>
+            <span className="col-span-2">Ranked by estimated effectiveness</span>
+            <span>Effectiveness</span>
+            <span>Safety</span>
+          </div>
+          <ol className="mt-4 space-y-4">
+            {ranked.map((treatment, index) => (
+              <li key={treatment.slug}><TreatmentRankingRow treatment={treatment} rank={index + 1} /></li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </SlideFrame>
   );
 }

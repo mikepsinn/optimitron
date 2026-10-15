@@ -26,7 +26,7 @@
 - 95%of rare diseases have no FDA-approved treatment
 ### Why promising treatments go untested
 - No one pays to test old drugs 573 drugs proposed for Alzheimer's are mostly untested, because no company can profit from testing a drug it can't patent.
-- No one learns from patients 99.8%of Alzheimer's patients are in no study, so nothing is learned from their treatment.
+- No one learns from patients 99%of Alzheimer's patients are in no drug trial, so nothing is learned from their treatment.
 - Right to Try gives makers no incentive$0 profit allowed under Right to Try: makers may charge only their costs, so few offer their drugs.
 ### What the act does
 - Review: An independent board approves each treatment, clinic and consent form.
@@ -39,5 +39,5 @@
 - 89 days to show that a cheap steroid cuts deaths among the sickest COVID patients by up to a third. Typical trials take years.
 - 4 treatments found that save lives, out of more than a dozen tested side by side.
 - $500 per patient, 82 times less than the $41,000 of a typical trial.
-- Sources: Alzheimer's Association, 2026 Facts and Figures; NIH; American Cancer Society, Cancer Statistics 2026; Frontiers in Pharmacology, 2023; USC Schaeffer Center; Right to Try Act, 2018; RECOVERY Collaborative Group, New England Journal of Medicine, 2021; NHS England, 2021; Manhattan Institute, 2023; Moore et al., JAMA Internal Medicine, 2018.
+- Sources: Alzheimer's Association, 2026 Facts and Figures; NIH; American Cancer Society, Cancer Statistics 2026; Frontiers in Pharmacology, 2023; Cummings et al., 2025; Right to Try Act, 2018; RECOVERY Collaborative Group, New England Journal of Medicine, 2021; NHS England, 2021; Manhattan Institute, 2023; Moore et al., JAMA Internal Medicine, 2018.
 - Accelerated Medicine Foundation Inc, dba Institute for Accelerated Medicine, a 501(c)(3) nonprofit. EIN 41-2555651.

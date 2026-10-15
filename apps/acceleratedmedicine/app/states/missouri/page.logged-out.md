@@ -24,7 +24,7 @@
 - [Major depression (past year)](https://www.nimh.nih.gov/health/statistics/major-depression)~390,000
 - [Living with or after cancer](https://www.cancer.gov/about-cancer/understanding/statistics)~330,000
 - [COPD](https://www.lung.org/lung-health-diseases/lung-disease-lookup/copd/learn-about-copd)~220,000
-- [Alzheimer's disease](https://www.alz.org/alzheimers-dementia/facts-figures)~140,000
+- [Alzheimer's disease](https://www.alz.org/alzheimers-dementia/facts-figures)~140,000 Over 99% are in no drug trial. [Cummings et al., 2025](https://doi.org/10.1002/trc2.70098)
 - Estimates: national counts scaled to Missouri's share of the US population ([Census, 2025](https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html)). Each condition links to its national source.
 ### What Missouri has today
 - Federal Right to Try Since 2018, a patient with a life-threatening illness who has used up approved options can ask a maker for a drug still in development. The maker may charge only its costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side effects and their outcomes, but not whether patients improved. Most states also passed their own Right to Try laws, with similar limits. [Right to Try Act (2018)](https://www.congress.gov/bill/115th-congress/senate-bill/204)

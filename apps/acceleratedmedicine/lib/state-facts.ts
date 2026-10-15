@@ -102,6 +102,8 @@ export interface NationalConditionCount {
   usCount: number;
   sourceUrl: string;
   sourceLabel: string;
+  /** A sourced line shown under the condition. */
+  note?: { text: string; sourceUrl: string; sourceLabel: string };
 }
 
 /**
@@ -152,6 +154,11 @@ export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
     usCount: 7_400_000,
     sourceUrl: "https://www.alz.org/alzheimers-dementia/facts-figures",
     sourceLabel: "Alzheimer's Association, 2026",
+    note: {
+      text: "Over 99% are in no drug trial.",
+      sourceUrl: "https://doi.org/10.1002/trc2.70098",
+      sourceLabel: "Cummings et al., 2025",
+    },
   },
 ];
 

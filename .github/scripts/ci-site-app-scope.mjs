@@ -9,10 +9,11 @@ import {
 } from "./vercel-app-build-scope.mjs";
 
 /**
- * The official Postgres image from AWS's public mirror. Docker Hub limits
- * anonymous pulls per IP, and GitHub's shared runners hit that limit.
+ * The official Postgres image through Google's Docker Hub mirror. Docker Hub
+ * and AWS's public gallery both cap anonymous pulls per IP, and GitHub's
+ * shared runners hit those caps.
  */
-const POSTGRES_IMAGE = "public.ecr.aws/docker/library/postgres:16";
+const POSTGRES_IMAGE = "mirror.gcr.io/library/postgres:16";
 
 /**
  * One CI build per site app. scripts/smoke-site-apps.mjs serves each app on

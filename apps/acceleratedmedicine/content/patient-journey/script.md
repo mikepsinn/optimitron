@@ -163,7 +163,7 @@ Society, Cancer Statistics 2026.
 - Title: Why promising treatments go untested
 - No one pays to test old drugs. 573: drugs proposed for Alzheimer's are mostly untested, because
   no company can profit from testing a drug it can't patent.
-- No one learns from patients. 99.8%: of Alzheimer's patients are in no study, so nothing is
+- No one learns from patients. 99%: of Alzheimer's patients are in no drug trial, so nothing is
   learned from their treatment.
 - Right to Try gives makers no incentive. $0: profit allowed under Right to Try: makers may charge
   only their costs, so few offer their drugs.
@@ -172,10 +172,10 @@ Society, Cancer Statistics 2026.
 one sentence.
 
 **If asked:** One: no financial incentive. Many of the 573 drugs are off patent, so no company
-can earn back the cost of a trial. Two: no learning. Only about 12,000 of about 7.4 million
-Americans with Alzheimer's join a trial each year (USC Schaeffer Center; Alzheimer's Association,
-2026), so about 99.8% are treated outside any study, and nobody records, pools or publishes their
-results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
+can earn back the cost of a trial. Two: no learning. The 182 Alzheimer's drug trials under way in 2025 need
+about 50,000 participants to fill them, worldwide (Cummings et al., 2025, https://doi.org/10.1002/trc2.70098). Even if every place
+went to an American with Alzheimer's, that is under 1% of the 7.4 million. So almost every patient is treated
+outside any study, and nobody records, pools or publishes their results. Three: the federal Right to Try Act (2018) lets a patient with a life-threatening illness,
 who has used up approved options and cannot join a trial, ask a maker for a drug that has passed
 Phase I and is still in development. The maker does not have to agree, may charge only its direct
 costs, and sends the FDA a yearly summary of doses supplied, patients treated, uses, and serious side
@@ -191,7 +191,7 @@ test them. Almost no Alzheimer's patients are in any study, so nobody learns fro
 And the federal Right to Try law lets drug makers charge only their costs, so they have no reason
 to take part: only 21 drugs have been made available in over six years.
 
-**Source line:** Sources: Frontiers in Pharmacology, 2023; USC Schaeffer Center; Alzheimer's
+**Source line:** Sources: Frontiers in Pharmacology, 2023; Cummings et al., 2025; Alzheimer's
 Association, 2026 Facts and Figures; Right to Try Act, 2018.
 
 ## 5. It has worked before
@@ -296,10 +296,11 @@ pooled results improve the rankings and labels, so the next patient chooses bett
 - Public directory: every participating clinic, with location and status.
 - Tag: Prototype
 
-**Visual:** The prototype tag, then the prototype's own ranking cards for the top three Alzheimer's treatments,
-large enough to read: Donanemab (effectiveness 57, safety 48, $38,000 a year), Lecanemab (55, 50,
-$36,500) and Donepezil (45, 60, $525). The two features run along the bottom with lavender
-icons.
+**Visual:** On the left, the prototype tag and the two features with lavender icons. On the right,
+the prototype's rankings for Alzheimer's, one row per treatment for the top five by estimated
+effectiveness, each with its effectiveness and safety bars, yearly cost and time to effect: Donanemab
+(57, 48, $38,000), Lecanemab (55, 50, $36,500), Donepezil (45, 60, $525), Rivastigmine (43, 58, $600)
+and Galantamine (42, 58, $550).
 
 **If asked:** This is the working prototype. It ranks Alzheimer's treatments by estimated
 effectiveness and safety. Today it lists approved drugs. In a care-integrated system, screened
