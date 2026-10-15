@@ -7,7 +7,7 @@ import type { FormEvent, ReactNode, RefObject } from "react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Input } from "@optimitron/neobrutalist-ui/ui/input"
 
-import { ORGANIZATION_STATES, SUPPORTER_STATES } from "@/lib/support-options"
+import { ORGANIZATION_STATES, SUPPORTER_STATES, US } from "@/lib/support-options"
 
 type SubmissionState =
   | { status: "idle" }
@@ -91,6 +91,25 @@ function StateSelect({ name, label, options }: { name: string; label: string; op
   )
 }
 
+/** The country list, named on the server (app/support/page.tsx), so the browser renders the same names. */
+export type CountryOption = { code: string; name: string }
+
+/** A country, defaulting to the United States, and a state that appears only for the US. */
+function PlaceFields({ countries, stateLabel, states }: { countries: readonly CountryOption[]; stateLabel: string; states: readonly string[] }) {
+  const [country, setCountry] = useState(US)
+  return (
+    <>
+      <Field label="Country">
+        <select name="countryCode" value={country} onChange={event => setCountry(event.target.value)} autoComplete="country"
+          className={select}>
+          {countries.map(option => <option key={option.code} value={option.code}>{option.name}</option>)}
+        </select>
+      </Field>
+      {country === US && <StateSelect name="state" label={stateLabel} options={states} />}
+    </>
+  )
+}
+
 function Footer({ submission, label, note }: { submission: SubmissionState; label: string; note: string }) {
   return (
     <div className="space-y-3">
@@ -118,7 +137,7 @@ function Done({ confirmation, title, children }: { confirmation: RefObject<HTMLD
 }
 
 /** A person adds their name. They count once they click the link in the confirmation email. */
-export function SupporterForm() {
+export function SupporterForm({ countries }: { countries: readonly CountryOption[] }) {
   const { submission, submit, confirmation } = useSubmission("/api/support")
   const [updates, setUpdates] = useState(true)
 
@@ -133,9 +152,12 @@ export function SupporterForm() {
   return (
     <form onSubmit={event => submit(event, { updates })} className={`${card} space-y-6`}>
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Your name"><Input name="name" autoComplete="name" maxLength={120} required className="h-11" /></Field>
-        <Field label="Email"><Input name="email" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
-        <div className="sm:col-span-2"><StateSelect name="state" label="Your state" options={SUPPORTER_STATES} /></div>
+        <Field label="First name"><Input name="firstName" autoComplete="given-name" maxLength={80} required className="h-11" /></Field>
+        <Field label="Last name"><Input name="lastName" autoComplete="family-name" maxLength={80} required className="h-11" /></Field>
+        <div className="sm:col-span-2">
+          <Field label="Email"><Input name="email" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
+        </div>
+        <PlaceFields countries={countries} stateLabel="State" states={SUPPORTER_STATES} />
       </div>
       <label className="flex cursor-pointer items-start gap-3">
         <input type="checkbox" checked={updates} onChange={event => setUpdates(event.target.checked)}
@@ -149,7 +171,7 @@ export function SupporterForm() {
 }
 
 /** An organization endorses. It appears on /supporters and its state page after the Institute approves it. */
-export function OrganizationForm() {
+export function OrganizationForm({ countries }: { countries: readonly CountryOption[] }) {
   const { submission, submit, fail, confirmation } = useSubmission("/api/endorse")
 
   if (submission.status === "success") {
@@ -182,12 +204,15 @@ export function OrganizationForm() {
         </div>
         <Field label="Website"><Input name="website" type="text" inputMode="url" autoComplete="url" maxLength={1000} required placeholder="example.org" className="h-11" /></Field>
         <Field label="Logo link" optional><Input name="logoUrl" type="text" inputMode="url" maxLength={1000} placeholder="example.org/logo.png" className="h-11" /></Field>
-        <Field label="Contact name"><Input name="contactName" autoComplete="name" maxLength={120} required className="h-11" /></Field>
-        <Field label="Contact email"><Input name="contactEmail" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
-        <div className="sm:col-span-2"><StateSelect name="state" label="Where it works" options={ORGANIZATION_STATES} /></div>
+        <Field label="Contact first name"><Input name="contactFirstName" autoComplete="given-name" maxLength={80} required className="h-11" /></Field>
+        <Field label="Contact last name"><Input name="contactLastName" autoComplete="family-name" maxLength={80} required className="h-11" /></Field>
+        <div className="sm:col-span-2">
+          <Field label="Contact email"><Input name="contactEmail" type="email" autoComplete="email" maxLength={320} required className="h-11" /></Field>
+        </div>
+        <PlaceFields countries={countries} stateLabel="State" states={ORGANIZATION_STATES} />
       </div>
       <Footer submission={submission} label="Endorse the initiative"
-        note="We list the organization's name, website, logo and state. The contact's name and email stay private." />
+        note="We list the organization's name, website, logo and location. The contact's name and email stay private." />
     </form>
   )
 }

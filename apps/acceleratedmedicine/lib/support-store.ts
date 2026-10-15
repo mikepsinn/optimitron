@@ -6,16 +6,19 @@ import { storeFormSubmission, type StoredForm } from "@/lib/form-submission-stor
 import { prisma } from "@/lib/prisma"
 import type { OrganizationInput, SupporterInput } from "@/lib/support"
 import type { SupportLinkAction } from "@/lib/support-links"
-import { ORGANIZATION_STATES, SUPPORTER_STATES } from "@/lib/support-options"
+import { COUNTRY_CODES, ORGANIZATION_STATES, OUTSIDE_US, SUPPORTER_STATES, US, fullName } from "@/lib/support-options"
 
 const supporterForm: StoredForm = {
   sourceKey: "acceleratedmedicine:supporter",
   title: "Supporters of the Care-Integrated Clinical Trials Initiative",
   purpose: FormPurpose.INTAKE,
   fields: [
-    { key: "name", prompt: "Your name", type: FormFieldType.SHORT_TEXT, required: true },
+    { key: "firstName", prompt: "First name", type: FormFieldType.SHORT_TEXT, required: true },
+    { key: "lastName", prompt: "Last name", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "email", prompt: "Email", type: FormFieldType.EMAIL, required: true },
-    { key: "state", prompt: "Your state", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: SUPPORTER_STATES },
+    { key: "countryCode", prompt: "Country", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: COUNTRY_CODES },
+    // Required in the US only, so the field itself is optional.
+    { key: "state", prompt: "State", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: SUPPORTER_STATES },
     { key: "updates", prompt: "Send occasional updates", type: FormFieldType.BOOLEAN, required: true },
   ],
 }
@@ -28,9 +31,11 @@ const organizationForm: StoredForm = {
     { key: "organization", prompt: "Organization", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "website", prompt: "Website", type: FormFieldType.URL, required: true },
     { key: "logoUrl", prompt: "Logo link", type: FormFieldType.URL, required: false },
-    { key: "contactName", prompt: "Contact name", type: FormFieldType.SHORT_TEXT, required: true },
+    { key: "contactFirstName", prompt: "Contact first name", type: FormFieldType.SHORT_TEXT, required: true },
+    { key: "contactLastName", prompt: "Contact last name", type: FormFieldType.SHORT_TEXT, required: true },
     { key: "contactEmail", prompt: "Contact email", type: FormFieldType.EMAIL, required: true },
-    { key: "state", prompt: "Where it works", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: ORGANIZATION_STATES },
+    { key: "countryCode", prompt: "Country", type: FormFieldType.SINGLE_SELECT, required: true, optionsJson: COUNTRY_CODES },
+    { key: "state", prompt: "State", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: ORGANIZATION_STATES },
   ],
 }
 
@@ -54,7 +59,14 @@ const supportEventForm: StoredForm = {
 export function storeSupporter(input: SupporterInput, submissionKey: string, clientKey: string) {
   return storeFormSubmission(
     supporterForm,
-    { name: input.name, email: input.email, state: input.state, updates: input.updates },
+    {
+      firstName: input.firstName,
+      lastName: input.lastName,
+      email: input.email,
+      countryCode: input.countryCode,
+      state: input.state,
+      updates: input.updates,
+    },
     submissionKey,
     clientKey,
   )
@@ -67,8 +79,10 @@ export function storeOrganization(input: OrganizationInput, submissionKey: strin
       organization: input.organization,
       website: input.website,
       logoUrl: input.logoUrl || "",
-      contactName: input.contactName,
+      contactFirstName: input.contactFirstName,
+      contactLastName: input.contactLastName,
       contactEmail: input.contactEmail,
+      countryCode: input.countryCode,
       state: input.state,
     },
     submissionKey,
@@ -116,8 +130,14 @@ const text = (value: unknown) => (typeof value === "string" ? value : "")
 
 export interface StoredSupporter {
   id: string
+  firstName: string
+  lastName: string
+  /** First and last name together. */
   name: string
   email: string
+  /** ISO 3166-1 alpha-2, or "" for an early supporter who only said they live outside the US. */
+  countryCode: string
+  /** A US state, or "" outside the US. */
   state: string
   updates: boolean
 }
@@ -127,27 +147,48 @@ export interface StoredOrganization {
   organization: string
   website: string
   logoUrl: string
-  contactName: string
+  contactFirstName: string
+  contactLastName: string
   contactEmail: string
+  countryCode: string
+  /** A US state or "Nationwide", or "" outside the US. */
   state: string
 }
 
-const toSupporter = ({ id, values }: { id: string; values: StoredValues }): StoredSupporter => ({
-  id,
-  name: text(values.name),
-  email: text(values.email),
-  state: text(values.state),
-  updates: values.updates === true,
-})
+/**
+ * The country and state a submission gave. Submissions from before the forms asked for a country have only a
+ * state: a US state (or "Nationwide"), or "Outside the United States".
+ */
+function readPlace(values: StoredValues): { countryCode: string; state: string } {
+  const state = text(values.state)
+  if (values.countryCode !== undefined) return { countryCode: text(values.countryCode), state }
+  return state === OUTSIDE_US || !state ? { countryCode: "", state: "" } : { countryCode: US, state }
+}
 
-const toOrganization = ({ id, values }: { id: string; values: StoredValues }): StoredOrganization => ({
+/** A stored supporter, including those who signed up with one name box before the first and last name boxes. */
+export const toSupporter = ({ id, values }: { id: string; values: StoredValues }): StoredSupporter => {
+  const firstName = text(values.firstName) || text(values.name)
+  const lastName = text(values.lastName)
+  return {
+    id,
+    firstName,
+    lastName,
+    name: fullName(firstName, lastName),
+    email: text(values.email),
+    ...readPlace(values),
+    updates: values.updates === true,
+  }
+}
+
+export const toOrganization = ({ id, values }: { id: string; values: StoredValues }): StoredOrganization => ({
   id,
   organization: text(values.organization),
   website: text(values.website),
   logoUrl: text(values.logoUrl),
-  contactName: text(values.contactName),
+  contactFirstName: text(values.contactFirstName) || text(values.contactName),
+  contactLastName: text(values.contactLastName),
   contactEmail: text(values.contactEmail),
-  state: text(values.state),
+  ...readPlace(values),
 })
 
 export async function getSupporter(id: string): Promise<StoredSupporter | undefined> {
@@ -181,7 +222,7 @@ export function countConfirmedPeople(supporters: readonly StoredSupporter[], con
   return new Set(supporters.filter(person => confirmedIds.has(person.id)).map(person => person.email.trim().toLowerCase())).size
 }
 
-export type ListedOrganization = Pick<StoredOrganization, "organization" | "website" | "logoUrl" | "state">
+export type ListedOrganization = Pick<StoredOrganization, "organization" | "website" | "logoUrl" | "countryCode" | "state">
 
 /** Approved organizations in name order, each listed once even if it endorsed twice. */
 export function listApprovedOrganizations(
@@ -189,9 +230,9 @@ export function listApprovedOrganizations(
   approvedIds: ReadonlySet<string>,
 ): ListedOrganization[] {
   const byName = new Map<string, ListedOrganization>()
-  for (const { id, organization, website, logoUrl, state } of organizations) {
+  for (const { id, organization, website, logoUrl, countryCode, state } of organizations) {
     // A later approved endorsement replaces an earlier one, so a corrected website or logo wins.
-    if (approvedIds.has(id)) byName.set(organization.trim().toLowerCase(), { organization, website, logoUrl, state })
+    if (approvedIds.has(id)) byName.set(organization.trim().toLowerCase(), { organization, website, logoUrl, countryCode, state })
   }
   return [...byName.values()].sort((a, b) => a.organization.localeCompare(b.organization, "en"))
 }

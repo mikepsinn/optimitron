@@ -20,7 +20,7 @@ export default async function ConfirmSupportPage({ searchParams }: { searchParam
   }
   if (link.status === "done") {
     return (
-      <SupportLinkPage status="done" title={`Thank you, ${link.record.name}`}>
+      <SupportLinkPage status="done" title={`Thank you, ${link.record.firstName}`}>
         <p>Your support for the Care-Integrated Clinical Trials Initiative is confirmed.</p>
         {link.record.updates && <p>We&apos;ll email {link.record.email} occasional updates. Every email has an unsubscribe link.</p>}
       </SupportLinkPage>
@@ -29,7 +29,7 @@ export default async function ConfirmSupportPage({ searchParams }: { searchParam
   return (
     <SupportLinkPage status="pending" title="Confirm your support" buttonLabel="Confirm"
       action={confirmSupporterAction.bind(null, s, t)} failed={failed === "1"}>
-      <p>{link.record.name}, click Confirm to add your support for the Care-Integrated Clinical Trials Initiative.</p>
+      <p>{link.record.firstName}, click Confirm to add your support for the Care-Integrated Clinical Trials Initiative.</p>
     </SupportLinkPage>
   )
 }
