@@ -70,16 +70,27 @@ function gapSortKey(row: GapRow): number {
   return Math.log(row.everyone / row.government)
 }
 
-/** Every program, most underfunded relative to what everyone wants first. */
+/**
+ * Every program, most underfunded relative to what everyone wants first.
+ * People's shares cover only programs someone answered, so they are rescaled
+ * to split the government money for those programs; both bars then share one
+ * total even before every program has answers.
+ */
 export function buildGapRows(results: PublicAllocationResults, personal?: PersonalResult): GapRow[] {
   const government = getActualGovernmentAllocations()
-  const answered = new Set(personal?.answeredIds ?? [])
-  const answeredShare = [...answered].reduce((sum, id) => sum + results.allocations[id], 0)
+  const ids = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[]
+  const answeredGovernment = ids
+    .filter((id) => results.answerCounts[id] > 0)
+    .reduce((sum, id) => sum + government[id], 0)
+  const scale = answeredGovernment > 0 ? answeredGovernment / 100 : 1
+  const yours = new Set(personal?.answeredIds ?? [])
+  const yourShare = [...yours].reduce((sum, id) => sum + results.allocations[id] * scale, 0)
 
-  return (Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[])
+  return ids
     .map((id) => {
-      const everyone = results.allocations[id]
-      const { low, high } = results.intervals[id]
+      const everyone = results.allocations[id] * scale
+      const low = results.intervals[id].low * scale
+      const high = results.intervals[id].high * scale
       const row: GapRow = {
         id,
         name: BUDGET_CATEGORIES[id].name,
@@ -91,7 +102,7 @@ export function buildGapRows(results: PublicAllocationResults, personal?: Person
         answerCount: results.answerCounts[id],
         gap: classifyGap(everyone, low, high, government[id], results.answerCounts[id]),
       }
-      if (personal && answered.has(id)) row.you = ((personal.allocations[id] ?? 0) / 100) * answeredShare
+      if (personal && yours.has(id)) row.you = ((personal.allocations[id] ?? 0) / 100) * yourShare
       return row
     })
     .sort((a, b) => gapSortKey(b) - gapSortKey(a) || b.government - a.government || a.name.localeCompare(b.name))

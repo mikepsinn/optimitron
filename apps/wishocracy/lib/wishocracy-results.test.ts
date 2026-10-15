@@ -58,6 +58,20 @@ describe("buildGapRows", () => {
   })
 })
 
+describe("buildGapRows with few programs answered", () => {
+  it("splits the government's money for the answered programs instead of a separate 100%", () => {
+    // One answer used to show trials at 64.9% against a 0.1% government share of all programs.
+    const rows = buildGapRows(calculatePublicAllocations([row("p1", MILITARY_ID, TRIALS_ID, 35)]))
+    const answered = rows.filter((r) => r.answerCount > 0)
+    expect(answered.map((r) => r.id).sort()).toEqual([MILITARY_ID, TRIALS_ID].sort())
+    const everyoneTotal = answered.reduce((sum, r) => sum + r.everyone, 0)
+    const governmentTotal = answered.reduce((sum, r) => sum + r.government, 0)
+    expect(everyoneTotal).toBeCloseTo(governmentTotal, 5)
+    const military = answered.find((r) => r.id === MILITARY_ID)!
+    expect(military.everyone / military.government).toBeCloseTo(0.35 * governmentTotal / military.government, 1)
+  })
+})
+
 describe("militaryPerTrialDollar", () => {
   it("compares government spending even before anyone has answered both programs", () => {
     const empty = militaryPerTrialDollar(calculatePublicAllocations([]))

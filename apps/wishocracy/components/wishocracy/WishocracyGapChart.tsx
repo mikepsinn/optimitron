@@ -117,6 +117,9 @@ export function WishocracyGapChart({ rows, hasAnswers, yourProgramCount }: {
         </ul>
         <p className="text-center text-muted-foreground">
           Percentages are shares of the {rows.length} programs shown, not the whole US budget.
+          {hasAnswers && rows.some((row) => row.answerCount === 0)
+            ? " Until every program has answers, people's bars split only the money the government spends on the programs they've compared."
+            : ""}
           {showYou
             ? ` You compared ${yourProgramCount} programs. Your dot takes what other people would give those ${yourProgramCount} and splits it your way.`
             : ""}
