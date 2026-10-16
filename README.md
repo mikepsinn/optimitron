@@ -136,10 +136,10 @@ pnpm alignment:sync
 
 ## The Web App
 
-Nine production sites run from this repo on shared packages:
+Eight production sites run from this repo:
 [optimitron.com](https://optimitron.com), [warondisease.org](https://warondisease.org),
 [wishocracy.org](https://wishocracy.org), [courtofhumanity.org](https://courtofhumanity.org),
-[dfda.earth](https://dfda.earth), [dih.earth](https://dih.earth), [curedao.org](https://curedao.org),
+[dfda.earth](https://dfda.earth), [curedao.org](https://curedao.org),
 [trialabundancesurvey.org](https://trialabundancesurvey.org), and
 [acceleratedmedicine.org](https://acceleratedmedicine.org). `warondisease.org` is the
 campaign's front door. Here's what's live on optimitron.com (`apps/optimitron`):
@@ -219,7 +219,7 @@ Auth: Google OAuth, magic-link email, World ID proof-of-personhood. Referral tra
 | [`@optimitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
 | [`@optimitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
 | [`@optimitron/web`](apps/optimitron/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, daily tracking | Active product surface |
-| [`@optimitron/site-kit`](packages/site-kit/) | Shared shell, auth, configuration, and campaign components behind the other site apps | Used by every site app |
+| [`@optimitron/site-kit`](packages/site-kit/) | Shared shell, auth, configuration, and campaign components for the campaign site apps | Used by every site app except acceleratedmedicine.org |
 | [`@optimitron/mcp`](packages/mcp/) | Auth, audit, and result helpers for the hosted MCP server at [optimitron.com/mcp](https://optimitron.com/mcp) | Live |
 | [`@optimitron/tracking`](packages/tracking/) | Personal health tracking: measurements, reminders, notifications, and their MCP tools, shared by optimitron.com and dfda.earth | Live |
 | [`@optimitron/chat-ui`](packages/chat-ui/) | Reusable conversational UI components plus text-to-measurement parsing for personal tracking flows | Reusable UI package |
