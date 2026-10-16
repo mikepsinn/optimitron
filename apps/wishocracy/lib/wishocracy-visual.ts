@@ -1,3 +1,4 @@
+import { DEFAULT_WISHOCRATIC_ITEMS } from "@optimitron/data/wishocratic-items-registry"
 import { BUDGET_CATEGORIES, type BudgetCategoryId } from "./wishocracy-data"
 import type { Comparison } from "./wishocracy-calculations"
 import { calculatePublicAllocations } from "./wishocracy-public-allocations"
@@ -29,7 +30,8 @@ function reviewerAnswers(ids: BudgetCategoryId[]): Comparison[] {
 
 /**
  * Explicit, deterministic review data: synthetic people whose answers follow
- * fixed preferences with noise. Normal requests always use saved responses.
+ * the catalog's poll-based citizen estimate, with noise. Normal requests
+ * always use saved responses.
  */
 export function getWishocracyVisualFixture(visual?: string) {
   if (process.env.NODE_ENV !== "development" && process.env.SITE_APP_VISUAL_FIXTURES !== "1") return undefined
@@ -38,9 +40,7 @@ export function getWishocracyVisualFixture(visual?: string) {
   const comparisons = reviewerAnswers(ids)
   if (visual === "empty") return { comparisons, results: calculatePublicAllocations([]) }
 
-  const strength = Object.fromEntries(ids.map((id, i) => [id, 1 + ((i * 7) % 11)])) as Record<BudgetCategoryId, number>
-  strength[TRIALS_ID] = 16
-  strength[MILITARY_ID] = 3
+  const strength = (id: BudgetCategoryId) => DEFAULT_WISHOCRATIC_ITEMS[id].estimatedCitizenAllocationPct
   const rng = seededRng(42)
   const rows = []
   for (let person = 0; person < FIXTURE_PEOPLE; person++) {
@@ -48,7 +48,7 @@ export function getWishocracyVisualFixture(visual?: string) {
       const itemAId = ids[Math.floor(rng() * ids.length)]!
       const itemBId = ids[Math.floor(rng() * ids.length)]!
       if (itemAId === itemBId) continue
-      const share = (100 * strength[itemAId]) / (strength[itemAId] + strength[itemBId])
+      const share = (100 * strength(itemAId)) / (strength(itemAId) + strength(itemBId))
       const allocationA = Math.min(100, Math.max(0, Math.round(share + (rng() - 0.5) * 40)))
       rows.push({
         id: `visual-${person}-${answer}`, userId: `visual-person-${person}`, itemAId, itemBId,

@@ -58,6 +58,15 @@ describe("buildGapRows", () => {
   })
 })
 
+describe("government shares", () => {
+  it("never reports a program with a budget as unfunded", () => {
+    const rows = buildGapRows(calculatePublicAllocations(ids.slice(1).map((id) => row("p1", ids[0]!, id, 50))))
+    for (const r of rows) {
+      expect(r.gap.kind === "not-funded", r.id).toBe(BUDGET_CATEGORIES[r.id].annualBudget === 0)
+    }
+  })
+})
+
 describe("buildGapRows with few programs answered", () => {
   it("splits the government's money for the answered programs instead of a separate 100%", () => {
     // One answer used to show trials at 64.9% against a 0.1% government share of all programs.

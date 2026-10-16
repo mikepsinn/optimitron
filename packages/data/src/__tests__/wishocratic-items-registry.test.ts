@@ -45,4 +45,23 @@ describe("Wishocratic items registry", () => {
       Object.values(allocations).reduce((sum, allocation) => sum + allocation, 0),
     ).toBeCloseTo(100, 0);
   });
+
+  it("keeps the citizen estimate a possible average and every funded program sourced", () => {
+    const items = Object.values(DEFAULT_WISHOCRATIC_ITEMS);
+    expect(
+      items.reduce((sum, item) => sum + item.estimatedCitizenAllocationPct, 0),
+    ).toBeCloseTo(100, 6);
+    for (const item of items) {
+      const [low, high] = item.estimatedCitizenAllocationRange;
+      // An average is 0 only if every person gives nothing.
+      expect(item.estimatedCitizenAllocationPct, item.slug).toBeGreaterThan(0);
+      expect(item.estimatedCitizenAllocationPct, item.slug).toBeGreaterThanOrEqual(low);
+      expect(item.estimatedCitizenAllocationPct, item.slug).toBeLessThanOrEqual(high);
+      expect(item.estimatedCitizenAllocationSources.length, item.slug).toBeGreaterThan(0);
+      if (item.annualBudgetBillions > 0) {
+        expect(item.budgetSourceUrl, item.slug).toMatch(/^https:\/\//);
+        expect(item.budgetFiscalYear, item.slug).toBeTruthy();
+      }
+    }
+  });
 });

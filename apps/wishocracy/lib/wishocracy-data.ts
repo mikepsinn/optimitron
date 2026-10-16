@@ -4,7 +4,6 @@
  */
 import {
   DEFAULT_WISHOCRATIC_ITEMS,
-  getDefaultWishocraticAllocations,
   type DefaultWishocraticItemId,
 } from "@optimitron/data/wishocratic-items-registry"
 import type { WishocraticItemRoiData } from "@optimitron/data/datasets/us-wishocratic-items"
@@ -48,7 +47,15 @@ export function isBudgetCategoryId(value: string): value is BudgetCategoryId {
   return Object.prototype.hasOwnProperty.call(DEFAULT_WISHOCRATIC_ITEMS, value)
 }
 
-/** Government allocation percentages from annual budgets (sum ~100%). */
+/**
+ * Government shares of the listed programs, in percent (sum 100). Unrounded:
+ * rounding to 0.1% would turn a $0.6B program into "not funded" and distort
+ * small programs' ratios. Round only when displaying.
+ */
 export function getActualGovernmentAllocations(): Record<BudgetCategoryId, number> {
-  return getDefaultWishocraticAllocations()
+  const ids = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[]
+  const total = ids.reduce((sum, id) => sum + BUDGET_CATEGORIES[id].annualBudget, 0)
+  return Object.fromEntries(
+    ids.map((id) => [id, (BUDGET_CATEGORIES[id].annualBudget / total) * 100]),
+  ) as Record<BudgetCategoryId, number>
 }
