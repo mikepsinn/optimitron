@@ -12,13 +12,11 @@ const spendingChartFile = "packages/site-kit/src/components/landing/war-vs-cures
 const wishocracyBarsFile = "apps/wishocracy/components/wishocracy/BudgetAllocationBars.tsx";
 const wishocracyResultsFiles = [
   "apps/wishocracy/app/results/page.tsx",
-  "apps/wishocracy/components/wishocracy/WishocracyGapChart.tsx",
-  "apps/wishocracy/lib/wishocracy-results.ts",
+  wishocracyBarsFile,
   "apps/wishocracy/lib/wishocracy-public-allocations.ts",
   "apps/wishocracy/lib/wishocracy-visual.ts",
 ];
 const wishocracyYourAnswersFiles = [
-  "apps/wishocracy/components/wishocracy/WishocracyYourAnswers.tsx",
   "apps/wishocracy/components/wishocracy/WishocracyAnswerEditor.tsx",
   "apps/wishocracy/lib/wishocracy-calculations.ts",
 ];

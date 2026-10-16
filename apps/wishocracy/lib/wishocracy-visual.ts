@@ -2,9 +2,10 @@ import { DEFAULT_WISHOCRATIC_ITEMS } from "@optimitron/data/wishocratic-items-re
 import { BUDGET_CATEGORIES, type BudgetCategoryId } from "./wishocracy-data"
 import type { Comparison } from "./wishocracy-calculations"
 import { calculatePublicAllocations } from "./wishocracy-public-allocations"
-import { MILITARY_ID, TRIALS_ID } from "./wishocracy-results"
 
 const FIXTURE_DATE = new Date("2026-01-01T00:00:00Z")
+const MILITARY_ID: BudgetCategoryId = "MILITARY_OPERATIONS"
+const TRIALS_ID: BudgetCategoryId = "PRAGMATIC_CLINICAL_TRIALS"
 const FIXTURE_PEOPLE = 60
 const FIXTURE_ANSWERS_EACH = 12
 /** Below this estimated share, synthetic people sometimes answer "fund neither". */
