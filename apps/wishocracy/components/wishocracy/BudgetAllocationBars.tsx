@@ -9,16 +9,16 @@ import { calculateAllocationsFromPairwise } from "@/lib/wishocracy-calculations"
 import type { Comparison } from "@/lib/wishocracy-calculations"
 import { ArrowUpDown } from "lucide-react"
 import { AllocationBar } from "@optimitron/neobrutalist-ui/ui/allocation-bar"
-import type { AverageAllocationResults } from "@/lib/wishocracy-average-allocations"
+import type { PublicAllocationResults } from "@/lib/wishocracy-public-allocations"
 
 interface BudgetAllocationBarsProps {
   comparisons?: Comparison[]
-  initialResults?: AverageAllocationResults
+  initialResults?: PublicAllocationResults
 }
 
 const allocationLabels = {
   user: "Your preferred allocation",
-  average: "Average preferred allocation",
+  average: "People's preferred allocation",
   government: "Current government allocation",
 }
 
@@ -29,7 +29,7 @@ export function BudgetAllocationBars({ comparisons, initialResults }: BudgetAllo
   const [results, setResults] = useState(initialResults)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
-  const averageAllocations = results?.totalUsers ? results.averageAllocations : undefined
+  const averageAllocations = results?.totalUsers ? results.allocations : undefined
   const sortOptions: Array<"user" | "average" | "government"> = [
     ...(showPersonal ? ["user" as const] : []),
     ...(averageAllocations ? ["average" as const] : []),
@@ -98,14 +98,14 @@ export function BudgetAllocationBars({ comparisons, initialResults }: BudgetAllo
 
   return (
     <div>
-      {!results && !failed && <p role="status" className="mb-4">Loading average allocations…</p>}
+      {!results && !failed && <p role="status" className="mb-4">Loading people's allocations…</p>}
       {failed && (
         <div role="alert" className="mb-4 flex flex-wrap items-center gap-3">
-          <p>Average allocations could not be loaded.</p>
+          <p>People's allocations could not be loaded.</p>
           <Button variant="outline" onClick={() => { setFailed(false); setAttempt((value) => value + 1) }}>Try again</Button>
         </div>
       )}
-      {results?.totalUsers === 0 && <p className="mb-4">Add your priorities to start the average allocation.</p>}
+      {results?.totalUsers === 0 && <p className="mb-4">Add your priorities to start the results.</p>}
       {/* Search and Sort Controls */}
       <div className="mb-4 space-y-3">
         <Input

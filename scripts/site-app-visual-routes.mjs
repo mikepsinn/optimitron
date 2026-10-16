@@ -10,6 +10,16 @@ const researchPageFile =
 const allocationBarFile = "packages/neobrutalist-ui/src/ui/allocation-bar.tsx";
 const spendingChartFile = "packages/site-kit/src/components/landing/war-vs-cures-chart.tsx";
 const wishocracyBarsFile = "apps/wishocracy/components/wishocracy/BudgetAllocationBars.tsx";
+const wishocracyResultsFiles = [
+  "apps/wishocracy/app/results/page.tsx",
+  wishocracyBarsFile,
+  "apps/wishocracy/lib/wishocracy-public-allocations.ts",
+  "apps/wishocracy/lib/wishocracy-visual.ts",
+];
+const wishocracyYourAnswersFiles = [
+  "apps/wishocracy/components/wishocracy/WishocracyAnswerEditor.tsx",
+  "apps/wishocracy/lib/wishocracy-calculations.ts",
+];
 const surveyResultsFiles = [
   allocationBarFile,
   "packages/site-kit/src/components/dashboard/SurveyResultsCard.tsx",
@@ -295,18 +305,23 @@ export const authenticatedSiteAppRoutes = Object.freeze({
     ...getAdminRoutes("wishocracy"),
     getAuthenticatedMenuRoute("wishocracy"),
     {
+      // /results is public. The site-app visual fixtures give the demo user a
+      // saved answer, so this captures the signed-in view with their dots.
       authenticated: true,
       authRole: "user",
+      publicPageSignedInState: true,
       covers: [
+        ...wishocracyResultsFiles,
+        ...wishocracyYourAnswersFiles,
+        "apps/wishocracy/lib/wishocracy-results.server.ts",
+        // Both only redirect signed-in people here.
         "apps/wishocracy/app/dashboard/page.tsx",
-        "apps/wishocracy/app/dashboard/dashboard-client.tsx",
-        wishocracyBarsFile,
-        allocationBarFile,
+        "apps/wishocracy/app/dashboard/settings/page.tsx",
       ],
-      label: "Allocation dashboard — signed-in user",
-      routeName: "dashboard-authenticated",
-      routePath: "/dashboard",
-      sourcePage: "apps/wishocracy/app/dashboard/page.tsx",
+      label: "Results with your answers — signed-in user",
+      routeName: "results-authenticated",
+      routePath: "/results",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
     },
   ],
   trialabundancesurvey: [
@@ -380,7 +395,11 @@ export const authenticatedSiteAppRouteExemptions = Object.freeze([
     sourcePage: "apps/acceleratedmedicine/app/admin/page.ts",
   },
   {
-    reason: "This page only redirects to the captured Wishocracy dashboard.",
+    reason: "This page only redirects to the captured signed-in Wishocracy results page.",
+    sourcePage: "apps/wishocracy/app/dashboard/page.tsx",
+  },
+  {
+    reason: "This page only redirects to the captured signed-in Wishocracy results page.",
     sourcePage: "apps/wishocracy/app/dashboard/settings/page.tsx",
   },
 ]);
@@ -791,14 +810,21 @@ export const publicSiteAppRoutes = Object.freeze({
   ],
   wishocracy: [
     {
-      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile, "apps/wishocracy/lib/wishocracy-visual.ts", "apps/wishocracy/lib/wishocracy-average-allocations.ts"],
+      covers: wishocracyResultsFiles,
       label: "Public allocation results",
       routeName: "results",
       routePath: "/results?visual=1",
       sourcePage: "apps/wishocracy/app/results/page.tsx",
     },
     {
-      covers: ["apps/wishocracy/app/results/page.tsx", wishocracyBarsFile],
+      covers: [...wishocracyResultsFiles, ...wishocracyYourAnswersFiles],
+      label: "Results with your answers",
+      routeName: "results-personal",
+      routePath: "/results?visual=personal",
+      sourcePage: "apps/wishocracy/app/results/page.tsx",
+    },
+    {
+      covers: wishocracyResultsFiles,
       label: "Results without responses",
       routeName: "results-empty",
       routePath: "/results?visual=empty",

@@ -55,9 +55,9 @@
 - Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it.
 - One live pair from the ballot. Of the money available for both, drag the handle to split it. Your drag stays on this page.
 - PRAGMATIC CLINICAL TRIALS
-- $2B/yr today · ROI 45:1
+- $2.1B/yr today · ROI 45:1
 - BOMBING IRAN
-- $37B/yr today · Negative ROI
+- $38B/yr today · Negative ROI
 - LOCK IN MY SPLIT
 - [Use Wishocracy](https://warondisease.org/vote)
 #### PART D · MEDICINE WITHOUT THE WAITING ROOM

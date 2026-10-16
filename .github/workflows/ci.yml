@@ -191,6 +191,7 @@ jobs:
               - 'packages/site-kit/**'
               - 'packages/survey-embed/**'
               - 'packages/tracking/**'
+              - 'packages/wishocracy/**'
               - 'packages/wishonia-widget/**'
               - 'apps/next-auth.d.ts'
               - 'apps/shared-*'

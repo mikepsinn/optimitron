@@ -21,20 +21,20 @@ export default function AboutPage() {
         <section>
           <h2 className="mb-4 text-2xl font-black uppercase">Two priorities at a time</h2>
           <p className="leading-relaxed">
-            Choose the spending areas you want to fund. Then divide a hypothetical $100 between two areas at a time.
-            Your choices become a percentage allocation you can inspect and revise on your dashboard.
+            Choose the programs you want to fund. Then divide a hypothetical $100 between two programs at a time.
+            Your choices become a percentage allocation you can see and change on the results page.
           </p>
         </section>
         <section className="space-y-4">
           <h2 className="text-2xl font-black uppercase">How to read the results</h2>
           <p className="leading-relaxed">
-            For each participant, we add the amounts assigned to each area across their saved comparisons and scale the total to 100%.
-            The public results average these individual allocations, giving each participant equal weight and using their latest answer to each pair.
-            Areas without an assigned amount contribute zero to that participant's allocation.
+            Each answer splits $100 between two programs. We pool everyone&apos;s latest answer for each pair and find the one set of shares that fits them all best, using the method in the Wishocracy paper.
+            Answering &quot;fund neither&quot;, or skipping a program when you pick what to fund, counts as giving it nothing.
+            Your own result uses only your answers and covers only the programs you compared.
           </p>
           <p className="leading-relaxed">
-            The government bars show published US annual budgets scaled across the same spending areas.
-            Both sets of percentages describe the areas shown, not the entire federal budget.
+            The government bars show annual federal spending scaled across the same programs.
+            Both sets of percentages describe the programs shown, not the entire federal budget.
           </p>
           <Link href={ROUTES.wishocracyResults} className="inline-block font-bold underline">Explore the results</Link>
         </section>
@@ -42,7 +42,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-black uppercase">The research</h2>
           <p className="leading-relaxed">
             The Wishocracy paper explores how pairwise preferences could guide public budgets and measure how closely governments follow citizens' priorities.
-            It describes the broader research framework; this site's results use the calculation explained above.
+            It describes the broader research framework, including the calculation explained above.
           </p>
           <a href="https://wishocracy.warondisease.org" className="inline-block font-bold underline">
             Read the Wishocracy paper

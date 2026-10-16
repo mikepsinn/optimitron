@@ -51,7 +51,7 @@
     "typecheck:apps": "pnpm --filter \"@apps/*\" run typecheck",
     "lint:apps": "pnpm --filter \"@apps/*\" run lint",
     "build:apps": "pnpm --workspace-concurrency=1 --filter \"@apps/*\" run build",
-    "build:app-dependencies": "pnpm --filter @optimitron/optimizer run build && pnpm --filter @optimitron/db run build",
+    "build:app-dependencies": "pnpm --filter @optimitron/optimizer run build && pnpm --filter @optimitron/wishocracy run build && pnpm --filter @optimitron/db run build",
     "smoke:apps": "pnpm --dir apps/optimitron exec tsx ../../scripts/smoke-site-apps.mjs",
     "copy": "pnpm --dir apps/optimitron exec tsx ../../scripts/copy-snapshot-sites.ts",
     "mcp:catalog": "pnpm --dir apps/optimitron exec tsx ../../scripts/generate-mcp-catalog.ts",

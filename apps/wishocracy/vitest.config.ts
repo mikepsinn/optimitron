@@ -36,6 +36,11 @@ export default defineConfig({
   },
   resolve: {
     alias: [
+      // Test against the engine's source so a fresh checkout needs no package build first.
+      {
+        find: /^@optimitron\/wishocracy$/,
+        replacement: path.resolve(appRoot, "../../packages/wishocracy/src/index.ts"),
+      },
       {
         find: /^@\/lib\/(.*)$/,
         replacement: "$1",
