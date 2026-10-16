@@ -1,64 +1,53 @@
 import { describe, expect, it } from "vitest"
 import { biggestDifferences, buildGapRows, buildPersonalResult, classifyGap, militaryPerTrialDollar, MILITARY_ID, TRIALS_ID } from "./wishocracy-results"
 import { calculatePublicAllocations } from "./wishocracy-public-allocations"
-import { BUDGET_CATEGORIES, getActualGovernmentAllocations, type BudgetCategoryId } from "./wishocracy-data"
+import { BUDGET_CATEGORIES, type BudgetCategoryId } from "./wishocracy-data"
 
 const ids = Object.keys(BUDGET_CATEGORIES) as BudgetCategoryId[]
-const government = getActualGovernmentAllocations()
-const [funded, other, third] = ids.filter((id) => government[id] > 0)
-const unfunded = ids.find((id) => government[id] === 0)
+const ISRAEL_AID: BudgetCategoryId = "ISRAEL_GAZA_MILITARY_AID"
+const VETERANS: BudgetCategoryId = "VETERANS_HEALTHCARE"
 function row(userId: string, itemAId: string, itemBId: string, allocationA: number, allocationB = 100 - allocationA) {
   return { id: `${userId}-${itemAId}-${itemBId}`, userId, itemAId, itemBId, allocationA, allocationB, updatedAt: new Date(2026, 0, 1) }
 }
+const people = ["p1", "p2", "p3", "p4"]
 
 describe("classifyGap", () => {
-  it("only calls a gap when the government share sits outside everyone's interval", () => {
-    expect(classifyGap(0, 0, 0, 5, 0)).toEqual({ kind: "no-answers" })
-    expect(classifyGap(3, 2, 4, 0, 4)).toEqual({ kind: "not-funded" })
-    expect(classifyGap(6, 2, 9, 5, 4)).toEqual({ kind: "unclear" })
-    expect(classifyGap(5.2, 5.2, 5.2, 5, 4)).toEqual({ kind: "unclear" })
-    expect(classifyGap(10, 9, 11, 2, 4)).toEqual({ kind: "more", ratio: 5 })
-    expect(classifyGap(1, 0.9, 1.1, 4, 4)).toEqual({ kind: "less", ratio: 4 })
+  it("only calls a gap when the government's rank falls outside people's likely ranks", () => {
+    expect(classifyGap(undefined, undefined, 3, 10)).toEqual({ kind: "no-answers" })
+    expect(classifyGap(2, [1, 4], 9, 0)).toEqual({ kind: "not-funded" })
+    expect(classifyGap(5, [3, 7], 6, 10)).toEqual({ kind: "same" })
+    expect(classifyGap(2, [1, 3], 9, 10)).toEqual({ kind: "higher", places: 7 })
+    expect(classifyGap(9, [8, 10], 1, 10)).toEqual({ kind: "lower", places: 8 })
   })
 })
 
 describe("buildGapRows", () => {
-  it("puts unfunded programs first, then the largest shortfall, and unanswered programs last", () => {
-    const people = ["p1", "p2", "p3"]
-    const results = calculatePublicAllocations(people.flatMap((p) => [
-      row(p, funded!, other!, 90), row(p, other!, third!, 50), row(p, unfunded!, funded!, 50),
-    ]))
-    const rows = buildGapRows(results)
-    expect(rows[0]!.id).toBe(unfunded)
-    expect(rows[0]!.gap.kind).toBe("not-funded")
-    const answeredOrder = rows.filter((r) => r.answerCount > 0).map((r) => r.everyone / (r.government || 1e-9))
-    expect(answeredOrder.slice(1)).toEqual([...answeredOrder.slice(1)].sort((a, b) => b - a))
-    expect(rows.slice(4).every((r) => r.gap.kind === "no-answers")).toBe(true)
-  })
-
-  it("places your dots only on programs you answered, scaled to everyone's money for those programs", () => {
-    const yours = [
-      { categoryA: funded!, categoryB: other!, allocationA: 50, allocationB: 50 },
-      { categoryA: third!, categoryB: unfunded!, allocationA: 0, allocationB: 0 },
-    ]
-    const results = calculatePublicAllocations([
-      row("you", funded!, other!, 50), row("you", third!, unfunded!, 0, 0),
-      row("p2", funded!, other!, 80), row("p2", other!, third!, 50), row("p2", third!, unfunded!, 50),
+  it("shows a program people put last as ranked lower, even when the government barely funds it", () => {
+    // Share ratios called this "Want 6.6x more" because the military takes half the money.
+    const answers = people.flatMap((p) => [
+      row(p, MILITARY_ID, ISRAEL_AID, 90),
+      row(p, VETERANS, ISRAEL_AID, 95),
+      row(p, VETERANS, MILITARY_ID, 60),
     ])
-    const rows = buildGapRows(results, buildPersonalResult(yours))
-    const answered = rows.filter((r) => r.you !== undefined)
-    expect(answered.map((r) => r.id).sort()).toEqual([funded!, other!, third!, unfunded!].sort())
-    const everyoneTotal = answered.reduce((sum, r) => sum + r.everyone, 0)
-    expect(answered.reduce((sum, r) => sum + (r.you ?? 0), 0)).toBeCloseTo(everyoneTotal, 5)
-    expect(rows.find((r) => r.id === third)!.you).toBe(0)
-
-    const differences = biggestDifferences(rows)
-    expect(differences[0]!.ratio).toBe(0)
-    expect(differences.every(({ ratio }) => ratio === 0 || ratio >= 1.5 || ratio <= 1 / 1.5)).toBe(true)
+    const rows = buildGapRows(calculatePublicAllocations(answers))
+    const aid = rows.find((r) => r.id === ISRAEL_AID)!
+    expect(aid.peopleRank).toBe(3)
+    expect(aid.governmentRank).toBe(3)
+    expect(rows.find((r) => r.id === VETERANS)!.gap.kind).toBe("higher")
+    expect(rows.find((r) => r.id === MILITARY_ID)!.gap.kind).toBe("lower")
+    expect(rows.slice(3).every((r) => r.gap.kind === "no-answers")).toBe(true)
   })
-})
 
-describe("government shares", () => {
+  it("ranks both sides over only the programs people compared, so partial results compare like with like", () => {
+    const rows = buildGapRows(calculatePublicAllocations(people.map((p) => row(p, TRIALS_ID, MILITARY_ID, 70))))
+    const trials = rows.find((r) => r.id === TRIALS_ID)!
+    expect(trials.rankedCount).toBe(2)
+    expect(trials.peopleRank).toBe(1)
+    expect(trials.governmentRank).toBe(2)
+    expect(trials.gap).toEqual({ kind: "higher", places: 1 })
+    expect(rows[0]!.id).toBe(TRIALS_ID)
+  })
+
   it("never reports a program with a budget as unfunded", () => {
     const rows = buildGapRows(calculatePublicAllocations(ids.slice(1).map((id) => row("p1", ids[0]!, id, 50))))
     for (const r of rows) {
@@ -67,17 +56,29 @@ describe("government shares", () => {
   })
 })
 
-describe("buildGapRows with few programs answered", () => {
-  it("splits the government's money for the answered programs instead of a separate 100%", () => {
-    // One answer used to show trials at 64.9% against a 0.1% government share of all programs.
-    const rows = buildGapRows(calculatePublicAllocations([row("p1", MILITARY_ID, TRIALS_ID, 35)]))
-    const answered = rows.filter((r) => r.answerCount > 0)
-    expect(answered.map((r) => r.id).sort()).toEqual([MILITARY_ID, TRIALS_ID].sort())
-    const everyoneTotal = answered.reduce((sum, r) => sum + r.everyone, 0)
-    const governmentTotal = answered.reduce((sum, r) => sum + r.government, 0)
-    expect(everyoneTotal).toBeCloseTo(governmentTotal, 5)
-    const military = answered.find((r) => r.id === MILITARY_ID)!
-    expect(military.everyone / military.government).toBeCloseTo(0.35 * governmentTotal / military.government, 1)
+describe("your answers", () => {
+  it("places you among the programs you'd fund and lists what you reject first", () => {
+    const [x, y] = ids.filter((id) => id !== MILITARY_ID && id !== TRIALS_ID && id !== VETERANS)
+    const yours = [
+      { categoryA: TRIALS_ID, categoryB: MILITARY_ID, allocationA: 90, allocationB: 10 },
+      { categoryA: MILITARY_ID, categoryB: VETERANS, allocationA: 70, allocationB: 30 },
+      { categoryA: x!, categoryB: y!, allocationA: 0, allocationB: 0 },
+    ]
+    const others = people.flatMap((p) => [
+      row(p, VETERANS, MILITARY_ID, 80), row(p, MILITARY_ID, TRIALS_ID, 60),
+      row(p, x!, VETERANS, 30), row(p, y!, TRIALS_ID, 40),
+    ])
+    const results = calculatePublicAllocations(others)
+    const rows = buildGapRows(results, buildPersonalResult(yours))
+    expect(rows.find((r) => r.id === TRIALS_ID)!.you).toEqual({ rejected: false, rank: 1, of: 3 })
+    expect(rows.find((r) => r.id === x)!.you).toEqual({ rejected: true })
+
+    const differences = biggestDifferences(rows, results, 5)
+    expect(differences.slice(0, 2).map((d) => d.yourRank)).toEqual([null, null])
+    expect(differences[0]!.of).toBe(5)
+    // Among the 3 you'd fund, you put veterans last; other people put it first.
+    expect(differences.find((d) => d.row.id === VETERANS)).toMatchObject({ yourRank: 3, peopleRank: 1, of: 3 })
+    expect(differences.some((d) => d.row.id === MILITARY_ID)).toBe(false)
   })
 })
 

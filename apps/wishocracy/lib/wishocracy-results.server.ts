@@ -18,16 +18,22 @@ const ANSWER_FIELDS = {
 /** Everyone's result, recomputed at most once a minute because the bootstrap reads every saved answer. */
 export const loadPublicAllocations = unstable_cache(async () => {
   const categoryIds = Object.keys(BUDGET_CATEGORIES)
-  const rows = await prisma.wishocraticAllocation.findMany({
-    where: {
-      deletedAt: null,
-      user: { deletedAt: null },
-      itemAId: { in: categoryIds },
-      itemBId: { in: categoryIds },
-    },
-    select: ANSWER_FIELDS,
-  })
-  return calculatePublicAllocations(rows)
+  const [rows, inclusions] = await Promise.all([
+    prisma.wishocraticAllocation.findMany({
+      where: {
+        deletedAt: null,
+        user: { deletedAt: null },
+        itemAId: { in: categoryIds },
+        itemBId: { in: categoryIds },
+      },
+      select: ANSWER_FIELDS,
+    }),
+    prisma.wishocraticItemInclusion.findMany({
+      where: { deletedAt: null, user: { deletedAt: null }, itemId: { in: categoryIds } },
+      select: { userId: true, itemId: true, included: true },
+    }),
+  ])
+  return calculatePublicAllocations(rows, inclusions)
 }, ["wishocracy-public-allocations"], { revalidate: 60 })
 
 /** The signed-in person's latest answer per pair and chosen programs, or null when nobody is signed in. */

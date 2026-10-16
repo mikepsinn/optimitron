@@ -7,6 +7,8 @@ import { MILITARY_ID, TRIALS_ID } from "./wishocracy-results"
 const FIXTURE_DATE = new Date("2026-01-01T00:00:00Z")
 const FIXTURE_PEOPLE = 60
 const FIXTURE_ANSWERS_EACH = 12
+/** Below this estimated share, synthetic people sometimes answer "fund neither". */
+const DISLIKED_PCT = 2.5
 
 function seededRng(seed: number): () => number {
   let s = seed
@@ -50,9 +52,10 @@ export function getWishocracyVisualFixture(visual?: string) {
       if (itemAId === itemBId) continue
       const share = (100 * strength(itemAId)) / (strength(itemAId) + strength(itemBId))
       const allocationA = Math.min(100, Math.max(0, Math.round(share + (rng() - 0.5) * 40)))
+      const neither = strength(itemAId) < DISLIKED_PCT && strength(itemBId) < DISLIKED_PCT && rng() < 0.5
       rows.push({
         id: `visual-${person}-${answer}`, userId: `visual-person-${person}`, itemAId, itemBId,
-        allocationA, allocationB: 100 - allocationA, updatedAt: FIXTURE_DATE,
+        allocationA: neither ? 0 : allocationA, allocationB: neither ? 0 : 100 - allocationA, updatedAt: FIXTURE_DATE,
       })
     }
   }

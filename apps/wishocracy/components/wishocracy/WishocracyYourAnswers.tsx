@@ -4,15 +4,15 @@ import { OPTIMITRON_LINKS } from "@/lib/optimitron-links"
 import { ROUTES } from "@optimitron/site-kit/lib/routes"
 import { BUDGET_CATEGORIES, type BudgetCategoryId } from "@/lib/wishocracy-data"
 import type { Comparison } from "@/lib/wishocracy-calculations"
-import { biggestDifferences, type GapRow, type PersonalResult } from "@/lib/wishocracy-results"
+import type { PublicAllocationResults } from "@/lib/wishocracy-public-allocations"
+import { biggestDifferences, type Difference, type GapRow, type PersonalResult } from "@/lib/wishocracy-results"
 import { WishocracyAnswerEditor } from "./WishocracyAnswerEditor"
-import { formatRatio, formatShare } from "./WishocracyGapChart"
+import { ordinal } from "./WishocracyGapChart"
 
-function describeDifference(row: GapRow, ratio: number): string {
-  if (ratio === 0) return `You'd give it nothing. Other people would give it ${formatShare(row.everyone)}.`
-  return ratio > 1
-    ? `You'd give it ${formatRatio(ratio)} what other people would.`
-    : `You'd give it ${formatRatio(1 / ratio)} less than other people would.`
+function describeDifference({ yourRank, peopleRank, of }: Difference): string {
+  return yourRank === null
+    ? `You'd fund none of it. Other people put it ${ordinal(peopleRank)} of the ${of} programs you compared.`
+    : `You put it ${ordinal(yourRank)} of the ${of} programs you'd fund. Other people put it ${ordinal(peopleRank)} of those ${of}.`
 }
 
 function describeAgreement(agreed: number, total: number, editable: boolean): string {
@@ -22,14 +22,15 @@ function describeAgreement(agreed: number, total: number, editable: boolean): st
   return ` Your ranking matches ${agreed} of your ${total} picks. The other ${conflicts} ${conflicts === 1 ? "contradicts" : "contradict"} your other picks.${editable ? " Change them below." : ""}`
 }
 
-export function WishocracyYourAnswers({ rows, personal, comparisons, selectedCategoryIds, editable }: {
+export function WishocracyYourAnswers({ rows, results, personal, comparisons, selectedCategoryIds, editable }: {
   rows: GapRow[]
+  results: PublicAllocationResults
   personal: PersonalResult
   comparisons: Comparison[]
   selectedCategoryIds: BudgetCategoryId[]
   editable: boolean
 }) {
-  const differences = biggestDifferences(rows)
+  const differences = biggestDifferences(rows, results)
   const programCount = Object.keys(BUDGET_CATEGORIES).length
   const { agreed, total } = personal.agreement
 
@@ -41,15 +42,15 @@ export function WishocracyYourAnswers({ rows, personal, comparisons, selectedCat
         <h3 className="mb-3 text-lg font-black uppercase">Where you differ most from other people</h3>
         {differences.length > 0 ? (
           <ul className="space-y-2">
-            {differences.map(({ row, ratio }) => (
-              <li key={row.id} className="flex gap-2">
-                <span aria-hidden="true" className="text-lg">{row.icon}</span>
-                <p><span className="font-black uppercase">{row.name}.</span> {describeDifference(row, ratio)}</p>
+            {differences.map((difference) => (
+              <li key={difference.row.id} className="flex gap-2">
+                <span aria-hidden="true" className="text-lg">{difference.row.icon}</span>
+                <p><span className="font-black uppercase">{difference.row.name}.</span> {describeDifference(difference)}</p>
               </li>
             ))}
           </ul>
         ) : (
-          <p>On every program you compared, you&apos;re within 1.5× of other people.</p>
+          <p>You order the programs you compared about the same way other people do.</p>
         )}
       </div>
 

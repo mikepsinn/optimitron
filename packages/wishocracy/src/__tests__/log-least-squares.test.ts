@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   answerAgreement,
+  fundingSupport,
   logLeastSquaresConfidenceIntervals,
   logLeastSquaresWeights,
 } from '../log-least-squares.js';
@@ -102,5 +103,23 @@ describe('answerAgreement', () => {
     const tied = { A: 0.5, B: 0.5 };
     expect(answerAgreement([answer('A', 'B', 30)], tied)).toEqual({ agreed: 0, total: 1 });
     expect(answerAgreement([answer('A', 'B', 70)], tied)).toEqual({ agreed: 0, total: 1 });
+  });
+});
+
+describe('funding votes', () => {
+  it('lowers an item that people would not fund at all, even when its pairwise split is even', () => {
+    const rows = [answer('A', 'B', 50, 'p1'), answer('A', 'B', 50, 'p2')];
+    const votes = [
+      { participantId: 'p1', itemId: 'A', fund: true },
+      { participantId: 'p2', itemId: 'A', fund: true },
+      { participantId: 'p1', itemId: 'B', fund: true },
+      { participantId: 'p2', itemId: 'B', fund: false },
+      { participantId: 'p3', itemId: 'B', fund: false },
+    ];
+    expect(fundingSupport(votes, ['A', 'B', 'C'])).toEqual({ A: 1, B: 1 / 3, C: 1 });
+    const [first, second] = logLeastSquaresConfidenceIntervals(rows, ['A', 'B'], { fundingVotes: votes, iterations: 50 });
+    expect(first?.itemId).toBe('A');
+    expect(first?.weight).toBeCloseTo(0.75, 5);
+    expect(second?.weight).toBeCloseTo(0.25, 5);
   });
 });

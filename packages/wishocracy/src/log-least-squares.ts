@@ -22,7 +22,20 @@ export interface LogLeastSquaresOptions {
   priorStrength?: number;
 }
 
+/**
+ * One person's answer to "should the government fund this at all?" (the
+ * paper's zero-funding filter). Pairwise splits cannot say "nothing": a "no"
+ * here is how opposition reaches the result.
+ */
+export interface FundingVote {
+  participantId: string;
+  itemId: string;
+  fund: boolean;
+}
+
 export interface LogLeastSquaresIntervalOptions extends LogLeastSquaresOptions {
+  /** Optional funding votes; each item's weight is scaled by its share of "yes" votes. */
+  fundingVotes?: readonly FundingVote[];
   /** Number of bootstrap resamples (default 200) */
   iterations?: number;
   /** Confidence level as a fraction (default 0.95) */
@@ -140,6 +153,44 @@ function percentile(sorted: number[], p: number): number {
   return (sorted[lo] ?? 0) * (1 - frac) + (sorted[hi] ?? 0) * frac;
 }
 
+/** Share of voters who would fund each item at all; 1 when nobody voted on it. */
+export function fundingSupport(
+  votes: readonly FundingVote[],
+  itemIds: string[],
+): Record<string, number> {
+  const yes = new Map<string, number>();
+  const all = new Map<string, number>();
+  for (const vote of votes) {
+    all.set(vote.itemId, (all.get(vote.itemId) ?? 0) + 1);
+    if (vote.fund) yes.set(vote.itemId, (yes.get(vote.itemId) ?? 0) + 1);
+  }
+  return Object.fromEntries(
+    itemIds.map((id) => {
+      const total = all.get(id) ?? 0;
+      return [id, total === 0 ? 1 : (yes.get(id) ?? 0) / total];
+    }),
+  );
+}
+
+/**
+ * The share each item would get averaged over everyone: people who would not
+ * fund it give it nothing, and the rest split money as the pairwise weights say.
+ */
+function weightsWithSupport(
+  comparisons: PairwiseComparison[],
+  votes: readonly FundingVote[],
+  itemIds: string[],
+  fitOptions: LogLeastSquaresOptions,
+): Record<string, number> {
+  const weights = logLeastSquaresWeights(comparisons, itemIds, fitOptions);
+  if (votes.length === 0) return weights;
+  const support = fundingSupport(votes, itemIds);
+  const total = itemIds.reduce((sum, id) => sum + (weights[id] ?? 0) * (support[id] ?? 1), 0);
+  return Object.fromEntries(
+    itemIds.map((id) => [id, total > 0 ? ((weights[id] ?? 0) * (support[id] ?? 1)) / total : 0]),
+  );
+}
+
 /**
  * Point weights plus percentile bootstrap intervals. Resamples participants,
  * not single answers, because one person's answers are not independent.
@@ -150,26 +201,32 @@ export function logLeastSquaresConfidenceIntervals(
   itemIds: string[],
   options: LogLeastSquaresIntervalOptions = {},
 ): PreferenceWeight[] {
-  const { iterations = 200, confidenceLevel = 0.95, seed = 1, ...fitOptions } = options;
-  const point = logLeastSquaresWeights(comparisons, itemIds, fitOptions);
+  const { iterations = 200, confidenceLevel = 0.95, seed = 1, fundingVotes = [], ...fitOptions } = options;
+  const point = weightsWithSupport(comparisons, fundingVotes, itemIds, fitOptions);
 
-  const byParticipant = new Map<string, PairwiseComparison[]>();
-  for (const comparison of comparisons) {
-    const rows = byParticipant.get(comparison.participantId) ?? [];
-    rows.push(comparison);
-    byParticipant.set(comparison.participantId, rows);
-  }
+  const byParticipant = new Map<string, { comparisons: PairwiseComparison[]; votes: FundingVote[] }>();
+  const entry = (id: string) => {
+    const found = byParticipant.get(id) ?? { comparisons: [], votes: [] };
+    byParticipant.set(id, found);
+    return found;
+  };
+  for (const comparison of comparisons) entry(comparison.participantId).comparisons.push(comparison);
+  for (const vote of fundingVotes) entry(vote.participantId).votes.push(vote);
   const participants = [...byParticipant.values()];
   const rng = seededRng(seed);
   const distributions = new Map(itemIds.map((id) => [id, [] as number[]]));
 
   if (participants.length > 0) {
     for (let iteration = 0; iteration < iterations; iteration++) {
-      const resample: PairwiseComparison[] = [];
+      const resampledComparisons: PairwiseComparison[] = [];
+      const resampledVotes: FundingVote[] = [];
       for (let i = 0; i < participants.length; i++) {
-        resample.push(...(participants[Math.floor(rng() * participants.length)] ?? []));
+        const participant = participants[Math.floor(rng() * participants.length)];
+        if (!participant) continue;
+        resampledComparisons.push(...participant.comparisons);
+        resampledVotes.push(...participant.votes);
       }
-      const weights = logLeastSquaresWeights(resample, itemIds, fitOptions);
+      const weights = weightsWithSupport(resampledComparisons, resampledVotes, itemIds, fitOptions);
       for (const id of itemIds) distributions.get(id)?.push(weights[id] ?? 0);
     }
   }

@@ -29,12 +29,12 @@ export default function AboutPage() {
           <h2 className="text-2xl font-black uppercase">How to read the results</h2>
           <p className="leading-relaxed">
             Each answer splits $100 between two programs. We pool everyone&apos;s latest answer for each pair and find the one set of shares that fits them all best, using the method in the Wishocracy paper.
-            People who answer more pairs add more evidence. The likely range shows how far a share could move if a different group of people had answered.
-            Your own result uses only your answers and covers only the programs you compared. Answering &quot;fund neither&quot; gives both programs nothing.
+            Answering &quot;fund neither&quot;, or skipping a program when you pick what to fund, counts as giving it nothing.
+            The results page ranks the programs by these shares and compares that order with the government&apos;s order by spending.
+            The likely range shows how far a rank could move if a different group of people had answered. Your own result uses only your answers and covers only the programs you compared.
           </p>
           <p className="leading-relaxed">
-            The government bars show published US annual budgets scaled across the same programs.
-            Both sets of percentages describe the programs shown, not the entire federal budget.
+            The government&apos;s order comes from annual federal spending on the same programs, not the entire federal budget.
           </p>
           <Link href={ROUTES.wishocracyResults} className="inline-block font-bold underline">Explore the results</Link>
         </section>

@@ -65,6 +65,22 @@ describe("public budget", () => {
     expect(Object.values(results.allocations).every((value) => value === 0)).toBe(true)
   })
 
+  it("lowers a program people would not fund at all, from fund-neither answers and skipped programs", () => {
+    // Pairwise answers alone split a and b evenly.
+    const even = [row("p1", 50), row("p2", 50), row("p3", 50)]
+    expect(calculatePublicAllocations(even).allocations[a!]).toBeCloseTo(50, 0)
+
+    const withOpposition = calculatePublicAllocations(
+      [...even, { ...row("p4", 0, b!, c!), allocationB: 0 }],
+      [{ userId: "p5", itemId: b!, included: false }, { userId: "p5", itemId: a!, included: true }],
+    )
+    // b: 3 of 5 people who decided would fund it; a: 4 of 4.
+    expect(withOpposition.support[b!]).toBeCloseTo(3 / 5, 10)
+    expect(withOpposition.support[a!]).toBe(1)
+    expect(withOpposition.allocations[a!]).toBeGreaterThan(withOpposition.allocations[b!])
+    expect(withOpposition.allocations[a!] / withOpposition.allocations[b!]).toBeCloseTo(5 / 3, 1)
+  })
+
   it("reports an interval around each share that widens when people disagree", () => {
     const agree = calculatePublicAllocations(["p1", "p2", "p3"].map((p) => row(p, 70)))
     const disagree = calculatePublicAllocations([row("p1", 90), row("p2", 70), row("p3", 30)])

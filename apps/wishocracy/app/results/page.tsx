@@ -103,17 +103,13 @@ export default async function ResultsPage({ searchParams }: {
             <p role="alert" className="max-w-3xl">The results didn&apos;t load. Refresh the page to try again.</p>
           ) : hasAnswers ? (
             <p className="max-w-3xl">
-              {people} {results.totalUsers === 1 ? "has" : "have"} answered. Programs the government underfunds most, compared with what they want, come first.
+              {people} {results.totalUsers === 1 ? "has" : "have"} answered. Programs people rank furthest above the government come first.
               {results.totalUsers < FEW_PEOPLE ? ` With only ${people} so far, expect these numbers to move.` : ""}
             </p>
           ) : (
             <p className="max-w-3xl">Nobody has answered yet. Be the first.</p>
           )}
-          <WishocracyGapChart
-            rows={rows}
-            hasAnswers={hasAnswers}
-            yourProgramCount={personal && hasAnswers ? personal.answeredIds.length : undefined}
-          />
+          <WishocracyGapChart rows={rows} hasAnswers={hasAnswers} showYou={personal !== undefined && hasAnswers} />
           {!viewer.signedIn ? (
             <p className="mt-6 text-center">
               Already compared programs?{" "}
@@ -126,6 +122,7 @@ export default async function ResultsPage({ searchParams }: {
         {viewer.signedIn && personal ? (
           <WishocracyYourAnswers
             rows={rows}
+            results={results}
             personal={personal}
             comparisons={viewer.comparisons}
             selectedCategoryIds={viewer.selectedCategoryIds}

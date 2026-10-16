@@ -5,7 +5,7 @@ import { BUDGET_CATEGORIES } from "@/lib/wishocracy-data"
 import type { BudgetCategoryId } from "@/lib/wishocracy-data"
 
 const empty = () => Object.fromEntries(Object.keys(BUDGET_CATEGORIES).map((id) => [id, 0])) as Record<BudgetCategoryId, number>
-const results = (totalUsers: number) => ({ allocations, intervals: Object.fromEntries(Object.keys(BUDGET_CATEGORIES).map((id) => [id, { low: 0, high: 0 }])) as Record<BudgetCategoryId, { low: number; high: number }>, answerCounts: empty(), totalUsers })
+const results = (totalUsers: number) => ({ allocations, intervals: Object.fromEntries(Object.keys(BUDGET_CATEGORIES).map((id) => [id, { low: 0, high: 0 }])) as Record<BudgetCategoryId, { low: number; high: number }>, answerCounts: empty(), support: Object.fromEntries(Object.keys(BUDGET_CATEGORIES).map((id) => [id, 1])) as Record<BudgetCategoryId, number>, totalUsers })
 const allocations = Object.fromEntries(Object.keys(BUDGET_CATEGORIES).map((id) => [id, 0])) as Record<BudgetCategoryId, number>
 const category = Object.keys(BUDGET_CATEGORIES)[0] as BudgetCategoryId
 allocations[category] = 100
