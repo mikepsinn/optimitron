@@ -2,7 +2,7 @@
 
 Longevitron is independent from Optimitron. Inside `longevitron/`, this file replaces the root `AGENTS.md` and `CLAUDE.md` rules for mission, campaign, task tree, copy, and screenshots. The root git and pull request rules still apply until this folder moves to its own repository.
 
-Read `docs/SPEC.md` before you make a change.
+Read `docs/SPEC.md` and `docs/ROADMAP.md` before you make a change.
 
 ## Hard rules
 

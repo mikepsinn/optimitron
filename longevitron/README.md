@@ -3,6 +3,7 @@
 Longevitron calculates, for each country, the budget and the laws that would raise average healthy life expectancy (HALE) the most. Every number on the site comes from a saved source file and passes an automated check.
 
 - Spec: [docs/SPEC.md](docs/SPEC.md)
+- Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
 - Agent rules: [AGENTS.md](AGENTS.md)
 
 ## Status
