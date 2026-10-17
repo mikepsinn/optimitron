@@ -1,0 +1,1297 @@
+[
+  {
+    "code": "AFG",
+    "name": "Afghanistan",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "AFG"
+  },
+  {
+    "code": "AGO",
+    "name": "Angola",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "AGO"
+  },
+  {
+    "code": "ALB",
+    "name": "Albania",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ALB"
+  },
+  {
+    "code": "ARE",
+    "name": "United Arab Emirates",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "ARE"
+  },
+  {
+    "code": "ARG",
+    "name": "Argentina",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "ARG"
+  },
+  {
+    "code": "ARM",
+    "name": "Armenia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ARM"
+  },
+  {
+    "code": "ATG",
+    "name": "Antigua and Barbuda",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "ATG"
+  },
+  {
+    "code": "AUS",
+    "name": "Australia",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "AUS"
+  },
+  {
+    "code": "AUT",
+    "name": "Austria",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "AUT"
+  },
+  {
+    "code": "AZE",
+    "name": "Azerbaijan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "AZE"
+  },
+  {
+    "code": "BDI",
+    "name": "Burundi",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "BDI"
+  },
+  {
+    "code": "BEL",
+    "name": "Belgium",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "BEL"
+  },
+  {
+    "code": "BEN",
+    "name": "Benin",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "BEN"
+  },
+  {
+    "code": "BFA",
+    "name": "Burkina Faso",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "BFA"
+  },
+  {
+    "code": "BGD",
+    "name": "Bangladesh",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "BGD"
+  },
+  {
+    "code": "BGR",
+    "name": "Bulgaria",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "BGR"
+  },
+  {
+    "code": "BHR",
+    "name": "Bahrain",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "BHR"
+  },
+  {
+    "code": "BHS",
+    "name": "Bahamas",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "BHS"
+  },
+  {
+    "code": "BIH",
+    "name": "Bosnia and Herzegovina",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "BIH"
+  },
+  {
+    "code": "BLR",
+    "name": "Belarus",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "BLR"
+  },
+  {
+    "code": "BLZ",
+    "name": "Belize",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "BLZ"
+  },
+  {
+    "code": "BOL",
+    "name": "Bolivia (Plurinational State of)",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "BOL"
+  },
+  {
+    "code": "BRA",
+    "name": "Brazil",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "BRA"
+  },
+  {
+    "code": "BRB",
+    "name": "Barbados",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "BRB"
+  },
+  {
+    "code": "BRN",
+    "name": "Brunei Darussalam",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "BRN"
+  },
+  {
+    "code": "BTN",
+    "name": "Bhutan",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "BTN"
+  },
+  {
+    "code": "BWA",
+    "name": "Botswana",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "BWA"
+  },
+  {
+    "code": "CAF",
+    "name": "Central African Republic",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "CAF"
+  },
+  {
+    "code": "CAN",
+    "name": "Canada",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "CAN"
+  },
+  {
+    "code": "CHE",
+    "name": "Switzerland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "CHE"
+  },
+  {
+    "code": "CHL",
+    "name": "Chile",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "CHL"
+  },
+  {
+    "code": "CHN",
+    "name": "China",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "CHN"
+  },
+  {
+    "code": "CIV",
+    "name": "Cote d'Ivoire",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "CIV"
+  },
+  {
+    "code": "CMR",
+    "name": "Cameroon",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "CMR"
+  },
+  {
+    "code": "COD",
+    "name": "Democratic Republic of the Congo",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "COD"
+  },
+  {
+    "code": "COG",
+    "name": "Congo",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "COG"
+  },
+  {
+    "code": "COL",
+    "name": "Colombia",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "COL"
+  },
+  {
+    "code": "COM",
+    "name": "Comoros",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "COM"
+  },
+  {
+    "code": "CPV",
+    "name": "Cabo Verde",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "CPV"
+  },
+  {
+    "code": "CRI",
+    "name": "Costa Rica",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "CRI"
+  },
+  {
+    "code": "CUB",
+    "name": "Cuba",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "CUB"
+  },
+  {
+    "code": "CYP",
+    "name": "Cyprus",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "CYP"
+  },
+  {
+    "code": "CZE",
+    "name": "Czechia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "CZE"
+  },
+  {
+    "code": "DEU",
+    "name": "Germany",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "DEU"
+  },
+  {
+    "code": "DJI",
+    "name": "Djibouti",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "DJI"
+  },
+  {
+    "code": "DNK",
+    "name": "Denmark",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "DNK"
+  },
+  {
+    "code": "DOM",
+    "name": "Dominican Republic",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "DOM"
+  },
+  {
+    "code": "DZA",
+    "name": "Algeria",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "DZA"
+  },
+  {
+    "code": "ECU",
+    "name": "Ecuador",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "ECU"
+  },
+  {
+    "code": "EGY",
+    "name": "Egypt",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "EGY"
+  },
+  {
+    "code": "ERI",
+    "name": "Eritrea",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "ERI"
+  },
+  {
+    "code": "ESP",
+    "name": "Spain",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ESP"
+  },
+  {
+    "code": "EST",
+    "name": "Estonia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "EST"
+  },
+  {
+    "code": "ETH",
+    "name": "Ethiopia",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "ETH"
+  },
+  {
+    "code": "FIN",
+    "name": "Finland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "FIN"
+  },
+  {
+    "code": "FJI",
+    "name": "Fiji",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "FJI"
+  },
+  {
+    "code": "FRA",
+    "name": "France",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "FRA"
+  },
+  {
+    "code": "FSM",
+    "name": "Micronesia (Federated States of)",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "FSM"
+  },
+  {
+    "code": "GAB",
+    "name": "Gabon",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GAB"
+  },
+  {
+    "code": "GBR",
+    "name": "United Kingdom of Great Britain and Northern Ireland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "GBR"
+  },
+  {
+    "code": "GEO",
+    "name": "Georgia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "GEO"
+  },
+  {
+    "code": "GHA",
+    "name": "Ghana",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GHA"
+  },
+  {
+    "code": "GIN",
+    "name": "Guinea",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GIN"
+  },
+  {
+    "code": "GMB",
+    "name": "Gambia",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GMB"
+  },
+  {
+    "code": "GNB",
+    "name": "Guinea-Bissau",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GNB"
+  },
+  {
+    "code": "GNQ",
+    "name": "Equatorial Guinea",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "GNQ"
+  },
+  {
+    "code": "GRC",
+    "name": "Greece",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "GRC"
+  },
+  {
+    "code": "GRD",
+    "name": "Grenada",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "GRD"
+  },
+  {
+    "code": "GTM",
+    "name": "Guatemala",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "GTM"
+  },
+  {
+    "code": "GUY",
+    "name": "Guyana",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "GUY"
+  },
+  {
+    "code": "HND",
+    "name": "Honduras",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "HND"
+  },
+  {
+    "code": "HRV",
+    "name": "Croatia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "HRV"
+  },
+  {
+    "code": "HTI",
+    "name": "Haiti",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "HTI"
+  },
+  {
+    "code": "HUN",
+    "name": "Hungary",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "HUN"
+  },
+  {
+    "code": "IDN",
+    "name": "Indonesia",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "IDN"
+  },
+  {
+    "code": "IND",
+    "name": "India",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "IND"
+  },
+  {
+    "code": "IRL",
+    "name": "Ireland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "IRL"
+  },
+  {
+    "code": "IRN",
+    "name": "Iran (Islamic Republic of)",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "IRN"
+  },
+  {
+    "code": "IRQ",
+    "name": "Iraq",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "IRQ"
+  },
+  {
+    "code": "ISL",
+    "name": "Iceland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ISL"
+  },
+  {
+    "code": "ISR",
+    "name": "Israel",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ISR"
+  },
+  {
+    "code": "ITA",
+    "name": "Italy",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ITA"
+  },
+  {
+    "code": "JAM",
+    "name": "Jamaica",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "JAM"
+  },
+  {
+    "code": "JOR",
+    "name": "Jordan",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "JOR"
+  },
+  {
+    "code": "JPN",
+    "name": "Japan",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "JPN"
+  },
+  {
+    "code": "KAZ",
+    "name": "Kazakhstan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "KAZ"
+  },
+  {
+    "code": "KEN",
+    "name": "Kenya",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "KEN"
+  },
+  {
+    "code": "KGZ",
+    "name": "Kyrgyzstan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "KGZ"
+  },
+  {
+    "code": "KHM",
+    "name": "Cambodia",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "KHM"
+  },
+  {
+    "code": "KIR",
+    "name": "Kiribati",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "KIR"
+  },
+  {
+    "code": "KOR",
+    "name": "Republic of Korea",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "KOR"
+  },
+  {
+    "code": "KWT",
+    "name": "Kuwait",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "KWT"
+  },
+  {
+    "code": "LAO",
+    "name": "Lao People's Democratic Republic",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "LAO"
+  },
+  {
+    "code": "LBN",
+    "name": "Lebanon",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "LBN"
+  },
+  {
+    "code": "LBR",
+    "name": "Liberia",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "LBR"
+  },
+  {
+    "code": "LBY",
+    "name": "Libya",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "LBY"
+  },
+  {
+    "code": "LCA",
+    "name": "Saint Lucia",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "LCA"
+  },
+  {
+    "code": "LKA",
+    "name": "Sri Lanka",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "LKA"
+  },
+  {
+    "code": "LSO",
+    "name": "Lesotho",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "LSO"
+  },
+  {
+    "code": "LTU",
+    "name": "Lithuania",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "LTU"
+  },
+  {
+    "code": "LUX",
+    "name": "Luxembourg",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "LUX"
+  },
+  {
+    "code": "LVA",
+    "name": "Latvia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "LVA"
+  },
+  {
+    "code": "MAR",
+    "name": "Morocco",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "MAR"
+  },
+  {
+    "code": "MDA",
+    "name": "Republic of Moldova",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "MDA"
+  },
+  {
+    "code": "MDG",
+    "name": "Madagascar",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MDG"
+  },
+  {
+    "code": "MDV",
+    "name": "Maldives",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "MDV"
+  },
+  {
+    "code": "MEX",
+    "name": "Mexico",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "MEX"
+  },
+  {
+    "code": "MKD",
+    "name": "North Macedonia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "MKD"
+  },
+  {
+    "code": "MLI",
+    "name": "Mali",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MLI"
+  },
+  {
+    "code": "MLT",
+    "name": "Malta",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "MLT"
+  },
+  {
+    "code": "MMR",
+    "name": "Myanmar",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "MMR"
+  },
+  {
+    "code": "MNE",
+    "name": "Montenegro",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "MNE"
+  },
+  {
+    "code": "MNG",
+    "name": "Mongolia",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "MNG"
+  },
+  {
+    "code": "MOZ",
+    "name": "Mozambique",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MOZ"
+  },
+  {
+    "code": "MRT",
+    "name": "Mauritania",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MRT"
+  },
+  {
+    "code": "MUS",
+    "name": "Mauritius",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MUS"
+  },
+  {
+    "code": "MWI",
+    "name": "Malawi",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "MWI"
+  },
+  {
+    "code": "MYS",
+    "name": "Malaysia",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "MYS"
+  },
+  {
+    "code": "NAM",
+    "name": "Namibia",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "NAM"
+  },
+  {
+    "code": "NER",
+    "name": "Niger",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "NER"
+  },
+  {
+    "code": "NGA",
+    "name": "Nigeria",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "NGA"
+  },
+  {
+    "code": "NIC",
+    "name": "Nicaragua",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "NIC"
+  },
+  {
+    "code": "NLD",
+    "name": "Netherlands (Kingdom of the)",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "NLD"
+  },
+  {
+    "code": "NOR",
+    "name": "Norway",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "NOR"
+  },
+  {
+    "code": "NPL",
+    "name": "Nepal",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "NPL"
+  },
+  {
+    "code": "NZL",
+    "name": "New Zealand",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "NZL"
+  },
+  {
+    "code": "OMN",
+    "name": "Oman",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "OMN"
+  },
+  {
+    "code": "PAK",
+    "name": "Pakistan",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "PAK"
+  },
+  {
+    "code": "PAN",
+    "name": "Panama",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "PAN"
+  },
+  {
+    "code": "PER",
+    "name": "Peru",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "PER"
+  },
+  {
+    "code": "PHL",
+    "name": "Philippines",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "PHL"
+  },
+  {
+    "code": "PNG",
+    "name": "Papua New Guinea",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "PNG"
+  },
+  {
+    "code": "POL",
+    "name": "Poland",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "POL"
+  },
+  {
+    "code": "PRI",
+    "name": "Puerto Rico",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "PRI"
+  },
+  {
+    "code": "PRK",
+    "name": "Democratic People's Republic of Korea",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "PRK"
+  },
+  {
+    "code": "PRT",
+    "name": "Portugal",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "PRT"
+  },
+  {
+    "code": "PRY",
+    "name": "Paraguay",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "PRY"
+  },
+  {
+    "code": "PSE",
+    "name": "occupied Palestinian territory, including east Jerusalem",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "PSE"
+  },
+  {
+    "code": "QAT",
+    "name": "Qatar",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "QAT"
+  },
+  {
+    "code": "ROU",
+    "name": "Romania",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "ROU"
+  },
+  {
+    "code": "RUS",
+    "name": "Russian Federation",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "RUS"
+  },
+  {
+    "code": "RWA",
+    "name": "Rwanda",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "RWA"
+  },
+  {
+    "code": "SAU",
+    "name": "Saudi Arabia",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "SAU"
+  },
+  {
+    "code": "SDN",
+    "name": "Sudan",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "SDN"
+  },
+  {
+    "code": "SEN",
+    "name": "Senegal",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "SEN"
+  },
+  {
+    "code": "SGP",
+    "name": "Singapore",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "SGP"
+  },
+  {
+    "code": "SLB",
+    "name": "Solomon Islands",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "SLB"
+  },
+  {
+    "code": "SLE",
+    "name": "Sierra Leone",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "SLE"
+  },
+  {
+    "code": "SLV",
+    "name": "El Salvador",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "SLV"
+  },
+  {
+    "code": "SOM",
+    "name": "Somalia",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "SOM"
+  },
+  {
+    "code": "SRB",
+    "name": "Serbia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "SRB"
+  },
+  {
+    "code": "SSD",
+    "name": "South Sudan",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "SSD"
+  },
+  {
+    "code": "STP",
+    "name": "Sao Tome and Principe",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "STP"
+  },
+  {
+    "code": "SUR",
+    "name": "Suriname",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "SUR"
+  },
+  {
+    "code": "SVK",
+    "name": "Slovakia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "SVK"
+  },
+  {
+    "code": "SVN",
+    "name": "Slovenia",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "SVN"
+  },
+  {
+    "code": "SWE",
+    "name": "Sweden",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "SWE"
+  },
+  {
+    "code": "SWZ",
+    "name": "Eswatini",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "SWZ"
+  },
+  {
+    "code": "SYC",
+    "name": "Seychelles",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "SYC"
+  },
+  {
+    "code": "SYR",
+    "name": "Syrian Arab Republic",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "SYR"
+  },
+  {
+    "code": "TCD",
+    "name": "Chad",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "TCD"
+  },
+  {
+    "code": "TGO",
+    "name": "Togo",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "TGO"
+  },
+  {
+    "code": "THA",
+    "name": "Thailand",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "THA"
+  },
+  {
+    "code": "TJK",
+    "name": "Tajikistan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "TJK"
+  },
+  {
+    "code": "TKM",
+    "name": "Turkmenistan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "TKM"
+  },
+  {
+    "code": "TLS",
+    "name": "Timor-Leste",
+    "region": "South-East Asia",
+    "source": "who-gho-countries",
+    "rowKey": "TLS"
+  },
+  {
+    "code": "TON",
+    "name": "Tonga",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "TON"
+  },
+  {
+    "code": "TTO",
+    "name": "Trinidad and Tobago",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "TTO"
+  },
+  {
+    "code": "TUN",
+    "name": "Tunisia",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "TUN"
+  },
+  {
+    "code": "TUR",
+    "name": "Türkiye",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "TUR"
+  },
+  {
+    "code": "TZA",
+    "name": "United Republic of Tanzania",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "TZA"
+  },
+  {
+    "code": "UGA",
+    "name": "Uganda",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "UGA"
+  },
+  {
+    "code": "UKR",
+    "name": "Ukraine",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "UKR"
+  },
+  {
+    "code": "URY",
+    "name": "Uruguay",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "URY"
+  },
+  {
+    "code": "USA",
+    "name": "United States of America",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "USA"
+  },
+  {
+    "code": "UZB",
+    "name": "Uzbekistan",
+    "region": "Europe",
+    "source": "who-gho-countries",
+    "rowKey": "UZB"
+  },
+  {
+    "code": "VCT",
+    "name": "Saint Vincent and the Grenadines",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "VCT"
+  },
+  {
+    "code": "VEN",
+    "name": "Venezuela (Bolivarian Republic of)",
+    "region": "Americas",
+    "source": "who-gho-countries",
+    "rowKey": "VEN"
+  },
+  {
+    "code": "VNM",
+    "name": "Viet Nam",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "VNM"
+  },
+  {
+    "code": "VUT",
+    "name": "Vanuatu",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "VUT"
+  },
+  {
+    "code": "WSM",
+    "name": "Samoa",
+    "region": "Western Pacific",
+    "source": "who-gho-countries",
+    "rowKey": "WSM"
+  },
+  {
+    "code": "YEM",
+    "name": "Yemen",
+    "region": "Eastern Mediterranean",
+    "source": "who-gho-countries",
+    "rowKey": "YEM"
+  },
+  {
+    "code": "ZAF",
+    "name": "South Africa",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "ZAF"
+  },
+  {
+    "code": "ZMB",
+    "name": "Zambia",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "ZMB"
+  },
+  {
+    "code": "ZWE",
+    "name": "Zimbabwe",
+    "region": "Africa",
+    "source": "who-gho-countries",
+    "rowKey": "ZWE"
+  }
+]

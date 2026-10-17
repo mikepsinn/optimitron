@@ -1,0 +1,29 @@
+{
+  "name": "longevitron",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@8.14.0",
+  "scripts": {
+    "dev": "next dev --port 3010",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "fetch:sources": "tsx scripts/fetch-sources.ts",
+    "build:records": "tsx scripts/build-records.ts",
+    "eval": "tsx evals/run.ts"
+  },
+  "dependencies": {
+    "next": "15.5.15",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "22",
+    "@types/react": "19.1",
+    "@types/react-dom": "19.1",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "4.1.5"
+  }
+}

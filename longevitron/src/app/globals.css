@@ -1,0 +1,94 @@
+:root {
+  --bg: #ffffff;
+  --fg: #16181d;
+  --muted: #5d6470;
+  --line: #e3e6eb;
+  --accent: #0b6e4f;
+  --notice-bg: #f3f7f5;
+  --planned: #8a6d1d;
+  --planned-bg: #fbf5e4;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111317;
+    --fg: #e8eaee;
+    --muted: #9aa1ad;
+    --line: #2a2e35;
+    --accent: #4cc497;
+    --notice-bg: #17201c;
+    --planned: #e2c071;
+    --planned-bg: #2a2416;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+main, .site-header, .site-footer {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.site-header nav { display: flex; gap: 20px; }
+.brand { font-weight: 700; font-size: 18px; color: var(--fg); text-decoration: none; }
+
+.site-footer {
+  margin-top: 64px;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+a { color: var(--accent); }
+h1 { font-size: 32px; line-height: 1.2; margin: 24px 0 12px; }
+h2 { font-size: 20px; margin: 40px 0 8px; }
+.lede { font-size: 18px; max-width: 680px; }
+.muted { color: var(--muted); }
+
+.notice {
+  background: var(--notice-bg);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  max-width: 680px;
+}
+
+.headline { display: flex; align-items: center; gap: 16px; margin: 16px 0; }
+.headline-value { font-size: 56px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+code { font-size: 13px; overflow-wrap: anywhere; }
+
+.badge { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.badge-live { color: var(--accent); background: var(--notice-bg); }
+.badge-planned { color: var(--planned); background: var(--planned-bg); }
+
+@media (max-width: 600px) {
+  h1 { font-size: 26px; }
+  .headline-value { font-size: 44px; }
+  .hide-mobile { display: none; }
+}
