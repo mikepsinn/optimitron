@@ -15,10 +15,11 @@ import { SOURCES } from '../src/lib/sources';
 const only = new Set(process.argv.slice(2));
 const manifest = existsSync(MANIFEST_PATH) ? readManifest() : [];
 mkdirSync(SOURCES_DIR, { recursive: true });
+const FETCH_TIMEOUT_MS = 60_000;
 
 for (const source of SOURCES) {
   if (only.size && !only.has(source.id)) continue;
-  const response = await fetch(source.url);
+  const response = await fetch(source.url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`${source.id}: HTTP ${response.status} from ${source.url}`);
   const bytes = new Uint8Array(await response.arrayBuffer());
   const entry: ManifestEntry = {

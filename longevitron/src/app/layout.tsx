@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </header>
         <main>{children}</main>
         <footer className="site-footer">
-          Every number on this site comes from a saved source file and passes an automated check.{' '}
+          Every decimal, percentage, and money amount on this site comes from a saved source file and passes an automated check.{' '}
           <Link href="/method/">How it works</Link>
         </footer>
       </body>

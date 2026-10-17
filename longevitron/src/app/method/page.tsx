@@ -12,6 +12,7 @@ const EVALS: { name: string; status: 'Live' | 'Planned'; rule: string }[] = [
   { name: 'Forecast ledger', status: 'Planned', rule: 'Each model version records its forecast for the next WHO release. This page scores each forecast when WHO publishes.' },
   { name: 'Adversarial review', status: 'Planned', rule: 'A reviewer agent must cite a file, a line, and a contradicting source. A second agent verifies each finding.' },
   { name: 'Human audit', status: 'Planned', rule: 'Each week the owner checks 10 random records. The agent loop stops if more than 1 in 20 are wrong.' },
+  { name: 'Prior calibration', status: 'Planned', rule: 'Each prior chance that a candidate works cites a base rate. When trials report, this page scores the priors.' },
 ];
 
 export default function MethodPage() {
@@ -21,23 +22,29 @@ export default function MethodPage() {
 
       <h2>Goal</h2>
       <p>
-        For each country, find the budget and the laws that maximize average healthy life expectancy (HALE)
+        For each country, find the trials, the budget, and the laws that maximize average healthy life expectancy (HALE)
         at birth, as the World Health Organization publishes it.
       </p>
 
       <h2>Limits</h2>
       <ol>
-        <li>The total budget stays the same. Money moves between categories only.</li>
+        <li>The total budget stays the same. Money moves between uses only.</li>
         <li>Debt interest and legally required pension payments stay fixed.</li>
         <li>No bans on adult choices. Taxes, labels, and information requirements are allowed.</li>
         <li>No category gets a level outside the range that real countries have.</li>
       </ol>
 
-      <h2>Budget rule</h2>
+      <h2>Model</h2>
       <p>
-        Each category gets money until the next dollar buys the same number of healthy years in every
-        category. Each law adapts a law that a country or state already passed, and cites the effect that was
-        measured after it passed.
+        The model compares every use of money in one unit: expected healthy years gained per dollar. It has
+        three kinds of options: delivery of proven interventions, trials of promising untested candidates, and
+        rules such as taxes and labels. A trial has value because its result changes later decisions. The model
+        selects the combination of options with the most expected healthy years, inside the budget and the
+        trial capacity of the country.
+      </p>
+      <p>
+        Each law adapts a law that a country or state already passed, and cites the effect that was measured
+        after it passed.
       </p>
 
       <h2>Evals</h2>

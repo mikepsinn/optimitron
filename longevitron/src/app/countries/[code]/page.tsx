@@ -39,13 +39,13 @@ export default async function CountryPage({ params }: Props) {
       <div className="headline">
         <span className="headline-value"><RecordValue record={latest} /></span>
         <span>
-          healthy years at birth in {latest.year}
+          healthy years at birth in <RecordValue record={latest} field="year" decimals={0} />
           <br />
           <span className="muted">WHO interval <RecordInterval record={latest} /></span>
         </span>
       </div>
 
-      <h2>Optimal budget and laws</h2>
+      <h2>Trials, budget, and laws</h2>
       <p className="notice">
         Not calculated yet. The model publishes only after it passes the evals on
         the <Link href="/method/">Method</Link> page.
@@ -63,7 +63,7 @@ export default async function CountryPage({ params }: Props) {
         <tbody>
           {[...series].reverse().map(record => (
             <tr key={record.id}>
-              <td>{record.year}</td>
+              <td><RecordValue record={record} field="year" decimals={0} /></td>
               <td className="num"><RecordValue record={record} /></td>
               <td className="num muted"><RecordInterval record={record} /></td>
             </tr>

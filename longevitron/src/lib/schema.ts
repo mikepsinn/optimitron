@@ -55,5 +55,5 @@ export type DataRecord = z.infer<typeof DataRecordSchema>;
 export type Country = z.infer<typeof CountrySchema>;
 
 /** Record fields that hold numbers a page can display. */
-export const NUMERIC_FIELDS = ['value', 'low', 'high'] as const;
+export const NUMERIC_FIELDS = ['value', 'low', 'high', 'year'] as const;
 export type NumericField = (typeof NUMERIC_FIELDS)[number];

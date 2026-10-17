@@ -6,25 +6,28 @@ export default function WorldPage() {
   const rows = countries
     .map(country => ({ country, record: latestHale(country.code)! }))
     .sort((a, b) => b.record.value - a.record.value || a.country.name.localeCompare(b.country.name));
-  const years = [...new Set(rows.map(row => row.record.year))].sort();
+  const yearRecords = [...new Map(rows.map(row => [row.record.year, row.record])).values()].sort((a, b) => a.year - b.year);
 
   return (
     <>
       <h1>Healthy life expectancy, by country</h1>
       <p className="lede">
-        Longevitron calculates, for each country, the budget and the laws that would raise average healthy
-        life expectancy (HALE) the most. HALE is the number of years that a newborn can expect to live in
+        Longevitron calculates, for each country, the trials, the budget, and the laws that would raise
+        average healthy life expectancy (HALE) the most. HALE is the number of years that a newborn can expect to live in
         full health.
       </p>
       <p className="notice">
-        Status: the budget model is not published yet. It will publish only after it passes the evals on
+        Status: the model is not published yet. It will publish only after it passes the evals on
         the <Link href="/method/">Method</Link> page. The first country is the United States.
       </p>
 
       <h2>Average HALE at birth, both sexes</h2>
       <p className="muted">
-        {rows.length} countries. WHO estimates for {years.join(', ')}. The interval is the WHO uncertainty
-        interval.
+        {rows.length} countries. WHO estimates for{' '}
+        {yearRecords.map((record, index) => (
+          <span key={record.year}>{index ? ', ' : ''}<RecordValue record={record} field="year" decimals={0} /></span>
+        ))}
+        . The interval is the WHO uncertainty interval.
       </p>
       <table>
         <thead>
