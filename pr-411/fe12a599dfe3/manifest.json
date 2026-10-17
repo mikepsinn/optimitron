@@ -1,0 +1,4317 @@
+{
+  "version": 2,
+  "generatedAt": "2026-10-17T00:19:14.105Z",
+  "generatedAtCentral": "Oct 16, 2026, 7:19:14 PM CDT",
+  "commitSha": "fe12a599dfe35978c8a4cc62e9341295b039e728",
+  "shortSha": "fe12a599dfe3",
+  "prNumber": "411",
+  "headBranch": "feature/readme-whats-live",
+  "repo": "mikepsinn/optimitron",
+  "previewBaseUrl": null,
+  "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html",
+  "baselineDescription": "screenshots vs main baseline artifact · copy vs aca568cb34db",
+  "summary": {
+    "changedRoutes": 1,
+    "copyOnlyRoutes": 0,
+    "erroredRoutes": 0,
+    "missingBaselineRoutes": 0,
+    "appCount": 1,
+    "appRoutes": 107,
+    "compatibilityRoutes": 0,
+    "unchangedRoutes": 106,
+    "missingPairs": 0
+  },
+  "coverage": {
+    "analysisAvailable": true,
+    "blockingIssues": [],
+    "changedUiFiles": [],
+    "complete": true,
+    "coveredUiFiles": [],
+    "invalidRoutes": [],
+    "missingCaptures": [],
+    "routeCoverage": [],
+    "uncoveredUiFiles": []
+  },
+  "routes": [
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "home",
+      "routeLabel": "optimitron.com · Home",
+      "routePath": "/",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=home",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "side-menu",
+      "routeLabel": "optimitron.com · Side Menu",
+      "routePath": "/",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=side-menu",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "side-menu-auth",
+      "routeLabel": "optimitron.com · Side Menu Auth",
+      "routePath": "/",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=side-menu-auth",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "create-task-dialog-person",
+      "routeLabel": "optimitron.com · Create Task Dialog Person",
+      "routePath": "/",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=create-task-dialog-person",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "dashboard",
+      "routeLabel": "optimitron.com · Dashboard",
+      "routePath": "/dashboard",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=dashboard",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "calendar",
+      "routeLabel": "optimitron.com · Calendar",
+      "routePath": "/calendar?date=2036-01-01",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=calendar",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "referendum-one-percent-treaty",
+      "routeLabel": "optimitron.com · Referendum One Percent Treaty",
+      "routePath": "/agencies/dcongress/referendums/one-percent-treaty",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=referendum-one-percent-treaty",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agencies",
+      "routeLabel": "optimitron.com · Agencies",
+      "routePath": "/agencies",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agencies",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "scoreboard",
+      "routeLabel": "optimitron.com · Scoreboard",
+      "routePath": "/scoreboard",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=scoreboard",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "tools",
+      "routeLabel": "optimitron.com · Tools",
+      "routePath": "/tools",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=tools",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "donate",
+      "routeLabel": "optimitron.com · Donate",
+      "routePath": "/donate",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=donate",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "tasks-index",
+      "routeLabel": "optimitron.com · Tasks Index",
+      "routePath": "/tasks",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=tasks-index",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "tasks-index-auth",
+      "routeLabel": "optimitron.com · Tasks Index Auth",
+      "routePath": "/tasks",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": true,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 1,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "1 changed",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=tasks-index-auth",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.25% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people",
+      "routeLabel": "optimitron.com · People",
+      "routePath": "/people",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-auth",
+      "routeLabel": "optimitron.com · People Auth",
+      "routePath": "/people",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-auth",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-missions",
+      "routeLabel": "optimitron.com · People Missions",
+      "routePath": "/people?missions=1",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-missions",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-missions-romantic",
+      "routeLabel": "optimitron.com · People Missions Romantic",
+      "routePath": "/people?missions=1&intent=DATES",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-missions-romantic",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-mike",
+      "routeLabel": "optimitron.com · People Mike",
+      "routePath": "/people/mike",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-mike",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "messages",
+      "routeLabel": "optimitron.com · Messages",
+      "routePath": "/messages",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=messages",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "questions",
+      "routeLabel": "optimitron.com · Questions",
+      "routePath": "/questions",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=questions",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "feedback",
+      "routeLabel": "optimitron.com · Feedback",
+      "routePath": "/feedback",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=feedback",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "privacy",
+      "routeLabel": "optimitron.com · Privacy",
+      "routePath": "/privacy",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=privacy",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "terms",
+      "routeLabel": "optimitron.com · Terms",
+      "routePath": "/terms",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=terms",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "settings",
+      "routeLabel": "optimitron.com · Settings",
+      "routePath": "/settings",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=settings",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "mcp-authorize-admin-user",
+      "routeLabel": "optimitron.com · MCP authorize — admin user",
+      "routePath": "/mcp/authorize?client_id=visual_mcp_authorize_client&redirect_uri=http%3A%2F%2F127.0.0.1%2Fvisual-mcp-callback&state=visual-review&scope=tasks%3Apersonal+tasks%3Aorganization&code_challenge=visualreviewcodechallengeaaaaaaaaaaaaaaaa&client_name=Visual+Review+MCP",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=mcp-authorize-admin-user",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "mcp-authorize-non-admin-user",
+      "routeLabel": "optimitron.com · MCP authorize — non-admin user",
+      "routePath": "/mcp/authorize?client_id=visual_mcp_authorize_client&redirect_uri=http%3A%2F%2F127.0.0.1%2Fvisual-mcp-callback&state=visual-review-non-admin&scope=tasks%3Apersonal+tasks%3Aorganization+earthdata%3Awrite+tasks%3Aadmin+earthdata%3Aadmin+agent%3Arun+github&code_challenge=visualreviewcodechallengeaaaaaaaaaaaaaaaa&client_name=Visual+Review+MCP",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=mcp-authorize-non-admin-user",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "organizations",
+      "routeLabel": "optimitron.com · Organizations",
+      "routePath": "/organizations",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=organizations",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "organization-iam-public",
+      "routeLabel": "optimitron.com · Organization Iam Public",
+      "routePath": "/organizations/institute-for-accelerated-medicine",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=organization-iam-public",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "organization-iam-survey",
+      "routeLabel": "optimitron.com · Organization Iam Survey",
+      "routePath": "/survey/institute-for-accelerated-medicine",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=organization-iam-survey",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-optimize-earth",
+      "routeLabel": "optimitron.com · Task Optimize Earth",
+      "routePath": "/tasks/optimize-earth",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-optimize-earth",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-one-percent-treaty",
+      "routeLabel": "optimitron.com · Task One Percent Treaty",
+      "routePath": "/tasks/1-pct-treaty",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-one-percent-treaty",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-signer-canada",
+      "routeLabel": "optimitron.com · Task Signer Canada",
+      "routePath": "/tasks/1-pct-treaty-signer-ca",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-signer-canada",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.02% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-management-owner",
+      "routeLabel": "optimitron.com · Task Management Owner",
+      "routePath": "/tasks/visual_document_review_management_owner_task",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-management-owner",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.02% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.09% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-management-claimant-admin",
+      "routeLabel": "optimitron.com · Task Management Claimant Admin",
+      "routePath": "/tasks/visual_document_review_management_claim_task",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-management-claimant-admin",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-management-add-subtask",
+      "routeLabel": "optimitron.com · Task Management Add Subtask",
+      "routePath": "/tasks/visual_document_review_management_owner_task",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-management-add-subtask",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "document-review-manager",
+      "routeLabel": "optimitron.com · Document Review Manager",
+      "routePath": "/tasks/visual_document_review_manager_task",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=document-review-manager",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "document-review-reviewer",
+      "routeLabel": "optimitron.com · Document Review Reviewer",
+      "routePath": "/tasks/cmvbn9ksv000gx60c3jqr69x1",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=document-review-reviewer",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "document-review-stale",
+      "routeLabel": "optimitron.com · Document Review Stale",
+      "routePath": "/tasks/cmvbn9kuf000mx60c7aif6mff",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=document-review-stale",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "admin-task-payouts",
+      "routeLabel": "optimitron.com · Admin Task Payouts",
+      "routePath": "/admin/task-payouts",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=admin-task-payouts",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "admin",
+      "routeLabel": "optimitron.com · Admin",
+      "routePath": "/admin",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=admin",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agencies-dcongress-referendums",
+      "routeLabel": "optimitron.com · Agencies Dcongress Referendums",
+      "routePath": "/agencies/dcongress/referendums",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agencies-dcongress-referendums",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agencies-dcongress",
+      "routeLabel": "optimitron.com · Agencies Dcongress",
+      "routePath": "/agencies/dcongress",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agencies-dcongress",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agency-dcbo",
+      "routeLabel": "optimitron.com · Agency Dcbo",
+      "routePath": "/agencies/dcbo",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agency-dcbo",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agency-dcensus",
+      "routeLabel": "optimitron.com · Agency Dcensus",
+      "routePath": "/agencies/dcensus",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agency-dcensus",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agency-dfec",
+      "routeLabel": "optimitron.com · Agency Dfec",
+      "routePath": "/agencies/dfec",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agency-dfec",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "agency-dih",
+      "routeLabel": "optimitron.com · Agency Dih",
+      "routePath": "/agencies/dih",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=agency-dih",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "alignment-report-mike",
+      "routeLabel": "optimitron.com · Alignment Report Mike",
+      "routePath": "/agencies/dfec/alignment/mike",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=alignment-report-mike",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "campaign-video",
+      "routeLabel": "optimitron.com · Campaign Video",
+      "routePath": "/video",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=campaign-video",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "campaign-vote-and-share-slide",
+      "routeLabel": "optimitron.com · Campaign Vote And Share Slide",
+      "routePath": "/demo?playlist=campaign-cut#campaign-vote-and-share",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=campaign-vote-and-share-slide",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "civic-vote",
+      "routeLabel": "optimitron.com · Civic Vote",
+      "routePath": "/civic/votes/visual_document_review_civic_vote",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=civic-vote",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "collection-detail",
+      "routeLabel": "optimitron.com · Collection Detail",
+      "routePath": "/collections/managed-demo-apg-projects",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=collection-detail",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "collection-share",
+      "routeLabel": "optimitron.com · Collection Share",
+      "routePath": "/collections/managed-demo-apg-projects",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=collection-share",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "collections",
+      "routeLabel": "optimitron.com · Collections",
+      "routePath": "/collections",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=collections",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "compute-fleet-analyzer",
+      "routeLabel": "optimitron.com · Compute Fleet Analyzer",
+      "routePath": "/compute",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=compute-fleet-analyzer",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.03% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "compute",
+      "routeLabel": "optimitron.com · Compute",
+      "routePath": "/compute",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=compute",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.02% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "content-search",
+      "routeLabel": "optimitron.com · Content Search",
+      "routePath": "/search?q=demo%20health",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=content-search",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.05% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.04% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "developers",
+      "routeLabel": "optimitron.com · Developers",
+      "routePath": "/developers",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=developers",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "dividend",
+      "routeLabel": "optimitron.com · Dividend",
+      "routePath": "/dividend",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=dividend",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "document-detail",
+      "routeLabel": "optimitron.com · Document Detail",
+      "routePath": "/documents/managed-demo-apg-operating-note",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=document-detail",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "documents",
+      "routeLabel": "optimitron.com · Documents",
+      "routePath": "/documents",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=documents",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.02% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.08% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "dysfunction-tax",
+      "routeLabel": "optimitron.com · Dysfunction Tax",
+      "routePath": "/dysfunction-tax",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=dysfunction-tax",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "efficiency",
+      "routeLabel": "optimitron.com · Efficiency",
+      "routePath": "/efficiency",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=efficiency",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-magic-link",
+      "routeLabel": "optimitron.com · Email Magic Link",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-magic-link",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-monthly-chain-digest",
+      "routeLabel": "optimitron.com · Email Monthly Chain Digest",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-monthly-chain-digest",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-post-vote-share",
+      "routeLabel": "optimitron.com · Email Post Vote Share",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-post-vote-share",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-referral-first-conversion",
+      "routeLabel": "optimitron.com · Email Referral First Conversion",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-referral-first-conversion",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-task-assignment",
+      "routeLabel": "optimitron.com · Email Task Assignment",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-task-assignment",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "email-task-comment-notification",
+      "routeLabel": "optimitron.com · Email Task Comment Notification",
+      "routePath": null,
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=email-task-comment-notification",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "eos-shareholders",
+      "routeLabel": "optimitron.com · Eos Shareholders",
+      "routePath": "/eos/shareholders",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=eos-shareholders",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "eos",
+      "routeLabel": "optimitron.com · Eos",
+      "routePath": "/eos",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=eos",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "game",
+      "routeLabel": "optimitron.com · Game",
+      "routePath": "/game",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=game",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "global-failed-state-slide",
+      "routeLabel": "optimitron.com · Global Failed State Slide",
+      "routePath": "/demo?playlist=hackathon#global-failed-state",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=global-failed-state-slide",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "government-agencies",
+      "routeLabel": "optimitron.com · Government Agencies",
+      "routePath": "/governments/US/agencies",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=government-agencies",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "government-agency-ungraded",
+      "routeLabel": "optimitron.com · Government Agency Ungraded",
+      "routePath": "/governments/US/agencies/dod",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=government-agency-ungraded",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "government-agency",
+      "routeLabel": "optimitron.com · Government Agency",
+      "routePath": "/governments/US/agencies/nih",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=government-agency",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "government-politicians",
+      "routeLabel": "optimitron.com · Government Politicians",
+      "routePath": "/governments/US/politicians",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=government-politicians",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "government-us",
+      "routeLabel": "optimitron.com · Government Us",
+      "routePath": "/governments/US",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=government-us",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "invest",
+      "routeLabel": "optimitron.com · Invest",
+      "routePath": "/invest",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=invest",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "mcp",
+      "routeLabel": "optimitron.com · Mcp",
+      "routePath": "/mcp",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=mcp",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "methodology",
+      "routeLabel": "optimitron.com · Methodology",
+      "routePath": "/methodology",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=methodology",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "moronia",
+      "routeLabel": "optimitron.com · Moronia",
+      "routePath": "/moronia",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=moronia",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "not-found",
+      "routeLabel": "optimitron.com · Not Found",
+      "routePath": "/this-page-does-not-exist",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=not-found",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "obg-category-detail-benchmarked",
+      "routeLabel": "optimitron.com · Obg Category Detail Benchmarked",
+      "routePath": "/obg/military",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=obg-category-detail-benchmarked",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "obg-category-detail",
+      "routeLabel": "optimitron.com · Obg Category Detail",
+      "routePath": "/obg/epa-environment",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=obg-category-detail",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "obg-index",
+      "routeLabel": "optimitron.com · Obg Index",
+      "routePath": "/obg",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=obg-index",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "obg",
+      "routeLabel": "optimitron.com · Obg",
+      "routePath": "/obg",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=obg",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "opg-index",
+      "routeLabel": "optimitron.com · Opg Index",
+      "routePath": "/opg",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=opg-index",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "opg-policy-detail",
+      "routeLabel": "optimitron.com · Opg Policy Detail",
+      "routePath": "/opg/national-health-spending-adopt-south-korea-s-approach",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=opg-policy-detail",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-demo-assign-dialog",
+      "routeLabel": "optimitron.com · People Demo Assign Dialog",
+      "routePath": "/people/demo?assignTask=1",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-demo-assign-dialog",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-demo-owner",
+      "routeLabel": "optimitron.com · People Demo Owner",
+      "routePath": "/people/demo",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-demo-owner",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "people-officials",
+      "routeLabel": "optimitron.com · People Officials",
+      "routePath": "/people?role=officials",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=people-officials",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "politician-not-found",
+      "routeLabel": "optimitron.com · Politician Not Found",
+      "routePath": "/governments/US/politicians/VISUAL0000",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=politician-not-found",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "politician-scorecard",
+      "routeLabel": "optimitron.com · Politician Scorecard",
+      "routePath": "/governments/US/politicians/S001208",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=politician-scorecard",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "prize",
+      "routeLabel": "optimitron.com · Prize",
+      "routePath": "/prize",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=prize",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "profile",
+      "routeLabel": "optimitron.com · Profile",
+      "routePath": "/profile",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=profile",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "search-empty",
+      "routeLabel": "optimitron.com · Search Empty",
+      "routePath": "/search",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=search-empty",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "search-loading",
+      "routeLabel": "optimitron.com · Search Loading",
+      "routePath": "/search",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=search-loading",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "search-results",
+      "routeLabel": "optimitron.com · Search Results",
+      "routePath": "/search?q=vote",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=search-results",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.01% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "search-typeahead",
+      "routeLabel": "optimitron.com · Search Typeahead",
+      "routePath": "/search",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=search-typeahead",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "services",
+      "routeLabel": "optimitron.com · Services",
+      "routePath": "/services",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=services",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "shirt",
+      "routeLabel": "optimitron.com · Shirt",
+      "routePath": "/shirt",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=shirt",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "side-menu-non-admin",
+      "routeLabel": "optimitron.com · Side Menu Non Admin",
+      "routePath": "/",
+      "routeUrl": null,
+      "authState": "demo-logged-in",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=side-menu-non-admin",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "signin-in-oauth-consent-flow",
+      "routeLabel": "optimitron.com · Signin In Oauth Consent Flow",
+      "routePath": "/auth/signin?callbackUrl=%2Fmcp%2Fauthorize%3Fclient_id%3Dvisual-review",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=signin-in-oauth-consent-flow",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "store",
+      "routeLabel": "optimitron.com · Store",
+      "routePath": "/store",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=store",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "task-one-percent-treaty-impact-trace",
+      "routeLabel": "optimitron.com · Task One Percent Treaty Impact Trace",
+      "routePath": "/tasks/1-pct-treaty",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=task-one-percent-treaty-impact-trace",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "tasks-tree",
+      "routeLabel": "optimitron.com · Tasks Tree",
+      "routePath": "/tasks/tree",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=tasks-tree",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "optimitron",
+      "appLabel": "Optimitron",
+      "captureKind": "app",
+      "routeName": "wishonia",
+      "routeLabel": "optimitron.com · Wishonia",
+      "routePath": "/wishonia",
+      "routeUrl": null,
+      "authState": "logged-out",
+      "siteApp": false,
+      "siteVariant": null,
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-411/latest/latest.html#route=wishonia",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0.00% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    }
+  ]
+}
