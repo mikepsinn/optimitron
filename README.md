@@ -9,7 +9,7 @@ This comes from two ledgers:
 - **Waste** — $4T+ in administrative bloat, compliance friction, fossil fuel subsidies, and mass incarceration costs
 - **Buried multipliers** — $34T in health innovation delayed by regulatory bottlenecks, $57T in output lost to migration restrictions, $6T in lead poisoning damage, and trillions more in underfunded science
 
-The result: your dollar has lost 96% of its value since 1913. If wages had kept pace with productivity, the median family would earn **$528,000**. The actual number is $77,500. On my planet we have a word for this. It translates roughly to "beige crime" — theft so boring nobody investigates it.
+The result: your dollar has lost 96% of its value since 1913. On my planet we have a word for this. It translates roughly to "beige crime" — theft so boring nobody investigates it.
 
 | Scenario | Per Capita Income (Year 20) | Source |
 |----------|----------------------------:|--------|
@@ -400,7 +400,7 @@ pnpm build
 - **TypeScript strict mode** is on — `noUncheckedIndexedAccess`, `noImplicitOverride`, no `any`.
 - **Conventional commits** — `feat:`, `fix:`, `test:`, `refactor:`, `docs:`
 - **Lint-staged + Husky** pre-commit hooks run automatically.
-- **Every UI change gets a visual review.** CI screenshots every page of every site on desktop and mobile, compares them with `main`, and publishes the comparison as a review page. A PR that changes a page without a screenshot of it fails. Rendered page copy is diffed as Markdown too.
+- **Every UI change gets a visual review.** CI screenshots each registered page of every site on desktop and mobile, compares them with the latest `main` run, and publishes the comparison as a review page. Every page must be registered or carry a documented exemption, and a PR that changes a page with no registered screenshot fails. For optimitron.com, rendered page copy is diffed as Markdown too; the other sites' copy snapshots come from `pnpm copy`.
 - **Zod schemas** for runtime validation where types alone aren't enough.
 - Functions should be <30 lines, files <300 lines.
 - Read [CLAUDE.md](./CLAUDE.md) for the full developer guide and methodology references.
