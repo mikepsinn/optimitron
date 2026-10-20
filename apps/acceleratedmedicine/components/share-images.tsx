@@ -11,15 +11,17 @@ const FOLDER = "/assets/acceleratedmedicine/social"
 type SocialImage = (typeof socialImages)[number]
 
 function ShareImage({ image }: { image: SocialImage }) {
+  // The thumbnail is cropped to the preview area when there is one, so it keeps that area's shape.
+  const shown = "preview" in image && image.preview ? image.preview : image
   return (
     <li className="flex flex-col rounded-lg border bg-background p-4">
       <div className="flex h-44 items-center justify-center rounded-md bg-muted p-3">
         <Image
           alt={`${image.title}: the initiative's name, its goal and the four-step loop`}
           className="max-h-full w-auto rounded-sm object-contain shadow-sm"
-          height={image.height}
+          height={shown.height}
           src={`${FOLDER}/thumbs/${image.file}.webp`}
-          width={image.width}
+          width={shown.width}
         />
       </div>
       <h4 className="mt-4 font-semibold">{image.title}</h4>

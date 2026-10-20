@@ -32,4 +32,4 @@
 - Facebook cover 1640 × 624 · Facebook pages and profiles [Download](/assets/acceleratedmedicine/social/facebook-cover-1640x624.png)
 - LinkedIn profile background 1584 × 396 · Personal LinkedIn profiles [Download](/assets/acceleratedmedicine/social/linkedin-profile-background-1584x396.png)
 - LinkedIn page cover 1128 × 191 · LinkedIn company pages [Download](/assets/acceleratedmedicine/social/linkedin-page-cover-1128x191.png)
-- YouTube banner 2560 × 1440 · YouTube channels. Phones and computers show only the middle strip. [Download](/assets/acceleratedmedicine/social/youtube-banner-2560x1440.png)
+- YouTube banner 2560 × 1440 · YouTube channels. Most screens show only this strip. [Download](/assets/acceleratedmedicine/social/youtube-banner-2560x1440.png)

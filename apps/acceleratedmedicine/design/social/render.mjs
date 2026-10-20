@@ -26,7 +26,9 @@ for (const image of images) {
   const png = await page.screenshot()
   await page.close()
   await sharp(png).png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(join(out, `${image.file}.png`))
-  await sharp(png).resize({ width: 720, height: 480, fit: "inside" }).webp({ quality: 82 })
+  // A preview crop shows only the part the platform displays on most screens (the YouTube banner's middle strip).
+  const thumbnail = image.preview ? sharp(png).extract(image.preview) : sharp(png)
+  await thumbnail.resize({ width: 720, height: 480, fit: "inside" }).webp({ quality: 82 })
     .toFile(join(out, "thumbs", `${image.file}.webp`))
   console.log(`${image.file}.png  ${image.use}`)
 }

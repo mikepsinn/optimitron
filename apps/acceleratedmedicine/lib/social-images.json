@@ -9,5 +9,5 @@
   { "file": "facebook-cover-1640x624", "kind": "header", "title": "Facebook cover", "width": 1640, "height": 624, "layout": "banner", "use": "Facebook pages and profiles" },
   { "file": "linkedin-profile-background-1584x396", "kind": "header", "title": "LinkedIn profile background", "width": 1584, "height": 396, "layout": "profile", "use": "Personal LinkedIn profiles" },
   { "file": "linkedin-page-cover-1128x191", "kind": "header", "title": "LinkedIn page cover", "width": 1128, "height": 191, "layout": "strip", "use": "LinkedIn company pages" },
-  { "file": "youtube-banner-2560x1440", "kind": "header", "title": "YouTube banner", "width": 2560, "height": 1440, "layout": "youtube", "use": "YouTube channels. Phones and computers show only the middle strip." }
+  { "file": "youtube-banner-2560x1440", "kind": "header", "title": "YouTube banner", "width": 2560, "height": 1440, "layout": "youtube", "use": "YouTube channels. Most screens show only this strip.", "preview": { "left": 0, "top": 508, "width": 2560, "height": 424 } }
 ]
