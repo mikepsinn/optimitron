@@ -35,7 +35,7 @@ export default async function ApproveListingPage({ searchParams }: { searchParam
   if (link.status === "done") {
     return (
       <SupportLinkPage status="done" title={`${organization} is listed`}>
-        <p>It appears on the supporters page and, if it works in one state, that state&apos;s page. We emailed {contactEmail}.</p>
+        <p>It appears on the members page and, if it works in one state, that state&apos;s page. We emailed {contactEmail}.</p>
       </SupportLinkPage>
     )
   }

@@ -34,8 +34,8 @@
 - Does the initiative tell patients which treatment to choose?
 - No. Treatment decisions belong to patients and their doctors. We explain the evidence and the research methods, and give no medical advice.
 - How can I help?
-- Add your name, or endorse the initiative as an organization. Clinics, researchers, data partners and funders can also partner with us.
-- [Show your support](/support)
+- Join the Care to Cures Alliance, as a person or an organization. Joining is free. Clinics, researchers, data partners and funders can also partner with us.
+- [Join the alliance](/support)
 ### Safety and data
 - Who decides a treatment is safe enough to offer?
 - An independent review board of at least five members: a physician, an outcomes researcher, an ethicist, a non-scientist and a member unaffiliated with the clinics and makers it reviews. None may have financial ties to the clinic or the maker. The board also approves each clinic and consent form.

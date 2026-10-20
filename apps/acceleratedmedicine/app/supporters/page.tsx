@@ -14,9 +14,9 @@ import { getSupportSummary } from "@/lib/support-store"
 export const revalidate = 300
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Supporters | Care-Integrated Clinical Trials Initiative",
+  title: "Members of the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative",
   description:
-    "The people and organizations who support the Care-Integrated Clinical Trials Initiative: every patient should be able to join clinical trials of the most promising treatments.",
+    "The people and organizations in the Care to Cures Alliance: every patient should be able to join clinical trials of the most promising treatments.",
   path: "/supporters",
 })
 
@@ -26,17 +26,17 @@ export default async function SupportersPage() {
   return (
     <AcceleratedMedicinePage>
       <section className="mx-auto max-w-3xl pb-12 text-center md:py-8 md:pb-16">
-        <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">Supporters</p>
+        <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">Members</p>
         <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-          Who supports the Care-Integrated Clinical Trials Initiative
+          Members of the Care to Cures Alliance
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground md:text-xl">
           {confirmedPeople > 0
-            ? `${confirmedPeople.toLocaleString("en-US")} ${confirmedPeople === 1 ? "person has" : "people have"} added their name, so every patient can join clinical trials of the most promising treatments.`
-            : "Add your name, so every patient can join clinical trials of the most promising treatments."}
+            ? `${confirmedPeople.toLocaleString("en-US")} ${confirmedPeople === 1 ? "person is a member" : "people are members"}. Members agree that every patient should be able to join clinical trials of the most promising treatments.`
+            : "Members agree that every patient should be able to join clinical trials of the most promising treatments."}
         </p>
         <Button asChild size="lg" className="mt-8">
-          <Link href="/support">Show your support <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></Link>
+          <Link href="/support">Join the alliance <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" /></Link>
         </Button>
       </section>
 
@@ -48,7 +48,7 @@ export default async function SupportersPage() {
           ) : (
             <p className="text-center text-muted-foreground">
               Patient groups, clinics, hospitals, research groups and companies can{" "}
-              <Link href="/support#organization" className="font-medium text-primary hover:underline">endorse the initiative</Link>.
+              <Link href="/support#organization" className="font-medium text-primary hover:underline">join the alliance</Link>.
             </p>
           )}
         </div>

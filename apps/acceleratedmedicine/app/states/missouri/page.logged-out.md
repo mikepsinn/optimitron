@@ -31,6 +31,6 @@
 - Few drugs offered The FDA's yearly reports list only a handful of drugs given under the federal law, because makers may charge only their costs. It does not cover existing drugs approved for other conditions. [FDA Right to Try annual summary](https://www.fda.gov/patients/learn-about-expanded-access-and-other-treatment-options/right-try-annual-reporting-summary)
 - A state that went further In 2025, Montana licensed experimental treatment centers with SB 535. Its first clinics are expected around the end of 2026. [The Montana precedent](/montana)
 ### Organizations in Missouri
-- Patient groups, clinics, hospitals and researchers in Missouri can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.
-- [Endorse as an organization](/support#organization)
+- Patient groups, clinics, hospitals and researchers in Missouri can join the Care to Cures Alliance, or partner with us.
+- [Join as an organization](/support#organization)
 - [Partner with us](/contact)

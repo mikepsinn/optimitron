@@ -42,8 +42,8 @@
 - Montana showed that a state can open access to promising treatments. The Care-Integrated Clinical Trials Act builds on it. Patients get screened treatments through their own doctor's practice as well as at dedicated centers. Every patient's outcome is recorded, and each protocol's yearly public report must include failures. And doctors can enroll patients in randomized trials during ordinary care, so the next patient chooses better.
 - [Read the act](/act)
 ### Organizations in Montana
-- Patient groups, clinics, hospitals and researchers in Montana can endorse the Care-Integrated Clinical Trials Initiative, or partner with us.
-- [Endorse as an organization](/support#organization)
+- Patient groups, clinics, hospitals and researchers in Montana can join the Care to Cures Alliance, or partner with us.
+- [Join as an organization](/support#organization)
 - [Partner with us](/contact)
 ### Official Montana sources
 - [SB 535 enrolled bill](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)

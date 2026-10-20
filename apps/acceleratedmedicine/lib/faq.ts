@@ -59,9 +59,9 @@ export const FAQ_SECTIONS: FaqSection[] = [
         id: "help",
         question: "How can I help?",
         answer: [
-          "Add your name, or endorse the initiative as an organization. Clinics, researchers, data partners and funders can also partner with us.",
+          "Join the Care to Cures Alliance, as a person or an organization. Joining is free. Clinics, researchers, data partners and funders can also partner with us.",
         ],
-        link: { href: "/support", label: "Show your support" },
+        link: { href: "/support", label: "Join the alliance" },
       },
     ],
   },

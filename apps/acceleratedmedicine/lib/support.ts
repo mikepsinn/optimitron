@@ -2,7 +2,7 @@ import { Resend } from "resend"
 import { z } from "zod"
 
 import { escapeHtml } from "@/lib/escape-html"
-import { SITE } from "@/lib/site-settings"
+import { ALLIANCE, SITE } from "@/lib/site-settings"
 import { supportLinkUrl, verifySupportLink } from "@/lib/support-links"
 import { COUNTRY_CODES, ORGANIZATION_STATES, SUPPORTER_STATES, US, fullName, placeLabel } from "@/lib/support-options"
 import {
@@ -84,11 +84,12 @@ function emailClient() {
 }
 
 export function buildSupporterConfirmation(name: string, confirmUrl: string) {
-  const subject = `Confirm your support for the ${INITIATIVE}`
+  const subject = `Confirm you're joining the ${ALLIANCE}`
   const text = [
     `Hi ${name},`,
     "",
-    `Confirm that you support the ${INITIATIVE}, so every patient can join clinical trials of the most promising treatments through their own doctor, with every result published:`,
+    `Confirm that you're joining the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.`,
+    "",
     confirmUrl,
     "",
     "If you did not sign up, ignore this email and nothing will be recorded.",
@@ -98,8 +99,8 @@ export function buildSupporterConfirmation(name: string, confirmUrl: string) {
   const html = `
     <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
       <p>Hi ${escapeHtml(name)},</p>
-      <p>Confirm that you support the ${INITIATIVE}, so every patient can join clinical trials of the most promising treatments through their own doctor, with every result published.</p>
-      <p><a href="${escapeHtml(confirmUrl)}" style="display:inline-block;background:#6d4aff;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirm your support</a></p>
+      <p>Confirm that you're joining the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.</p>
+      <p><a href="${escapeHtml(confirmUrl)}" style="display:inline-block;background:#6d4aff;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirm</a></p>
       <p style="color:#666">If you did not sign up, ignore this email and nothing will be recorded.</p>
       ${SIGNATURE_HTML}
     </main>
@@ -115,7 +116,7 @@ export function buildOrganizationAlert(input: OrganizationInput, approveUrl: str
     ["Location", placeLabel(input)],
     ["Contact", `${fullName(input.contactFirstName, input.contactLastName)} <${input.contactEmail}>`],
   ]
-  const subject = `[Endorsement] ${input.organization} (${placeLabel(input)})`
+  const subject = `[Alliance] ${input.organization} (${placeLabel(input)}) wants to join`
   const text = [
     ...rows.map(([label, value]) => `${label}: ${value}`),
     "",
@@ -125,7 +126,7 @@ export function buildOrganizationAlert(input: OrganizationInput, approveUrl: str
     "Do nothing to keep it off the site. Reply to this email to write to the contact.",
   ].join("\n")
   const html = `
-    <h1>Organization endorsement</h1>
+    <h1>Organization joining the alliance</h1>
     ${rows.map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`).join("\n")}
     <p>Check the organization, then list it on /supporters and its state page.</p>
     <p><a href="${escapeHtml(approveUrl)}">Approve listing</a></p>
@@ -141,10 +142,10 @@ function buildSupporterConfirmedAlert(supporter: StoredSupporter) {
     ["Where", placeLabel(supporter)],
     ["Wants updates", supporter.updates ? "Yes" : "No"],
   ]
-  const subject = `[Supporter] ${supporter.name} (${placeLabel(supporter)}) confirmed`
+  const subject = `[Member] ${supporter.name} (${placeLabel(supporter)}) confirmed`
   const text = [...rows.map(([label, value]) => `${label}: ${value}`), "", "Reply to this email to write to them."].join("\n")
   const html = `
-    <h1>Supporter confirmed</h1>
+    <h1>Member confirmed</h1>
     ${rows.map(([label, value]) => `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`).join("\n")}
     <p>Reply to this email to write to them.</p>
   `.trim()
@@ -152,8 +153,8 @@ function buildSupporterConfirmedAlert(supporter: StoredSupporter) {
 }
 
 function buildOrganizationReceipt(input: OrganizationInput) {
-  const subject = `We received ${input.organization}'s endorsement`
-  const body = `Thank you for endorsing the ${INITIATIVE}. We check each organization before listing it, and we will email you when ${input.organization} appears on acceleratedmedicine.org/supporters.`
+  const subject = `We received ${input.organization}'s request to join`
+  const body = `Thank you for joining the ${ALLIANCE}. We check each organization before listing it, and we will email you when ${input.organization} appears on acceleratedmedicine.org/supporters.`
   return {
     subject,
     text: [`Hi ${input.contactFirstName},`, "", body, "", SIGNATURE_TEXT].join("\n"),
@@ -162,8 +163,8 @@ function buildOrganizationReceipt(input: OrganizationInput) {
 }
 
 function buildOrganizationListed(organization: StoredOrganization) {
-  const subject = `${organization.organization} is listed as a supporter`
-  const body = `${organization.organization} now appears among the organizations supporting the ${INITIATIVE}: https://acceleratedmedicine.org/supporters`
+  const subject = `${organization.organization} is listed as an alliance member`
+  const body = `${organization.organization} now appears among the members of the ${ALLIANCE}: https://acceleratedmedicine.org/supporters`
   return {
     subject,
     text: [`Hi ${organization.contactFirstName},`, "", body, "", SIGNATURE_TEXT].join("\n"),

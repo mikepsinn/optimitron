@@ -19,6 +19,6 @@
 - Every donation, including gifts made on warondisease.org, goes to Accelerated Medicine Foundation Inc, a 501(c)(3) nonprofit operating as the Institute for Accelerated Medicine.
 - EIN 41-2555651. Your donation is tax-deductible to the extent allowed by law. Stripe emails your receipt. Keep it for your records.
 - Just donated? Your Stripe receipt email is the confirmation. Questions? Email [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org).
-- [Add your name](/support)
+- [Join the alliance](/support)
 - [Read the act](/act)
 - Donated on warondisease.org? [Vote on the 1% Treaty](https://warondisease.org/vote)
