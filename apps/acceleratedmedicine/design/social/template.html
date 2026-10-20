@@ -158,7 +158,14 @@
     const gaps = parseFloat(style.rowGap) * (page.children.length - 1)
     loopBox.style.width = `${Math.floor(Math.min(height - used - gaps, page.clientWidth * 0.86))}px`
   }
-  document.fonts.ready.then(() => { fitLoop(); window.__ready = true })
+  // Load Inter's two weights before measuring. If either is missing, report it instead of drawing a fallback font.
+  Promise.all(["700", "800"].map(weight => document.fonts.load(`${weight} 16px Inter`)))
+    .then(faces => {
+      if (faces.some(found => found.length === 0)) throw new Error("Inter 700 or 800 did not load")
+      fitLoop()
+      window.__ready = true
+    })
+    .catch(error => { window.__ready = error.message })
 </script>
 </body>
 </html>

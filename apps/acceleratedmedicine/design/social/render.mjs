@@ -21,7 +21,8 @@ const template = pathToFileURL(join(here, "template.html")).href
 for (const image of images) {
   const page = await browser.newPage({ viewport: { width: image.width, height: image.height } })
   await page.goto(`${template}?layout=${image.layout}`, { waitUntil: "networkidle" })
-  await page.waitForFunction(() => window.__ready === true)
+  const ready = await (await page.waitForFunction(() => window.__ready)).jsonValue()
+  if (ready !== true) throw new Error(`${image.file}: ${ready}`)
   const png = await page.screenshot()
   await page.close()
   await sharp(png).png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(join(out, `${image.file}.png`))
