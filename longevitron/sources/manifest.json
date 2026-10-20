@@ -1,0 +1,18 @@
+[
+  {
+    "id": "who-gho-countries",
+    "url": "https://ghoapi.azureedge.net/api/DIMENSION/COUNTRY/DimensionValues",
+    "file": "who-gho-countries.json.gz",
+    "retrievedAt": "2026-10-17T23:16:29.303Z",
+    "sha256": "7db1dabf96910634c222bb5d752ec1add3b2872d587684619b19666ef17ce410",
+    "bytes": 31019
+  },
+  {
+    "id": "who-gho-hale",
+    "url": "https://ghoapi.azureedge.net/api/WHOSIS_000002?$filter=SpatialDimType%20eq%20'COUNTRY'%20and%20Dim1%20eq%20'SEX_BTSX'",
+    "file": "who-gho-hale.json.gz",
+    "retrievedAt": "2026-10-17T23:16:29.009Z",
+    "sha256": "f7afefe7d607d06387f47351adaa35695254eba7853802e17f4e84301d68206d",
+    "bytes": 2638137
+  }
+]
