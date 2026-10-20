@@ -12,7 +12,7 @@ import { loadScript } from "@/lib/present-script"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Presentations and Handouts | Care-Integrated Clinical Trials Initiative",
+  title: "Presentations and Handouts | Care to Cures Alliance",
   description: "A one-page overview, a presentation and a two-minute video about the Care-Integrated Clinical Trials Act, to present, print or save as PDF.",
   path: "/resources",
 })

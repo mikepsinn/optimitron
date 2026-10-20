@@ -38,7 +38,7 @@ export default async function DonatePage({ searchParams }: { searchParams: Promi
       <section className="mx-auto max-w-3xl pb-10 text-center md:py-4">
         <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">Donate</p>
         <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-          Fund the Care-Integrated Clinical Trials Initiative
+          Fund the Care to Cures Alliance
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground md:text-xl">
           Help patients understand their options and turn treatment outcomes into useful evidence. Your donation

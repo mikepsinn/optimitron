@@ -2,20 +2,20 @@
 
 ## Metadata
 
-- Page title: About us | Care-Integrated Clinical Trials Initiative
-- Meta description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
+- Page title: About us | Care to Cures Alliance
+- Meta description: Learn about the Care to Cures Alliance: who we are, our research and the advisory board.
 - Canonical: https://acceleratedmedicine.org/about
-- Open Graph title: About us | Care-Integrated Clinical Trials Initiative
-- Open Graph description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: About us | Care-Integrated Clinical Trials Initiative
-- Twitter description: Learn about the Care-Integrated Clinical Trials Initiative: who we are, our research and the advisory board.
+- Open Graph title: About us | Care to Cures Alliance
+- Open Graph description: Learn about the Care to Cures Alliance: who we are, our research and the advisory board.
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: About us | Care to Cures Alliance
+- Twitter description: Learn about the Care to Cures Alliance: who we are, our research and the advisory board.
 
 ## Visible Page Copy
 
 - About us
-## The Care-Integrated Clinical Trials Initiative
-- We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published. The Institute for Accelerated Medicine, a Wyoming 501(c)(3) nonprofit, runs the initiative.
+## The Care to Cures Alliance
+- We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own doctor, at a clinic an independent board has approved, and so every result is published. The Institute for Accelerated Medicine, a Wyoming 501(c)(3) nonprofit, convenes the alliance.
 ### Our research
 - Paper Patient's Right to Trial Act Models how much sooner treatments arrive if every state adopts the act. [Read the paper](https://rtt-impact.acceleratedmedicine.org/)
 - Paper Continuous Evidence Generation Protocol Finds treatment effects in real-world data, then confirms them with pragmatic trials. [Read the paper](https://dfda-spec.warondisease.org)
@@ -25,6 +25,6 @@
 ### Who we are
 - We're basically just concerned citizens trying to coordinate humanity to make it possible for anyone to participate in clinical trials for the most promising treatment, considering everyone we've ever loved is being slowly tortured and will be eventually murdered by horrible diseases. The Institute's board of directors is Mike Sinn, Ian Whitmore and Kathryn Bortko.
 ### Work with us
-- Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials Initiative.
+- Clinics, patient groups, data partners and funders can partner with the alliance.
 - [Partner with us](/contact)
 - [Read the act](/act)

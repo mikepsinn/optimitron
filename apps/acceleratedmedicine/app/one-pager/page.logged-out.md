@@ -7,7 +7,7 @@
 - Canonical: https://acceleratedmedicine.org/one-pager
 - Open Graph title: The Care-Integrated Clinical Trials Act (One-Page Overview)
 - Open Graph description: The Care-Integrated Clinical Trials Act on one page: why promising treatments go untested, what the act does, and a trial that shows the idea works.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
 - Twitter title: The Care-Integrated Clinical Trials Act (One-Page Overview)
 - Twitter description: The Care-Integrated Clinical Trials Act on one page: why promising treatments go untested, what the act does, and a trial that shows the idea works.
 
@@ -15,7 +15,7 @@
 
 - [Resources](/resources)
 - Save as PDF
-- THE CARE-INTEGRATED CLINICAL TRIALS INITIATIVE
+- THE CARE TO CURES ALLIANCE
 - [acceleratedmedicine.org/act](https://acceleratedmedicine.org/act) · [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 ## The Care-Integrated Clinical Trials Act
 - Every patient's treatment can help the next patient. This proposed state law lets any patient get a screened, promising treatment through their own doctor, lets clinics charge enough to offer it, and publishes every result.

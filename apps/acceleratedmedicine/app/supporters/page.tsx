@@ -14,7 +14,7 @@ import { getSupportSummary } from "@/lib/support-store"
 export const revalidate = 300
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Members of the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative",
+  title: "Members | Care to Cures Alliance",
   description:
     "The people and organizations in the Care to Cures Alliance: every patient should be able to join clinical trials of the most promising treatments.",
   path: "/supporters",

@@ -8,7 +8,7 @@ import { fullName, placeLabel } from "@/lib/support-options"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Approve listing | Care-Integrated Clinical Trials Initiative",
+  title: "Approve listing | Care to Cures Alliance",
   robots: { index: false, follow: false },
 }
 

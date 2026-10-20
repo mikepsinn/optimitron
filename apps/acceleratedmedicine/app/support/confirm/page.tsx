@@ -7,7 +7,7 @@ import { checkSupporterLink } from "@/lib/support"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Confirm you're joining | Care-Integrated Clinical Trials Initiative",
+  title: "Confirm you're joining | Care to Cures Alliance",
   robots: { index: false, follow: false },
 }
 
