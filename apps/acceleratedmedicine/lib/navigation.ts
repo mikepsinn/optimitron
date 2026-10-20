@@ -1,8 +1,8 @@
 /** The donation pages stay reachable at /donate, but no menu links to them. Set this to true to show the links. */
 export const SHOW_DONATE_LINKS = false
 
-/** /supporters stays reachable, but nothing links to it until a few organizations are approved. */
-export const SHOW_SUPPORTERS_LINKS = false
+/** The members page (/supporters). The footer, /support and the confirmation page link to it. */
+export const SHOW_SUPPORTERS_LINKS = true
 
 export interface NavigationItem {
   id: string

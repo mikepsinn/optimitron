@@ -2,19 +2,19 @@
 
 ## Metadata
 
-- Page title: Care-Integrated Clinical Trials Initiative
+- Page title: Care to Cures Alliance
 - Meta description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Canonical: https://acceleratedmedicine.org/donate
-- Open Graph title: Care-Integrated Clinical Trials Initiative
+- Open Graph title: Care to Cures Alliance
 - Open Graph description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Care to Cures Alliance
 - Twitter description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 
 ## Visible Page Copy
 
 - Donate
-## Fund the Care-Integrated Clinical Trials Initiative
+## Fund the Care to Cures Alliance
 - Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
 - One-time
 - Monthly

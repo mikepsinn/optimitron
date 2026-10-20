@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Impact Model | Care-Integrated Clinical Trials Initiative
+- Page title: Impact Model | Care to Cures Alliance
 - Meta description: A model of how much sooner treatments could arrive if every state adopted the Care-Integrated Clinical Trials Act, with every assumption you can change.
 - Canonical: https://acceleratedmedicine.org/impact
-- Open Graph title: Impact Model | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Impact Model | Care to Cures Alliance
 - Open Graph description: A model of how much sooner treatments could arrive if every state adopted the Care-Integrated Clinical Trials Act, with every assumption you can change.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Impact Model | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Impact Model | Care to Cures Alliance
 - Twitter description: A model of how much sooner treatments could arrive if every state adopted the Care-Integrated Clinical Trials Act, with every assumption you can change.
 
 ## Visible Page Copy

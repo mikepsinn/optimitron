@@ -17,9 +17,8 @@ import {
 } from "@/lib/support-store"
 
 const INBOX = SITE.email
-const INITIATIVE = SITE.title
-const SIGNATURE_TEXT = `The ${INITIATIVE}`
-const SIGNATURE_HTML = `<p><strong>The ${INITIATIVE}</strong></p>`
+const SIGNATURE_TEXT = `The ${ALLIANCE}`
+const SIGNATURE_HTML = `<p><strong>The ${ALLIANCE}</strong></p>`
 
 // People type "example.org" as often as "https://example.org". Anything that is not http or https, such as
 // a javascript: link, is rejected, because the site links to these addresses.
@@ -80,7 +79,7 @@ function emailClient() {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return undefined
   const fromAddress = process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.acceleratedmedicine.org"
-  return { resend: new Resend(apiKey), from: `${INITIATIVE} <${fromAddress}>` }
+  return { resend: new Resend(apiKey), from: `${ALLIANCE} <${fromAddress}>` }
 }
 
 export function buildSupporterConfirmation(name: string, confirmUrl: string) {

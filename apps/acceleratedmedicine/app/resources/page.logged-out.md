@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Presentations and Handouts | Care-Integrated Clinical Trials Initiative
+- Page title: Presentations and Handouts | Care to Cures Alliance
 - Meta description: A one-page overview, a presentation and a two-minute video about the Care-Integrated Clinical Trials Act, to present, print or save as PDF.
 - Canonical: https://acceleratedmedicine.org/resources
-- Open Graph title: Presentations and Handouts | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Presentations and Handouts | Care to Cures Alliance
 - Open Graph description: A one-page overview, a presentation and a two-minute video about the Care-Integrated Clinical Trials Act, to present, print or save as PDF.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Presentations and Handouts | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Presentations and Handouts | Care to Cures Alliance
 - Twitter description: A one-page overview, a presentation and a two-minute video about the Care-Integrated Clinical Trials Act, to present, print or save as PDF.
 
 ## Visible Page Copy

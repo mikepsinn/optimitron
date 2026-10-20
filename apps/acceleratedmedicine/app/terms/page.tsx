@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 // The text this site showed when it used the shared site-kit terms page. Only "The service" changed: it now
-// names the Institute, which runs the initiative.
+// names the Institute, which convenes the alliance.
 export default function TermsPage() {
   const entity = SITE.legalEntityName
 

@@ -24,7 +24,7 @@ import { getSupportSummary } from "@/lib/support-store"
 export const revalidate = 300
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative",
+  title: "Montana's Universal Right to Try Law | Care to Cures Alliance",
   description:
     "A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.",
   path: "/montana",

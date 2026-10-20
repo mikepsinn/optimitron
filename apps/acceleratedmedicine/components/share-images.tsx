@@ -17,7 +17,7 @@ function ShareImage({ image }: { image: SocialImage }) {
     <li className="flex flex-col rounded-lg border bg-background p-4">
       <div className="flex h-44 items-center justify-center rounded-md bg-muted p-3">
         <Image
-          alt={`${image.title}: the initiative's name, its goal and the four-step loop`}
+          alt={`${image.title}: the alliance's name, its goal and the four-step loop`}
           className="max-h-full w-auto rounded-sm object-contain shadow-sm"
           height={shown.height}
           src={`${FOLDER}/thumbs/${image.file}.webp`}

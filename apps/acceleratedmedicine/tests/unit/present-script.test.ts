@@ -17,7 +17,7 @@ describe("presentation script", () => {
 
   it("takes labeled on-screen text, notes and sources without markdown", () => {
     const [title, margaret] = slides;
-    expect(title.eyebrow).toBe("THE CARE-INTEGRATED CLINICAL TRIALS INITIATIVE");
+    expect(title.eyebrow).toBe("THE CARE TO CURES ALLIANCE");
     expect(title.title).toBe("Every patient's treatment can help the next patient");
     expect(title.subtitle).toMatch(/^Radically accelerating medical discovery/);
     expect(margaret.sourceLine).toBe(

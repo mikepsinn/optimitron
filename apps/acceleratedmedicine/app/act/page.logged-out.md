@@ -7,7 +7,7 @@
 - Canonical: https://acceleratedmedicine.org/act
 - Open Graph title: The Care-Integrated Clinical Trials Act
 - Open Graph description: Proposed state legislation that lets any patient get a screened, promising treatment through their own doctor, lets clinics charge for it, and publishes every result.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
 - Twitter title: The Care-Integrated Clinical Trials Act
 - Twitter description: Proposed state legislation that lets any patient get a screened, promising treatment through their own doctor, lets clinics charge for it, and publishes every result.
 

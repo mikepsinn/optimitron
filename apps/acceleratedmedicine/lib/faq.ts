@@ -50,7 +50,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       },
       {
         id: "advice",
-        question: "Does the initiative tell patients which treatment to choose?",
+        question: "Does the alliance tell patients which treatment to choose?",
         answer: [
           "No. Treatment decisions belong to patients and their doctors. We explain the evidence and the research methods, and give no medical advice.",
         ],

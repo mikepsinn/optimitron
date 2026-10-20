@@ -5,7 +5,7 @@ import { RightToTrialImpactExplorer } from "@/components/impact/right-to-trial-i
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata";
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Impact Model | Care-Integrated Clinical Trials Initiative",
+  title: "Impact Model | Care to Cures Alliance",
   description:
     "A model of how much sooner treatments could arrive if every state adopted the Care-Integrated Clinical Trials Act, with every assumption you can change.",
   path: "/impact",

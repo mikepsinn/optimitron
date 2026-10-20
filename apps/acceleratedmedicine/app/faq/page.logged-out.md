@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Frequently Asked Questions | Care-Integrated Clinical Trials Initiative
+- Page title: Frequently Asked Questions | Care to Cures Alliance
 - Meta description: How care-integrated clinical trials work, how patients are kept safe, what happens to their data, and what the Care-Integrated Clinical Trials Act does.
 - Canonical: https://acceleratedmedicine.org/faq
-- Open Graph title: Frequently Asked Questions | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Frequently Asked Questions | Care to Cures Alliance
 - Open Graph description: How care-integrated clinical trials work, how patients are kept safe, what happens to their data, and what the Care-Integrated Clinical Trials Act does.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Frequently Asked Questions | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Frequently Asked Questions | Care to Cures Alliance
 - Twitter description: How care-integrated clinical trials work, how patients are kept safe, what happens to their data, and what the Care-Integrated Clinical Trials Act does.
 
 ## Visible Page Copy
@@ -31,7 +31,7 @@
 - Patients can also choose to join centrally run comparisons, as RECOVERY did. The trial, not the doctor, assigns each patient's treatment, at random or by another scientifically justified method. The approved protocol sets what is compared and whether a placebo is used. Every published result says which method produced it.
 - Why do they cost less?
 - They use existing clinics and routine records instead of building a separate research site for each study. RECOVERY cost about $500 per patient, compared with about $41,000 per patient in the trials behind new FDA approvals (Manhattan Institute, 2023; Moore et al., JAMA Internal Medicine, 2018).
-- Does the initiative tell patients which treatment to choose?
+- Does the alliance tell patients which treatment to choose?
 - No. Treatment decisions belong to patients and their doctors. We explain the evidence and the research methods, and give no medical advice.
 - How can I help?
 - Join the Care to Cures Alliance, as a person or an organization. Joining is free. Clinics, researchers, data partners and funders can also partner with us.

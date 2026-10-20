@@ -15,11 +15,11 @@ export function AboutPage() {
     <AcceleratedMedicinePage>
       <section className="mx-auto max-w-4xl pb-12 text-center md:py-8 md:pb-16">
         <p className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">About us</p>
-        <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Care-Integrated Clinical Trials Initiative</h1>
+        <h1 className="mt-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">The Care to Cures Alliance</h1>
         <p className="mx-auto mt-4 max-w-3xl text-muted-foreground md:text-xl">
           We work so every patient can join a pragmatic clinical trial of a promising treatment, through their own
           doctor, at a clinic an independent board has approved, and so every result is published. The Institute for
-          Accelerated Medicine, a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit, runs the initiative.
+          Accelerated Medicine, a {NONPROFIT.incorporatedIn} 501(c)(3) nonprofit, convenes the alliance.
         </p>
       </section>
 
@@ -67,8 +67,7 @@ export function AboutPage() {
 
       <section aria-labelledby="work-heading" className="py-12 md:py-16">
         <SectionHeading id="work-heading" title="Work with us">
-          Clinics, patient groups, data partners and funders can partner with the Care-Integrated Clinical Trials
-          Initiative.
+          Clinics, patient groups, data partners and funders can partner with the alliance.
         </SectionHeading>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button asChild size="lg">
