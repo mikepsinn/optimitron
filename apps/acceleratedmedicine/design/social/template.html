@@ -1,0 +1,177 @@
+<!doctype html>
+<!--
+  Social images for acceleratedmedicine.org, offered on /resources. render.mjs opens this page once per size in
+  lib/social-images.json (?layout=…, with the viewport set to the image size) and saves a screenshot. The loop art (loop.jpg) was generated with Codex in
+  the retro scientific illustration style; every word is HTML, so it stays exact.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=block" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f7edd5;
+    --purple: #694cfa;
+    --amber: #e3ab47;
+    --ink: #020817;
+    --line: #1f2340;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 100vw; height: 100vh; overflow: hidden; }
+  body { background: var(--cream); color: var(--ink); font-family: Inter, sans-serif; }
+  .page { width: 100%; height: 100%; display: flex; }
+
+  .name { color: var(--purple); font-weight: 800; letter-spacing: -0.02em; line-height: 1.08; }
+  .rule { background: var(--amber); border-radius: 999px; }
+  .headline { font-weight: 800; letter-spacing: -0.025em; line-height: 1.12; }
+  .headline em { color: var(--purple); font-style: normal; }
+  .url { font-weight: 700; letter-spacing: -0.01em; }
+
+  /* The four-step loop, with each step's label pinned to the bottom of its circle. */
+  .loop {
+    position: relative; aspect-ratio: 1; container-type: inline-size;
+    background: url(loop.jpg) center / contain no-repeat;
+  }
+  /* The art's textured square background fades into the page, so no box edge shows. */
+  .loop::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    box-shadow: inset 0 0 4cqw 3cqw var(--cream);
+  }
+  .step {
+    position: absolute; z-index: 1; transform: translate(-50%, -50%); white-space: nowrap;
+    display: flex; align-items: center; gap: 1.6cqw; padding: 1.2cqw 2.6cqw 1.2cqw 1.3cqw;
+    background: #fff; border: 0.45cqw solid var(--line); border-radius: 999px;
+    font-size: 3.3cqw; font-weight: 700; color: var(--ink);
+  }
+  .step b { display: grid; place-items: center; width: 4.6cqw; height: 4.6cqw; border-radius: 50%; background: var(--purple); color: #fff; font-size: 2.9cqw; }
+  .s1 { left: 24%; top: 42%; } .s2 { left: 75.5%; top: 42%; } .s3 { left: 75.5%; top: 92%; } .s4 { left: 24%; top: 92%; }
+  .loop.plain .step { display: none; }
+
+  /* Landscape: text on the left, the loop on the right (link previews, X posts). */
+  .landscape { align-items: center; padding: 0 2.5vw 0 4.6vw; gap: 2vw; }
+  .landscape .text { flex: 1; display: flex; flex-direction: column; gap: 4.4vh; }
+  .landscape .name { font-size: 7.6vh; }
+  .landscape .rule { width: 11vh; height: 0.9vh; }
+  .landscape .headline { font-size: 6.9vh; }
+  .landscape .url { font-size: 5.7vh; margin-top: 2vh; }
+  .landscape .loop { height: 96vh; }
+  /* At 16:9 the text column is narrower for its height, so the type is a step smaller. */
+  .wide .name { font-size: 5.8vh; }
+  .wide .headline { font-size: 5.8vh; }
+  .wide .url { font-size: 4.8vh; }
+  .wide .loop { height: 92vh; }
+
+  /* Stacked: text above, the loop below (square, portrait, Pinterest, stories). */
+  .stacked { flex-direction: column; align-items: center; justify-content: center; padding: 6vw; text-align: center; gap: 3vw; }
+  .stacked .name { font-size: 5.6vw; }
+  .stacked .rule { width: 12vw; height: 0.9vw; flex: none; }
+  .stacked .headline { font-size: 5.8vw; max-width: 88vw; }
+  .stacked .url { font-size: 4.8vw; }
+  .stacked .loop { flex: none; }
+  /* Stories keep words clear of the top and bottom 250 pixels at 1080 × 1920, where the app's controls sit. */
+  /* A square leaves little room under the text, so the text is smaller and the loop bigger. */
+  .square { padding: 4.5vw; gap: 2.2vw; }
+  .square .name { font-size: 4.6vw; }
+  .square .headline { font-size: 4.9vw; }
+  .square .url { font-size: 4vw; }
+  .story { padding: 13vh 6vw; gap: 3.6vw; }
+  .story .name { font-size: 6.4vw; }
+  .story .headline { font-size: 7vw; }
+  .story .url { font-size: 5.6vw; }
+
+  /* Banners: profile headers and covers. The text keeps clear of the bottom-left, where the profile photo sits. */
+  .banner { align-items: center; justify-content: space-between; padding: 0 5vw 0 7vw; gap: 4vw; }
+  .banner .text { display: flex; flex-direction: column; gap: 3.5vh; align-self: center; margin-bottom: 18vh; }
+  .banner .name { font-size: 9vh; }
+  .banner .headline { font-size: 6.5vh; max-width: 52vw; }
+  .banner .url { font-size: 6vh; }
+  .banner .loop { height: 92vh; }
+  /* A LinkedIn profile's photo covers the bottom-left fifth. The purple pattern fills that corner, and the words and
+     loop sit on a cream card to its right. */
+  .profile { padding: 5vh 1.6vw 5vh 23vw; }
+  .profile .card {
+    flex: 1; height: 100%; padding: 0 2vw 0 3vw; border-radius: 1.4vw; background: var(--cream);
+    display: flex; align-items: center; justify-content: space-between; gap: 2vw;
+  }
+  .profile .text { margin-bottom: 0; }
+  .profile .loop { height: 84vh; }
+
+  /* Phones show only the middle 1546 × 423, computers the full width of that strip and TVs everything. The words
+     and loop sit in the middle on a cream card a little larger than that strip; the rest is a purple pattern. */
+  .youtube { align-items: center; justify-content: center; }
+  .pattern {
+    background-color: var(--purple);
+    background-image: radial-gradient(rgb(255 255 255 / 0.18) 4px, transparent 4.6px);
+    background-size: 51px 51px;
+  }
+  .youtube .safe {
+    width: 64vw; height: 33vh; padding: 0 2.4vw; border-radius: 1vw; background: var(--cream);
+    display: flex; align-items: center; justify-content: space-between; gap: 3vw;
+  }
+  .youtube .text { display: flex; flex-direction: column; gap: 1.6vh; }
+  .youtube .name { font-size: 4.6vh; }
+  .youtube .headline { font-size: 3.3vh; max-width: 38vw; }
+  .youtube .url { font-size: 3vh; }
+  .youtube .loop { height: 29.4vh; }
+
+  /* LinkedIn's page cover is a thin strip. The page's logo covers its bottom-left corner, so the text starts to its right. */
+  .strip { align-items: center; justify-content: space-between; padding: 0 3vw 0 18vw; gap: 3vw; }
+  .strip .text { display: flex; flex-direction: column; gap: 6vh; }
+  .strip .name { font-size: 14vh; }
+  .strip .headline { font-size: 10.5vh; }
+  .strip .url { font-size: 10.5vh; }
+  .strip .loop { height: 94vh; }
+</style>
+</head>
+<body>
+<div id="page"></div>
+<script>
+  const layout = new URLSearchParams(location.search).get("layout") || "landscape"
+  const name = '<p class="name">The <span style="white-space: nowrap">Care-Integrated</span> Clinical Trials Initiative</p>'
+  const rule = '<div class="rule"></div>'
+  const headline = '<p class="headline">Ensure every patient can participate in clinical trials for the <em>most promising treatments</em></p>'
+  const url = '<p class="url">acceleratedmedicine.org</p>'
+  const loop = plain => `<div class="loop${plain ? " plain" : ""}">
+    <span class="step s1"><b>1</b>See your doctor</span>
+    <span class="step s2"><b>2</b>Compare rankings</span>
+    <span class="step s3"><b>3</b>Check the outcome label</span>
+    <span class="step s4"><b>4</b>Every clinic adds results</span>
+  </div>`
+  const layouts = {
+    landscape: `<div class="page landscape"><div class="text">${name}${rule}${headline}${url}</div>${loop()}</div>`,
+    wide: `<div class="page landscape wide"><div class="text">${name}${rule}${headline}${url}</div>${loop()}</div>`,
+    stacked: `<div class="page stacked">${name}${rule}${headline}${loop()}${url}</div>`,
+    square: `<div class="page stacked square">${name}${rule}${headline}${loop()}${url}</div>`,
+    story: `<div class="page stacked story">${name}${rule}${headline}${loop()}${url}</div>`,
+    banner: `<div class="page banner"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
+    profile: `<div class="page banner profile pattern"><div class="card"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
+    youtube: `<div class="page youtube pattern"><div class="safe"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
+    strip: `<div class="page strip"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
+  }
+  document.getElementById("page").outerHTML = layouts[layout]
+
+  // In a stacked layout the loop takes whatever height the text leaves, up to 86% of the width.
+  function fitLoop() {
+    const page = document.querySelector(".page.stacked")
+    if (!page) return
+    const loopBox = page.querySelector(".loop")
+    loopBox.style.width = "0px"
+    const style = getComputedStyle(page)
+    const height = page.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
+    const others = [...page.children].filter(child => child !== loopBox)
+    const used = others.reduce((sum, child) => sum + child.getBoundingClientRect().height, 0)
+    const gaps = parseFloat(style.rowGap) * (page.children.length - 1)
+    loopBox.style.width = `${Math.floor(Math.min(height - used - gaps, page.clientWidth * 0.86))}px`
+  }
+  // Load Inter's two weights before measuring. If either is missing, report it instead of drawing a fallback font.
+  Promise.all(["700", "800"].map(weight => document.fonts.load(`${weight} 16px Inter`)))
+    .then(faces => {
+      if (faces.some(found => found.length === 0)) throw new Error("Inter 700 or 800 did not load")
+      fitLoop()
+      window.__ready = true
+    })
+    .catch(error => { window.__ready = error.message })
+</script>
+</body>
+</html>

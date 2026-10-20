@@ -7,6 +7,7 @@ import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { EXPLAINER_VIDEO } from "@/components/home/explainer-video"
+import { ShareImages } from "@/components/share-images"
 import { loadScript } from "@/lib/present-script"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
@@ -92,9 +93,10 @@ export default function ResourcesPage() {
           </li>
         ))}
       </ul>
-      <p className="mx-auto mt-8 max-w-5xl pb-8 text-center text-sm text-muted-foreground">
+      <p className="mx-auto mt-8 max-w-5xl pb-12 text-center text-sm text-muted-foreground">
         Save as PDF opens your browser&apos;s print window. Choose Save as PDF as the destination.
       </p>
+      <ShareImages />
     </AcceleratedMedicinePage>
   )
 }

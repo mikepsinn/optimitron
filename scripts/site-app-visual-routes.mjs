@@ -1,7 +1,12 @@
+import { readFileSync } from "node:fs";
 import * as navigationInventoryModule from "./site-app-navigation.ts";
 import { VARIANTS } from "../packages/site-kit/src/lib/site-variant-types.ts";
 
 const { getInternalNavigationRoutesForVariant } = navigationInventoryModule.default ?? navigationInventoryModule;
+
+const acceleratedMedicineSocialImages = JSON.parse(
+  readFileSync(new URL("../apps/acceleratedmedicine/lib/social-images.json", import.meta.url), "utf8"),
+);
 
 const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
@@ -1030,7 +1035,14 @@ export const publicSiteAppRoutes = Object.freeze({
       covers: [
         "apps/acceleratedmedicine/app/resources/page.tsx",
         "apps/acceleratedmedicine/components/home/explainer-video.tsx",
+        "apps/acceleratedmedicine/components/share-images.tsx",
         "apps/acceleratedmedicine/lib/navigation.ts",
+        "apps/acceleratedmedicine/lib/social-images.json",
+        // The page shows each image's thumbnail and offers the full image for download.
+        ...acceleratedMedicineSocialImages.flatMap(({ file }) => [
+          `apps/acceleratedmedicine/public/assets/acceleratedmedicine/social/${file}.png`,
+          `apps/acceleratedmedicine/public/assets/acceleratedmedicine/social/thumbs/${file}.webp`,
+        ]),
       ],
       label: "Presentations and handouts",
       routeName: "resources",
