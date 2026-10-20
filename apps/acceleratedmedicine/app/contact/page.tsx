@@ -33,7 +33,7 @@ export default async function ContactPage({
           to our inbox, and we reply by email.
         </p>
         <p className="mt-3 text-muted-foreground">
-          To add your name or your organization to the public list, join the{" "}
+          To sign on as a person or an organization, join the{" "}
           <Link href="/support" className="font-medium text-primary hover:underline">Care to Cures Alliance</Link>.
         </p>
         <div className="mt-8">
