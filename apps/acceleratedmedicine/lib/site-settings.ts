@@ -5,6 +5,9 @@ import type { Metadata } from "next"
  * They started as a copy of the acceleratedmedicine.org entry in packages/site-kit/src/lib/site-config.ts,
  * which this app no longer reads.
  */
+/** People and organizations join the alliance on /support. The initiative is the work: the act, the research, the presentations. */
+export const ALLIANCE = "Care to Cures Alliance"
+
 export const SITE = {
   title: "Care-Integrated Clinical Trials Initiative",
   description:

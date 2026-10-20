@@ -136,7 +136,7 @@ function Done({ confirmation, title, children }: { confirmation: RefObject<HTMLD
   )
 }
 
-/** A person adds their name. They count once they click the link in the confirmation email. */
+/** A person joins the alliance. They count once they click the link in the confirmation email. */
 export function SupporterForm({ countries }: { countries: readonly CountryOption[] }) {
   const { submission, submit, confirmation } = useSubmission("/api/support")
   const [updates, setUpdates] = useState(true)
@@ -144,7 +144,7 @@ export function SupporterForm({ countries }: { countries: readonly CountryOption
   if (submission.status === "success") {
     return (
       <Done confirmation={confirmation} title="Check your email">
-        We sent a link to {submission.fields.email}. Your name counts once you click it.
+        We sent a link to {submission.fields.email}. You join once you click it.
       </Done>
     )
   }
@@ -162,15 +162,15 @@ export function SupporterForm({ countries }: { countries: readonly CountryOption
       <label className="flex cursor-pointer items-start gap-3">
         <input type="checkbox" checked={updates} onChange={event => setUpdates(event.target.checked)}
           className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]" />
-        <span>Email me occasional updates about the initiative.</span>
+        <span>Email me occasional updates.</span>
       </label>
-      <Footer submission={submission} label="Add my name"
-        note="We show how many people support the initiative, never their names. We email you only to confirm and, if you ask, to send updates." />
+      <Footer submission={submission} label="Join the alliance"
+        note="Joining is free. We show how many people have joined, never their names. We email you only to confirm and, if you ask, to send updates." />
     </form>
   )
 }
 
-/** An organization endorses. It appears on /supporters and its state page after the Institute approves it. */
+/** An organization joins the alliance. It appears on /supporters and its state page after the Institute approves it. */
 export function OrganizationForm({ countries }: { countries: readonly CountryOption[] }) {
   const { submission, submit, fail, confirmation } = useSubmission("/api/endorse")
 
@@ -178,7 +178,7 @@ export function OrganizationForm({ countries }: { countries: readonly CountryOpt
     return (
       <Done confirmation={confirmation} title={`Thank you, ${submission.fields.organization}`}>
         We check each organization before listing it, and we&apos;ll email {submission.fields.contactEmail} when it
-        appears on the supporters page.
+        appears on the members page.
       </Done>
     )
   }
@@ -211,7 +211,7 @@ export function OrganizationForm({ countries }: { countries: readonly CountryOpt
         </div>
         <PlaceFields countries={countries} stateLabel="State" states={ORGANIZATION_STATES} />
       </div>
-      <Footer submission={submission} label="Endorse the initiative"
+      <Footer submission={submission} label="Join the alliance"
         note="We list the organization's name, website, logo and location. The contact's name and email stay private." />
     </form>
   )

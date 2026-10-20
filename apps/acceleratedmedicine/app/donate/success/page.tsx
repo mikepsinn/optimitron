@@ -71,7 +71,7 @@ export default async function DonateSuccessPage({
       <section className="mx-auto max-w-2xl py-10 text-center">
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="/support">Add your name</Link>
+            <Link href="/support">Join the alliance</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link href="/act">Read the act</Link>

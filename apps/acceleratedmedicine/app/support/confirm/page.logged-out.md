@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Confirm your support | Care-Integrated Clinical Trials Initiative
+- Page title: Confirm you're joining | Care-Integrated Clinical Trials Initiative
 - Meta description: Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.
 - Canonical: https://acceleratedmedicine.org/support/confirm
 - Open Graph title: Care-Integrated Clinical Trials Initiative

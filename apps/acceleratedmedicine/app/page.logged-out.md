@@ -18,7 +18,7 @@
 - Treatment rankings based on real-world outcomes
 - An Outcome Label for every treatment
 - Patient data that stays with patients and their clinics
-- [Show your support](/support)
+- [Join the alliance](/support)
 - [See how medicine should work](#how-it-works)
 ### Every patient helps the next
 - 1 Compare You and your doctor see which treatments worked for people like you.
