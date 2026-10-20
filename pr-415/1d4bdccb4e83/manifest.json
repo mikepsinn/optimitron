@@ -1,0 +1,937 @@
+{
+  "version": 2,
+  "generatedAt": "2026-10-20T19:26:56.373Z",
+  "generatedAtCentral": "Oct 20, 2026, 2:26:56 PM CDT",
+  "commitSha": "1d4bdccb4e8308420ead777d82a9d50d69324dc7",
+  "shortSha": "1d4bdccb4e83",
+  "prNumber": "415",
+  "headBranch": "feature/am-alliance-partner-links",
+  "repo": "mikepsinn/optimitron",
+  "previewBaseUrl": null,
+  "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html",
+  "baselineDescription": "screenshots vs main baseline artifact · copy vs 39b0ed0b8f6a",
+  "summary": {
+    "changedRoutes": 3,
+    "copyOnlyRoutes": 0,
+    "erroredRoutes": 0,
+    "missingBaselineRoutes": 0,
+    "appCount": 1,
+    "appRoutes": 22,
+    "compatibilityRoutes": 0,
+    "unchangedRoutes": 19,
+    "missingPairs": 0
+  },
+  "coverage": {
+    "analysisAvailable": true,
+    "blockingIssues": [],
+    "changedUiFiles": [
+      "apps/acceleratedmedicine/app/contact/page.tsx",
+      "apps/acceleratedmedicine/app/support/page.tsx"
+    ],
+    "complete": true,
+    "coveredUiFiles": [
+      "apps/acceleratedmedicine/app/contact/page.tsx",
+      "apps/acceleratedmedicine/app/support/page.tsx"
+    ],
+    "invalidRoutes": [],
+    "missingCaptures": [],
+    "routeCoverage": [
+      {
+        "filePath": "apps/acceleratedmedicine/app/contact/page.tsx",
+        "routeNames": [
+          "site-app-acceleratedmedicine-contact",
+          "site-app-acceleratedmedicine-contact-advisory-board"
+        ]
+      },
+      {
+        "filePath": "apps/acceleratedmedicine/app/support/page.tsx",
+        "routeNames": [
+          "site-app-acceleratedmedicine-support"
+        ]
+      }
+    ],
+    "uncoveredUiFiles": []
+  },
+  "routes": [
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-home",
+      "routeLabel": "acceleratedmedicine.org · Home",
+      "routePath": "/",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-home",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-faq",
+      "routeLabel": "acceleratedmedicine.org · FAQ",
+      "routePath": "/faq",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/faq?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-faq",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-states",
+      "routeLabel": "acceleratedmedicine.org · Your state",
+      "routePath": "/states",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/states?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-states",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-montana",
+      "routeLabel": "acceleratedmedicine.org · Montana precedent",
+      "routePath": "/montana",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/montana?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-montana",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-impact",
+      "routeLabel": "acceleratedmedicine.org · Impact",
+      "routePath": "/impact",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/impact?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-impact",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-about",
+      "routeLabel": "acceleratedmedicine.org · About us",
+      "routePath": "/about",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/about?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-about",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-privacy",
+      "routeLabel": "acceleratedmedicine.org · Privacy Policy",
+      "routePath": "/privacy",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/privacy?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-privacy",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-terms",
+      "routeLabel": "acceleratedmedicine.org · Terms of Service",
+      "routePath": "/terms",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/terms?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-terms",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-states-missouri",
+      "routeLabel": "acceleratedmedicine.org · State page",
+      "routePath": "/states/missouri",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/states/missouri?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-states-missouri",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-contact",
+      "routeLabel": "acceleratedmedicine.org · Partner sign-up",
+      "routePath": "/contact",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/contact?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": true,
+      "copyChanged": true,
+      "errored": false,
+      "changedPairs": 2,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "2 changed",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-contact",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "1440x1755 -> 1440x1791; 2.5% overlap"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "390x2633 -> 390x2693; 8% overlap"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-contact-advisory-board",
+      "routeLabel": "acceleratedmedicine.org · Advisory-board sign-up",
+      "routePath": "/contact?type=advisory-board",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/contact?type=advisory-board&logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": true,
+      "copyChanged": true,
+      "errored": false,
+      "changedPairs": 2,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "2 changed",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-contact-advisory-board",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "1440x1755 -> 1440x1791; 2.6% overlap"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "390x2633 -> 390x2693; 8.3% overlap"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-act",
+      "routeLabel": "acceleratedmedicine.org · The Care-Integrated Clinical Trials Act",
+      "routePath": "/act",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/act?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-act",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-support",
+      "routeLabel": "acceleratedmedicine.org · Show your support",
+      "routePath": "/support",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/support?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": true,
+      "copyChanged": true,
+      "errored": false,
+      "changedPairs": 2,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "2 changed",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-support",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "1440x2239 -> 1440x2267; 1% overlap"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": true,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "390x3175 -> 390x3223; 3.8% overlap"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-supporters",
+      "routeLabel": "acceleratedmedicine.org · Supporters",
+      "routePath": "/supporters",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/supporters?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-supporters",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-support-confirm",
+      "routeLabel": "acceleratedmedicine.org · Confirm support (bad link)",
+      "routePath": "/support/confirm",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/support/confirm?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-support-confirm",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-support-approve",
+      "routeLabel": "acceleratedmedicine.org · Approve listing (bad link)",
+      "routePath": "/support/approve",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/support/approve?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-support-approve",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-resources",
+      "routeLabel": "acceleratedmedicine.org · Presentations and handouts",
+      "routePath": "/resources",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/resources?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-resources",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-one-pager",
+      "routeLabel": "acceleratedmedicine.org · One-page overview",
+      "routePath": "/one-pager",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/one-pager?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-one-pager",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-present-patient-journey",
+      "routeLabel": "acceleratedmedicine.org · Patient journey presentation",
+      "routePath": "/present/patient-journey",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/present/patient-journey?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-present-patient-journey",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-donate",
+      "routeLabel": "acceleratedmedicine.org · Donate",
+      "routePath": "/donate",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/donate?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-donate",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-donate-success",
+      "routeLabel": "acceleratedmedicine.org · Donation received",
+      "routePath": "/donate/success?session_id=cs_test_visual_review",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/donate/success?session_id=cs_test_visual_review&logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-donate-success",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    },
+    {
+      "appId": "acceleratedmedicine",
+      "appLabel": "Accelerated Medicine",
+      "captureKind": "app",
+      "routeName": "site-app-acceleratedmedicine-not-found",
+      "routeLabel": "acceleratedmedicine.org · Page not found",
+      "routePath": "/this-page-does-not-exist",
+      "routeUrl": "https://acceleratedmedicine-f4aex1ix4-mike-p-sinns-projects.vercel.app/this-page-does-not-exist?logout=1",
+      "authState": "logged-out",
+      "siteApp": true,
+      "siteVariant": "acceleratedmedicine",
+      "baselineMissingPairs": 0,
+      "baselineSkippedForCaptureProtocol": false,
+      "changed": false,
+      "copyChanged": false,
+      "errored": false,
+      "changedPairs": 0,
+      "missingPairs": 0,
+      "erroredPairs": 0,
+      "statusLabel": "unchanged",
+      "reviewUrl": "https://mikepsinn.github.io/optimitron/pr-415/latest/latest.html#route=site-app-acceleratedmedicine-not-found",
+      "projects": [
+        {
+          "projectName": "default",
+          "projectLabel": "Desktop",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        },
+        {
+          "projectName": "visual-mobile",
+          "projectLabel": "Mobile",
+          "changed": false,
+          "missing": false,
+          "errored": false,
+          "diffLabel": "0% changed"
+        }
+      ]
+    }
+  ]
+}
