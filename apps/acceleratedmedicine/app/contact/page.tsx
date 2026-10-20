@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { PartnerSignupForm } from "@/components/partner-signup-form"
@@ -30,6 +31,10 @@ export default async function ContactPage({
         <p className="mt-4 text-muted-foreground md:text-xl">
           Tell us how you want to help make care-integrated clinical trials part of normal care. Your message goes
           to our inbox, and we reply by email.
+        </p>
+        <p className="mt-3 text-muted-foreground">
+          To add your name or your organization to the public list, join the{" "}
+          <Link href="/support" className="font-medium text-primary hover:underline">Care to Cures Alliance</Link>.
         </p>
         <div className="mt-8">
           <PartnerSignupForm initialType={isPartnerType(type) ? type : undefined} />

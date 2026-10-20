@@ -40,7 +40,8 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl">
           <SectionHeading id="organization-heading" title="Join as an organization">
             Patient groups, clinics, hospitals, research groups and companies can join. We list each one on the members
-            page.
+            page. To do more, such as running a pilot site, sharing data or funding the work,{" "}
+            <Link href="/contact" className="font-medium text-primary hover:underline">partner with us</Link>.
           </SectionHeading>
           <div className="mt-6"><OrganizationForm countries={COUNTRY_OPTIONS} /></div>
         </div>
