@@ -1,4 +1,4 @@
-import { Download } from "lucide-react"
+import { ChevronDown, Download } from "lucide-react"
 import Image from "next/image"
 
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
@@ -12,7 +12,7 @@ type SocialImage = (typeof socialImages)[number]
 
 function ShareImage({ image }: { image: SocialImage }) {
   return (
-    <li className="flex flex-col rounded-lg border bg-card p-4 shadow-sm">
+    <li className="flex flex-col rounded-lg border bg-background p-4">
       <div className="flex h-44 items-center justify-center rounded-md bg-muted p-3">
         <Image
           alt={`${image.title}: the initiative's name, its goal and the four-step loop`}
@@ -40,21 +40,28 @@ const GROUPS = [
   { kind: "header", title: "Profile headers and covers" },
 ]
 
+/** The share images, closed by default so the page leads with the presentations. The thumbnails load when opened. */
 export function ShareImages() {
   return (
-    <section aria-labelledby="share-images" className="mx-auto max-w-5xl pb-12">
-      <h2 id="share-images" className="text-2xl font-bold tracking-tight md:text-3xl">Images to share</h2>
-      <p className="mt-2 text-muted-foreground">Each image is sized for the places listed under it.</p>
-      {GROUPS.map(group => (
-        <div key={group.kind}>
-          <h3 className="mt-8 text-lg font-semibold">{group.title}</h3>
-          <ul className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {socialImages.filter(image => image.kind === group.kind).map(image => (
-              <ShareImage image={image} key={image.file} />
-            ))}
-          </ul>
-        </div>
-      ))}
-    </section>
+    <details className="group mx-auto mb-12 max-w-5xl rounded-lg border bg-card shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
+        <h2 className="text-lg font-semibold">
+          Images for social media <span className="whitespace-nowrap">({socialImages.length} sizes)</span>
+        </h2>
+        <ChevronDown aria-hidden="true" className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="border-t p-5">
+        {GROUPS.map(group => (
+          <div className="mb-8 last:mb-0" key={group.kind}>
+            <h3 className="font-semibold text-muted-foreground">{group.title}</h3>
+            <ul className="mt-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {socialImages.filter(image => image.kind === group.kind).map(image => (
+                <ShareImage image={image} key={image.file} />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </details>
   )
 }
