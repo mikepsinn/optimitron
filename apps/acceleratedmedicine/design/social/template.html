@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-  Social images for acceleratedmedicine.org. render.mjs opens this page once per size (?layout=…, with the
-  viewport set to the image size) and saves a screenshot. The loop art (loop.jpg) was generated with Codex in
+  Social images for acceleratedmedicine.org, offered on /resources. render.mjs opens this page once per size in
+  lib/social-images.json (?layout=…, with the viewport set to the image size) and saves a screenshot. The loop art (loop.jpg) was generated with Codex in
   the retro scientific illustration style; every word is HTML, so it stays exact.
 -->
 <html lang="en">
@@ -87,21 +87,34 @@
   .banner .headline { font-size: 6.5vh; max-width: 52vw; }
   .banner .url { font-size: 6vh; }
   .banner .loop { height: 92vh; }
+  /* A LinkedIn profile's photo covers the bottom-left fifth, so the text starts to its right. */
+  .profile { padding-left: 23vw; }
+  .profile .text { margin-bottom: 0; }
 
-  /* YouTube shows only the middle 1546 × 423 on every screen, so everything sits there. */
-  .youtube { align-items: center; justify-content: center; }
-  .youtube .safe { width: 60.4vw; height: 29.4vh; display: flex; align-items: center; justify-content: space-between; gap: 3vw; }
+  /* Phones show only the middle 1546 × 423, computers the full width of that strip and TVs everything. The words
+     and loop sit in the middle on a cream card a little larger than that strip; the rest is a purple pattern. */
+  .youtube {
+    align-items: center; justify-content: center;
+    background-color: var(--purple);
+    background-image: radial-gradient(rgb(255 255 255 / 0.18) 0.16vw, transparent 0.18vw);
+    background-size: 2vw 2vw;
+  }
+  .youtube .safe {
+    width: 64vw; height: 33vh; padding: 0 2.4vw; border-radius: 1vw; background: var(--cream);
+    display: flex; align-items: center; justify-content: space-between; gap: 3vw;
+  }
   .youtube .text { display: flex; flex-direction: column; gap: 1.6vh; }
   .youtube .name { font-size: 4.6vh; }
   .youtube .headline { font-size: 3.3vh; max-width: 38vw; }
   .youtube .url { font-size: 3vh; }
   .youtube .loop { height: 29.4vh; }
 
-  /* LinkedIn's cover is a thin strip: the name and address, with the loop art for color. */
-  .strip { align-items: center; justify-content: space-between; padding: 0 3vw 0 24vw; }
+  /* LinkedIn's page cover is a thin strip. The page's logo covers its bottom-left corner, so the text starts to its right. */
+  .strip { align-items: center; justify-content: space-between; padding: 0 3vw 0 18vw; gap: 3vw; }
   .strip .text { display: flex; flex-direction: column; gap: 6vh; }
-  .strip .name { font-size: 17vh; }
-  .strip .url { font-size: 13vh; }
+  .strip .name { font-size: 14vh; }
+  .strip .headline { font-size: 10.5vh; }
+  .strip .url { font-size: 10.5vh; }
   .strip .loop { height: 94vh; }
 </style>
 </head>
@@ -126,8 +139,9 @@
     square: `<div class="page stacked square">${name}${rule}${headline}${loop()}${url}</div>`,
     story: `<div class="page stacked story">${name}${rule}${headline}${loop()}${url}</div>`,
     banner: `<div class="page banner"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
+    profile: `<div class="page banner profile"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
     youtube: `<div class="page youtube"><div class="safe"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
-    strip: `<div class="page strip"><div class="text">${name}${url}</div>${loop(true)}</div>`,
+    strip: `<div class="page strip"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
   }
   document.getElementById("page").outerHTML = layouts[layout]
 

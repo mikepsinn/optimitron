@@ -1,0 +1,13 @@
+[
+  { "file": "landscape-post-1200x630", "kind": "post", "title": "Landscape post", "width": 1200, "height": 630, "layout": "landscape", "use": "Facebook and LinkedIn posts, and link previews" },
+  { "file": "widescreen-post-1600x900", "kind": "post", "title": "Widescreen post", "width": 1600, "height": 900, "layout": "wide", "use": "X and Bluesky posts" },
+  { "file": "square-post-1080x1080", "kind": "post", "title": "Square post", "width": 1080, "height": 1080, "layout": "square", "use": "Instagram, Facebook, LinkedIn and Threads posts" },
+  { "file": "portrait-post-1080x1350", "kind": "post", "title": "Portrait post", "width": 1080, "height": 1350, "layout": "stacked", "use": "Instagram and Facebook feeds" },
+  { "file": "pinterest-pin-1000x1500", "kind": "post", "title": "Pinterest pin", "width": 1000, "height": 1500, "layout": "stacked", "use": "Pinterest" },
+  { "file": "story-1080x1920", "kind": "post", "title": "Story", "width": 1080, "height": 1920, "layout": "story", "use": "Instagram and Facebook Stories, Reels, TikTok and YouTube Shorts" },
+  { "file": "x-bluesky-header-1500x500", "kind": "header", "title": "X and Bluesky header", "width": 1500, "height": 500, "layout": "banner", "use": "X and Bluesky profiles" },
+  { "file": "facebook-cover-1640x624", "kind": "header", "title": "Facebook cover", "width": 1640, "height": 624, "layout": "banner", "use": "Facebook pages and profiles" },
+  { "file": "linkedin-profile-background-1584x396", "kind": "header", "title": "LinkedIn profile background", "width": 1584, "height": 396, "layout": "profile", "use": "Personal LinkedIn profiles" },
+  { "file": "linkedin-page-cover-1128x191", "kind": "header", "title": "LinkedIn page cover", "width": 1128, "height": 191, "layout": "strip", "use": "LinkedIn company pages" },
+  { "file": "youtube-banner-2560x1440", "kind": "header", "title": "YouTube banner", "width": 2560, "height": 1440, "layout": "youtube", "use": "YouTube channels. Phones and computers show only the middle strip." }
+]
