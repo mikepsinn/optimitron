@@ -87,17 +87,23 @@
   .banner .headline { font-size: 6.5vh; max-width: 52vw; }
   .banner .url { font-size: 6vh; }
   .banner .loop { height: 92vh; }
-  /* A LinkedIn profile's photo covers the bottom-left fifth, so the text starts to its right. */
-  .profile { padding-left: 23vw; }
+  /* A LinkedIn profile's photo covers the bottom-left fifth. The purple pattern fills that corner, and the words and
+     loop sit on a cream card to its right. */
+  .profile { padding: 5vh 1.6vw 5vh 23vw; }
+  .profile .card {
+    flex: 1; height: 100%; padding: 0 2vw 0 3vw; border-radius: 1.4vw; background: var(--cream);
+    display: flex; align-items: center; justify-content: space-between; gap: 2vw;
+  }
   .profile .text { margin-bottom: 0; }
+  .profile .loop { height: 84vh; }
 
   /* Phones show only the middle 1546 × 423, computers the full width of that strip and TVs everything. The words
      and loop sit in the middle on a cream card a little larger than that strip; the rest is a purple pattern. */
-  .youtube {
-    align-items: center; justify-content: center;
+  .youtube { align-items: center; justify-content: center; }
+  .pattern {
     background-color: var(--purple);
-    background-image: radial-gradient(rgb(255 255 255 / 0.18) 0.16vw, transparent 0.18vw);
-    background-size: 2vw 2vw;
+    background-image: radial-gradient(rgb(255 255 255 / 0.18) 4px, transparent 4.6px);
+    background-size: 51px 51px;
   }
   .youtube .safe {
     width: 64vw; height: 33vh; padding: 0 2.4vw; border-radius: 1vw; background: var(--cream);
@@ -139,8 +145,8 @@
     square: `<div class="page stacked square">${name}${rule}${headline}${loop()}${url}</div>`,
     story: `<div class="page stacked story">${name}${rule}${headline}${loop()}${url}</div>`,
     banner: `<div class="page banner"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
-    profile: `<div class="page banner profile"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
-    youtube: `<div class="page youtube"><div class="safe"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
+    profile: `<div class="page banner profile pattern"><div class="card"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
+    youtube: `<div class="page youtube pattern"><div class="safe"><div class="text">${name}${headline}${url}</div>${loop(true)}</div></div>`,
     strip: `<div class="page strip"><div class="text">${name}${headline}${url}</div>${loop(true)}</div>`,
   }
   document.getElementById("page").outerHTML = layouts[layout]
