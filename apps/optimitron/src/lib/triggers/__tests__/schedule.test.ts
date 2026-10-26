@@ -34,6 +34,18 @@ describe("triggers/schedule/isScheduleDue", () => {
     expect(isScheduleDue("*/5 * * * *", lastFire, notDueAfter3)).toBe(false);
   });
 
+  it.each(["0 9 * * *", "30 9 * * *", "0 10 * * 1"])(
+    "catches up %s at the daily tick without firing again before its next occurrence",
+    (schedule) => {
+      const previousTick = new Date("2026-10-25T10:00:25Z");
+      const mondayTick = new Date("2026-10-26T10:00:25Z");
+      expect(isScheduleDue(schedule, previousTick, mondayTick)).toBe(true);
+      expect(
+        isScheduleDue(schedule, mondayTick, new Date("2026-10-26T11:00:00Z")),
+      ).toBe(false);
+    },
+  );
+
   it("does not double-fire when only milliseconds have passed since last fire", () => {
     const lastFire = new Date("2026-04-29T12:00:00.000Z");
     const oneSecondLater = new Date("2026-04-29T12:00:01.000Z");

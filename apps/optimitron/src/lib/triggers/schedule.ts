@@ -10,9 +10,9 @@ import { CronExpressionParser } from "cron-parser";
  *   - schedule invalid    → not due (caller logs the parse error)
  *   - any tick ≥ lastFiredAt and ≤ now → due
  *
- * Granularity is bounded by the cron handler's tick rate (currently every
- * 5 minutes via vercel.json). A `* * * * *` schedule effectively becomes
- * every-5-min for our purposes.
+ * Granularity is bounded by the cron handler's tick rate (currently daily
+ * at 10:00 UTC via vercel.json). Missed ticks are coalesced into one fire;
+ * this does not replay every occurrence of a more frequent schedule.
  */
 export function isScheduleDue(
   schedule: string,
@@ -30,6 +30,7 @@ export function isScheduleDue(
     interval = CronExpressionParser.parse(schedule, {
       currentDate,
       endDate: now,
+      tz: "UTC",
     });
   } catch {
     return false;
