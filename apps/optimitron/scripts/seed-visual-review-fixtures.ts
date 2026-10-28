@@ -292,11 +292,13 @@ async function ensureFixtureManager() {
       deletedAt: null,
       displayName: "Ada Reviewer",
       email,
+      isPublic: true,
     },
     create: {
       displayName: "Ada Reviewer",
       email,
       id: ids.fixtureManagerPerson,
+      isPublic: true,
     },
   });
   const user = await prisma.user.upsert({
