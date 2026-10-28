@@ -12029,6 +12029,7 @@ export function createMcpServer(
                   status: TaskStatus.ACTIVE,
                 },
               });
+              invalidatePublicTaskReads();
               promoted.push({ taskId: task.id, title: task.title });
             }
 
