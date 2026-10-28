@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Join the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative
+- Page title: Join the alliance | Care to Cures Alliance
 - Meta description: People and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published. Joining is free.
 - Canonical: https://acceleratedmedicine.org/support
-- Open Graph title: Join the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Join the alliance | Care to Cures Alliance
 - Open Graph description: People and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published. Joining is free.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Join the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Join the alliance | Care to Cures Alliance
 - Twitter description: People and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published. Joining is free.
 
 ## Visible Page Copy
@@ -35,3 +35,4 @@
 - Contact email
 - State Choose one Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware District of Columbia Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming Nationwide
 - We list the organization's name, website, logo and location. The contact's name and email stay private.
+- [See the members](/supporters)

@@ -5,11 +5,11 @@ import type { Metadata } from "next"
  * They started as a copy of the acceleratedmedicine.org entry in packages/site-kit/src/lib/site-config.ts,
  * which this app no longer reads.
  */
-/** People and organizations join the alliance on /support. The initiative is the work: the act, the research, the presentations. */
+/** The site's name. People and organizations join on /support; the Care-Integrated Clinical Trials Act is the policy it explains. */
 export const ALLIANCE = "Care to Cures Alliance"
 
 export const SITE = {
-  title: "Care-Integrated Clinical Trials Initiative",
+  title: ALLIANCE,
   description:
     "Every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.",
   url: "https://acceleratedmedicine.org",
@@ -19,15 +19,16 @@ export const SITE = {
   email: "hello@acceleratedmedicine.org",
   /** Major gifts and foundation grants (the /donate page). */
   donationsEmail: "donations@acceleratedmedicine.org",
-  /** Runs the initiative and operates the website. Terms and Privacy name it. */
+  /** Convenes the alliance and operates the website. Terms and Privacy name it. */
   legalEntityName: "Institute for Accelerated Medicine",
   /** The "from" name on emails the site sends. */
   emailFromName: "Institute for Accelerated Medicine",
   openGraphImage: {
-    path: "/assets/acceleratedmedicine/iam-og-1200x630.png",
+    // The landscape post from design/social/render.mjs. A new address, so link previews pick up the new name.
+    path: "/assets/acceleratedmedicine/social/landscape-post-1200x630.png",
     width: 1200,
     height: 630,
-    alt: "The Care-Integrated Clinical Trials Initiative: see your doctor, compare rankings, check the outcome label, and every clinic adds results.",
+    alt: "The Care to Cures Alliance: ensure every patient can participate in clinical trials for the most promising treatments. See your doctor, compare rankings, check the outcome label, and every clinic adds results.",
   },
   icons: {
     icon: [

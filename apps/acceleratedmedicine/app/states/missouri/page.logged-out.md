@@ -7,7 +7,7 @@
 - Canonical: https://acceleratedmedicine.org/states/missouri
 - Open Graph title: Missouri: Care-Integrated Clinical Trials
 - Open Graph description: How many people in Missouri live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
 - Twitter title: Missouri: Care-Integrated Clinical Trials
 - Twitter description: How many people in Missouri live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.
 

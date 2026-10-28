@@ -47,7 +47,7 @@ export function SupportLinkPage({
             <Button asChild size="lg" variant="outline" className="mt-6"><Link href="/support">Go to the support page</Link></Button>
           )}
           {status === "done" && SHOW_SUPPORTERS_LINKS && (
-            <Button asChild size="lg" variant="outline" className="mt-6"><Link href="/supporters">See who supports the initiative</Link></Button>
+            <Button asChild size="lg" variant="outline" className="mt-6"><Link href="/supporters">See the members</Link></Button>
           )}
         </div>
       </section>

@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
+- Page title: Montana's Universal Right to Try Law | Care to Cures Alliance
 - Meta description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
 - Canonical: https://acceleratedmedicine.org/montana
-- Open Graph title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Montana's Universal Right to Try Law | Care to Cures Alliance
 - Open Graph description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Montana's Universal Right to Try Law | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Montana's Universal Right to Try Law | Care to Cures Alliance
 - Twitter description: A plain-language guide to Montana SB 535: licensed experimental treatment centers, patient safeguards, and what the Care-Integrated Clinical Trials Act would add.
 
 ## Visible Page Copy

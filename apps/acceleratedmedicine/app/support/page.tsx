@@ -9,7 +9,7 @@ import { SHOW_SUPPORTERS_LINKS } from "@/lib/navigation"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Join the Care to Cures Alliance | Care-Integrated Clinical Trials Initiative",
+  title: "Join the alliance | Care to Cures Alliance",
   description:
     "People and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published. Joining is free.",
   path: "/support",

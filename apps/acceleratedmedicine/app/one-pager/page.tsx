@@ -49,7 +49,7 @@ export default function OnePager() {
       <article className="mx-auto max-w-[8.5in] rounded-lg border bg-background p-6 text-[12.5px] leading-snug shadow-sm [print-color-adjust:exact] sm:p-[0.5in] print:max-w-none print:rounded-none print:border-0 print:p-0 print:shadow-none">
         <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b pb-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">
-            The Care-Integrated Clinical Trials Initiative
+            The Care to Cures Alliance
           </p>
           <p className="text-[11px] text-muted-foreground">
             <a href={`${SITE.url}/act`} className="text-primary">acceleratedmedicine.org/act</a>

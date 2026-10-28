@@ -1,5 +1,5 @@
 /**
- * The nonprofit that runs the initiative, for legal facts, donation receipts and the mailing address.
+ * The nonprofit that convenes the alliance, for legal facts, donation receipts and the mailing address.
  * Copied from packages/site-kit/src/lib/nonprofit-identity.ts, keeping only what this site uses. Update both
  * when the organization's records change.
  */

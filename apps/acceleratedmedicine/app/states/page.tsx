@@ -5,7 +5,7 @@ import { StateTileMap } from "@/components/state-tile-map"
 import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 
 export const metadata: Metadata = rightToTrialMetadata({
-  title: "Your State | Care-Integrated Clinical Trials Initiative",
+  title: "Your State | Care to Cures Alliance",
   description:
     "Choose a state to see how many people there live with conditions that better treatments could help, and what the Care-Integrated Clinical Trials Act would change.",
   path: "/states",

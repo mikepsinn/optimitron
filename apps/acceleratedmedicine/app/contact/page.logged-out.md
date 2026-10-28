@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Partner with us | Care-Integrated Clinical Trials Initiative
+- Page title: Partner with us | Care to Cures Alliance
 - Meta description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
 - Canonical: https://acceleratedmedicine.org/contact
-- Open Graph title: Partner with us | Care-Integrated Clinical Trials Initiative
+- Open Graph title: Partner with us | Care to Cures Alliance
 - Open Graph description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Partner with us | Care-Integrated Clinical Trials Initiative
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/social/landscape-post-1200x630.png
+- Twitter title: Partner with us | Care to Cures Alliance
 - Twitter description: Clinics, researchers, data partners, funders and advisors: tell us how you want to help every patient join clinical trials for the most promising treatments.
 
 ## Visible Page Copy

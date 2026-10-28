@@ -49,7 +49,7 @@ prototype render the app's own components with its data, not screenshots.
 - **They should feel:** that this is common sense, safe and proven. Calm confidence, not fear or
   outrage.
 - **The close:** "Learn more at acceleratedmedicine.org", with no ask on the slides or in the
-  video. The initiative is a 501(c)(3). Describing the act is education. When the deck is presented
+  video. The Institute is a 501(c)(3). Describing the act is education. When the deck is presented
   to a legislator, the presenter makes the ask in person, from a private presenter brief kept
   outside this public repository; that is direct lobbying, which is allowed within limits. Asking
   the public to contact legislators would be grassroots lobbying, so the public materials do not.
@@ -77,11 +77,11 @@ prototype render the app's own components with its data, not screenshots.
 
 ## 1. Title
 
-**Purpose:** Name the initiative and the idea in one line.
+**Purpose:** Name the alliance and the idea in one line.
 
 **On screen**
 
-- Eyebrow: THE CARE-INTEGRATED CLINICAL TRIALS INITIATIVE
+- Eyebrow: THE CARE TO CURES ALLIANCE
 - Title: Every patient's treatment can help the next patient
 - Subtitle: Radically accelerating medical discovery by letting any patient join trials of the
   most promising treatments.
