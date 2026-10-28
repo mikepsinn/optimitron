@@ -2,7 +2,7 @@ import { deserialize, serialize } from "node:v8";
 import { unstable_cache, revalidateTag } from "next/cache";
 
 export const PUBLIC_TASK_READ_CACHE_TAG = "public-task-read";
-export const PUBLIC_READ_REVALIDATE_SECONDS = 3600;
+export const PUBLIC_READ_REVALIDATE_SECONDS = 24 * 60 * 60;
 
 /** Cache server-only public read models without converting Dates to strings. */
 export function cachePublicRead<Args extends unknown[], Result>(
