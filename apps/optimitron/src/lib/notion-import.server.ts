@@ -1,3 +1,4 @@
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { createHash } from "node:crypto";
 import { Prisma } from "@optimitron/db";
 import {
@@ -2749,6 +2750,7 @@ export async function importNotionBundle(input: {
     }
   }
 
+  invalidatePublicTaskReads();
   const summary = summarize(items);
   return {
     dryRun: false,

@@ -12,6 +12,7 @@ import {
 } from "@/lib/content-access.server";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import {
   hasDocumentGovernanceHistory,
   invalidateDocumentReviewsForDocument,
@@ -584,6 +585,7 @@ export async function createDocument(
     return returnExisting(raced);
   }
 
+  invalidatePublicTaskReads();
   const view = await getDocumentForViewer(
     documentId,
     input.createdByUserId,
@@ -786,6 +788,7 @@ export async function updateDocument(
     });
     await invalidateDocumentReviewsForDocument(tx, current.id);
   });
+  invalidatePublicTaskReads();
 
   const view = await getDocumentForViewer(
     current.id,

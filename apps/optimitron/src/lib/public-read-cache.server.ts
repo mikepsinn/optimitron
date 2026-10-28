@@ -1,0 +1,37 @@
+import { deserialize, serialize } from "node:v8";
+import { unstable_cache, revalidateTag } from "next/cache";
+
+export const PUBLIC_TASK_READ_CACHE_TAG = "public-task-read";
+export const PUBLIC_READ_REVALIDATE_SECONDS = 3600;
+
+/** Cache server-only public read models without converting Dates to strings. */
+export function cachePublicRead<Args extends unknown[], Result>(
+  read: (...args: Args) => Promise<Result>,
+  key: string,
+  tags: string[],
+  revalidate = PUBLIC_READ_REVALIDATE_SECONDS,
+) {
+  const cached = unstable_cache(
+    async (...args: Args) => serialize(await read(...args)).toString("base64"),
+    // V8 serialization is local to a runtime version, unlike the JSON cache envelope.
+    [key, process.versions.v8],
+    { revalidate, tags },
+  );
+  return async (...args: Args): Promise<Result> =>
+    deserialize(Buffer.from(await cached(...args), "base64")) as Result;
+}
+
+export function invalidatePublicTaskReads() {
+  try {
+    revalidateTag(PUBLIC_TASK_READ_CACHE_TAG);
+  } catch (error) {
+    // These helpers also run in CLI maintenance scripts without a Next request.
+    // Those scripts must invalidate the deployed cache separately after writes.
+    if (
+      error instanceof Error &&
+      error.message.includes("static generation store missing")
+    )
+      return;
+    throw error;
+  }
+}

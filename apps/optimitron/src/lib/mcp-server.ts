@@ -1,3 +1,4 @@
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { convertUnit, getUnitDefinition } from "@optimitron/data/unit-conversion";
 /**
  * Shared MCP Server factory for the Optimitron Task System.
@@ -10089,6 +10090,7 @@ export function createMcpServer(
               }
             }
 
+            invalidatePublicTaskReads();
             const fresh = await tasks.getTaskDetailData(task.id, userId, {
               clientAccessBoundary: taskClientBoundary,
             });
@@ -12562,6 +12564,7 @@ export function createMcpServer(
               },
               { maxWait: 10_000, timeout: 60_000 },
             );
+            invalidatePublicTaskReads();
             const fresh = await tasks.getTaskDetailData(task.id, userId, {
               clientAccessBoundary: taskClientBoundary,
             });
@@ -12636,6 +12639,7 @@ export function createMcpServer(
               data: { deletedAt: new Date() },
             });
 
+            invalidatePublicTaskReads();
             return ok({ taskId, deleted: true });
           }
 

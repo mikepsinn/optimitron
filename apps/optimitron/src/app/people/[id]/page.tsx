@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { VOTER_SUFFERING_HOURS_PREVENTED } from "@optimitron/data/parameters";
 import { PersonLifeStatus } from "@optimitron/db/enums";
-import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
@@ -19,9 +18,9 @@ import { getPersonTaskProfileData } from "@/lib/tasks.server";
 import { authOptions } from "@/lib/auth";
 import { getRepresentedLifeStatusLabel } from "@/lib/represented-life-status";
 import {
-  PUBLIC_PERSON_PROFILE_CACHE_TAG,
-  PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
-} from "@/lib/person-profile-cache";
+  getCachedPersonTaskProfileData,
+  getCachedRepresentedPersonProfileData,
+} from "@/lib/public-person-profile.server";
 import {
   humanityVGovernmentLink,
   plaintiffsLink,
@@ -39,24 +38,6 @@ import {
 } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
-const getCachedRepresentedPersonProfileData = unstable_cache(
-  async (id: string) => getRepresentedPersonProfileData(id),
-  ["public-represented-person-profile"],
-  {
-    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
-    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
-  },
-);
-
-const getCachedPersonTaskProfileData = unstable_cache(
-  async (id: string) => getPersonTaskProfileData(id, null),
-  ["public-person-task-profile"],
-  {
-    revalidate: PUBLIC_PERSON_PROFILE_REVALIDATE_SECONDS,
-    tags: [PUBLIC_PERSON_PROFILE_CACHE_TAG],
-  },
-);
-
 type PersonTaskProfileData = NonNullable<
   Awaited<ReturnType<typeof getPersonTaskProfileData>>
 >;
@@ -72,8 +53,8 @@ export async function generateMetadata({
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   const [representedData, data] = await Promise.all([
-    getRepresentedPersonProfileData(id),
-    getPersonTaskProfileData(id, null),
+    getCachedRepresentedPersonProfileData(id),
+    getCachedPersonTaskProfileData(id),
   ]);
 
   if (representedData && (!data || !shouldUseCampaignProfile(data.person))) {

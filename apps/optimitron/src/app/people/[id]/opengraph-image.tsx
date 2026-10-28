@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { PersonLifeStatus } from "@optimitron/db/enums";
 import { headers } from "next/headers";
 import { toAbsoluteOgImageSrc } from "@/lib/og-image";
-import { getRepresentedPersonProfileData } from "@/lib/represented-people.server";
+import { getCachedRepresentedPersonProfileData } from "@/lib/public-person-profile.server";
 import { getRequestSiteOrigin } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -49,7 +49,7 @@ export default async function OGImage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const data = await getRepresentedPersonProfileData(id);
+  const data = await getCachedRepresentedPersonProfileData(id);
 
   if (!data) {
     return new ImageResponse(
