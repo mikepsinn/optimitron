@@ -4,8 +4,10 @@
  * the trigger's `iterationSource` to get records to act on, and fire the
  * trigger once per record.
  *
- * Hit by Vercel cron every 5 min (see vercel.json). New cron-driven
+ * Hit by Vercel cron daily at 10:00 UTC (see vercel.json). New cron-driven
  * triggers are added by writing a TaskTrigger row — no new route needed.
+ * Schedules are caught up since the last successful fire, with up to a
+ * day's delay. Revisit the tick rate before adding time-sensitive triggers.
  *
  * Adding a new iteration shape (e.g. "users-pending-digest") IS a code
  * change in `iteration-sources.ts`. That's the right split: data queries
