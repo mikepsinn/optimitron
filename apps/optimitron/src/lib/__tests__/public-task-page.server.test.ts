@@ -13,6 +13,8 @@ import {
 import { invalidatePublicTaskReads, invalidatePublicTaskReplies, PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
 import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import { getCachedPersonTaskProfileData, getCachedRepresentedPersonProfileData } from "@/lib/public-person-profile.server";
+import { getMemorialAttributionsByGovernment, getMemorialAttributionsForGovernment } from "@/lib/prosecution-data.server";
+import { getLatestAggregateScores } from "@/lib/aggregate-alignment.server";
 
 const readers = vi.hoisted(() => ({
   detail: vi.fn(),
@@ -23,6 +25,8 @@ const readers = vi.hoisted(() => ({
   fundingTarget: vi.fn(),
   personTasks: vi.fn(),
   representedPerson: vi.fn(),
+  memorials: vi.fn(),
+  jurisdiction: vi.fn(),
 }));
 vi.hoisted(async () => {
   const { AsyncLocalStorage } = await import("node:async_hooks");
@@ -47,7 +51,11 @@ vi.mock("@/lib/wishonia.server", () => ({
   getWishoniaUserId: readers.wishonia,
 }));
 vi.mock("@/lib/prisma", () => ({
-  prisma: { taskFundingTarget: { findFirst: readers.fundingTarget } },
+  prisma: {
+    taskFundingTarget: { findFirst: readers.fundingTarget },
+    personMemorial: { findMany: readers.memorials },
+    jurisdiction: { findUnique: readers.jurisdiction },
+  },
 }));
 
 let cache: IncrementalCache;
@@ -190,5 +198,35 @@ describe("anonymous task reads through Next's real persistent cache", () => {
     }));
     cache.resetRequestCache();
     expect((await getPublicTaskPageData("public-task")).commentFeed.comments).toEqual([{ id: "reply" }]);
+  });
+
+  it("serves different country pages from one memorial index and withdraws hidden memorials", async () => {
+    readers.memorials.mockResolvedValue([{
+      id: "memorial-1", deathCountryCode: "US", causeCategory: "ARMED_CONFLICT", civilianStatus: "CIVILIAN",
+      responsibleParties: [{ jurisdiction: { code: "GB" } }],
+      efficacyLagEvidence: [{ interventionApprovalTimeline: { conditionName: "Example condition" } }],
+    }]);
+    expect((await getMemorialAttributionsByGovernment()).US?.memorialDeaths).toBe(1);
+    expect(await getMemorialAttributionsForGovernment("GB")).toMatchObject({
+      attributedMemorialIds: ["memorial-1"], conflictCivilianDeaths: 1, efficacyLagDeaths: 1,
+      topEfficacyLagConditions: [{ conditionName: "Example condition", count: 1 }],
+    });
+    for (let i = 0; i < 100; i++) {
+      cache.resetRequestCache();
+      expect((await getMemorialAttributionsForGovernment(`empty-${i}`)).memorialDeaths).toBe(0);
+    }
+    expect(readers.memorials).toHaveBeenCalledTimes(1);
+    readers.memorials.mockResolvedValue([]);
+    await cache.revalidateTag(PUBLIC_TASK_READ_CACHE_TAG);
+    cache.resetRequestCache();
+    expect((await getMemorialAttributionsForGovernment("GB")).attributedMemorialIds).toEqual([]);
+  });
+
+  it("caches empty aggregate scoreboards between repeated anonymous visits", async () => {
+    readers.jurisdiction.mockResolvedValue(null);
+    expect(await getLatestAggregateScores("US")).toBeNull();
+    cache.resetRequestCache();
+    expect(await getLatestAggregateScores("US")).toBeNull();
+    expect(readers.jurisdiction).toHaveBeenCalledTimes(1);
   });
 });

@@ -7,7 +7,7 @@ import {
 } from "@/lib/person-profile-cache";
 
 // Metadata, page content, and share images must use the same public cache.
-// Keep the existing profile expiration and visibility-change invalidation policy.
+// Visibility changes invalidate immediately; quiet profiles stay warm between crawls.
 export const getCachedRepresentedPersonProfileData = cachePublicRead(
   getRepresentedPersonProfileData,
   "public-represented-person-profile-v2",

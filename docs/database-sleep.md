@@ -16,8 +16,12 @@ funding on every visit. Actual funding balances and supporter walls remain live.
 Checkout and pledge setup invalidate cached target absence after creating the
 first target, so anonymous donors can see its live funding status immediately.
 
-Public person metadata, page content, and share images now reuse the existing
-five-minute profile cache and its visibility invalidation tag.
+Public person metadata, page content, and share images share a 24-hour cache
+and retain the visibility invalidation tag. Public government pages reuse one
+memorial attribution index across all countries, including empty countries.
+Condition memorial totals and aggregate politician scoreboards are cached too.
+Memorial changes, hiding/restoring content, and completed aggregation refresh
+the affected public reads.
 
 Task creation, edits, deletion, comment changes, document edits, MCP edits and
 deletions, imports, and task merges invalidate `public-task-read` after their

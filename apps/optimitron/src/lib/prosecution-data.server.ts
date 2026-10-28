@@ -4,6 +4,32 @@ import {
   PersonDeathCauseCategory,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { cachePublicRead, PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
+import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
+
+// One public index serves every country, including countries with no memorials.
+// Crawling new country URLs must not cause a new database lookup each time.
+const getPublicMemorialAttributionIndex = cachePublicRead(
+  () => prisma.personMemorial.findMany({
+    where: { deletedAt: null, isPublic: true },
+    select: {
+      causeCategory: true,
+      civilianStatus: true,
+      deathCountryCode: true,
+      id: true,
+      efficacyLagEvidence: {
+        where: { deletedAt: null },
+        select: { interventionApprovalTimeline: { select: { conditionName: true } } },
+      },
+      responsibleParties: {
+        where: { deletedAt: null },
+        select: { jurisdiction: { select: { code: true } } },
+      },
+    },
+  }),
+  "public-memorial-attribution-index-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+);
 
 export interface MemorialAttributionSummary {
   /** Total memorial deaths attributed to this government (unique persons). */
@@ -39,25 +65,7 @@ const CONFLICT_CAUSES: PersonDeathCauseCategory[] = [
 export async function getMemorialAttributionsByGovernment(): Promise<
   Record<string, MemorialAttributionSummary>
 > {
-  // Pull every public memorial with the data we need to attribute it.
-  const memorials = await prisma.personMemorial.findMany({
-    where: { deletedAt: null, isPublic: true },
-    select: {
-      causeCategory: true,
-      civilianStatus: true,
-      deathCountryCode: true,
-      id: true,
-      efficacyLagEvidence: {
-        where: { deletedAt: null },
-        select: { id: true },
-        take: 1,
-      },
-      responsibleParties: {
-        where: { deletedAt: null },
-        select: { jurisdiction: { select: { code: true } } },
-      },
-    },
-  });
+  const memorials = await getPublicMemorialAttributionIndex();
 
   const result: Record<string, MemorialAttributionSummary> = {};
 
@@ -99,7 +107,7 @@ export interface ConditionMemorialSummary {
   efficacyLagCount: number;
 }
 
-export async function getMemorialAttributionsForCondition(
+async function readMemorialAttributionsForCondition(
   globalVariableId: string,
 ): Promise<ConditionMemorialSummary> {
   const memorials = await prisma.personMemorial.findMany({
@@ -148,36 +156,10 @@ export async function getMemorialAttributionsForGovernment(
     attributedMemorialIds: string[];
   }
 > {
-  const memorials = await prisma.personMemorial.findMany({
-    where: {
-      deletedAt: null,
-      isPublic: true,
-      OR: [
-        { deathCountryCode: countryCode },
-        {
-          responsibleParties: {
-            some: {
-              deletedAt: null,
-              jurisdiction: { code: countryCode },
-            },
-          },
-        },
-      ],
-    },
-    select: {
-      causeCategory: true,
-      civilianStatus: true,
-      id: true,
-      efficacyLagEvidence: {
-        where: { deletedAt: null },
-        select: {
-          interventionApprovalTimeline: {
-            select: { conditionName: true },
-          },
-        },
-      },
-    },
-  });
+  const memorials = (await getPublicMemorialAttributionIndex()).filter(
+    (memorial) => memorial.deathCountryCode === countryCode ||
+      memorial.responsibleParties.some((party) => party.jurisdiction?.code === countryCode),
+  );
 
   const conditionCounts = new Map<string, number>();
   let efficacyLagDeaths = 0;
@@ -211,3 +193,9 @@ export async function getMemorialAttributionsForGovernment(
     topEfficacyLagConditions,
   };
 }
+
+export const getMemorialAttributionsForCondition = cachePublicRead(
+  readMemorialAttributionsForCondition,
+  "public-condition-memorial-attribution-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+);
