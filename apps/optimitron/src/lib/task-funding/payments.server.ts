@@ -11,6 +11,7 @@ import {
 } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { getTaskPath } from "@/lib/routes";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/url";
@@ -368,6 +369,7 @@ export async function createTaskFundingCheckoutSession(
 
     return { commerceOrder: order, payment: taskPayment };
   });
+  invalidatePublicTaskReads();
 
   const baseUrl = getBaseUrl();
   const stripe = getStripeClient();

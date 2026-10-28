@@ -13,15 +13,18 @@ database failures propagate instead of becoming cached empty content. Server-sid
 serialization preserves Date and BigInt values used by task/profile rendering.
 The absence of a funding target is cached too, so unfunded tasks do not query
 funding on every visit. Actual funding balances and supporter walls remain live.
-New targets created outside task mutations may take up to 24 hours to appear to
-anonymous visitors; signed-in users see them immediately.
+Checkout and pledge setup invalidate cached target absence after creating the
+first target, so anonymous donors can see its live funding status immediately.
 
 Public person metadata, page content, and share images now reuse the existing
 five-minute profile cache and its visibility invalidation tag.
 
 Task creation, edits, deletion, comment changes, document edits, MCP edits and
 deletions, imports, and task merges invalidate `public-task-read` after their
-transaction commits. Other background status changes may take up to 24 hours to
+transaction commits. Imports invalidate committed privacy changes before later
+link work can fail. Wishonia replies run in Next's `after()` lifecycle and use a
+separate reply tag so the original comment's cache flush cannot suppress theirs.
+Other background status changes may take up to 24 hours to
 appear to anonymous visitors; authenticated users still read current data.
 CLI maintenance scripts lack a Next request context and must separately invalidate
 the deployed tag after direct writes. A merge called with an existing transaction

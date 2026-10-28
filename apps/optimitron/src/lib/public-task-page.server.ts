@@ -10,6 +10,7 @@ import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import {
   cachePublicRead,
   PUBLIC_TASK_READ_CACHE_TAG,
+  PUBLIC_TASK_REPLY_CACHE_TAG,
 } from "@/lib/public-read-cache.server";
 
 // Only anonymous read models belong here. Signed-in pages call the live readers.
@@ -69,5 +70,5 @@ export const getPublicTaskPageData = cachePublicRead(
     };
   },
   "public-task-page-v1",
-  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_TASK_REPLY_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
 );

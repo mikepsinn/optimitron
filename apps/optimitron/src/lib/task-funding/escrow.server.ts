@@ -14,6 +14,7 @@ import { sendPledgeDeclineRecoveryEmail } from "@/lib/email/task-funding-pledge-
 import { sendPledgeChargeReceiptEmail } from "@/lib/email/task-funding-pledge-receipt-email";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { withTaskFundingLock } from "@/lib/task-payouts.server";
 import {
@@ -209,6 +210,7 @@ export async function createPledgeCardSetupSession(
     select: { id: true },
   });
 
+  invalidatePublicTaskReads();
   const user = await prisma.user.findFirst({
     where: { deletedAt: null, id: input.userId },
     select: {
