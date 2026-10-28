@@ -26,7 +26,7 @@
 - Join the alliance
 - Joining is free. We show how many people have joined, never their names. We email you only to confirm and, if you ask, to send updates.
 ### Join as an organization
-- Patient groups, clinics, hospitals, research groups and companies can join. We list each one on the members page.
+- Patient groups, clinics, hospitals, research groups and companies can join. We list each one on the members page. To do more, such as running a pilot site, sharing data or funding the work, [partner with us](/contact).
 - Organization
 - Website
 - Logo link (optional)
