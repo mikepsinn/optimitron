@@ -1,3 +1,4 @@
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { createHash } from "node:crypto";
 import { Prisma } from "@optimitron/db";
 import {
@@ -1792,6 +1793,12 @@ export async function importNotionBundle(input: {
     }
   }
 
+  // These entity transactions have already committed, including task privacy
+  // changes. Later link validation can fail, so invalidate before attempting it.
+  if (taskIds.size || personIds.size || organizationIds.size) {
+    invalidatePublicTaskReads();
+  }
+
   const resolveMappedId = async (input: {
     directId?: string | null;
     kind: "collection" | "document" | "organization" | "person" | "task";
@@ -2749,6 +2756,7 @@ export async function importNotionBundle(input: {
     }
   }
 
+  invalidatePublicTaskReads();
   const summary = summarize(items);
   return {
     dryRun: false,

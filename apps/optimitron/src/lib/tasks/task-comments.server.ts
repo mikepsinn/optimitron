@@ -9,6 +9,7 @@ import {
   TaskCommentVisibility,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import {
   TaskCommentAttachmentInputError,
   deleteTaskCommentAttachmentObjects,
@@ -328,6 +329,7 @@ export async function postComment(input: {
     return finalized;
   });
 
+  invalidatePublicTaskReads();
   return result as TaskCommentRow;
 }
 
@@ -365,7 +367,7 @@ export async function voteComment(input: {
     throw new Error("Comment not found");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const existing = await tx.taskCommentVote.findUnique({
       where: {
         commentId_userId: { commentId: input.commentId, userId: input.userId },
@@ -441,6 +443,8 @@ export async function voteComment(input: {
       userVote: (afterVote?.value ?? 0) as 1 | -1 | 0,
     };
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 /**
@@ -497,6 +501,7 @@ export async function deleteComment(input: {
         });
       }
     });
+    invalidatePublicTaskReads();
     if (attachments.length > 0) {
       try {
         await deleteTaskCommentAttachmentObjects(
@@ -537,6 +542,7 @@ export async function deleteComment(input: {
       },
     });
   });
+  invalidatePublicTaskReads();
   if (attachments.length > 0) {
     try {
       await deleteTaskCommentAttachmentObjects(

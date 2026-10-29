@@ -2,6 +2,13 @@ import { createHash } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CollectionFieldType, ContentVisibility } from "@optimitron/db/enums";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
+import { workAsyncStorage, type WorkStore } from "next/dist/server/app-render/work-async-storage.external";
+import { PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
+
+vi.hoisted(async () => {
+  const { AsyncLocalStorage } = await import("node:async_hooks");
+  Object.assign(globalThis, { AsyncLocalStorage });
+});
 
 const mocks = vi.hoisted(() => ({
   assertCollectionAccess: vi.fn(),
@@ -16,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   sourceArtifactFindUnique: vi.fn(),
   sourceArtifactUpsert: vi.fn(),
   taskFindMany: vi.fn(),
+  taskEdgeFindMany: vi.fn(),
   transaction: vi.fn(),
   userFindFirst: vi.fn(),
 }));
@@ -40,6 +48,7 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: mocks.sourceArtifactFindUnique,
     },
     task: { findMany: mocks.taskFindMany },
+    taskEdge: { findMany: mocks.taskEdgeFindMany },
     $transaction: mocks.transaction,
     user: { findFirst: mocks.userFindFirst },
   },
@@ -123,6 +132,7 @@ beforeEach(() => {
   mocks.documentFindMany.mockResolvedValue([]);
   mocks.contentAttachmentFindMany.mockResolvedValue([]);
   mocks.taskFindMany.mockResolvedValue([]);
+  mocks.taskEdgeFindMany.mockResolvedValue([]);
   mocks.personFindMany.mockResolvedValue([]);
   mocks.organizationFindMany.mockResolvedValue([]);
   mocks.sourceArtifactFindMany.mockResolvedValue([]);
@@ -142,6 +152,41 @@ beforeEach(() => {
 });
 
 describe("Notion import review", () => {
+  it("queues invalidation for a committed privacy change even when later link persistence fails", async () => {
+    const task = {
+      id: "imported-task",
+      taskKey: stableSourceKey("task", "task-1"),
+      createdByUserId: "user_1",
+      status: "DRAFT",
+      parentTaskId: null,
+      isPublic: true,
+    };
+    mocks.taskFindMany.mockResolvedValue([task]);
+    mocks.transaction
+      .mockImplementationOnce(async (callback) => callback({
+        task: {
+          findUnique: async () => task,
+          update: async ({ data }: { data: { isPublic: boolean } }) => Object.assign(task, data),
+        },
+        sourceArtifact: {
+          findUnique: mocks.sourceArtifactFindUnique,
+          upsert: mocks.sourceArtifactUpsert,
+        },
+        taskSourceArtifact: { updateMany: async () => ({}), upsert: async () => ({}) },
+      }))
+      .mockRejectedValueOnce(new Error("Link transaction failed"));
+    const store = { incrementalCache: {}, route: "/api/notion/import" } as WorkStore;
+    await expect(workAsyncStorage.run(store, () => importNotionBundle({
+      actorUserId: "user_1",
+      bundle: { workspaceId: "workspace-1", tasks: [{ sourceId: "task-1", title: "Private draft" }] },
+      dryRun: false,
+    }))).rejects.toThrow("Link transaction failed");
+    expect(task.isPublic).toBe(false);
+    // The real Next revalidateTag API must have queued the committed change
+    // for the response's cache flush, even though the import did not return.
+    expect(store.pendingRevalidatedTags).toContain(PUBLIC_TASK_READ_CACHE_TAG);
+  });
+
   it("does not take ownership of active dependencies created elsewhere", () => {
     expect(
       importedDependencyEdgeAction({

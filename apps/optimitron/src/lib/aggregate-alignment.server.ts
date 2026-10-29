@@ -4,6 +4,7 @@ import {
   type AlignmentScore as WishocracyAlignmentScore,
 } from "@optimitron/wishocracy";
 import { prisma } from "@/lib/prisma";
+import { cachePublicRead, invalidatePublicTaskReads, PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
 import { createLogger } from "@/lib/logger";
 import {
   buildCitizenPreferenceSummary,
@@ -250,6 +251,7 @@ export async function computeAggregateAlignmentScores(
     `Persisted ${scoreData.length} alignment scores for aggregation run ${aggregationRun.id}`,
   );
 
+  invalidatePublicTaskReads();
   return {
     aggregationRunId: aggregationRun.id,
     jurisdictionId: jurisdiction.id,
@@ -271,7 +273,7 @@ export async function computeAggregateAlignmentScores(
  * Load the latest aggregate alignment scores for a jurisdiction.
  * Returns null if no aggregate run exists yet.
  */
-export async function getLatestAggregateScores(
+async function readLatestAggregateScores(
   jurisdictionCode: string,
 ): Promise<AggregateScoreData | null> {
   const jurisdiction = await prisma.jurisdiction.findUnique({
@@ -375,3 +377,9 @@ export async function getLatestAggregateScores(
     citizenPriorities,
   };
 }
+
+export const getLatestAggregateScores = cachePublicRead(
+  readLatestAggregateScores,
+  "public-aggregate-alignment-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG],
+);

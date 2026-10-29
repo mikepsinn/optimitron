@@ -1,3 +1,4 @@
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { Prisma } from "@optimitron/db";
 import { upsertTrustedOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
@@ -471,7 +472,7 @@ export async function upsertImportedTaskBundle(
     options?.verifiedByUserId?.trim() ||
     (await getWishoniaUserId());
 
-  return prisma.$transaction(
+  const result = await prisma.$transaction(
     async (tx) => {
       const assigneeOrganization = options?.assigneeOrganizationId?.trim()
         ? await tx.organization.findUniqueOrThrow({
@@ -631,4 +632,6 @@ export async function upsertImportedTaskBundle(
       timeout: 120_000,
     },
   );
+  invalidatePublicTaskReads();
+  return result;
 }

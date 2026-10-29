@@ -39,6 +39,7 @@ import {
   mergeDuplicatePerson,
 } from "./person.server";
 import { prisma } from "./prisma";
+import { invalidatePublicTaskReads } from "./public-read-cache.server";
 import { slugify } from "./slugify";
 import { ensureSubjectForPerson, ensureSubjectForUser } from "./subject.server";
 import {
@@ -531,7 +532,7 @@ export async function upsertMemorialPerson(
   const sourceKey = normalizeSourceKey(data);
   const sourceRef = data.sourceRef ?? sourceKey;
 
-  return db.$transaction(async (tx) => {
+  const result = await db.$transaction(async (tx) => {
     const sourceArtifact =
       !data.sourceArtifactId && (data.sourceUrl || sourceKey)
         ? await upsertSourceArtifact(
@@ -898,6 +899,8 @@ export async function upsertMemorialPerson(
       vote,
     };
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export const addMemorialEvidenceInputSchema = z
@@ -990,7 +993,9 @@ export async function addMemorialResponsibleParty(
   if (!data.name && !data.jurisdictionId && !data.organizationId) {
     throw new Error("name, jurisdictionId, or organizationId is required");
   }
-  return db.personMemorialResponsibleParty.create({ data });
+  const result = await db.personMemorialResponsibleParty.create({ data });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export const reportContentInputSchema = z.object({
@@ -1808,6 +1813,7 @@ export async function runEfficacyLagMatcher(input: { limit?: number } = {}) {
       createdOrUpdated += 1;
     }
   }
+  if (createdOrUpdated) invalidatePublicTaskReads();
   return { matchedEvidenceRows: createdOrUpdated };
 }
 
@@ -1870,21 +1876,27 @@ export async function hideContent(input: {
   targetId: string;
   targetType: string;
 }) {
-  return updateVisibility(input.targetType, input.targetId, false);
+  const result = await updateVisibility(input.targetType, input.targetId, false);
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function restoreContent(input: {
   targetId: string;
   targetType: string;
 }) {
-  return updateVisibility(input.targetType, input.targetId, true);
+  const result = await updateVisibility(input.targetType, input.targetId, true);
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function mergeDuplicatePeople(input: {
   canonicalPersonId: string;
   duplicatePersonId: string;
 }) {
-  return mergeDuplicatePerson(input);
+  const result = await mergeDuplicatePerson(input);
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function resolveContentReport(input: {

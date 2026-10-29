@@ -60,45 +60,15 @@ import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communic
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
-import {
-  canUserManageTask,
-  TASK_NOT_FOUND_MESSAGE,
-} from "@/lib/tasks/task-visibility.server";
+import { canUserManageTask } from "@/lib/tasks/task-visibility.server";
 import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
-
-// The feed/timeline helpers throw the shared "Task not found" for tasks the
-// viewer can't see. The page already renders TaskAccessGate when `data` is
-// null, so swallow ONLY that specific throw into an empty feed — any other
-// rejection (DB error, bug in assertUserCanViewTask) should surface as a 500
-// instead of a silent, indistinguishable "no comments yet".
-const EMPTY_COMMENT_FEED = { comments: [], nextCursor: null, total: 0 };
-
-function isTaskNotFoundError(error: unknown): boolean {
-  return error instanceof Error && error.message === TASK_NOT_FOUND_MESSAGE;
-}
-
-async function getPublicTaskPageData(id: string) {
-  const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
-    getTaskDetailData(id, null),
-    getTaskCommentFeed({
-      taskId: id,
-      sort: "new",
-      limit: 100,
-      currentUserId: null,
-    }).catch((error) => {
-      if (isTaskNotFoundError(error)) return EMPTY_COMMENT_FEED;
-      throw error;
-    }),
-    getTaskActivityTimeline(id, 50, null).catch((error) => {
-      if (isTaskNotFoundError(error)) return [];
-      throw error;
-    }),
-    getTaskAncestors(id, null),
-  ]);
-
-  return { data, commentFeed, activityTimeline, ancestors };
-}
+import {
+  EMPTY_COMMENT_FEED,
+  isTaskNotFoundError,
+  getCachedPublicTaskDetailData,
+  getPublicTaskPageData,
+} from "@/lib/public-task-page.server";
 
 const TASK_DATE_TIME_ZONE = "UTC";
 
@@ -344,7 +314,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const data = await getTaskDetailData(id, null);
+  const data = await getCachedPublicTaskDetailData(id);
 
   if (!data) {
     // Private and nonexistent tasks share one generic, noindexed shell so the
@@ -431,7 +401,7 @@ export default async function TaskDetailPage({
         publicPageData?.data ?? null,
         publicPageData?.commentFeed ?? { comments: [], total: 0 },
         publicPageData?.activityTimeline ?? [],
-        await getWishoniaUserId().catch(() => null),
+        publicPageData?.wishoniaUserId ?? null,
         publicPageData?.ancestors ?? [],
         false,
         null,
@@ -516,7 +486,7 @@ export default async function TaskDetailPage({
     externalActionRequests,
   ] = await Promise.all([
     userId ? canUserManageTask(task.id, userId) : Promise.resolve(false),
-    task.isPublic
+    task.isPublic && (userId || publicPageData?.hasFundingTarget)
       ? getTaskFundingStatus(task.id).catch(() => null)
       : Promise.resolve(null),
     isPaidTask && userId

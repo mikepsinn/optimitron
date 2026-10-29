@@ -18,6 +18,7 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import {
   assertOrganizationCanBePubliclyReferenced,
   upsertTrustedOrganization,
@@ -2324,6 +2325,7 @@ export async function createTask(
     }
   }
 
+  invalidatePublicTaskReads();
   return task;
 }
 
@@ -2361,7 +2363,7 @@ export async function updateTaskCreatedByUser(
     userId: creatorUserId,
   });
 
-  return prisma.$transaction(async (tx) => {
+  const updatedTask = await prisma.$transaction(async (tx) => {
     // Lock the row before reading the archive-eligibility relations so a
     // concurrent claim/execution start (which also locks this row, see
     // claimTask) can't slip in between the read and the write below.
@@ -2534,6 +2536,8 @@ export async function updateTaskCreatedByUser(
       }),
     });
   });
+  invalidatePublicTaskReads();
+  return updatedTask;
 }
 
 // Soft-delete without removing related history. Ordinary users stay inside the
@@ -2584,7 +2588,7 @@ export async function deleteTaskCreatedByUser(
     where: { id: taskId },
     data: { deletedAt: new Date() },
   });
-
+  invalidatePublicTaskReads();
   return { id: taskId, deleted: true };
 }
 

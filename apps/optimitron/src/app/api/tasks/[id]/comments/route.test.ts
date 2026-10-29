@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  after: vi.fn(),
   authorizeOwnerSend: vi.fn(),
   canUserCommentOnTask: vi.fn(),
   canUserViewTask: vi.fn(),
@@ -11,6 +12,11 @@ const mocks = vi.hoisted(() => ({
   postComment: vi.fn(),
   generateAndPostWishoniaReply: vi.fn(),
   notifyTaskCommentRecipients: vi.fn(),
+}));
+
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/server")>()),
+  after: mocks.after,
 }));
 
 vi.mock("@/lib/email/outbound-authorization.server", () => ({

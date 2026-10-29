@@ -1045,6 +1045,15 @@ function loadDocumentReviewRoutes(): VisualRouteSpec[] {
 
   return [
     {
+      // The local fixture manager is public so this exercises anonymous caching.
+      covers: ["apps/optimitron/src/app/people/[id]/page.tsx"],
+      name: "public-person-profile",
+      path: "/people/visual_document_review_manager_person",
+      required: true,
+      requiredSelector: "h1",
+      requiredText: /^Ada Reviewer$/,
+    },
+    {
       authenticated: true,
       covers: [
         TASK_DETAIL_PAGE_FILE,

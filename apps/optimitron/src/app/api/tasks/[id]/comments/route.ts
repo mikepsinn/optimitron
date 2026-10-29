@@ -3,7 +3,8 @@
  * POST /api/tasks/[id]/comments — auth required, rate-limited, background-fires Wishonia reply
  */
 
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { invalidatePublicTaskReplies } from "@/lib/public-read-cache.server";
 import { getCurrentUser, getTaskRequestIdentity } from "@/lib/auth-utils";
 import { authorizeOwnerSend } from "@/lib/email/outbound-authorization.server";
 import { prisma } from "@/lib/prisma";
@@ -235,6 +236,9 @@ export async function POST(
     // a final comment object once posted.
     const acceptHeader = request.headers.get("accept") ?? "";
     if (acceptHeader.includes("application/x-ndjson")) {
+      // after() runs once the stream closes, after the reply has committed,
+      // and flushes this tag separately from the original comment's tag.
+      after(() => invalidatePublicTaskReplies());
       return streamCommentResponse({
         taskId,
         comment,
@@ -246,11 +250,14 @@ export async function POST(
     // Non-streaming clients (MCP, curl, older browsers): background-fire
     // Wishonia reply so the user's comment returns immediately.
     if (message) {
-      void generateAndPostWishoniaReply({
-        taskId,
-        parentCommentId: comment.id,
-        userComment: message,
-        userCommentAuthorId: currentUser.id,
+      after(async () => {
+        await generateAndPostWishoniaReply({
+          taskId,
+          parentCommentId: comment.id,
+          userComment: message,
+          userCommentAuthorId: currentUser.id,
+        });
+        invalidatePublicTaskReplies();
       });
     }
 

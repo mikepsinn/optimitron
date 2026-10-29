@@ -1,3 +1,4 @@
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import {
   TaskExecutionAttemptStatus,
   TaskStatus,
@@ -1006,10 +1007,12 @@ export async function mergeTask(
   db: DbClient = prisma,
 ): Promise<MergeTaskReport> {
   if ("$transaction" in db) {
-    return db.$transaction((tx) => mergeTaskInClient(input, tx), {
+    const result = await db.$transaction((tx) => mergeTaskInClient(input, tx), {
       maxWait: 10_000,
       timeout: 60_000,
     });
+    invalidatePublicTaskReads();
+    return result;
   }
   return mergeTaskInClient(input, db);
 }
