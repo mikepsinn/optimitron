@@ -7,7 +7,7 @@ import type { FormEvent, ReactNode, RefObject } from "react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
 import { Input } from "@optimitron/neobrutalist-ui/ui/input"
 
-import { ORGANIZATION_STATES, SUPPORTER_STATES, US } from "@/lib/support-options"
+import { ORGANIZATION_STATES, SUPPORTER_STATES, US, type SupporterSource } from "@/lib/support-options"
 
 type SubmissionState =
   | { status: "idle" }
@@ -136,21 +136,25 @@ function Done({ confirmation, title, children }: { confirmation: RefObject<HTMLD
   )
 }
 
-/** A person joins the alliance. They count once they click the link in the confirmation email. */
-export function SupporterForm({ countries }: { countries: readonly CountryOption[] }) {
+/**
+ * A person joins the alliance. They count once they click the link in the confirmation email.
+ * From /open-letter the same sign-up also records a signature on the letter.
+ */
+export function SupporterForm({ countries, source = "support" }: { countries: readonly CountryOption[]; source?: SupporterSource }) {
   const { submission, submit, confirmation } = useSubmission("/api/support")
   const [updates, setUpdates] = useState(true)
+  const signsLetter = source === "open-letter"
 
   if (submission.status === "success") {
     return (
       <Done confirmation={confirmation} title="Check your email">
-        We sent a link to {submission.fields.email}. You join once you click it.
+        We sent a link to {submission.fields.email}. {signsLetter ? "Your signature counts" : "You join"} once you click it.
       </Done>
     )
   }
 
   return (
-    <form onSubmit={event => submit(event, { updates })} className={`${card} space-y-6`}>
+    <form onSubmit={event => submit(event, { updates, source })} className={`${card} space-y-6`}>
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="First name"><Input name="firstName" autoComplete="given-name" maxLength={80} required className="h-11" /></Field>
         <Field label="Last name"><Input name="lastName" autoComplete="family-name" maxLength={80} required className="h-11" /></Field>
@@ -164,8 +168,13 @@ export function SupporterForm({ countries }: { countries: readonly CountryOption
           className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]" />
         <span>Email me occasional updates.</span>
       </label>
-      <Footer submission={submission} label="Join the alliance"
-        note="Joining is free. We show how many people have joined, never their names. We email you only to confirm and, if you ask, to send updates." />
+      {signsLetter ? (
+        <Footer submission={submission} label="Sign the letter"
+          note="Signing also makes you a member of the alliance. We show how many people have joined, never their names. We email you only to confirm and, if you ask, to send updates." />
+      ) : (
+        <Footer submission={submission} label="Join the alliance"
+          note="Joining is free. We show how many people have joined, never their names. We email you only to confirm and, if you ask, to send updates." />
+      )}
     </form>
   )
 }

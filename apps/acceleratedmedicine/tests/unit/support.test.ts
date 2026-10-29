@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { approveOrganization, confirmSupporter, organizationSchema, sendOrganizationEndorsement, supporterSchema } from "../../lib/support";
+import { approveOrganization, confirmSupporter, organizationSchema, sendOrganizationEndorsement, sendSupporterSignup, supporterSchema } from "../../lib/support";
 import { signSupportLink, verifySupportLink } from "../../lib/support-links";
 import { countConfirmedPeople, listApprovedOrganizations, toOrganization, toSupporter, type StoredOrganization, type StoredSupporter } from "../../lib/support-store";
 
@@ -15,6 +15,7 @@ const supporter: StoredSupporter = {
   countryCode: "US",
   state: "Illinois",
   updates: true,
+  source: "support",
 };
 const organization: StoredOrganization = {
   id: "org_1",
@@ -230,5 +231,25 @@ describe("an endorsement alert", () => {
     const link = new URL(alert!.text.match(/https:\/\/acceleratedmedicine\.org\/support\/approve\S+/)![0]);
     expect(link.searchParams.get("s")).toBe("org_9");
     expect(verifySupportLink("approve-organization", "org_9", link.searchParams.get("t")!)).toBe(true);
+  });
+
+  it("stores an open-letter signature as such and asks the signer to confirm the letter", async () => {
+    const store = vi.fn(async () => ({ submissionId: "sub_9" }));
+    await sendSupporterSignup(
+      {
+        submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
+        firstName: "Ada",
+        lastName: "Lovelace",
+        email: "ada@example.com",
+        countryCode: "US",
+        state: "Illinois",
+        source: "open-letter",
+      },
+      { clientKey: "0".repeat(64), store },
+    );
+    expect(store.mock.calls[0]![0]).toMatchObject({ source: "open-letter" });
+    expect(sent[0]).toMatchObject({ to: "ada@example.com", subject: "Confirm your signature on the open letter" });
+
+    expect(toSupporter({ id: "old_4", values: { firstName: "Bo", email: "bo@example.com", countryCode: "DE" } }).source).toBe("support");
   });
 });

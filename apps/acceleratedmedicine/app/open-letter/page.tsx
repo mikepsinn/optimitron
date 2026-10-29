@@ -82,7 +82,7 @@ export default function OpenLetterPage() {
             care-integrated clinical trials.
           </SectionHeading>
           <div className="mt-6">
-            <SupporterForm countries={COUNTRY_OPTIONS} />
+            <SupporterForm countries={COUNTRY_OPTIONS} source="open-letter" />
           </div>
         </section>
       </article>
