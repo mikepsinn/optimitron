@@ -63,6 +63,7 @@ export const ROUTES = {
   fixAi: '/fix-ai',
   employees: '/employees',
   signatories: '/signatories',
+  openLetter: '/open-letter',
   join: '/join',
   coalition: '/coalition',
   campaign: '/campaign',

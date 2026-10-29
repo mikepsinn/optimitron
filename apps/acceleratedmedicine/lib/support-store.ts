@@ -6,7 +6,16 @@ import { storeFormSubmission, type StoredForm } from "@/lib/form-submission-stor
 import { prisma } from "@/lib/prisma"
 import type { OrganizationInput, SupporterInput } from "@/lib/support"
 import type { SupportLinkAction } from "@/lib/support-links"
-import { COUNTRY_CODES, ORGANIZATION_STATES, OUTSIDE_US, SUPPORTER_STATES, US, fullName } from "@/lib/support-options"
+import {
+  COUNTRY_CODES,
+  ORGANIZATION_STATES,
+  OUTSIDE_US,
+  SUPPORTER_SOURCES,
+  SUPPORTER_STATES,
+  US,
+  fullName,
+  type SupporterSource,
+} from "@/lib/support-options"
 
 const supporterForm: StoredForm = {
   sourceKey: "acceleratedmedicine:supporter",
@@ -20,6 +29,8 @@ const supporterForm: StoredForm = {
     // Required in the US only, so the field itself is optional.
     { key: "state", prompt: "State", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: SUPPORTER_STATES },
     { key: "updates", prompt: "Send occasional updates", type: FormFieldType.BOOLEAN, required: true },
+    // Sign-ups from before this field came from /support.
+    { key: "source", prompt: "Joined from", type: FormFieldType.SINGLE_SELECT, required: false, optionsJson: SUPPORTER_SOURCES },
   ],
 }
 
@@ -66,6 +77,7 @@ export function storeSupporter(input: SupporterInput, submissionKey: string, cli
       countryCode: input.countryCode,
       state: input.state,
       updates: input.updates,
+      source: input.source,
     },
     submissionKey,
     clientKey,
@@ -140,6 +152,7 @@ export interface StoredSupporter {
   /** A US state, or "" outside the US. */
   state: string
   updates: boolean
+  source: SupporterSource
 }
 
 export interface StoredOrganization {
@@ -177,6 +190,7 @@ export const toSupporter = ({ id, values }: { id: string; values: StoredValues }
     email: text(values.email),
     ...readPlace(values),
     updates: values.updates === true,
+    source: values.source === "open-letter" ? "open-letter" : "support",
   }
 }
 

@@ -72,6 +72,7 @@ export const appNavigation: {
       label: "Support",
       resolvedItems: [
         { id: "support", label: "Join the alliance", path: "/support" },
+        { id: "openLetter", label: "Sign the open letter", path: "/open-letter" },
         { id: "supporters", label: "Alliance members", path: "/supporters", feature: "supporters" },
         donate,
         { id: "partner", label: "Partner with us", path: "/contact" },

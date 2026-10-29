@@ -4,7 +4,16 @@ import { z } from "zod"
 import { escapeHtml } from "@/lib/escape-html"
 import { ALLIANCE, SITE } from "@/lib/site-settings"
 import { supportLinkUrl, verifySupportLink } from "@/lib/support-links"
-import { COUNTRY_CODES, ORGANIZATION_STATES, SUPPORTER_STATES, US, fullName, placeLabel } from "@/lib/support-options"
+import {
+  COUNTRY_CODES,
+  ORGANIZATION_STATES,
+  SUPPORTER_SOURCES,
+  SUPPORTER_STATES,
+  US,
+  fullName,
+  placeLabel,
+  type SupporterSource,
+} from "@/lib/support-options"
 import {
   getOrganization,
   getSupporter,
@@ -56,6 +65,7 @@ export const supporterSchema = z.object({
   countryCode: z.enum(COUNTRY_CODES),
   state: z.string().trim().max(80).optional().default(""),
   updates: z.boolean().default(false),
+  source: z.enum(SUPPORTER_SOURCES).default("support"),
   companyWebsite: honeypot,
 }).superRefine(withState(SUPPORTER_STATES)).transform(dropStateOutsideUs)
 
@@ -82,12 +92,16 @@ function emailClient() {
   return { resend: new Resend(apiKey), from: `${ALLIANCE} <${fromAddress}>` }
 }
 
-export function buildSupporterConfirmation(name: string, confirmUrl: string) {
-  const subject = `Confirm you're joining the ${ALLIANCE}`
+export function buildSupporterConfirmation(name: string, confirmUrl: string, source: SupporterSource = "support") {
+  const signsLetter = source === "open-letter"
+  const subject = signsLetter ? "Confirm your signature on the open letter" : `Confirm you're joining the ${ALLIANCE}`
+  const lead = signsLetter
+    ? `Confirm that you're signing the open letter for care-integrated clinical trials. Your signature also makes you a member of the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.`
+    : `Confirm that you're joining the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.`
   const text = [
     `Hi ${name},`,
     "",
-    `Confirm that you're joining the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.`,
+    lead,
     "",
     confirmUrl,
     "",
@@ -98,7 +112,7 @@ export function buildSupporterConfirmation(name: string, confirmUrl: string) {
   const html = `
     <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
       <p>Hi ${escapeHtml(name)},</p>
-      <p>Confirm that you're joining the ${ALLIANCE}: people and organizations who agree that every patient should be able to join clinical trials of the most promising treatments, through their own doctor, with every result published.</p>
+      <p>${escapeHtml(lead)}</p>
       <p><a href="${escapeHtml(confirmUrl)}" style="display:inline-block;background:#6d4aff;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Confirm</a></p>
       <p style="color:#666">If you did not sign up, ignore this email and nothing will be recorded.</p>
       ${SIGNATURE_HTML}
@@ -140,8 +154,10 @@ function buildSupporterConfirmedAlert(supporter: StoredSupporter) {
     ["Email", supporter.email],
     ["Where", placeLabel(supporter)],
     ["Wants updates", supporter.updates ? "Yes" : "No"],
+    ["Signed the open letter", supporter.source === "open-letter" ? "Yes" : "No"],
   ]
-  const subject = `[Member] ${supporter.name} (${placeLabel(supporter)}) confirmed`
+  const tag = supporter.source === "open-letter" ? "Open letter" : "Member"
+  const subject = `[${tag}] ${supporter.name} (${placeLabel(supporter)}) confirmed`
   const text = [...rows.map(([label, value]) => `${label}: ${value}`), "", "Reply to this email to write to them."].join("\n")
   const html = `
     <h1>Member confirmed</h1>
@@ -189,7 +205,7 @@ export async function sendSupporterSignup(
   }
   const { submissionId } = await (options.store ?? storeSupporter)(input, input.submissionKey, options.clientKey)
   const result = await email.resend.emails.send(
-    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.firstName, supportLinkUrl("confirm-supporter", submissionId)) },
+    { from: email.from, to: input.email, replyTo: INBOX, ...buildSupporterConfirmation(input.firstName, supportLinkUrl("confirm-supporter", submissionId), input.source) },
     { idempotencyKey: `supporter-confirmation/${submissionId}` },
   )
   if (result.error || !result.data?.id) {

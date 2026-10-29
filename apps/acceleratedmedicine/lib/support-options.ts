@@ -9,6 +9,10 @@ export const OUTSIDE_US = "Outside the United States"
 
 export const US = "US"
 
+/** The page a person joined from. Signing the open letter also makes them an alliance member. */
+export const SUPPORTER_SOURCES = ["support", "open-letter"] as const
+export type SupporterSource = (typeof SUPPORTER_SOURCES)[number]
+
 // Washington, D.C. is not a state, but people and organizations there need a choice too.
 const stateNames: string[] = [...US_STATES.map(([name]) => name), "District of Columbia"].sort((a, b) => a.localeCompare(b, "en"))
 
