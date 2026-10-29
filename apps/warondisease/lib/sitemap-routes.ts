@@ -22,7 +22,6 @@ export const PUBLIC_CAMPAIGN_ROUTES = [
   ROUTES.love,
   ROUTES.mcp,
   ROUTES.missions,
-  ROUTES.openLetter,
   ROUTES.poster,
   ROUTES.privacy,
   ROUTES.research,
