@@ -3,13 +3,15 @@ import type { Metadata } from "next"
 import { AcceleratedMedicinePage } from "@/components/accelerated-medicine-chrome"
 import { SectionHeading } from "@/components/section-heading"
 import { SupporterForm } from "@/components/support-forms"
+import { rightToTrialMetadata } from "@/lib/right-to-trial-metadata"
 import { COUNTRY_OPTIONS } from "@/lib/support-options"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = rightToTrialMetadata({
   title: "Open Letter: Universal Care-Integrated Clinical Trials",
   description:
     "Sign the open letter calling for every patient to have the right and practical ability to join clinical trials through ordinary care.",
-}
+  path: "/open-letter",
+})
 
 export default function OpenLetterPage() {
   return (
