@@ -41,6 +41,13 @@ export const appNavigation: AppNavigation = {
           "requiresScrollHandler": true
         },
         {
+          "id": "openLetter",
+          "label": "Sign the Open Letter",
+          "path": "/open-letter",
+          "description": "Sign the open letter calling for universal care-integrated clinical trials",
+          "emoji": "✍️"
+        },
+        {
           "id": "plaintiffs",
           "label": "Register a Plaintiff",
           "path": "https://courtofhumanity.org/plaintiffs",
