@@ -203,9 +203,9 @@ async function extractPage(
   //  2. domcontentloaded fires before <head> meta tags hydrate, so the
   //     metadata extraction returns null for every field.
   //  3. Heavy pages (large datasets, many DB queries) get ERR_CONNECTION_RESET,
-  //     ERR_ABORTED, or never reach networkidle (continuous background polling).
-  //     Strategy: retry connection errors after a pause; on final retry fall back
-  //     to "load" so we capture rendered content even if requests keep running.
+  //     ERR_ABORTED, or keep media/background requests open after rendering.
+  //     Match visual capture navigation: wait for the document and allow a
+  //     bounded load wait, then enforce the loader/metadata checks below.
   const isRetryableNavError = (err: unknown): boolean => {
     const msg = err instanceof Error ? err.message : String(err);
     return (
@@ -216,13 +216,13 @@ async function extractPage(
       msg.includes("Timeout")
     );
   };
-  const tryExtract = async (
-    settleMs: number,
-    waitUntil: "networkidle" | "load" = "networkidle",
-  ) => {
+  const tryExtract = async (settleMs: number) => {
     const response = await page.goto(`${BASE}${route}`, {
-      waitUntil,
+      waitUntil: "domcontentloaded",
       timeout: 60000,
+    });
+    await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {
+      // Open subresources must not prevent capture of the rendered document.
     });
     const status = response?.status() ?? null;
     const redirectedFromRequest = response?.request().redirectedFrom();
@@ -239,13 +239,8 @@ async function extractPage(
   let navResult: Awaited<ReturnType<typeof tryExtract>>;
   const NAV_RETRIES = 2;
   for (let attempt = 0; ; attempt++) {
-    // Final retry: fall back to "load" for pages that never reach networkidle.
-    const waitUntil = attempt === NAV_RETRIES ? "load" : "networkidle";
     try {
-      navResult = await tryExtract(
-        attempt === NAV_RETRIES ? 2000 : 400,
-        waitUntil,
-      );
+      navResult = await tryExtract(attempt === NAV_RETRIES ? 2000 : 400);
       break;
     } catch (err) {
       if (isRetryableNavError(err) && attempt < NAV_RETRIES) {
