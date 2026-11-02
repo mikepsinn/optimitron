@@ -15,7 +15,7 @@
 
 - DEVELOPERS
 ## MCP TOOL REFERENCE
-- Every tool the Optimitron MCP server exposes — 164 tools (33 admin-gated) — generated from the same registry the live server enforces, so this page cannot drift from reality. The machine-readable version is [/api/mcp/tools](/api/mcp/tools); connection instructions live at [/mcp](/mcp).
+- Every tool the Optimitron MCP server exposes — 163 tools (33 admin-gated) — generated from the same registry the live server enforces, so this page cannot drift from reality. The machine-readable version is [/api/mcp/tools](/api/mcp/tools); connection instructions live at [/mcp](/mcp).
 - Each tool is listed once, under its primary scope; many accept more than one scope, so the badges on a tool name every scope that can call it.
 ### OAUTH SCOPES
 ### PUBLIC (NO SCOPE) (15)
@@ -119,7 +119,7 @@
 - limit (number) — Max results to return (default 20, max 100)
 - visibility (enum) — Which tasks to search: 'all' = public + your private work (default when signed in), 'public' = public only (default for anonymous callers), 'private' = only your non-public tasks.
 - status (enum) — Optional status filter to narrow dependency candidates.
-### TASKS:PERSONAL (91)
+### TASKS:PERSONAL (90)
 #### recordMeasurement tasks:personal
 - Record an ad hoc personal dFDA/N-of-1 measurement. To answer, correct, or snooze a due or overdue notification, use respondToTrackingReminderNotifications instead. recordMeasurement does not mark notifications answered. Supported measurements include a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable. Pass value in the supplied unit, or your personal default when omitted. The server preserves the entered value and converts it to the canonical unit. One-time unit choices do not change personal defaults.
 - PARAMETERS (15)
@@ -534,10 +534,6 @@
 - Fire a TaskTrigger manually with arbitrary context. Use dryRun:true to render templates and return the planned spawn without committing — critical for iterating on a template before it goes live. Without dryRun: writes are committed and idempotent (re-firing the same idempotencyKey returns the cached result).
 - context (object, required) — Arbitrary event context. Templates and resolvers read from this.
 - dryRun (boolean) — Default false. True = render-only, no writes.
-#### importNotionBundle tasks:personal or tasks:admin
-- Validate and import a lossless Notion export bundle. Dry-run is the default; set dryRun to false only after reviewing the returned create, update, unchanged, and error items. Imported tasks remain private drafts, and formula or rollup definitions are preserved without execution.
-- bundle (object, required)
-- dryRun (boolean)
 #### createCollection tasks:personal or tasks:admin
 - Create a private structured collection with stable fields. Formula and rollup fields preserve imported definitions and outputs but are not executed.
 - name (string, required)
@@ -1016,7 +1012,7 @@
 - Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused.
 - taskId (string, required) — Task ID to attach impact to
 - frameKey (enum) — Time horizon for evaluation (default: FIVE_YEAR)
-- frame (object) — Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; for Notion imports use P(success) * Value.
+- frame (object) — Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; calculate it as P(success) * Value.
 - metrics (array) — Custom impact metrics (lives lost, taxpayer cost, suffering hours, etc.)
 - assumptions (array) — Human-readable assumptions, including probability gates and why subjective values are plausible
 - sourceUrls (array) — Sources/citations for the value, probability, deadline, or conversion assumptions

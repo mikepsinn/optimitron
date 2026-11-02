@@ -121,8 +121,7 @@ remaining work while preserving this dependency order:
 
 ## Later
 
-- Connect the implemented lossless Notion bundle importer (OPT-INTG-01) to
-  Notion OAuth/API and add Google Calendar import (OPT-INTG-02) after
+- Add Google Calendar import (OPT-INTG-02) after
   companion-loop stages 1–2 prove the queue. Documents and table collections
   already ship as OPT-CONTENT-01; formula execution, block collaboration, and
   generic automations wait for a concrete migrated workflow.

@@ -5343,7 +5343,7 @@
           },
           "frame": {
             "type": "object",
-            "description": "Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; for Notion imports use P(success) * Value.",
+            "description": "Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; calculate it as P(success) * Value.",
             "properties": {
               "evaluationHorizonYears": {
                 "type": "number",
@@ -6989,31 +6989,6 @@
         ]
       },
       "name": "fireTaskTrigger",
-      "requiredScopes": [
-        "tasks:personal",
-        "tasks:admin"
-      ]
-    },
-    {
-      "adminOnly": false,
-      "description": "Validate and import a lossless Notion export bundle. Dry-run is the default; set dryRun to false only after reviewing the returned create, update, unchanged, and error items. Imported tasks remain private drafts, and formula or rollup definitions are preserved without execution.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "bundle": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "dryRun": {
-            "type": "boolean",
-            "default": true
-          }
-        },
-        "required": [
-          "bundle"
-        ]
-      },
-      "name": "importNotionBundle",
       "requiredScopes": [
         "tasks:personal",
         "tasks:admin"
