@@ -361,21 +361,12 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Acceptance:** An agent proposing an externally-visible action (send email, spend money) blocks until the owner approves the concrete action; approval and execution are auditable.
 - **Roadmap:** now — companion loop stage 4
 
-### OPT-INTG-01 — Notion import
-
-- **Layer:** personal
-- **Status:** partial
-- **Summary:** Lossless normalized Notion bundles dry-run and idempotently import pages, databases, records, views, private files, people, organizations, and draft tasks with workspace-scoped source keys and source artifacts. Formula and rollup definitions plus current outputs are preserved but not executed. A live Notion API client/OAuth connection is still absent.
-- **Evidence:** apps/optimitron/src/lib/notion-import.schema.ts; apps/optimitron/src/lib/notion-import.server.ts; apps/optimitron/scripts/import-notion-bundle.ts; apps/optimitron/src/lib/**tests**/fixtures/notion-operational-workspaces.ts; @notionhq/client absent from every package.json
-- **Acceptance:** Connecting a Notion workspace yields deduplicated task-import proposals that update on source edits.
-- **Roadmap:** foundation implemented; live connector later
-
 ### OPT-INTG-03 — Reviewed private conversation-to-work ingestion
 
 - **Layer:** personal / organization
 - **Status:** planned
 - **Summary:** A channel-neutral reviewed import path for explicitly selected Discord, Telegram, WhatsApp, email, Slack, meeting-note, Notion-comment, and GitHub-discussion context. Raw private text is local by default; the server retains safe hashes, anchors, approved excerpts, candidates, and provenance.
-- **Evidence:** reusable `SourceArtifact`/`TaskSourceArtifact`, proposal-bundle, and Notion-import foundations; approved contract in docs/plans/phased-approach-optimitron.md; no safe private-source ownership or channel importer currently ships
+- **Evidence:** reusable `SourceArtifact`/`TaskSourceArtifact` and proposal-bundle foundations; approved contract in docs/plans/phased-approach-optimitron.md; no safe private-source ownership or channel importer currently ships
 - **Acceptance:** Review/apply is hash-sealed, idempotent, atomic, private, source-linked, and creates every grounded nonduplicate action as `ACTIVE`; duplicates gain links, ambiguity gains clarification tasks, and unreviewed text never leaves the device.
 - **Roadmap:** now — after OPT-TASK-08 authorization and roots
 

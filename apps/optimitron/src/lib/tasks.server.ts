@@ -18,7 +18,8 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
-import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
+import { cachePublicRead, invalidatePublicTaskReads, PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_TASK_REVALIDATE_SECONDS } from "@/lib/public-read-cache.server";
+import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import {
   assertOrganizationCanBePubliclyReferenced,
   upsertTrustedOrganization,
@@ -1526,7 +1527,25 @@ async function nullInaccessibleParentTasks<
   );
 }
 
-export async function getTasksPageData(
+const getAnonymousTasksPageData = cachePublicRead(
+  () => readTasksPageData(null),
+  "public-tasks-list-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  PUBLIC_TASK_REVALIDATE_SECONDS,
+);
+
+export function getTasksPageData(
+  userId?: string | null,
+  options?: { frameKey?: TaskImpactFrameKey | string | null },
+) {
+  // Personalized and custom-frame readers retain their live behavior. The
+  // common anonymous list is shared by /tasks, /fund and the service counter.
+  return !userId && !options?.frameKey
+    ? getAnonymousTasksPageData()
+    : readTasksPageData(userId, options);
+}
+
+async function readTasksPageData(
   userId?: string | null,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
@@ -2880,7 +2899,7 @@ export async function completeSelfTask(
 }
 
 export async function claimTask(taskId: string, userId: string) {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const actor = await tx.user.findUnique({
       where: { id: userId },
       select: { personId: true },
@@ -2998,6 +3017,8 @@ export async function claimTask(taskId: string, userId: string) {
       },
     });
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function completeTaskClaim(
@@ -3052,7 +3073,7 @@ export async function completeTaskClaim(
     throw new Error("The task is no longer active.");
   }
 
-  return prisma.taskClaim.update({
+  const completedClaim = await prisma.taskClaim.update({
     where: { id: claim.id },
     data: {
       actualCashCostUsd: actuals?.actualCashCostUsd ?? null,
@@ -3063,6 +3084,8 @@ export async function completeTaskClaim(
       status: TaskClaimStatus.COMPLETED,
     },
   });
+  invalidatePublicTaskReads();
+  return completedClaim;
 }
 
 /**
@@ -3113,7 +3136,7 @@ export async function completeTaskForUser(
 
 /** Release an active claim while retaining its history for accountability. */
 export async function abandonTaskClaim(taskId: string, userId: string) {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const claim = await tx.taskClaim.findFirst({
       where: { deletedAt: null, taskId, userId },
       select: {
@@ -3163,6 +3186,8 @@ export async function abandonTaskClaim(taskId: string, userId: string) {
       },
     });
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function verifyTask(
@@ -3288,6 +3313,8 @@ export async function verifyTask(
     };
   });
 
+  // The commit succeeded even if a later reward/payout side effect fails.
+  invalidatePublicTaskReads();
   if (result.rewardUserId && result.rewardKey) {
     await grantWishes({
       dedupeKey: result.rewardKey,
@@ -3387,7 +3414,7 @@ export async function reassignTask(
           roleTitle: input.roleTitle ?? null,
         });
 
-  return prisma.task.update({
+  const reassignedTask = await prisma.task.update({
     where: { id: taskId },
     data: {
       assigneeOrganizationId: assigneeOrganization?.id ?? null,
@@ -3400,4 +3427,6 @@ export async function reassignTask(
       roleTitle: input.roleTitle ?? null,
     },
   });
+  invalidatePublicTaskReads();
+  return reassignedTask;
 }

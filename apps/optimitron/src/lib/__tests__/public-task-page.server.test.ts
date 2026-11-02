@@ -10,7 +10,7 @@ import {
   getCachedPublicTaskDetailData,
   getPublicTaskPageData,
 } from "@/lib/public-task-page.server";
-import { invalidatePublicTaskReads, invalidatePublicTaskReplies, PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
+import { cachePublicRead, invalidatePublicTaskReads, invalidatePublicTaskReplies, PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
 import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import { getCachedPersonTaskProfileData, getCachedRepresentedPersonProfileData } from "@/lib/public-person-profile.server";
 import { getMemorialAttributionsByGovernment, getMemorialAttributionsForGovernment } from "@/lib/prosecution-data.server";
@@ -27,6 +27,7 @@ const readers = vi.hoisted(() => ({
   representedPerson: vi.fn(),
   memorials: vi.fn(),
   jurisdiction: vi.fn(),
+  taskIds: vi.fn(),
 }));
 vi.hoisted(async () => {
   const { AsyncLocalStorage } = await import("node:async_hooks");
@@ -46,12 +47,14 @@ vi.mock("@/lib/tasks/task-comments.server", () => ({
 }));
 vi.mock("@/lib/tasks/task-visibility.server", () => ({
   TASK_NOT_FOUND_MESSAGE: "Task not found",
+  getTaskVisibilityWhere: () => ({ deletedAt: null, isPublic: true }),
 }));
 vi.mock("@/lib/wishonia.server", () => ({
   getWishoniaUserId: readers.wishonia,
 }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    task: { findMany: readers.taskIds },
     taskFundingTarget: { findFirst: readers.fundingTarget },
     personMemorial: { findMany: readers.memorials },
     jurisdiction: { findUnique: readers.jurisdiction },
@@ -101,9 +104,34 @@ beforeEach(() => {
   readers.activity.mockResolvedValue([]);
   readers.wishonia.mockResolvedValue("wishonia");
   readers.fundingTarget.mockResolvedValue(null);
+  readers.taskIds.mockResolvedValue([{ id: "public-task" }, { id: "another-task" }]);
 });
 
 describe("anonymous task reads through Next's real persistent cache", () => {
+  it("rejects many missing or private task IDs without detail, feed or ancestry queries", async () => {
+    for (let i = 0; i < 100; i++) {
+      cache.resetRequestCache();
+      expect(await getCachedPublicTaskDetailData(`unknown-${i}`)).toBeNull();
+      expect((await getPublicTaskPageData(`unknown-${i}`)).data).toBeNull();
+    }
+    expect(readers.taskIds).toHaveBeenCalledTimes(1);
+    for (const reader of [readers.detail, readers.ancestors, readers.comments, readers.activity, readers.fundingTarget])
+      expect(reader).not.toHaveBeenCalled();
+    readers.taskIds.mockResolvedValue([{ id: "unknown-1" }]);
+    await cache.revalidateTag(PUBLIC_TASK_READ_CACHE_TAG);
+    expect((await getPublicTaskPageData("unknown-1")).data?.task.id).toBe("unknown-1");
+  });
+
+  it("compresses large public read models so the data cache can retain them", async () => {
+    const model = { description: "Public task description. ".repeat(150_000), createdAt: new Date("2026-01-01"), amount: 42n };
+    const read = vi.fn().mockResolvedValue(model);
+    const cached = cachePublicRead(read, "large-model", [PUBLIC_TASK_READ_CACHE_TAG]);
+    expect(await cached()).toEqual(model);
+    cache.resetRequestCache();
+    expect(await cached()).toEqual(model);
+    expect(read).toHaveBeenCalledTimes(1);
+  });
+
   it("shares metadata and page reads across requests while preserving Dates and BigInts", async () => {
     const metadata = await getCachedPublicTaskDetailData("public-task");
     const first = await getPublicTaskPageData("public-task");
@@ -126,6 +154,7 @@ describe("anonymous task reads through Next's real persistent cache", () => {
 
   it("withdraws cached metadata, comments, and page data together after deletion or privacy changes", async () => {
     await getPublicTaskPageData("public-task");
+    readers.taskIds.mockResolvedValue([]);
     readers.detail.mockResolvedValue(null);
     readers.comments.mockRejectedValue(new Error("Task not found"));
     readers.activity.mockRejectedValue(new Error("Task not found"));
