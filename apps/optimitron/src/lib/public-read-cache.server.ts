@@ -1,9 +1,15 @@
 import { deserialize, serialize } from "node:v8";
+import { gzip, gunzip } from "node:zlib";
+import { promisify } from "node:util";
 import { unstable_cache, revalidateTag } from "next/cache";
 
 export const PUBLIC_TASK_READ_CACHE_TAG = "public-task-read";
 export const PUBLIC_TASK_REPLY_CACHE_TAG = "public-task-reply";
 export const PUBLIC_READ_REVALIDATE_SECONDS = 24 * 60 * 60;
+export const PUBLIC_TASK_REVALIDATE_SECONDS = 7 * 24 * 60 * 60;
+
+const compress = promisify(gzip);
+const decompress = promisify(gunzip);
 
 /** Cache server-only public read models without converting Dates to strings. */
 export function cachePublicRead<Args extends unknown[], Result>(
@@ -13,13 +19,13 @@ export function cachePublicRead<Args extends unknown[], Result>(
   revalidate = PUBLIC_READ_REVALIDATE_SECONDS,
 ) {
   const cached = unstable_cache(
-    async (...args: Args) => serialize(await read(...args)).toString("base64"),
+    async (...args: Args) => (await compress(serialize(await read(...args)))).toString("base64"),
     // V8 serialization is local to a runtime version, unlike the JSON cache envelope.
-    [key, process.versions.v8],
+    [key, "gzip-v1", process.versions.v8],
     { revalidate, tags },
   );
   return async (...args: Args): Promise<Result> =>
-    deserialize(Buffer.from(await cached(...args), "base64")) as Result;
+    deserialize(await decompress(Buffer.from(await cached(...args), "base64"))) as Result;
 }
 
 export function invalidatePublicTaskReads() {

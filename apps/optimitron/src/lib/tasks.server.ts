@@ -18,7 +18,8 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
-import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
+import { cachePublicRead, invalidatePublicTaskReads, PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_TASK_REVALIDATE_SECONDS } from "@/lib/public-read-cache.server";
+import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
 import {
   assertOrganizationCanBePubliclyReferenced,
   upsertTrustedOrganization,
@@ -1526,7 +1527,25 @@ async function nullInaccessibleParentTasks<
   );
 }
 
-export async function getTasksPageData(
+const getAnonymousTasksPageData = cachePublicRead(
+  () => readTasksPageData(null),
+  "public-tasks-list-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  PUBLIC_TASK_REVALIDATE_SECONDS,
+);
+
+export function getTasksPageData(
+  userId?: string | null,
+  options?: { frameKey?: TaskImpactFrameKey | string | null },
+) {
+  // Personalized and custom-frame readers retain their live behavior. The
+  // common anonymous list is shared by /tasks, /fund and the service counter.
+  return !userId && !options?.frameKey
+    ? getAnonymousTasksPageData()
+    : readTasksPageData(userId, options);
+}
+
+async function readTasksPageData(
   userId?: string | null,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
