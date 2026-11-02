@@ -2899,7 +2899,7 @@ export async function completeSelfTask(
 }
 
 export async function claimTask(taskId: string, userId: string) {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const actor = await tx.user.findUnique({
       where: { id: userId },
       select: { personId: true },
@@ -3017,6 +3017,8 @@ export async function claimTask(taskId: string, userId: string) {
       },
     });
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function completeTaskClaim(
@@ -3071,7 +3073,7 @@ export async function completeTaskClaim(
     throw new Error("The task is no longer active.");
   }
 
-  return prisma.taskClaim.update({
+  const completedClaim = await prisma.taskClaim.update({
     where: { id: claim.id },
     data: {
       actualCashCostUsd: actuals?.actualCashCostUsd ?? null,
@@ -3082,6 +3084,8 @@ export async function completeTaskClaim(
       status: TaskClaimStatus.COMPLETED,
     },
   });
+  invalidatePublicTaskReads();
+  return completedClaim;
 }
 
 /**
@@ -3132,7 +3136,7 @@ export async function completeTaskForUser(
 
 /** Release an active claim while retaining its history for accountability. */
 export async function abandonTaskClaim(taskId: string, userId: string) {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const claim = await tx.taskClaim.findFirst({
       where: { deletedAt: null, taskId, userId },
       select: {
@@ -3182,6 +3186,8 @@ export async function abandonTaskClaim(taskId: string, userId: string) {
       },
     });
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function verifyTask(
@@ -3307,6 +3313,8 @@ export async function verifyTask(
     };
   });
 
+  // The commit succeeded even if a later reward/payout side effect fails.
+  invalidatePublicTaskReads();
   if (result.rewardUserId && result.rewardKey) {
     await grantWishes({
       dedupeKey: result.rewardKey,
@@ -3406,7 +3414,7 @@ export async function reassignTask(
           roleTitle: input.roleTitle ?? null,
         });
 
-  return prisma.task.update({
+  const reassignedTask = await prisma.task.update({
     where: { id: taskId },
     data: {
       assigneeOrganizationId: assigneeOrganization?.id ?? null,
@@ -3419,4 +3427,6 @@ export async function reassignTask(
       roleTitle: input.roleTitle ?? null,
     },
   });
+  invalidatePublicTaskReads();
+  return reassignedTask;
 }

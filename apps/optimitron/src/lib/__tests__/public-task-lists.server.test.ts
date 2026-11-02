@@ -4,16 +4,21 @@ import { IncrementalCache } from "next/dist/server/lib/incremental-cache";
 import { nodeFs } from "next/dist/server/lib/node-fs-methods";
 import { tagsManifest } from "next/dist/server/lib/incremental-cache/tags-manifest.external";
 import { beforeEach, expect, it, vi } from "vitest";
-import { getTasksPageData } from "@/lib/tasks.server";
+import { getTasksPageData, verifyTask } from "@/lib/tasks.server";
+import { TaskClaimPolicy, TaskStatus } from "@optimitron/db";
+import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/task-keys";
+import { workAsyncStorage, type WorkStore } from "next/dist/server/app-render/work-async-storage.external";
+import { executeRevalidates } from "next/dist/server/revalidation-utils";
 import { getTaskTreePageData } from "@/lib/tasks/task-tree.server";
 import { PUBLIC_TASK_READ_CACHE_TAG } from "@/lib/public-read-cache.server";
 
-const db = vi.hoisted(() => ({ tasks: vi.fn(), user: vi.fn() }));
+const db = vi.hoisted(() => ({ tasks: vi.fn(), user: vi.fn(), transaction: vi.fn() }));
 vi.hoisted(async () => {
   const { AsyncLocalStorage } = await import("node:async_hooks");
   Object.assign(globalThis, { AsyncLocalStorage });
 });
 vi.mock("@/lib/prisma", () => ({ prisma: {
+  $transaction: db.transaction,
   task: { findMany: db.tasks },
   user: { findUnique: db.user, findUniqueOrThrow: db.user },
 } }));
@@ -82,4 +87,33 @@ it("shares anonymous tree reads but reloads signed-in trees and invalidated tree
   cache.resetRequestCache();
   await getTaskTreePageData(null);
   expect(db.tasks).toHaveBeenCalledTimes(4);
+});
+
+it("shows a verified task in the cached public tree only after the mutation commits", async () => {
+  const task = {
+    id: OPTIMIZE_EARTH_ROOT_TASK_ID, title: "Public mission", status: TaskStatus.ACTIVE as TaskStatus,
+    isPublic: true, parentTaskId: null, createdAt: new Date("2026-01-01"), dueAt: null,
+    contextJson: null, currentImpactEstimateSet: null, incomingEdges: [], outgoingEdges: [],
+    estimatedEffortHours: null, sortOrder: 0, taskKey: null,
+  };
+  db.tasks.mockImplementation(async () => [{ ...task }]);
+  db.user.mockResolvedValue({ id: "reviewer", isAdmin: true, personId: null });
+  const tx = { task: {
+    findFirst: async () => ({ ...task, claimPolicy: TaskClaimPolicy.OPEN_SINGLE }),
+    update: async () => ({ ...task, status: TaskStatus.VERIFIED }),
+  } };
+  db.transaction.mockImplementation(async (run: (client: typeof tx) => Promise<unknown>) => {
+    const result = await run(tx);
+    expect((await getTaskTreePageData(null)).root?.status).toBe(TaskStatus.ACTIVE);
+    task.status = TaskStatus.VERIFIED;
+    return result;
+  });
+  expect((await getTaskTreePageData(null)).root?.status).toBe(TaskStatus.ACTIVE);
+  const store = { incrementalCache: cache, route: "/api/tasks/task/verify" } as WorkStore;
+  await workAsyncStorage.run(store, async () => {
+    await verifyTask(task.id, "reviewer", { completionEvidence: "Completed work" });
+    await executeRevalidates(store);
+  });
+  cache.resetRequestCache();
+  expect((await getTaskTreePageData(null)).root?.status).toBe(TaskStatus.VERIFIED);
 });
