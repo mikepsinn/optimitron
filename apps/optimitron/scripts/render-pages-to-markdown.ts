@@ -232,7 +232,7 @@ async function extractPage(
     const redirectedFromStatus = redirectedFromResponse
       ? redirectedFromResponse.status()
       : null;
-    await waitForGlobalLoaderToClear(page, route);
+    await waitForPageLoaderToClear(page, route);
     await page.waitForTimeout(settleMs);
     return { status, redirectedFromStatus };
   };
@@ -299,13 +299,17 @@ async function extractPage(
   return { bodyMarkdown, metadata, redirectedFromStatus };
 }
 
-async function waitForGlobalLoaderToClear(
+async function waitForPageLoaderToClear(
   page: import("@playwright/test").Page,
   route: string,
 ): Promise<void> {
+  const loadingText =
+    route.split(/[?#]/, 1)[0] === "/survey"
+      ? [...GLOBAL_LOADING_TEXT, "Loading survey"]
+      : GLOBAL_LOADING_TEXT;
   const hasLoadingText = (bodyText: string) => {
     const normalizedBody = bodyText.toLowerCase();
-    return GLOBAL_LOADING_TEXT.some((text) =>
+    return loadingText.some((text) =>
       normalizedBody.includes(text.toLowerCase()),
     );
   };
@@ -318,7 +322,7 @@ async function waitForGlobalLoaderToClear(
           (text: string) => !bodyText.includes(text.toLowerCase()),
         );
       },
-      GLOBAL_LOADING_TEXT,
+      loadingText,
       { timeout: 30_000 },
     );
   } catch {
@@ -329,7 +333,7 @@ async function waitForGlobalLoaderToClear(
     if (hasLoadingText(bodyText)) {
       const excerpt = bodyText.replace(/\s+/g, " ").trim().slice(0, 300);
       throw new Error(
-        `global loader still visible after 30s on ${route}; snapshot NOT written. Body starts: "${excerpt}". Fix the slow render or add a route-specific readiness signal before regenerating markdown.`,
+        `page loader still visible after 30s on ${route}; snapshot NOT written. Body starts: "${excerpt}". Fix the slow render or add a route-specific readiness signal before regenerating markdown.`,
       );
     }
   }
