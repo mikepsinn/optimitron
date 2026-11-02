@@ -11,6 +11,7 @@ import { Prisma, type PrismaClient } from "@optimitron/db";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma as defaultPrisma } from "../prisma";
+import { invalidatePublicTaskReads } from "../public-read-cache.server";
 import { getSourceArtifactVisibilityWhere } from "../source-artifact-visibility.server";
 import {
   CalculationSourcePayloadSchema,
@@ -649,10 +650,12 @@ export async function createDirectTaskImpact(
   options: { publish: boolean },
   db: PrismaClient = defaultPrisma,
 ) {
-  return db.$transaction(
+  const result = await db.$transaction(
     (tx) => createDirectTaskImpactWithTransaction(rawInput, actor, options, tx),
     { maxWait: 10_000, timeout: 60_000 },
   );
+  if (result.isCurrent) invalidatePublicTaskReads();
+  return result;
 }
 
 export async function getTaskImpactTrace(

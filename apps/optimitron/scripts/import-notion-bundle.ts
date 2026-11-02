@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { config as loadEnv } from "dotenv";
 import { importNotionBundle } from "../src/lib/notion-import.server";
+import { assertLocalNotionImportApply } from "../src/lib/notion-import-cli";
 
 loadEnv({ path: path.resolve(process.cwd(), "..", "..", ".env") });
 
@@ -31,6 +32,7 @@ function parseArguments(argv: string[]) {
 
 async function main() {
   const arguments_ = parseArguments(process.argv.slice(2));
+  assertLocalNotionImportApply(arguments_.apply, process.env.DATABASE_URL);
   const bundle = JSON.parse(
     await readFile(path.resolve(arguments_.file), "utf8"),
   ) as unknown;
