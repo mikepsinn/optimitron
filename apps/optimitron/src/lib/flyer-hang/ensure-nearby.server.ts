@@ -16,6 +16,7 @@ import {
   getUserTreatyTaskKey,
 } from "@optimitron/db/task-keys";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { ROUTES, getTaskPath, warOnDiseaseUrl } from "@/lib/routes";
 import {
   FLYER_HANG_GRID_SLOTS,
@@ -312,6 +313,9 @@ export async function ensureNearbyFlyerHangTasks(input: {
     prisma,
     input.createdByUserId,
   );
+  // These upserts commit independently. Queue response-time invalidation now
+  // so later failures cannot leave a newly created public ID hidden.
+  invalidatePublicTaskReads();
   const personal = await ensurePersonalHangFlyersTask({
     createdByUserId: input.createdByUserId,
     personId: input.personId,

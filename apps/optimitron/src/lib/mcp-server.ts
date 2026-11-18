@@ -6253,7 +6253,7 @@ const TASK_TOOL_DEFINITIONS = [
         frame: {
           type: "object",
           description:
-            "Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; for Notion imports use P(success) * Value.",
+            "Low/base/high impact frame. expectedEconomicValueUsd* is already probability-weighted; calculate it as P(success) * Value.",
           properties: {
             evaluationHorizonYears: {
               type: "number",

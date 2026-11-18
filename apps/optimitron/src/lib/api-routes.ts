@@ -61,7 +61,6 @@ export const API_ROUTES = {
     attachment: (id: string) => `/api/content/attachments/${id}`,
     completeAttachment: (id: string) =>
       `/api/content/attachments/${id}/complete`,
-    notionImport: "/api/content/imports/notion",
     search: "/api/content/search",
   },
   push: {

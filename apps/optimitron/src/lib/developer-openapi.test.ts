@@ -20,7 +20,6 @@ describe("developer OpenAPI document", () => {
     expect(doc.paths).toHaveProperty("/api/content/export");
     expect(doc.paths).toHaveProperty("/api/content/access");
     expect(doc.paths).toHaveProperty("/api/content/attachments/{attachmentId}");
-    expect(doc.paths).toHaveProperty("/api/content/imports/notion");
     expect(doc.paths).toHaveProperty("/api/referral-invitations");
     expect(doc.paths).toHaveProperty("/api/referendums/{slug}/vote");
     expect(doc.paths).toHaveProperty("/api/profile");
@@ -127,7 +126,7 @@ describe("developer OpenAPI document", () => {
     });
   });
 
-  it("publishes concrete document, collection, and import contracts", () => {
+  it("publishes concrete document and collection contracts", () => {
     const doc = getDeveloperOpenApiDocument("https://optimitron.test");
 
     expect(
@@ -153,24 +152,5 @@ describe("developer OpenAPI document", () => {
         "application/json"
       ].schema,
     ).toEqual({ $ref: "#/components/schemas/ContentGrantRequest" });
-    expect(
-      doc.paths["/api/content/imports/notion"].post.requestBody.content[
-        "application/json"
-      ].schema,
-    ).toEqual({ $ref: "#/components/schemas/NotionImportRequest" });
-    expect(doc.components.schemas.NotionImportBundle).toMatchObject({
-      required: ["workspaceId"],
-      properties: {
-        collections: {
-          items: {
-            required: ["sourceId", "name"],
-            properties: {
-              fields: { type: "array", maxItems: 200 },
-              records: { type: "array", maxItems: 20000 },
-            },
-          },
-        },
-      },
-    });
   });
 });

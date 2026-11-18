@@ -1,6 +1,7 @@
 import type { Prisma } from "@optimitron/db";
 import { TaskEdgeType } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { cachePublicRead, PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_TASK_REVALIDATE_SECONDS } from "@/lib/public-read-cache.server";
 import { impactEstimateSetSelect } from "@/lib/tasks.server";
 import { selectImpactFrame } from "@/lib/tasks/impact";
 import { getTaskVisibilityWhere } from "@/lib/tasks/task-visibility.server";
@@ -72,7 +73,18 @@ function isTaxonomyNode(contextJson: Prisma.JsonValue | null): boolean {
   );
 }
 
-export async function getTaskTreePageData(
+const getAnonymousTaskTreePageData = cachePublicRead(
+  () => readTaskTreePageData(null),
+  "public-task-tree-v1",
+  [PUBLIC_TASK_READ_CACHE_TAG],
+  PUBLIC_TASK_REVALIDATE_SECONDS,
+);
+
+export function getTaskTreePageData(userId?: string | null): Promise<TaskTreePageData> {
+  return userId ? readTaskTreePageData(userId) : getAnonymousTaskTreePageData();
+}
+
+async function readTaskTreePageData(
   userId?: string | null,
 ): Promise<TaskTreePageData> {
   const viewer = userId

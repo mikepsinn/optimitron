@@ -12,7 +12,6 @@ import {
   MCP_SCOPE_DESCRIPTIONS,
   scopeToWire,
 } from "@/lib/mcp-scopes";
-import { notionImportBundleSchema } from "@/lib/notion-import.schema";
 
 type JsonSchema = Record<string, unknown>;
 
@@ -1101,26 +1100,6 @@ export function getDeveloperOpenApiDocument(origin: string) {
           },
         },
       },
-      "/api/content/imports/notion": {
-        post: {
-          tags: ["Content"],
-          summary: "Dry-run or apply an idempotent Notion export bundle",
-          security: taskPersonalOrAdminSecurity,
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/NotionImportRequest" },
-              },
-            },
-          },
-          responses: {
-            "200": jsonObjectResponse("Per-item import review"),
-            "400": errorResponse,
-            "401": unauthorizedResponse,
-          },
-        },
-      },
       "/api/referral-invitations": {
         get: {
           tags: ["Referrals"],
@@ -1714,16 +1693,6 @@ export function getDeveloperOpenApiDocument(origin: string) {
             contentType: { type: "string", maxLength: 160 },
             fileName: { type: "string", minLength: 1, maxLength: 512 },
             sizeBytes: { type: "integer", minimum: 1 },
-          },
-        },
-        NotionImportBundle: openApiSchema(notionImportBundleSchema),
-        NotionImportRequest: {
-          type: "object",
-          additionalProperties: false,
-          required: ["bundle"],
-          properties: {
-            dryRun: { type: "boolean", default: true },
-            bundle: { $ref: "#/components/schemas/NotionImportBundle" },
           },
         },
         OAuthClientRegistration: {

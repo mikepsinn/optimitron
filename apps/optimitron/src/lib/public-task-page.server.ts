@@ -7,18 +7,25 @@ import { TASK_NOT_FOUND_MESSAGE } from "@/lib/tasks/task-visibility.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 import { prisma } from "@/lib/prisma";
 import { PUBLIC_PERSON_PROFILE_CACHE_TAG } from "@/lib/person-profile-cache";
+import { isPublicTaskId } from "@/lib/public-task-index.server";
 import {
   cachePublicRead,
   PUBLIC_TASK_READ_CACHE_TAG,
   PUBLIC_TASK_REPLY_CACHE_TAG,
+  PUBLIC_TASK_REVALIDATE_SECONDS,
 } from "@/lib/public-read-cache.server";
 
 // Only anonymous read models belong here. Signed-in pages call the live readers.
-export const getCachedPublicTaskDetailData = cachePublicRead(
+const getKnownPublicTaskDetailData = cachePublicRead(
   (id: string) => getTaskDetailData(id, null),
   "public-task-detail-v1",
   [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  PUBLIC_TASK_REVALIDATE_SECONDS,
 );
+
+export async function getCachedPublicTaskDetailData(id: string) {
+  return await isPublicTaskId(id) ? getKnownPublicTaskDetailData(id.trim()) : null;
+}
 
 // The feed/timeline helpers throw the shared "Task not found" for tasks the
 // viewer can't see. The page already renders TaskAccessGate when `data` is
@@ -31,7 +38,7 @@ export function isTaskNotFoundError(error: unknown): boolean {
   return error instanceof Error && error.message === TASK_NOT_FOUND_MESSAGE;
 }
 
-export const getPublicTaskPageData = cachePublicRead(
+const getKnownPublicTaskPageData = cachePublicRead(
   async (id: string) => {
     const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
       getCachedPublicTaskDetailData(id),
@@ -71,4 +78,17 @@ export const getPublicTaskPageData = cachePublicRead(
   },
   "public-task-page-v1",
   [PUBLIC_TASK_READ_CACHE_TAG, PUBLIC_TASK_REPLY_CACHE_TAG, PUBLIC_PERSON_PROFILE_CACHE_TAG],
+  PUBLIC_TASK_REVALIDATE_SECONDS,
 );
+
+export async function getPublicTaskPageData(id: string) {
+  if (await isPublicTaskId(id)) return getKnownPublicTaskPageData(id.trim());
+  return {
+    data: null,
+    commentFeed: EMPTY_COMMENT_FEED,
+    activityTimeline: [],
+    ancestors: [],
+    wishoniaUserId: null,
+    hasFundingTarget: false,
+  };
+}

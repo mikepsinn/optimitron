@@ -188,17 +188,11 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
   publishing) SHALL pass a propose → user-approve → execute gate. The user
   reviews a concrete proposed action, not a vague intention.
 
-### 3.7 External sources (OPT-INTG-01, OPT-INTG-02)
+### 3.7 External sources (OPT-INTG-02, OPT-INTG-03)
 
-- Notion pages and databases import through lossless normalized bundles with
-  workspace-scoped source keys, hash-based change detection, source artifacts,
-  private-file copying, and duplicate collapsing. Documents, bounded table
-  collections, and migration tooling exist; the live Notion API connection
-  does not. Imported formulas and rollups retain their definitions and current
-  values but do not execute in Optimitron.
 - Google Calendar events import as fixed commitments for the execution
   planner. The normalization seam exists; the live API connection does not.
-  These systems are migration and invitation sources. Optimitron owns the
+  External systems are migration and invitation sources. Optimitron owns the
   resulting planning state and projects it into its own task and calendar
   views.
 - WhatsApp, Discord, Telegram, email, Slack, meeting notes, Notion comments,

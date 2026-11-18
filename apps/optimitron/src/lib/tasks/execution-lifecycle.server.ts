@@ -14,6 +14,7 @@ import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { invalidatePublicTaskReads } from "@/lib/public-read-cache.server";
 import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import { readTaskContext } from "@/lib/tasks/task-context";
 import {
@@ -136,7 +137,7 @@ export async function startTaskExecution(
   });
   if (!actor) throw new Error("Task not found");
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const taskAccess = getTaskAccessWhere({
       action: "EXECUTE",
       personId: actor.personId,
@@ -313,6 +314,8 @@ export async function startTaskExecution(
     });
     return attempt;
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 async function loadAttemptForContribution(
@@ -383,7 +386,7 @@ export async function submitTaskArtifact(
   actorUserId: string,
 ) {
   const input = SubmitTaskArtifactSchema.parse(rawInput);
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const attempt = await loadAttemptForContribution(
       tx,
       input.taskExecutionAttemptId,
@@ -485,6 +488,8 @@ export async function submitTaskArtifact(
       },
     });
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function submitTaskForVerification(
@@ -492,7 +497,7 @@ export async function submitTaskForVerification(
   actorUserId: string,
 ) {
   const input = SubmitTaskForVerificationSchema.parse(rawInput);
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const attempt = await loadAttemptForContribution(
       tx,
       input.taskExecutionAttemptId,
@@ -569,6 +574,8 @@ export async function submitTaskForVerification(
     ]);
     return { attempt: updatedAttempt, verification };
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function verifyTaskExecution(
@@ -582,7 +589,7 @@ export async function verifyTaskExecution(
   });
   if (!actor) throw new Error("Task verification not found");
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const verification = await tx.taskVerification.findFirst({
       where: {
         deletedAt: null,
@@ -695,6 +702,8 @@ export async function verifyTaskExecution(
 
     return updatedVerification;
   });
+  invalidatePublicTaskReads();
+  return result;
 }
 
 export async function getTaskAuditTrail(taskId: string, actorUserId: string) {

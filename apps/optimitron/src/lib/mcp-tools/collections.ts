@@ -23,7 +23,6 @@ export const COLLECTION_TOOL_SCOPES = {
   createCollection: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   updateCollection: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   getCollection: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  importNotionBundle: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   listCollections: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   createCollectionRecord: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   upsertCollectionRecordsBatch: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
@@ -104,19 +103,6 @@ const BATCH_OPERATION_SCHEMA = {
 const NULLABLE_ID_SCHEMA = { type: ["string", "null"] } as const;
 
 export const COLLECTION_TOOL_DEFINITIONS = [
-  {
-    name: "importNotionBundle",
-    description:
-      "Validate and import a lossless Notion export bundle. Dry-run is the default; set dryRun to false only after reviewing the returned create, update, unchanged, and error items. Imported tasks remain private drafts, and formula or rollup definitions are preserved without execution.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        bundle: { type: "object", additionalProperties: true },
-        dryRun: { type: "boolean", default: true },
-      },
-      required: ["bundle"],
-    },
-  },
   {
     name: "createCollection",
     description:
@@ -301,22 +287,6 @@ export async function handleCollectionToolCall(input: {
     }
 
     switch (name) {
-      case "importNotionBundle": {
-        const parsed = z
-          .object({
-            bundle: z.unknown(),
-            dryRun: z.boolean().default(true),
-          })
-          .parse(args);
-        const { importNotionBundle } = await import("../notion-import.server");
-        return ok(
-          await importNotionBundle({
-            actorUserId: userId as string,
-            bundle: parsed.bundle,
-            dryRun: parsed.dryRun,
-          }),
-        );
-      }
       case "createCollection": {
         const parsed = z
           .object({

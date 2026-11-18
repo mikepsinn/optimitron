@@ -48,16 +48,16 @@
           "matches": 0
         },
         "tests": {
-          "files": 4,
-          "matches": 5
+          "files": 3,
+          "matches": 4
         },
         "docs": {
           "files": 1,
           "matches": 1
         },
         "other": {
-          "files": 21,
-          "matches": 28
+          "files": 30,
+          "matches": 38
         }
       },
       "keyFiles": [
@@ -82,15 +82,15 @@
           "matches": 2
         },
         {
+          "path": "apps/optimitron/src/lib/person.server.ts",
+          "matches": 1
+        },
+        {
           "path": "packages/data/src/datasets/natural-experiments.ts",
           "matches": 1
         },
         {
           "path": "packages/data/src/fetchers/usaspending.ts",
-          "matches": 1
-        },
-        {
-          "path": "packages/data/src/importers/strava.ts",
           "matches": 1
         }
       ],
@@ -124,8 +124,8 @@
           "matches": 17
         },
         "runtime-libraries": {
-          "files": 54,
-          "matches": 184
+          "files": 53,
+          "matches": 183
         },
         "api-routes": {
           "files": 6,
@@ -136,8 +136,8 @@
           "matches": 0
         },
         "components": {
-          "files": 2,
-          "matches": 3
+          "files": 1,
+          "matches": 1
         },
         "scripts": {
           "files": 0,
@@ -148,12 +148,12 @@
           "matches": 24
         },
         "docs": {
-          "files": 4,
-          "matches": 8
+          "files": 5,
+          "matches": 10
         },
         "other": {
-          "files": 4,
-          "matches": 23
+          "files": 27,
+          "matches": 87
         }
       },
       "keyFiles": [
@@ -248,8 +248,8 @@
           "matches": 1
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 3,
+          "matches": 6
         }
       },
       "keyFiles": [
@@ -313,11 +313,11 @@
         },
         "runtime-prisma": {
           "files": 2,
-          "matches": 11
+          "matches": 13
         },
         "runtime-libraries": {
           "files": 2,
-          "matches": 11
+          "matches": 13
         },
         "api-routes": {
           "files": 0,
@@ -351,7 +351,7 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/tasks/agent-lease.server.ts",
-          "matches": 16
+          "matches": 20
         },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
@@ -384,7 +384,7 @@
       ],
       "notes": [],
       "directPrismaFiles": 2,
-      "directPrismaMatches": 11,
+      "directPrismaMatches": 13,
       "classification": "runtime-live"
     },
     {
@@ -712,8 +712,8 @@
           "matches": 0
         },
         "components": {
-          "files": 10,
-          "matches": 63
+          "files": 7,
+          "matches": 24
         },
         "scripts": {
           "files": 0,
@@ -728,22 +728,14 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 1
+          "files": 18,
+          "matches": 119
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/badges.server.ts",
           "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/components/shared/TrialCard.tsx",
-          "matches": 21
-        },
-        {
-          "path": "apps/optimitron/src/components/treatment/HealthEconomicsDisplay.tsx",
-          "matches": 15
         },
         {
           "path": "apps/optimitron/src/components/personhood/PersonhoodStatusBadge.tsx",
@@ -762,8 +754,16 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/components/medical/TreatmentReport.tsx",
-          "matches": 3
+          "path": "apps/optimitron/src/components/prize/CitizenDashboard.tsx",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/components/dashboard/NotificationPreferencesCard.tsx",
+          "matches": 1
+        },
+        {
+          "path": "apps/optimitron/src/components/retroui/Badge.tsx",
+          "matches": 1
         }
       ],
       "notes": [],
@@ -792,8 +792,8 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 4
+          "files": 3,
+          "matches": 5
         },
         "runtime-libraries": {
           "files": 0,
@@ -812,8 +812,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -838,6 +838,10 @@
           "matches": 4
         },
         {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -856,17 +860,13 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [
         "External bill stance record. Bill metadata currently comes from the Congress fetchers rather than a first-class Prisma bill table."
       ],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 4,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
@@ -890,12 +890,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 14
+          "files": 2,
+          "matches": 11
         },
         "runtime-libraries": {
-          "files": 11,
-          "matches": 33
+          "files": 10,
+          "matches": 27
         },
         "api-routes": {
           "files": 2,
@@ -922,18 +922,14 @@
           "matches": 1
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 25
-        },
-        {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 9
         },
         {
           "path": "packages/db/src/managed-data/managed-demo-content.ts",
@@ -958,11 +954,15 @@
         {
           "path": "apps/optimitron/src/lib/developer-openapi.ts",
           "matches": 3
+        },
+        {
+          "path": "apps/optimitron/src/lib/content-access.server.ts",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 14,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 11,
       "classification": "runtime-live"
     },
     {
@@ -1082,12 +1082,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 21
+          "files": 4,
+          "matches": 18
         },
         "runtime-libraries": {
-          "files": 6,
-          "matches": 22
+          "files": 5,
+          "matches": 19
         },
         "api-routes": {
           "files": 0,
@@ -1124,12 +1124,8 @@
           "matches": 28
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 8
-        },
-        {
           "path": "packages/db/src/managed-data/managed-demo-content.ts",
-          "matches": 2
+          "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/content-attachments.server.ts",
@@ -1150,11 +1146,15 @@
         {
           "path": "apps/optimitron/src/lib/content-search.server.ts",
           "matches": 1
+        },
+        {
+          "path": "packages/db/prisma/schema.prisma",
+          "matches": 11
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 21,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 18,
       "classification": "runtime-live"
     },
     {
@@ -1698,19 +1698,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/db/src/managed-data/managed-commerce-catalog.ts",
-          "matches": 4
-        },
-        {
           "path": "apps/optimitron/src/lib/commerce-catalog.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/db/src/managed-data/managed-seed-data.ts",
-          "matches": 2
+          "path": "packages/db/src/managed-data/managed-commerce-catalog.ts",
+          "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/task-funding/conversion.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 2
         },
         {
@@ -2046,24 +2046,24 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 5
+          "files": 3,
+          "matches": 4
         },
         "runtime-libraries": {
           "files": 9,
           "matches": 49
         },
         "api-routes": {
-          "files": 3,
-          "matches": 4
+          "files": 2,
+          "matches": 2
         },
         "pages": {
           "files": 1,
           "matches": 1
         },
         "components": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "scripts": {
           "files": 2,
@@ -2078,8 +2078,8 @@
           "matches": 0
         },
         "other": {
-          "files": 1,
-          "matches": 1
+          "files": 5,
+          "matches": 14
         }
       },
       "keyFiles": [
@@ -2089,10 +2089,6 @@
         },
         {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
-          "matches": 3
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 3
         },
         {
@@ -2108,17 +2104,21 @@
           "matches": 1
         },
         {
-          "path": "apps/optimitron/src/components/people/PeopleFilterBar.tsx",
+          "path": "apps/optimitron/src/components/people/RepresentedPersonForm.tsx",
           "matches": 1
         },
         {
-          "path": "apps/optimitron/src/components/people/RepresentedPersonForm.tsx",
-          "matches": 1
+          "path": "packages/data/src/parameters/parameters-calculations-citations.ts",
+          "matches": 24
+        },
+        {
+          "path": "packages/data/src/datasets/medical-data/references.json",
+          "matches": 10
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 5,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -2239,11 +2239,11 @@
         },
         "runtime-prisma": {
           "files": 4,
-          "matches": 20
+          "matches": 16
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 20
+          "files": 3,
+          "matches": 15
         },
         "api-routes": {
           "files": 0,
@@ -2258,8 +2258,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -2280,8 +2280,8 @@
           "matches": 26
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 10
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/content-export.server.ts",
@@ -2310,12 +2310,12 @@
       ],
       "notes": [],
       "directPrismaFiles": 4,
-      "directPrismaMatches": 20,
+      "directPrismaMatches": 16,
       "classification": "runtime-live"
     },
     {
       "name": "ContentReport",
-      "schemaLine": 10844,
+      "schemaLine": 10850,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2430,12 +2430,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 14
+          "files": 3,
+          "matches": 6
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 16
+          "files": 3,
+          "matches": 8
         },
         "api-routes": {
           "files": 0,
@@ -2462,15 +2462,11 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 3
+          "files": 2,
+          "matches": 4
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 12
-        },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 8
@@ -2480,15 +2476,11 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/lib/represented-people.server.ts",
+          "path": "packages/db/src/managed-data/managed-famous-disease-deaths.ts",
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/__tests__/campaign-structured-data.test.ts",
+          "path": "apps/courtofhumanity/tests/integration/court-data.test.ts",
           "matches": 2
         },
         {
@@ -2498,11 +2490,19 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 12
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql",
+          "matches": 22
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql",
+          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 14,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 6,
       "classification": "runtime-live"
     },
     {
@@ -2526,12 +2526,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "api-routes": {
           "files": 0,
@@ -2563,10 +2563,6 @@
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 4
-        },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
@@ -2594,12 +2590,18 @@
         {
           "path": "packages/db/src/generated/prisma/browser.ts",
           "matches": 2
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 2
         }
       ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
+      "notes": [
+        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
+      ],
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
+      "classification": "suspicious"
     },
     {
       "name": "CourtCaseEvidence",
@@ -2623,11 +2625,11 @@
         },
         "runtime-prisma": {
           "files": 1,
-          "matches": 1
+          "matches": 2
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 3
         },
         "api-routes": {
           "files": 0,
@@ -2660,8 +2662,12 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 2
+          "path": "packages/db/src/managed-data/managed-famous-disease-deaths.ts",
+          "matches": 4
+        },
+        {
+          "path": "packages/db/src/constants.ts",
+          "matches": 1
         },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
@@ -2686,15 +2692,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
         }
       ],
       "notes": [],
       "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
+      "directPrismaMatches": 2,
       "classification": "runtime-live"
     },
     {
@@ -2718,12 +2720,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "api-routes": {
           "files": 0,
@@ -2755,10 +2757,6 @@
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 2
-        },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
@@ -2786,12 +2784,18 @@
         {
           "path": "packages/db/src/generated/prisma/browser.ts",
           "matches": 2
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 2
         }
       ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
+      "notes": [
+        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
+      ],
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
+      "classification": "suspicious"
     },
     {
       "name": "CourtCaseParty",
@@ -2814,16 +2818,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 9
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 8
+          "files": 1,
+          "matches": 1
         },
         "api-routes": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -2846,27 +2850,11 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 4
+          "files": 2,
+          "matches": 5
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/represented-people.server.ts",
-          "matches": 8
-        },
-        {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 2
-        },
         {
           "path": "apps/optimitron/src/lib/people-dedup.server.ts",
           "matches": 1
@@ -2882,11 +2870,27 @@
         {
           "path": "packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql",
           "matches": 12
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/CourtCaseParty.ts",
+          "matches": 197
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 27
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/browser.ts",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 9,
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
       "classification": "runtime-live"
     },
     {
@@ -2910,12 +2914,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "api-routes": {
           "files": 0,
@@ -2947,10 +2951,6 @@
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 2
-        },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
@@ -2978,11 +2978,15 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 29
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 2,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 1,
       "classification": "runtime-live"
     },
     {
@@ -4202,11 +4206,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/db/src/managed-data/managed-dating-catalog.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/dating.server.ts",
+          "path": "packages/db/src/managed-data/managed-dating-catalog.ts",
           "matches": 2
         },
         {
@@ -4452,12 +4456,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 16
+          "files": 6,
+          "matches": 20
         },
         "runtime-libraries": {
-          "files": 10,
-          "matches": 30
+          "files": 12,
+          "matches": 37
         },
         "api-routes": {
           "files": 0,
@@ -4468,24 +4472,24 @@
           "matches": 2
         },
         "components": {
-          "files": 4,
-          "matches": 4
+          "files": 5,
+          "matches": 6
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 3
         },
         "tests": {
-          "files": 3,
-          "matches": 8
+          "files": 4,
+          "matches": 15
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 3,
+          "matches": 5
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 6,
+          "matches": 7
         }
       },
       "keyFiles": [
@@ -4494,8 +4498,12 @@
           "matches": 21
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 8
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 13
+        },
+        {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 6
         },
         {
           "path": "packages/db/src/managed-data/managed-demo-content.ts",
@@ -4516,15 +4524,11 @@
         {
           "path": "apps/optimitron/src/app/search/page.tsx",
           "matches": 1
-        },
-        {
-          "path": "apps/optimitron/src/components/documents/task-documents-list.tsx",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 16,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 20,
       "classification": "runtime-live"
     },
     {
@@ -4548,12 +4552,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 6
+          "files": 5,
+          "matches": 12
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 7
+          "files": 5,
+          "matches": 12
         },
         "api-routes": {
           "files": 0,
@@ -4568,8 +4572,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 1,
@@ -4586,15 +4590,23 @@
       },
       "keyFiles": [
         {
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 10
+        },
+        {
           "path": "apps/optimitron/src/lib/documents.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/db/src/managed-data/managed-demo-content.ts",
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
           "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/managed-data/managed-demo-content.ts",
           "matches": 2
         },
         {
@@ -4608,19 +4620,11 @@
         {
           "path": "docs/FEATURES.md",
           "matches": 2
-        },
-        {
-          "path": "docs/PRD.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 8
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 6,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 12,
       "classification": "runtime-live"
     },
     {
@@ -4645,11 +4649,11 @@
         },
         "runtime-prisma": {
           "files": 4,
-          "matches": 12
+          "matches": 13
         },
         "runtime-libraries": {
-          "files": 12,
-          "matches": 30
+          "files": 13,
+          "matches": 32
         },
         "api-routes": {
           "files": 0,
@@ -4676,8 +4680,8 @@
           "matches": 8
         },
         "other": {
-          "files": 1,
-          "matches": 7
+          "files": 6,
+          "matches": 14
         }
       },
       "keyFiles": [
@@ -4686,16 +4690,16 @@
           "matches": 16
         },
         {
+          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
+          "matches": 5
+        },
+        {
           "path": "apps/optimitron/src/lib/admin-communications.server.ts",
           "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/email/email-log.server.ts",
           "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
-          "matches": 3
         },
         {
           "path": "apps/optimitron/src/lib/email/send-deduped-email.server.ts",
@@ -4716,7 +4720,7 @@
       ],
       "notes": [],
       "directPrismaFiles": 4,
-      "directPrismaMatches": 12,
+      "directPrismaMatches": 13,
       "classification": "runtime-live"
     },
     {
@@ -4740,12 +4744,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 12
+          "files": 6,
+          "matches": 20
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 13
+          "files": 10,
+          "matches": 26
         },
         "api-routes": {
           "files": 0,
@@ -4779,7 +4783,19 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
-          "matches": 20
+          "matches": 26
+        },
+        {
+          "path": "apps/optimitron/src/lib/email/outbound-authorization.server.ts",
+          "matches": 4
+        },
+        {
+          "path": "apps/optimitron/src/lib/email/outbound-message-dispatch.server.ts",
+          "matches": 4
+        },
+        {
+          "path": "apps/optimitron/src/lib/weekly-metrics.server.ts",
+          "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/mcp-tools/private-execution.ts",
@@ -4790,29 +4806,17 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/mcp-instructions.ts",
+          "path": "apps/optimitron/src/lib/email/outbound-message-approval.server.ts",
           "matches": 1
         },
         {
-          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
-          "matches": 2
-        },
-        {
-          "path": "docs/FEATURES.md",
-          "matches": 1
-        },
-        {
-          "path": "docs/plans/phased-approach-optimitron.md",
-          "matches": 1
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
+          "path": "apps/optimitron/src/lib/email/resend.ts",
           "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 12,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 20,
       "classification": "runtime-live"
     },
     {
@@ -4860,16 +4864,16 @@
           "matches": 2
         },
         "tests": {
-          "files": 1,
-          "matches": 7
+          "files": 2,
+          "matches": 9
         },
         "docs": {
           "files": 3,
           "matches": 4
         },
         "other": {
-          "files": 6,
-          "matches": 12
+          "files": 17,
+          "matches": 34
         }
       },
       "keyFiles": [
@@ -4898,11 +4902,11 @@
           "matches": 2
         },
         {
-          "path": "packages/data/src/datasets/medical-data/treatments/anxiety-disorder.json",
+          "path": "apps/optimitron/src/lib/mcp-tools/form-responses.ts",
           "matches": 1
         },
         {
-          "path": "packages/data/src/datasets/medical-data/treatments/genital-prolapse.json",
+          "path": "apps/optimitron/src/lib/nonprofit-identity.ts",
           "matches": 1
         }
       ],
@@ -4956,16 +4960,16 @@
           "matches": 2
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "docs": {
           "files": 1,
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 4
+          "files": 3,
+          "matches": 12
         }
       },
       "keyFiles": [
@@ -4990,16 +4994,16 @@
           "matches": 2
         },
         {
+          "path": "apps/trialabundancesurvey/tests/e2e/auth-email.spec.ts",
+          "matches": 1
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql",
-          "matches": 10
         }
       ],
       "notes": [],
@@ -5052,8 +5056,8 @@
           "matches": 2
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "docs": {
           "files": 1,
@@ -5074,6 +5078,10 @@
           "matches": 2
         },
         {
+          "path": "apps/trialabundancesurvey/tests/e2e/auth-email.spec.ts",
+          "matches": 1
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -5092,10 +5100,6 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 29
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
@@ -5319,11 +5323,11 @@
         },
         "runtime-prisma": {
           "files": 2,
-          "matches": 9
+          "matches": 10
         },
         "runtime-libraries": {
           "files": 2,
-          "matches": 9
+          "matches": 10
         },
         "api-routes": {
           "files": 0,
@@ -5342,8 +5346,8 @@
           "matches": 0
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "docs": {
           "files": 0,
@@ -5361,7 +5365,11 @@
         },
         {
           "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
-          "matches": 8
+          "matches": 10
+        },
+        {
+          "path": "apps/trialabundancesurvey/tests/e2e/auth-email.spec.ts",
+          "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -5382,15 +5390,11 @@
         {
           "path": "packages/db/src/generated/prisma/models/User.ts",
           "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
       "directPrismaFiles": 2,
-      "directPrismaMatches": 9,
+      "directPrismaMatches": 10,
       "classification": "runtime-live"
     },
     {
@@ -5415,11 +5419,11 @@
         },
         "runtime-prisma": {
           "files": 7,
-          "matches": 15
+          "matches": 13
         },
         "runtime-libraries": {
-          "files": 8,
-          "matches": 24
+          "files": 9,
+          "matches": 22
         },
         "api-routes": {
           "files": 2,
@@ -5430,38 +5434,38 @@
           "matches": 0
         },
         "components": {
-          "files": 1,
-          "matches": 1
-        },
-        "scripts": {
           "files": 0,
           "matches": 0
         },
-        "tests": {
+        "scripts": {
           "files": 1,
           "matches": 2
+        },
+        "tests": {
+          "files": 3,
+          "matches": 5
         },
         "docs": {
           "files": 1,
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 2
+          "files": 8,
+          "matches": 29
         }
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 10
-        },
-        {
           "path": "apps/optimitron/src/lib/profile.server.ts",
-          "matches": 10
+          "matches": 8
         },
         {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 7
+        },
+        {
+          "path": "apps/optimitron/src/lib/measurement-summaries-backfill.server.ts",
+          "matches": 5
         },
         {
           "path": "apps/optimitron/src/lib/earth-data.server.ts",
@@ -5480,13 +5484,13 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/components/medical/medical-pages.tsx",
-          "matches": 1
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
+          "matches": 3
         }
       ],
       "notes": [],
       "directPrismaFiles": 7,
-      "directPrismaMatches": 15,
+      "directPrismaMatches": 13,
       "classification": "runtime-live"
     },
     {
@@ -5932,8 +5936,8 @@
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         }
       },
       "keyFiles": [
@@ -6380,16 +6384,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 7,
-          "matches": 11
+          "files": 6,
+          "matches": 10
         },
         "runtime-libraries": {
           "files": 19,
           "matches": 37
         },
         "api-routes": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -6412,8 +6416,8 @@
           "matches": 1
         },
         "other": {
-          "files": 5,
-          "matches": 13
+          "files": 6,
+          "matches": 6
         }
       },
       "keyFiles": [
@@ -6430,10 +6434,6 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/alignment-politicians.server.ts",
           "matches": 2
         },
@@ -6442,17 +6442,21 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/wishocracy-catalog.server.ts",
+          "path": "packages/db/src/wishocracy-catalog.ts",
           "matches": 2
         },
         {
           "path": "apps/optimitron/src/components/scoreboard/PoliticianAlignmentDashboard.tsx",
           "matches": 1
+        },
+        {
+          "path": "packages/obg/src/country-report.ts",
+          "matches": 4
         }
       ],
       "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 11,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 10,
       "classification": "runtime-live"
     },
     {
@@ -6553,7 +6557,7 @@
     },
     {
       "name": "McpToolCallAudit",
-      "schemaLine": 10779,
+      "schemaLine": 10785,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6668,12 +6672,12 @@
           "matches": 2
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 9
+          "files": 2,
+          "matches": 6
         },
         "runtime-libraries": {
           "files": 14,
-          "matches": 33
+          "matches": 32
         },
         "api-routes": {
           "files": 0,
@@ -6692,29 +6696,25 @@
           "matches": 2
         },
         "tests": {
-          "files": 7,
-          "matches": 27
+          "files": 8,
+          "matches": 28
         },
         "docs": {
-          "files": 5,
-          "matches": 16
+          "files": 6,
+          "matches": 18
         },
         "other": {
-          "files": 3,
-          "matches": 14
+          "files": 10,
+          "matches": 31
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/profile.server.ts",
-          "matches": 14
+          "matches": 10
         },
         {
           "path": "apps/optimitron/src/lib/census-aggregation.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
@@ -6734,13 +6734,17 @@
           "matches": 3
         },
         {
+          "path": "apps/optimitron/src/lib/measurement-summaries-backfill.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/data/src/pipelines/fetch-country-timeseries.ts",
           "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 9,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 6,
       "classification": "runtime-live"
     },
     {
@@ -6765,7 +6769,7 @@
         },
         "runtime-prisma": {
           "files": 2,
-          "matches": 4
+          "matches": 3
         },
         "runtime-libraries": {
           "files": 3,
@@ -6784,29 +6788,29 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
           "files": 1,
           "matches": 2
+        },
+        "tests": {
+          "files": 3,
+          "matches": 4
         },
         "docs": {
           "files": 1,
           "matches": 1
         },
         "other": {
-          "files": 2,
-          "matches": 15
+          "files": 7,
+          "matches": 30
         }
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/profile.server.ts",
-          "matches": 6
+          "path": "apps/optimitron/src/lib/measurement-summaries-backfill.server.ts",
+          "matches": 5
         },
         {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 2
         },
         {
@@ -6814,29 +6818,29 @@
           "matches": 2
         },
         {
+          "path": "apps/optimitron/scripts/backfill-measurement-summaries.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
           "matches": 2
         },
         {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
+          "path": "apps/optimitron/src/lib/__tests__/mcp-server.test.ts",
           "matches": 1
         },
         {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 9
+          "path": "apps/optimitron/src/lib/__tests__/measurement-summaries.integration.test.ts",
+          "matches": 1
         },
         {
-          "path": "packages/db/prisma/migrations/20260311211431_init/migration.sql",
-          "matches": 10
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql",
-          "matches": 7
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
+          "matches": 1
         }
       ],
       "notes": [],
       "directPrismaFiles": 2,
-      "directPrismaMatches": 4,
+      "directPrismaMatches": 3,
       "classification": "runtime-live"
     },
     {
@@ -6926,7 +6930,7 @@
           "matches": 3
         },
         {
-          "path": "packages/db/src/__tests__/zod-validators.test.ts",
+          "path": "apps/optimitron/src/lib/__tests__/aggregate-relationships.test.ts",
           "matches": 2
         }
       ],
@@ -6988,8 +6992,8 @@
           "matches": 2
         },
         "other": {
-          "files": 4,
-          "matches": 9
+          "files": 6,
+          "matches": 8
         }
       },
       "keyFiles": [
@@ -7002,16 +7006,12 @@
           "matches": 1
         },
         {
-          "path": "packages/extension/src/background/service-worker.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/routes.ts",
           "matches": 2
         },
         {
-          "path": "packages/db/src/cleanup-test-data.ts",
-          "matches": 1
+          "path": "packages/extension/src/background/service-worker.ts",
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/push-notifications.ts",
@@ -7019,6 +7019,10 @@
         },
         {
           "path": "apps/optimitron/src/lib/tasks/share-templates.ts",
+          "matches": 1
+        },
+        {
+          "path": "packages/db/src/cleanup-test-data.ts",
           "matches": 1
         },
         {
@@ -7138,12 +7142,12 @@
           "matches": 3
         },
         "migrations": {
-          "files": 4,
-          "matches": 15
+          "files": 5,
+          "matches": 16
         },
         "generated": {
           "files": 9,
-          "matches": 182
+          "matches": 187
         },
         "zod": {
           "files": 0,
@@ -7246,8 +7250,8 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 4
+          "files": 5,
+          "matches": 5
         },
         "runtime-libraries": {
           "files": 1,
@@ -7266,8 +7270,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -7283,6 +7287,10 @@
         }
       },
       "keyFiles": [
+        {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
+        },
         {
           "path": "apps/optimitron/src/app/api/mcp/oauth/authorize/route.ts",
           "matches": 2
@@ -7310,40 +7318,36 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql",
-          "matches": 4
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 4,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
       "name": "OAuthGrant",
-      "schemaLine": 10735,
+      "schemaLine": 10738,
       "buckets": {
         "schema": {
           "files": 1,
           "matches": 4
         },
         "migrations": {
-          "files": 5,
-          "matches": 17
+          "files": 6,
+          "matches": 19
         },
         "generated": {
           "files": 10,
-          "matches": 187
+          "matches": 192
         },
         "zod": {
           "files": 0,
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 7
+          "files": 6,
+          "matches": 10
         },
         "runtime-libraries": {
           "files": 1,
@@ -7351,7 +7355,7 @@
         },
         "api-routes": {
           "files": 3,
-          "matches": 5
+          "matches": 7
         },
         "pages": {
           "files": 1,
@@ -7362,8 +7366,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -7380,12 +7384,16 @@
       },
       "keyFiles": [
         {
+          "path": "apps/optimitron/src/app/api/mcp/oauth/token/route.ts",
+          "matches": 8
+        },
+        {
           "path": "apps/optimitron/src/app/api/mcp/oauth/revoke/route.ts",
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/app/api/mcp/oauth/token/route.ts",
-          "matches": 4
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/app/api/mcp/route.ts",
@@ -7406,15 +7414,11 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql",
-          "matches": 10
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 7,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 10,
       "classification": "runtime-live"
     },
     {
@@ -7438,20 +7442,20 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 23,
-          "matches": 58
+          "files": 21,
+          "matches": 51
         },
         "runtime-libraries": {
-          "files": 28,
-          "matches": 117
+          "files": 25,
+          "matches": 108
         },
         "api-routes": {
-          "files": 7,
-          "matches": 23
+          "files": 8,
+          "matches": 24
         },
         "pages": {
-          "files": 6,
-          "matches": 9
+          "files": 4,
+          "matches": 7
         },
         "components": {
           "files": 7,
@@ -7462,16 +7466,16 @@
           "matches": 3
         },
         "tests": {
-          "files": 12,
-          "matches": 23
+          "files": 17,
+          "matches": 35
         },
         "docs": {
           "files": 7,
           "matches": 12
         },
         "other": {
-          "files": 8,
-          "matches": 31
+          "files": 51,
+          "matches": 176
         }
       },
       "keyFiles": [
@@ -7484,16 +7488,16 @@
           "matches": 32
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 14
-        },
-        {
           "path": "apps/optimitron/src/app/api/admin/organizations/[id]/route.ts",
           "matches": 13
         },
         {
           "path": "packages/db/src/managed-data/managed-iam-organization.ts",
           "matches": 11
+        },
+        {
+          "path": "apps/optimitron/src/app/api/organizations/[id]/route.ts",
+          "matches": 6
         },
         {
           "path": "packages/db/src/managed-data/managed-demo-user.ts",
@@ -7504,13 +7508,13 @@
           "matches": 6
         },
         {
-          "path": "apps/optimitron/src/app/api/organizations/[id]/route.ts",
-          "matches": 6
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/organization-position/route.ts",
+          "matches": 5
         }
       ],
       "notes": [],
-      "directPrismaFiles": 23,
-      "directPrismaMatches": 58,
+      "directPrismaFiles": 21,
+      "directPrismaMatches": 51,
       "classification": "core"
     },
     {
@@ -7534,8 +7538,8 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 10,
-          "matches": 20
+          "files": 11,
+          "matches": 21
         },
         "runtime-libraries": {
           "files": 8,
@@ -7554,8 +7558,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -7566,8 +7570,8 @@
           "matches": 3
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 2
         }
       },
       "keyFiles": [
@@ -7576,11 +7580,7 @@
           "matches": 23
         },
         {
-          "path": "packages/db/src/managed-data/managed-demo-user.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/managed-data/managed-iam-organization.ts",
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
           "matches": 2
         },
         {
@@ -7602,11 +7602,15 @@
         {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 10,
-      "directPrismaMatches": 20,
+      "directPrismaFiles": 11,
+      "directPrismaMatches": 21,
       "classification": "core"
     },
     {
@@ -7662,8 +7666,8 @@
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         }
       },
       "keyFiles": [
@@ -7726,12 +7730,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 9,
-          "matches": 16
+          "files": 8,
+          "matches": 15
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 10
+          "files": 4,
+          "matches": 9
         },
         "api-routes": {
           "files": 3,
@@ -7784,21 +7788,21 @@
           "matches": 4
         },
         {
+          "path": "apps/optimitron/src/app/admin/referendum-positions/page.tsx",
+          "matches": 2
+        },
+        {
           "path": "packages/db/src/managed-data/managed-demo-user.ts",
           "matches": 2
         },
         {
           "path": "packages/db/src/managed-data/managed-iam-organization.ts",
           "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/app/admin/referendum-positions/page.tsx",
-          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 9,
-      "directPrismaMatches": 16,
+      "directPrismaFiles": 8,
+      "directPrismaMatches": 15,
       "classification": "runtime-live"
     },
     {
@@ -8206,40 +8210,40 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 31,
-          "matches": 72
+          "files": 29,
+          "matches": 62
         },
         "runtime-libraries": {
-          "files": 48,
-          "matches": 181
+          "files": 49,
+          "matches": 177
         },
         "api-routes": {
-          "files": 9,
-          "matches": 22
+          "files": 7,
+          "matches": 13
         },
         "pages": {
-          "files": 4,
-          "matches": 6
+          "files": 3,
+          "matches": 4
         },
         "components": {
           "files": 3,
           "matches": 3
         },
         "scripts": {
-          "files": 5,
-          "matches": 19
+          "files": 6,
+          "matches": 21
         },
         "tests": {
-          "files": 17,
-          "matches": 45
+          "files": 20,
+          "matches": 50
         },
         "docs": {
-          "files": 8,
-          "matches": 17
+          "files": 9,
+          "matches": 18
         },
         "other": {
-          "files": 5,
-          "matches": 24
+          "files": 29,
+          "matches": 124
         }
       },
       "keyFiles": [
@@ -8256,29 +8260,29 @@
           "matches": 15
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 12
-        },
-        {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 10
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
+          "matches": 8
         },
         {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 8
         },
         {
-          "path": "apps/optimitron/src/lib/tasks.server.ts",
-          "matches": 8
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
+          "matches": 6
         },
         {
-          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/src/app/api/tasks/route.ts",
+          "matches": 6
+        },
+        {
+          "path": "apps/optimitron/src/lib/profile-identity.server.ts",
           "matches": 6
         }
       ],
       "notes": [],
-      "directPrismaFiles": 31,
-      "directPrismaMatches": 72,
+      "directPrismaFiles": 29,
+      "directPrismaMatches": 62,
       "classification": "core"
     },
     {
@@ -8302,16 +8306,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 10
+          "files": 3,
+          "matches": 4
         },
         "runtime-libraries": {
           "files": 4,
           "matches": 5
         },
         "api-routes": {
-          "files": 2,
-          "matches": 6
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -8340,23 +8344,15 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 10
-        },
-        {
           "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/db/src/managed-data/managed-grandma-kay.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/managed-data/managed-grandma-kay.ts",
           "matches": 2
         },
         {
@@ -8370,11 +8366,19 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 6
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql",
+          "matches": 13
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/PersonCondition.ts",
+          "matches": 188
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 10,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -8430,8 +8434,8 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         }
       },
       "keyFiles": [
@@ -8590,16 +8594,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 7,
-          "matches": 15
+          "files": 6,
+          "matches": 11
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 12
+          "files": 5,
+          "matches": 13
         },
         "api-routes": {
-          "files": 3,
-          "matches": 6
+          "files": 1,
+          "matches": 1
         },
         "pages": {
           "files": 0,
@@ -8632,12 +8636,12 @@
           "matches": 9
         },
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 8
+          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
+          "matches": 5
         },
         {
-          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
-          "matches": 7
+          "path": "packages/db/src/managed-data/managed-famous-disease-deaths.ts",
+          "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/evidence-package.server.ts",
@@ -8648,21 +8652,21 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
           "matches": 2
         },
         {
           "path": "apps/optimitron/src/app/api/people/[id]/evidence-package/route.ts",
           "matches": 1
+        },
+        {
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
+          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 15,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 11,
       "classification": "runtime-live"
     },
     {
@@ -8686,16 +8690,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 14
+          "files": 1,
+          "matches": 5
         },
         "runtime-libraries": {
           "files": 2,
           "matches": 8
         },
         "api-routes": {
-          "files": 2,
-          "matches": 9
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -8724,16 +8728,8 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 16
-        },
-        {
           "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 11
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/evidence-package.server.ts",
@@ -8754,11 +8750,19 @@
         {
           "path": "packages/db/src/generated/prisma/models/PersonMemorialEvidence.ts",
           "matches": 191
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 31
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 14,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
@@ -8782,16 +8786,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 8
+          "files": 1,
+          "matches": 5
         },
         "runtime-libraries": {
           "files": 3,
           "matches": 8
         },
         "api-routes": {
-          "files": 2,
-          "matches": 3
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -8824,14 +8828,6 @@
           "matches": 11
         },
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 1
         },
@@ -8850,11 +8846,19 @@
         {
           "path": "packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql",
           "matches": 10
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/PersonMemorialResponsibleParty.ts",
+          "matches": 196
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 27
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 8,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
@@ -8878,16 +8882,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 9
+          "files": 1,
+          "matches": 3
         },
         "runtime-libraries": {
           "files": 2,
           "matches": 4
         },
         "api-routes": {
-          "files": 2,
-          "matches": 6
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -8916,16 +8920,8 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 10
-        },
-        {
           "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/evidence-package.server.ts",
@@ -8946,11 +8942,19 @@
         {
           "path": "packages/db/src/generated/prisma/models/PersonMemorialSubmission.ts",
           "matches": 167
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 25
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 9,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 3,
       "classification": "runtime-live"
     },
     {
@@ -8974,16 +8978,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 9
+          "files": 1,
+          "matches": 3
         },
         "runtime-libraries": {
           "files": 2,
           "matches": 4
         },
         "api-routes": {
-          "files": 2,
-          "matches": 6
+          "files": 0,
+          "matches": 0
         },
         "pages": {
           "files": 0,
@@ -9012,16 +9016,8 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
-          "matches": 10
-        },
-        {
           "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
-        },
-        {
-          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
-          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/evidence-package.server.ts",
@@ -9042,11 +9038,19 @@
         {
           "path": "packages/db/src/generated/prisma/models/PersonRelationship.ts",
           "matches": 146
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 25
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/Person.ts",
+          "matches": 4
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 9,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 3,
       "classification": "runtime-live"
     },
     {
@@ -9179,27 +9183,27 @@
         },
         "pages": {
           "files": 3,
-          "matches": 6
+          "matches": 5
         },
         "components": {
-          "files": 6,
-          "matches": 9
+          "files": 5,
+          "matches": 8
         },
         "scripts": {
           "files": 0,
           "matches": 0
         },
         "tests": {
-          "files": 3,
-          "matches": 6
+          "files": 4,
+          "matches": 7
         },
         "docs": {
-          "files": 2,
-          "matches": 3
+          "files": 3,
+          "matches": 4
         },
         "other": {
-          "files": 10,
-          "matches": 71
+          "files": 7,
+          "matches": 14
         }
       },
       "keyFiles": [
@@ -9217,7 +9221,7 @@
         },
         {
           "path": "apps/optimitron/src/app/governments/[code]/page.tsx",
-          "matches": 3
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
@@ -9274,8 +9278,8 @@
           "matches": 0
         },
         "pages": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "components": {
           "files": 0,
@@ -9304,10 +9308,6 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
-          "matches": 2
-        },
-        {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
           "matches": 2
         },
@@ -9330,6 +9330,10 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 24
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
         }
       ],
       "notes": [],
@@ -9390,8 +9394,8 @@
           "matches": 1
         },
         "other": {
-          "files": 4,
-          "matches": 11
+          "files": 5,
+          "matches": 13
         }
       },
       "keyFiles": [
@@ -9400,11 +9404,11 @@
           "matches": 4
         },
         {
-          "path": "packages/db/src/types.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-alignment.ts",
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/wishocracy-alignment.ts",
+          "path": "packages/db/src/types.ts",
           "matches": 2
         },
         {
@@ -9744,28 +9748,28 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 21,
-          "matches": 32
+          "files": 18,
+          "matches": 29
         },
         "runtime-libraries": {
-          "files": 16,
-          "matches": 39
+          "files": 14,
+          "matches": 37
         },
         "api-routes": {
           "files": 3,
           "matches": 10
         },
         "pages": {
-          "files": 5,
-          "matches": 8
+          "files": 6,
+          "matches": 9
         },
         "components": {
           "files": 4,
           "matches": 4
         },
         "scripts": {
-          "files": 3,
-          "matches": 4
+          "files": 2,
+          "matches": 3
         },
         "tests": {
           "files": 7,
@@ -9776,8 +9780,8 @@
           "matches": 1
         },
         "other": {
-          "files": 5,
-          "matches": 5
+          "files": 16,
+          "matches": 27
         }
       },
       "keyFiles": [
@@ -9815,8 +9819,8 @@
         }
       ],
       "notes": [],
-      "directPrismaFiles": 21,
-      "directPrismaMatches": 32,
+      "directPrismaFiles": 18,
+      "directPrismaMatches": 29,
       "classification": "runtime-live"
     },
     {
@@ -9840,40 +9844,40 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 19,
-          "matches": 45
+          "files": 14,
+          "matches": 40
         },
         "runtime-libraries": {
-          "files": 16,
-          "matches": 42
+          "files": 15,
+          "matches": 41
         },
         "api-routes": {
           "files": 1,
           "matches": 2
         },
         "pages": {
-          "files": 4,
-          "matches": 4
+          "files": 1,
+          "matches": 1
         },
         "components": {
           "files": 0,
           "matches": 0
         },
         "scripts": {
-          "files": 2,
-          "matches": 8
+          "files": 1,
+          "matches": 7
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 3,
+          "matches": 3
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         },
         "other": {
-          "files": 2,
-          "matches": 4
+          "files": 17,
+          "matches": 29
         }
       },
       "keyFiles": [
@@ -9906,15 +9910,15 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
+          "path": "apps/optimitron/src/lib/referral-point-mint.server.ts",
           "matches": 4
         }
       ],
       "notes": [
         "Internal platform vote tied to a real Referendum row, referral attribution, and VOTE token / reward flows."
       ],
-      "directPrismaFiles": 19,
-      "directPrismaMatches": 45,
+      "directPrismaFiles": 14,
+      "directPrismaMatches": 40,
       "classification": "runtime-live"
     },
     {
@@ -9938,12 +9942,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 7
+          "files": 5,
+          "matches": 8
         },
         "runtime-libraries": {
-          "files": 11,
-          "matches": 15
+          "files": 12,
+          "matches": 17
         },
         "api-routes": {
           "files": 4,
@@ -9966,18 +9970,22 @@
           "matches": 7
         },
         "docs": {
-          "files": 6,
-          "matches": 7
+          "files": 7,
+          "matches": 8
         },
         "other": {
-          "files": 5,
-          "matches": 11
+          "files": 14,
+          "matches": 18
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/referral.server.ts",
           "matches": 8
+        },
+        {
+          "path": "apps/optimitron/src/lib/weekly-metrics.server.ts",
+          "matches": 3
         },
         {
           "path": "apps/optimitron/src/app/api/game-stats/route.ts",
@@ -10002,15 +10010,11 @@
         {
           "path": "apps/optimitron/src/app/api/personhood/world-id/verify/route.ts",
           "matches": 1
-        },
-        {
-          "path": "apps/optimitron/src/app/prize/page.tsx",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 7,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 8,
       "classification": "runtime-live"
     },
     {
@@ -10034,20 +10038,20 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "api-routes": {
           "files": 0,
           "matches": 0
         },
         "pages": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "components": {
           "files": 0,
@@ -10066,19 +10070,11 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 4
+          "files": 3,
+          "matches": 6
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/referral-redirect.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/app/r/[code]/page.tsx",
-          "matches": 1
-        },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
@@ -10102,12 +10098,22 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/browser.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 2
         }
       ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
+      "notes": [
+        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
+      ],
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
+      "classification": "suspicious"
     },
     {
       "name": "ReferralInvitation",
@@ -10162,8 +10168,8 @@
           "matches": 7
         },
         "other": {
-          "files": 1,
-          "matches": 5
+          "files": 8,
+          "matches": 12
         }
       },
       "keyFiles": [
@@ -10196,7 +10202,7 @@
           "matches": 2
         },
         {
-          "path": "packages/db/src/cleanup-test-data.ts",
+          "path": "apps/optimitron/src/lib/jobs/refresh-user-downstream-cache.server.ts",
           "matches": 1
         }
       ],
@@ -10250,16 +10256,16 @@
           "matches": 0
         },
         "tests": {
-          "files": 3,
-          "matches": 7
+          "files": 5,
+          "matches": 17
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         },
         "other": {
-          "files": 4,
-          "matches": 7
+          "files": 17,
+          "matches": 27
         }
       },
       "keyFiles": [
@@ -10284,15 +10290,15 @@
           "matches": 3
         },
         {
-          "path": "packages/data/src/datasets/wishonia-agencies.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/referendum-vote-sync.ts",
           "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/wishocracy-state-utils.ts",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/wishocracy-utils.ts",
           "matches": 2
         }
       ],
@@ -10322,20 +10328,20 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 5
+          "files": 4,
+          "matches": 4
         },
         "runtime-libraries": {
-          "files": 6,
-          "matches": 6
+          "files": 5,
+          "matches": 5
         },
         "api-routes": {
           "files": 1,
           "matches": 1
         },
         "pages": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "components": {
           "files": 0,
@@ -10354,17 +10360,13 @@
           "matches": 10
         },
         "other": {
-          "files": 1,
-          "matches": 5
+          "files": 3,
+          "matches": 7
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/app/api/share-attempts/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/lib/referral-redirect.server.ts",
           "matches": 2
         },
         {
@@ -10380,7 +10382,7 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/app/r/[code]/page.tsx",
+          "path": "apps/optimitron/src/lib/share-channels.ts",
           "matches": 1
         },
         {
@@ -10388,13 +10390,17 @@
           "matches": 1
         },
         {
-          "path": "apps/optimitron/src/lib/share-channels.ts",
-          "matches": 1
+          "path": "docs/TREATY_REFERRAL_MODEL_AUDIT.md",
+          "matches": 6
+        },
+        {
+          "path": "docs/FEATURES.md",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 5,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -10450,8 +10456,8 @@
           "matches": 1
         },
         "other": {
-          "files": 1,
-          "matches": 3
+          "files": 4,
+          "matches": 6
         }
       },
       "keyFiles": [
@@ -10514,12 +10520,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 13,
-          "matches": 26
+          "files": 12,
+          "matches": 18
         },
         "runtime-libraries": {
-          "files": 12,
-          "matches": 24
+          "files": 11,
+          "matches": 16
         },
         "api-routes": {
           "files": 0,
@@ -10552,10 +10558,6 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 16
-        },
-        {
           "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 6
         },
@@ -10582,11 +10584,15 @@
         {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/mcp-tools/private-execution.ts",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 13,
-      "directPrismaMatches": 26,
+      "directPrismaFiles": 12,
+      "directPrismaMatches": 18,
       "classification": "core"
     },
     {
@@ -10706,12 +10712,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 6
+          "files": 1,
+          "matches": 2
         },
         "runtime-libraries": {
-          "files": 21,
-          "matches": 27
+          "files": 18,
+          "matches": 22
         },
         "api-routes": {
           "files": 0,
@@ -10722,38 +10728,30 @@
           "matches": 5
         },
         "components": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "scripts": {
           "files": 1,
           "matches": 2
         },
         "tests": {
-          "files": 5,
-          "matches": 10
+          "files": 6,
+          "matches": 11
         },
         "docs": {
           "files": 2,
           "matches": 9
         },
         "other": {
-          "files": 2,
-          "matches": 3
+          "files": 10,
+          "matches": 12
         }
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/subject.server.ts",
-          "matches": 6
-        },
-        {
           "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 4
-        },
-        {
-          "path": "apps/optimitron/src/lib/court-data.server.ts",
-          "matches": 2
         },
         {
           "path": "apps/optimitron/src/app/admin/communications/page.tsx",
@@ -10764,8 +10762,8 @@
           "matches": 2
         },
         {
-          "path": "packages/data/src/datasets/medical-data/treatments/hemophilia.json",
-          "matches": 2
+          "path": "apps/optimitron/src/components/tasks/TaskExternalActionApprovals.tsx",
+          "matches": 1
         },
         {
           "path": "apps/optimitron/src/lib/email/preview-envelope.ts",
@@ -10774,11 +10772,19 @@
         {
           "path": "apps/optimitron/src/lib/tasks/task-comment-notification.email.md",
           "matches": 2
+        },
+        {
+          "path": "packages/data/src/datasets/medical-data/treatments/hemophilia.json",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/email/inbound-monitor-forward.ts",
+          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 6,
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 2,
       "classification": "runtime-live"
     },
     {
@@ -10802,66 +10808,66 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 60,
-          "matches": 186
+          "files": 65,
+          "matches": 218
         },
         "runtime-libraries": {
-          "files": 77,
-          "matches": 377
+          "files": 86,
+          "matches": 419
         },
         "api-routes": {
           "files": 14,
           "matches": 39
         },
         "pages": {
-          "files": 7,
-          "matches": 21
+          "files": 8,
+          "matches": 22
         },
         "components": {
-          "files": 12,
-          "matches": 16
+          "files": 13,
+          "matches": 17
         },
         "scripts": {
-          "files": 13,
-          "matches": 26
+          "files": 14,
+          "matches": 32
         },
         "tests": {
-          "files": 29,
-          "matches": 76
+          "files": 36,
+          "matches": 92
         },
         "docs": {
-          "files": 14,
-          "matches": 60
+          "files": 18,
+          "matches": 69
         },
         "other": {
-          "files": 13,
-          "matches": 39
+          "files": 31,
+          "matches": 127
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 132
+          "matches": 133
         },
         {
           "path": "apps/optimitron/src/lib/tasks.server.ts",
-          "matches": 59
+          "matches": 86
+        },
+        {
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 33
         },
         {
           "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 28
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 27
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
+          "matches": 20
         },
         {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 19
-        },
-        {
-          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
-          "matches": 18
         },
         {
           "path": "apps/optimitron/src/lib/tasks/private-task-bundle.server.ts",
@@ -10873,8 +10879,8 @@
         }
       ],
       "notes": [],
-      "directPrismaFiles": 60,
-      "directPrismaMatches": 186,
+      "directPrismaFiles": 65,
+      "directPrismaMatches": 218,
       "classification": "core"
     },
     {
@@ -11186,12 +11192,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 13
+          "files": 5,
+          "matches": 19
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 18
+          "files": 6,
+          "matches": 23
         },
         "api-routes": {
           "files": 0,
@@ -11206,8 +11212,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -11225,11 +11231,19 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/tasks.server.ts",
-          "matches": 18
+          "matches": 26
         },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 7
+        },
+        {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/flyer-hang/ensure-nearby.server.ts",
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/lib/task-payouts.server.ts",
@@ -11246,19 +11260,11 @@
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 7
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql",
-          "matches": 9
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 13,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 19,
       "classification": "core"
     },
     {
@@ -11282,12 +11288,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 10,
-          "matches": 34
+          "files": 12,
+          "matches": 38
         },
         "runtime-libraries": {
-          "files": 12,
-          "matches": 43
+          "files": 13,
+          "matches": 47
         },
         "api-routes": {
           "files": 0,
@@ -11302,8 +11308,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 2,
-          "matches": 3
+          "files": 3,
+          "matches": 4
         },
         "tests": {
           "files": 0,
@@ -11321,7 +11327,7 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/tasks/task-comments.server.ts",
-          "matches": 28
+          "matches": 32
         },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
@@ -11344,17 +11350,17 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/tasks/task-comment-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
           "matches": 3
         },
         {
-          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comment-notifications.server.ts",
           "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 10,
-      "directPrismaMatches": 34,
+      "directPrismaFiles": 12,
+      "directPrismaMatches": 38,
       "classification": "runtime-live"
     },
     {
@@ -11378,8 +11384,8 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 18
+          "files": 5,
+          "matches": 19
         },
         "runtime-libraries": {
           "files": 4,
@@ -11398,8 +11404,8 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
           "files": 0,
@@ -11424,6 +11430,10 @@
           "matches": 14
         },
         {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
+        },
+        {
           "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 2
         },
@@ -11442,15 +11452,11 @@
         {
           "path": "packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql",
           "matches": 1
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/TaskCommentAttachment.ts",
-          "matches": 186
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 18,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 19,
       "classification": "runtime-live"
     },
     {
@@ -11570,12 +11576,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 10,
+          "files": 11,
           "matches": 35
         },
         "runtime-libraries": {
           "files": 14,
-          "matches": 46
+          "matches": 45
         },
         "api-routes": {
           "files": 0,
@@ -11602,8 +11608,8 @@
           "matches": 20
         },
         "other": {
-          "files": 1,
-          "matches": 8
+          "files": 4,
+          "matches": 11
         }
       },
       "keyFiles": [
@@ -11612,12 +11618,12 @@
           "matches": 29
         },
         {
-          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
-          "matches": 11
-        },
-        {
           "path": "apps/optimitron/src/lib/email/inbound-reply.ts",
           "matches": 10
+        },
+        {
+          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
+          "matches": 9
         },
         {
           "path": "apps/optimitron/src/lib/communications-audit.server.ts",
@@ -11641,7 +11647,7 @@
         }
       ],
       "notes": [],
-      "directPrismaFiles": 10,
+      "directPrismaFiles": 11,
       "directPrismaMatches": 35,
       "classification": "runtime-live"
     },
@@ -12246,12 +12252,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 7,
-          "matches": 32
+          "files": 8,
+          "matches": 29
         },
         "runtime-libraries": {
-          "files": 7,
-          "matches": 32
+          "files": 8,
+          "matches": 29
         },
         "api-routes": {
           "files": 0,
@@ -12285,15 +12291,15 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 26
+          "matches": 28
         },
         {
           "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 16
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 14
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
+          "matches": 4
         },
         {
           "path": "apps/optimitron/src/lib/form-responses.server.ts",
@@ -12312,13 +12318,13 @@
           "matches": 2
         },
         {
-          "path": "docs/FEATURES.md",
+          "path": "apps/optimitron/src/lib/tasks/task-tree-steward.server.ts",
           "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 32,
+      "directPrismaFiles": 8,
+      "directPrismaMatches": 29,
       "classification": "core"
     },
     {
@@ -12342,12 +12348,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 2
+          "files": 4,
+          "matches": 12
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 2
+          "files": 3,
+          "matches": 11
         },
         "api-routes": {
           "files": 0,
@@ -12362,12 +12368,12 @@
           "matches": 0
         },
         "scripts": {
-          "files": 1,
-          "matches": 2
+          "files": 2,
+          "matches": 3
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 2
         },
         "docs": {
           "files": 4,
@@ -12380,11 +12386,27 @@
       },
       "keyFiles": [
         {
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 16
+        },
+        {
           "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 4
         },
         {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/tasks/document-review-invalidation.server.ts",
+          "matches": 2
+        },
+        {
           "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
+          "matches": 2
+        },
+        {
+          "path": "apps/optimitron/src/lib/tasks/document-review.integration.test.ts",
           "matches": 2
         },
         {
@@ -12394,27 +12416,11 @@
         {
           "path": "docs/plans/phased-approach-optimitron.md",
           "matches": 1
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "docs/TASK_MODEL.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 7
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql",
-          "matches": 15
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 12,
       "classification": "runtime-live"
     },
     {
@@ -12438,12 +12444,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 7,
-          "matches": 12
+          "files": 10,
+          "matches": 18
         },
         "runtime-libraries": {
-          "files": 6,
-          "matches": 11
+          "files": 8,
+          "matches": 16
         },
         "api-routes": {
           "files": 1,
@@ -12458,12 +12464,12 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "docs": {
           "files": 3,
@@ -12480,8 +12486,20 @@
           "matches": 10
         },
         {
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 6
+        },
+        {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 4
+        },
+        {
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
+          "matches": 4
+        },
+        {
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
+          "matches": 2
         },
         {
           "path": "apps/optimitron/src/app/api/extension/tasks/[id]/done/route.ts",
@@ -12492,25 +12510,13 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/lib/tasks/personal-planning.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/plans/phased-approach-optimitron.md",
+          "path": "apps/optimitron/src/lib/tasks/agent-lease.server.ts",
           "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 12,
+      "directPrismaFiles": 10,
+      "directPrismaMatches": 18,
       "classification": "runtime-live"
     },
     {
@@ -12662,8 +12668,8 @@
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 3
         }
       },
       "keyFiles": [
@@ -12822,12 +12828,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 8,
-          "matches": 20
+          "files": 9,
+          "matches": 21
         },
         "runtime-libraries": {
-          "files": 6,
-          "matches": 20
+          "files": 7,
+          "matches": 21
         },
         "api-routes": {
           "files": 1,
@@ -12888,13 +12894,13 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/task-funding/status.server.ts",
+          "path": "apps/optimitron/src/lib/public-task-page.server.ts",
           "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 8,
-      "directPrismaMatches": 20,
+      "directPrismaFiles": 9,
+      "directPrismaMatches": 21,
       "classification": "runtime-live"
     },
     {
@@ -13064,11 +13070,11 @@
           "matches": 8
         },
         {
-          "path": "packages/db/src/managed-data/managed-seed-data.ts",
+          "path": "apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts",
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts",
+          "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 4
         },
         {
@@ -13148,10 +13154,6 @@
       },
       "keyFiles": [
         {
-          "path": "packages/db/src/managed-data/managed-seed-data.ts",
-          "matches": 2
-        },
-        {
           "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
@@ -13165,6 +13167,10 @@
         },
         {
           "path": "apps/optimitron/src/lib/tasks/wishonia-task-reply.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 2
         },
         {
@@ -13252,11 +13258,11 @@
           "matches": 4
         },
         {
-          "path": "packages/db/src/managed-data/managed-seed-data.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 2
         },
         {
@@ -13594,8 +13600,8 @@
           "matches": 19
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 19
+          "files": 3,
+          "matches": 20
         },
         "api-routes": {
           "files": 0,
@@ -13640,6 +13646,10 @@
           "matches": 2
         },
         {
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
+          "matches": 1
+        },
+        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 7
         },
@@ -13654,10 +13664,6 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 31
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/User.ts",
-          "matches": 4
         }
       ],
       "notes": [],
@@ -13686,12 +13692,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 8,
-          "matches": 15
-        },
-        "runtime-libraries": {
           "files": 7,
           "matches": 13
+        },
+        "runtime-libraries": {
+          "files": 6,
+          "matches": 11
         },
         "api-routes": {
           "files": 0,
@@ -13736,10 +13742,6 @@
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/notion-import.server.ts",
-          "matches": 4
-        },
-        {
           "path": "apps/optimitron/src/lib/tasks/private-task-bundle.server.ts",
           "matches": 4
         },
@@ -13754,11 +13756,15 @@
         {
           "path": "apps/optimitron/src/lib/tasks/private-work-portability.server.ts",
           "matches": 2
+        },
+        {
+          "path": "docs/plans/phased-approach-optimitron.md",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 8,
-      "directPrismaMatches": 15,
+      "directPrismaFiles": 7,
+      "directPrismaMatches": 13,
       "classification": "core"
     },
     {
@@ -13820,11 +13826,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/db/src/managed-data/managed-task-triggers.ts",
+          "path": "apps/optimitron/src/lib/triggers/admin.ts",
           "matches": 4
         },
         {
-          "path": "apps/optimitron/src/lib/triggers/admin.ts",
+          "path": "packages/db/src/managed-data/managed-task-triggers.ts",
           "matches": 4
         },
         {
@@ -13907,11 +13913,11 @@
         },
         "docs": {
           "files": 6,
-          "matches": 11
+          "matches": 10
         },
         "other": {
-          "files": 2,
-          "matches": 26
+          "files": 5,
+          "matches": 47
         }
       },
       "keyFiles": [
@@ -14070,12 +14076,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 5
+          "files": 3,
+          "matches": 6
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 5
+          "files": 3,
+          "matches": 6
         },
         "api-routes": {
           "files": 0,
@@ -14116,6 +14122,10 @@
           "matches": 2
         },
         {
+          "path": "apps/optimitron/src/lib/tasks/document-review.server.ts",
+          "matches": 2
+        },
+        {
           "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
@@ -14134,15 +14144,11 @@
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
-        },
-        {
-          "path": "docs/TASK_MODEL.md",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 5,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 6,
       "classification": "runtime-live"
     },
     {
@@ -14166,12 +14172,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 5
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 6
+          "files": 0,
+          "matches": 0
         },
         "api-routes": {
           "files": 0,
@@ -14190,22 +14196,22 @@
           "matches": 0
         },
         "tests": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 3
         },
         "docs": {
           "files": 5,
-          "matches": 7
+          "matches": 6
         },
         "other": {
-          "files": 1,
-          "matches": 6
+          "files": 2,
+          "matches": 11
         }
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 11
+          "path": "apps/optimitron/src/lib/__tests__/mcp-server.test.ts",
+          "matches": 2
         },
         {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
@@ -14213,7 +14219,7 @@
         },
         {
           "path": "docs/FEATURES.md",
-          "matches": 3
+          "matches": 2
         },
         {
           "path": "docs/MCP_SERVER.md",
@@ -14236,10 +14242,12 @@
           "matches": 7
         }
       ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 5,
-      "classification": "runtime-live"
+      "notes": [
+        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
+      ],
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
+      "classification": "tests-only"
     },
     {
       "name": "TrackingReminderNotification",
@@ -14262,12 +14270,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 4
+          "files": 0,
+          "matches": 0
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 4
+          "files": 0,
+          "matches": 0
         },
         "api-routes": {
           "files": 0,
@@ -14290,8 +14298,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 1,
@@ -14300,16 +14308,8 @@
       },
       "keyFiles": [
         {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 8
-        },
-        {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
           "matches": 2
-        },
-        {
-          "path": "docs/FEATURES.md",
-          "matches": 1
         },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
@@ -14330,12 +14330,22 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 23
+        },
+        {
+          "path": "packages/db/src/generated/prisma/browser.ts",
+          "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 3
         }
       ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 4,
-      "classification": "runtime-live"
+      "notes": [
+        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
+      ],
+      "directPrismaFiles": 0,
+      "directPrismaMatches": 0,
+      "classification": "tests-only"
     },
     {
       "name": "Unit",
@@ -14358,12 +14368,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 7
+          "files": 3,
+          "matches": 4
         },
         "runtime-libraries": {
-          "files": 22,
-          "matches": 34
+          "files": 23,
+          "matches": 32
         },
         "api-routes": {
           "files": 1,
@@ -14386,19 +14396,15 @@
           "matches": 6
         },
         "docs": {
-          "files": 6,
-          "matches": 6
+          "files": 10,
+          "matches": 14
         },
         "other": {
-          "files": 2,
-          "matches": 7
+          "files": 20,
+          "matches": 42
         }
       },
       "keyFiles": [
-        {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 8
-        },
         {
           "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 4
@@ -14424,13 +14430,17 @@
           "matches": 3
         },
         {
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/data/src/datasets/medical-data/treatments/covid-19.json",
           "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 7,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -14454,16 +14464,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 82,
-          "matches": 142
+          "files": 87,
+          "matches": 157
         },
         "runtime-libraries": {
-          "files": 87,
-          "matches": 195
+          "files": 88,
+          "matches": 202
         },
         "api-routes": {
-          "files": 15,
-          "matches": 21
+          "files": 17,
+          "matches": 26
         },
         "pages": {
           "files": 5,
@@ -14474,37 +14484,37 @@
           "matches": 6
         },
         "scripts": {
-          "files": 5,
-          "matches": 26
+          "files": 6,
+          "matches": 30
         },
         "tests": {
-          "files": 22,
-          "matches": 50
+          "files": 26,
+          "matches": 62
         },
         "docs": {
           "files": 9,
           "matches": 29
         },
         "other": {
-          "files": 10,
-          "matches": 62
+          "files": 65,
+          "matches": 164
         }
       },
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 30
+          "matches": 24
         },
         {
           "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 20
         },
         {
-          "path": "apps/optimitron/src/lib/profile.server.ts",
-          "matches": 12
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
+          "matches": 18
         },
         {
-          "path": "apps/optimitron/src/lib/tasks.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 12
         },
         {
@@ -14520,13 +14530,13 @@
           "matches": 9
         },
         {
-          "path": "apps/optimitron/src/lib/email/suppression.server.ts",
+          "path": "apps/optimitron/scripts/seed-visual-review-fixtures.ts",
           "matches": 8
         }
       ],
       "notes": [],
-      "directPrismaFiles": 82,
-      "directPrismaMatches": 142,
+      "directPrismaFiles": 87,
+      "directPrismaMatches": 157,
       "classification": "core"
     },
     {
@@ -14648,12 +14658,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 7
+          "files": 4,
+          "matches": 6
         },
         "runtime-libraries": {
-          "files": 6,
-          "matches": 11
+          "files": 5,
+          "matches": 10
         },
         "api-routes": {
           "files": 1,
@@ -14702,10 +14712,6 @@
           "matches": 2
         },
         {
-          "path": "apps/optimitron/src/lib/mcp-server.ts",
-          "matches": 2
-        },
-        {
           "path": "packages/data/src/importers/standard-variable-names.ts",
           "matches": 2
         },
@@ -14716,11 +14722,15 @@
         {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
           "matches": 1
+        },
+        {
+          "path": "packages/db/prisma/schema.prisma",
+          "matches": 6
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 7,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 6,
       "classification": "runtime-live"
     },
     {
@@ -14864,8 +14874,8 @@
           "matches": 0
         },
         "tests": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 3
         },
         "docs": {
           "files": 1,
@@ -14879,6 +14889,10 @@
       "keyFiles": [
         {
           "path": "apps/optimitron/src/lib/auth-spam-guard.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "apps/trialabundancesurvey/tests/e2e/auth-email.spec.ts",
           "matches": 2
         },
         {
@@ -14904,10 +14918,6 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
@@ -15058,16 +15068,16 @@
           "matches": 7
         },
         "tests": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 6
         },
         "docs": {
           "files": 0,
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 3,
+          "matches": 5
         }
       },
       "keyFiles": [
@@ -15329,7 +15339,7 @@
         },
         "runtime-libraries": {
           "files": 3,
-          "matches": 4
+          "matches": 5
         },
         "api-routes": {
           "files": 0,
@@ -15356,8 +15366,8 @@
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 3,
+          "matches": 4
         }
       },
       "keyFiles": [
@@ -15370,11 +15380,11 @@
           "matches": 3
         },
         {
-          "path": "packages/db/src/managed-data/managed-seed-data.ts",
-          "matches": 2
+          "path": "packages/db/src/wishocracy-catalog.ts",
+          "matches": 3
         },
         {
-          "path": "apps/optimitron/src/lib/wishocracy-catalog.server.ts",
+          "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 2
         },
         {
@@ -15548,8 +15558,8 @@
           "matches": 0
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         }
       },
       "keyFiles": [
@@ -15692,8 +15702,8 @@
     {
       "name": "ActivityType",
       "schemaLine": 309,
-      "referenceFiles": 27,
-      "references": 128
+      "referenceFiles": 34,
+      "references": 176
     },
     {
       "name": "AgentExecutorStatus",
@@ -15710,20 +15720,20 @@
     {
       "name": "BadgeType",
       "schemaLine": 433,
-      "referenceFiles": 11,
-      "references": 78
+      "referenceFiles": 14,
+      "references": 103
     },
     {
       "name": "CollectionFieldType",
       "schemaLine": 821,
-      "referenceFiles": 11,
-      "references": 111
+      "referenceFiles": 9,
+      "references": 107
     },
     {
       "name": "CombinationOperation",
       "schemaLine": 54,
-      "referenceFiles": 21,
-      "references": 371
+      "referenceFiles": 22,
+      "references": 372
     },
     {
       "name": "CommerceEntitlementStatus",
@@ -15782,8 +15792,8 @@
     {
       "name": "ContentAccessLevel",
       "schemaLine": 811,
-      "referenceFiles": 18,
-      "references": 208
+      "referenceFiles": 19,
+      "references": 206
     },
     {
       "name": "ContentReportStatus",
@@ -15794,32 +15804,32 @@
     {
       "name": "ContentVisibility",
       "schemaLine": 804,
-      "referenceFiles": 46,
-      "references": 488
+      "referenceFiles": 50,
+      "references": 509
     },
     {
       "name": "CourtCaseItemStatus",
       "schemaLine": 4710,
-      "referenceFiles": 13,
-      "references": 258
+      "referenceFiles": 14,
+      "references": 259
     },
     {
       "name": "CourtCasePartyCapacity",
       "schemaLine": 4701,
-      "referenceFiles": 10,
-      "references": 76
+      "referenceFiles": 9,
+      "references": 74
     },
     {
       "name": "CourtCasePartyRole",
       "schemaLine": 4691,
-      "referenceFiles": 15,
+      "referenceFiles": 17,
       "references": 97
     },
     {
       "name": "CourtCaseStatus",
       "schemaLine": 4682,
-      "referenceFiles": 12,
-      "references": 116
+      "referenceFiles": 11,
+      "references": 112
     },
     {
       "name": "DatingBlockScope",
@@ -15878,8 +15888,8 @@
     {
       "name": "DatingProfileStatus",
       "schemaLine": 9664,
-      "referenceFiles": 11,
-      "references": 134
+      "referenceFiles": 12,
+      "references": 136
     },
     {
       "name": "DatingQuestionAnswerVisibility",
@@ -15914,14 +15924,14 @@
     {
       "name": "EfficacyLagEvidenceStatus",
       "schemaLine": 238,
-      "referenceFiles": 10,
-      "references": 80
+      "referenceFiles": 11,
+      "references": 83
     },
     {
       "name": "EmailLogStatus",
       "schemaLine": 1132,
-      "referenceFiles": 15,
-      "references": 99
+      "referenceFiles": 18,
+      "references": 110
     },
     {
       "name": "EvidenceGrade",
@@ -15932,38 +15942,38 @@
     {
       "name": "ExternalActionRequestStatus",
       "schemaLine": 560,
-      "referenceFiles": 13,
-      "references": 139
+      "referenceFiles": 20,
+      "references": 180
     },
     {
       "name": "FillingType",
       "schemaLine": 60,
-      "referenceFiles": 22,
-      "references": 450
+      "referenceFiles": 23,
+      "references": 455
     },
     {
       "name": "FormFieldType",
       "schemaLine": 1100,
-      "referenceFiles": 9,
-      "references": 68
+      "referenceFiles": 14,
+      "references": 115
     },
     {
       "name": "FormPurpose",
       "schemaLine": 1083,
-      "referenceFiles": 11,
-      "references": 90
+      "referenceFiles": 16,
+      "references": 102
     },
     {
       "name": "FormStatus",
       "schemaLine": 1092,
-      "referenceFiles": 11,
-      "references": 90
+      "referenceFiles": 13,
+      "references": 94
     },
     {
       "name": "FormSubmissionStatus",
       "schemaLine": 1116,
-      "referenceFiles": 11,
-      "references": 108
+      "referenceFiles": 15,
+      "references": 119
     },
     {
       "name": "InterventionExperienceStatus",
@@ -15992,8 +16002,8 @@
     {
       "name": "JurisdictionType",
       "schemaLine": 153,
-      "referenceFiles": 16,
-      "references": 172
+      "referenceFiles": 19,
+      "references": 185
     },
     {
       "name": "KnowledgeSensitivity",
@@ -16004,14 +16014,14 @@
     {
       "name": "McpScope",
       "schemaLine": 1052,
-      "referenceFiles": 64,
-      "references": 641
+      "referenceFiles": 80,
+      "references": 725
     },
     {
       "name": "McpToolCallStatus",
       "schemaLine": 1069,
-      "referenceFiles": 9,
-      "references": 75
+      "referenceFiles": 10,
+      "references": 78
     },
     {
       "name": "MeasurementScale",
@@ -16022,8 +16032,8 @@
     {
       "name": "ModelRevisionStatus",
       "schemaLine": 892,
-      "referenceFiles": 14,
-      "references": 164
+      "referenceFiles": 16,
+      "references": 168
     },
     {
       "name": "NotificationChannel",
@@ -16034,20 +16044,20 @@
     {
       "name": "NotificationStatus",
       "schemaLine": 144,
-      "referenceFiles": 11,
-      "references": 76
+      "referenceFiles": 12,
+      "references": 148
     },
     {
       "name": "NotificationType",
       "schemaLine": 359,
-      "referenceFiles": 10,
-      "references": 87
+      "referenceFiles": 12,
+      "references": 92
     },
     {
       "name": "OrganizationMemberRole",
       "schemaLine": 658,
-      "referenceFiles": 27,
-      "references": 134
+      "referenceFiles": 30,
+      "references": 139
     },
     {
       "name": "OrganizationNameKind",
@@ -16058,20 +16068,20 @@
     {
       "name": "OrganizationReferendumPositionStatus",
       "schemaLine": 416,
-      "referenceFiles": 20,
-      "references": 123
+      "referenceFiles": 22,
+      "references": 129
     },
     {
       "name": "OrgStatus",
       "schemaLine": 399,
-      "referenceFiles": 43,
-      "references": 276
+      "referenceFiles": 51,
+      "references": 321
     },
     {
       "name": "OrgType",
       "schemaLine": 380,
-      "referenceFiles": 43,
-      "references": 260
+      "referenceFiles": 47,
+      "references": 291
     },
     {
       "name": "ParameterDistributionType",
@@ -16094,14 +16104,14 @@
     {
       "name": "PersonConditionStatus",
       "schemaLine": 201,
-      "referenceFiles": 18,
-      "references": 106
+      "referenceFiles": 19,
+      "references": 108
     },
     {
       "name": "PersonDeathCauseCategory",
       "schemaLine": 209,
-      "referenceFiles": 18,
-      "references": 149
+      "referenceFiles": 21,
+      "references": 162
     },
     {
       "name": "PersonhoodProvider",
@@ -16112,20 +16122,20 @@
     {
       "name": "PersonhoodVerificationStatus",
       "schemaLine": 187,
-      "referenceFiles": 16,
-      "references": 86
+      "referenceFiles": 17,
+      "references": 88
     },
     {
       "name": "PersonLifeStatus",
       "schemaLine": 194,
-      "referenceFiles": 34,
-      "references": 256
+      "referenceFiles": 46,
+      "references": 306
     },
     {
       "name": "PersonMemorialEvidenceKind",
       "schemaLine": 227,
-      "referenceFiles": 15,
-      "references": 112
+      "referenceFiles": 17,
+      "references": 127
     },
     {
       "name": "PointMintStatus",
@@ -16136,20 +16146,20 @@
     {
       "name": "ReferendumKind",
       "schemaLine": 4671,
-      "referenceFiles": 17,
-      "references": 124
+      "referenceFiles": 19,
+      "references": 134
     },
     {
       "name": "ReferendumStatus",
       "schemaLine": 4663,
-      "referenceFiles": 22,
-      "references": 137
+      "referenceFiles": 28,
+      "references": 155
     },
     {
       "name": "ReferendumVoteSource",
       "schemaLine": 4498,
-      "referenceFiles": 16,
-      "references": 121
+      "referenceFiles": 21,
+      "references": 143
     },
     {
       "name": "ReferralAnswer",
@@ -16160,20 +16170,20 @@
     {
       "name": "ReferralInvitationContactMethod",
       "schemaLine": 351,
-      "referenceFiles": 12,
-      "references": 120
+      "referenceFiles": 15,
+      "references": 136
     },
     {
       "name": "ReferralInvitationMessageFormat",
       "schemaLine": 345,
-      "referenceFiles": 14,
-      "references": 116
+      "referenceFiles": 17,
+      "references": 123
     },
     {
       "name": "ReferralInvitationStatus",
       "schemaLine": 335,
-      "referenceFiles": 15,
-      "references": 122
+      "referenceFiles": 22,
+      "references": 164
     },
     {
       "name": "RelationshipDirection",
@@ -16184,26 +16194,26 @@
     {
       "name": "ShareSource",
       "schemaLine": 329,
-      "referenceFiles": 10,
-      "references": 92
+      "referenceFiles": 13,
+      "references": 99
     },
     {
       "name": "SocialPlatform",
       "schemaLine": 423,
-      "referenceFiles": 11,
-      "references": 68
+      "referenceFiles": 14,
+      "references": 86
     },
     {
       "name": "SourceArtifactType",
       "schemaLine": 854,
-      "referenceFiles": 27,
-      "references": 207
+      "referenceFiles": 25,
+      "references": 190
     },
     {
       "name": "SourceSystem",
       "schemaLine": 842,
-      "referenceFiles": 26,
-      "references": 230
+      "referenceFiles": 25,
+      "references": 227
     },
     {
       "name": "StrengthLevel",
@@ -16226,8 +16236,8 @@
     {
       "name": "SubjectType",
       "schemaLine": 161,
-      "referenceFiles": 15,
-      "references": 141
+      "referenceFiles": 19,
+      "references": 148
     },
     {
       "name": "TaskApplicationEventType",
@@ -16238,8 +16248,8 @@
     {
       "name": "TaskApplicationPolicy",
       "schemaLine": 678,
-      "referenceFiles": 10,
-      "references": 234
+      "referenceFiles": 15,
+      "references": 245
     },
     {
       "name": "TaskApplicationStatus",
@@ -16250,50 +16260,50 @@
     {
       "name": "TaskCandidateKind",
       "schemaLine": 517,
-      "referenceFiles": 12,
-      "references": 202
+      "referenceFiles": 14,
+      "references": 211
     },
     {
       "name": "TaskCandidateMatchStatus",
       "schemaLine": 526,
-      "referenceFiles": 11,
-      "references": 111
+      "referenceFiles": 12,
+      "references": 115
     },
     {
       "name": "TaskCategory",
       "schemaLine": 459,
-      "referenceFiles": 41,
-      "references": 380
+      "referenceFiles": 45,
+      "references": 417
     },
     {
       "name": "TaskClaimPolicy",
       "schemaLine": 640,
-      "referenceFiles": 52,
-      "references": 426
+      "referenceFiles": 61,
+      "references": 466
     },
     {
       "name": "TaskClaimStatus",
       "schemaLine": 711,
-      "referenceFiles": 19,
-      "references": 141
+      "referenceFiles": 24,
+      "references": 196
     },
     {
       "name": "TaskCommentKind",
       "schemaLine": 1026,
-      "referenceFiles": 22,
-      "references": 144
+      "referenceFiles": 21,
+      "references": 142
     },
     {
       "name": "TaskCommentSource",
       "schemaLine": 1041,
       "referenceFiles": 21,
-      "references": 143
+      "references": 144
     },
     {
       "name": "TaskCommentVisibility",
       "schemaLine": 1035,
-      "referenceFiles": 9,
-      "references": 110
+      "referenceFiles": 12,
+      "references": 118
     },
     {
       "name": "TaskCommunicationAudience",
@@ -16305,7 +16315,7 @@
       "name": "TaskCommunicationChannel",
       "schemaLine": 982,
       "referenceFiles": 17,
-      "references": 156
+      "references": 157
     },
     {
       "name": "TaskCommunicationDirection",
@@ -16340,8 +16350,8 @@
     {
       "name": "TaskCommunicationStatus",
       "schemaLine": 993,
-      "referenceFiles": 18,
-      "references": 171
+      "referenceFiles": 22,
+      "references": 184
     },
     {
       "name": "TaskCompensationCadence",
@@ -16352,8 +16362,8 @@
     {
       "name": "TaskCompensationKind",
       "schemaLine": 483,
-      "referenceFiles": 14,
-      "references": 247
+      "referenceFiles": 16,
+      "references": 259
     },
     {
       "name": "TaskDeadlinePolicy",
@@ -16388,26 +16398,26 @@
     {
       "name": "TaskEdgeType",
       "schemaLine": 721,
-      "referenceFiles": 20,
-      "references": 122
+      "referenceFiles": 22,
+      "references": 141
     },
     {
       "name": "TaskEngagementKind",
       "schemaLine": 474,
-      "referenceFiles": 11,
-      "references": 233
+      "referenceFiles": 15,
+      "references": 245
     },
     {
       "name": "TaskExecutionAttemptStatus",
       "schemaLine": 534,
-      "referenceFiles": 17,
-      "references": 167
+      "referenceFiles": 23,
+      "references": 193
     },
     {
       "name": "TaskExecutionMode",
       "schemaLine": 510,
-      "referenceFiles": 14,
-      "references": 244
+      "referenceFiles": 21,
+      "references": 264
     },
     {
       "name": "TaskFundingEventType",
@@ -16424,26 +16434,26 @@
     {
       "name": "TaskFundingPaymentStatus",
       "schemaLine": 765,
-      "referenceFiles": 16,
-      "references": 148
+      "referenceFiles": 17,
+      "references": 151
     },
     {
       "name": "TaskFundingPledgerKind",
       "schemaLine": 735,
-      "referenceFiles": 16,
-      "references": 138
+      "referenceFiles": 17,
+      "references": 141
     },
     {
       "name": "TaskFundingPledgeStatus",
       "schemaLine": 740,
-      "referenceFiles": 21,
-      "references": 168
+      "referenceFiles": 22,
+      "references": 173
     },
     {
       "name": "TaskFundingTargetStatus",
       "schemaLine": 728,
-      "referenceFiles": 26,
-      "references": 140
+      "referenceFiles": 28,
+      "references": 145
     },
     {
       "name": "TaskImpactEstimateKind",
@@ -16454,14 +16464,14 @@
     {
       "name": "TaskImpactFrameKey",
       "schemaLine": 915,
-      "referenceFiles": 34,
-      "references": 150
+      "referenceFiles": 35,
+      "references": 154
     },
     {
       "name": "TaskImpactPublicationStatus",
       "schemaLine": 907,
-      "referenceFiles": 16,
-      "references": 97
+      "referenceFiles": 18,
+      "references": 103
     },
     {
       "name": "TaskMarketplaceFeePolicy",
@@ -16490,26 +16500,26 @@
     {
       "name": "TaskRemotePolicy",
       "schemaLine": 502,
-      "referenceFiles": 11,
-      "references": 235
+      "referenceFiles": 13,
+      "references": 239
     },
     {
       "name": "TaskStatus",
       "schemaLine": 650,
-      "referenceFiles": 82,
-      "references": 610
+      "referenceFiles": 98,
+      "references": 761
     },
     {
       "name": "TaskVerificationMethod",
       "schemaLine": 544,
-      "referenceFiles": 11,
-      "references": 83
+      "referenceFiles": 13,
+      "references": 88
     },
     {
       "name": "TaskVerificationResult",
       "schemaLine": 552,
-      "referenceFiles": 13,
-      "references": 93
+      "referenceFiles": 16,
+      "references": 101
     },
     {
       "name": "UnitCodeSystem",
@@ -16538,8 +16548,8 @@
     {
       "name": "VotePosition",
       "schemaLine": 4491,
-      "referenceFiles": 36,
-      "references": 258
+      "referenceFiles": 57,
+      "references": 338
     },
     {
       "name": "WishReason",
@@ -16563,8 +16573,8 @@
       "name": "CitizenBill",
       "classification": "missing-first-class-model-candidate",
       "summary": "Legislative bill metadata is heavily used through external fetchers, classification flows, UI cards, and saved CitizenBillVote rows, but there is no first-class Prisma bill model yet.",
-      "evidenceFiles": 14,
-      "evidenceMatches": 112,
+      "evidenceFiles": 15,
+      "evidenceMatches": 113,
       "evidence": [
         {
           "path": "apps/optimitron/src/components/chat/ChatPage.tsx",
@@ -16587,15 +16597,15 @@
           "matches": 9
         },
         {
-          "path": "packages/data/src/fetchers/congress.ts",
-          "matches": 6
-        },
-        {
           "path": "apps/optimitron/src/app/api/civic/votes/route.ts",
           "matches": 6
         },
         {
           "path": "apps/optimitron/src/components/chat/BillCard.tsx",
+          "matches": 6
+        },
+        {
+          "path": "packages/data/src/fetchers/congress.ts",
           "matches": 6
         }
       ]

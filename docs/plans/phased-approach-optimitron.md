@@ -77,7 +77,7 @@ Codex and Claude Code own conversational interaction, source connectors they alr
 | EV and queue | Impact estimates, `rank-tasks`, planner, queue audit, next action | Exclude roots, containers, and pending-verification work; retain negative-EV tasks without recommending them. |
 | MCP | OAuth/PKCE, `getMe`, CRUD, proposal bundles, comments, claims, queues | Harden actor identity; add private organization scopes, reviewed private imports, artifacts, verification, approvals, audit, and export. |
 | Privacy | `isPublic`, organization membership, task visibility, content grants | Create one authorization policy for tasks and every child resource; prevent existence and count leaks. |
-| Provenance | `SourceArtifact`, `TaskSourceArtifact`, Notion import patterns | Give private sources owners and visibility; store message hashes and anchors, not unrestricted transcripts. |
+| Provenance | `SourceArtifact`, `TaskSourceArtifact`, proposal bundles | Give private sources owners and visibility; store message hashes and anchors, not unrestricted transcripts. |
 | Execution | `TaskExecutionAttempt`, claims, leases, actual costs and duration | Make attempts canonical; link artifacts and verification results. |
 | Content | Documents, revisions, private attachments, comments | Reuse as deliverables; avoid building another document workspace. |
 | Extension | Local health tracking, on-device causal analysis, OAuth agenda | Correct stale docs; add selected capture, local extraction, review, and human approval. |
@@ -142,7 +142,7 @@ Pilot telemetry:
 
 ### Existing foundation
 
-`SourceArtifact` and `TaskSourceArtifact` provide stable provenance. The Notion importer and proposal-bundle code provide normalization, validation, dry run, idempotency, and apply patterns. There is no safe channel-neutral private-source ownership policy yet, and no direct WhatsApp, Discord, Telegram, or email ingestion abstraction that should be trusted with ambient access.
+`SourceArtifact` and `TaskSourceArtifact` provide stable provenance. The proposal-bundle code provides normalization, validation, dry run, idempotency, and apply patterns. There is no safe channel-neutral private-source ownership policy yet, and no direct WhatsApp, Discord, Telegram, or email ingestion abstraction that should be trusted with ambient access.
 
 ### Smallest useful path
 
